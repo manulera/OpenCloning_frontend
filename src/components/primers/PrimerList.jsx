@@ -6,6 +6,7 @@ import PrimerTableRow from './PrimerTableRow';
 import './PrimerList.css';
 import { cloningActions } from '../../store/cloning';
 import ImportPrimersButton from './import_primers/ImportPrimersButton';
+import ImportPrimersFromDatabaseButton from './import_primers/ImportPrimersFromDatabaseButton';
 
 function getUsedPrimerIds(sources) {
   const forPcr = sources
@@ -92,6 +93,7 @@ function PrimerList() {
               Add Primer
             </Button>
             <ImportPrimersButton addPrimer={addPrimer} />
+            <ImportPrimersFromDatabaseButton addPrimer={addPrimer} />
           </div>
         )}
       </div>
