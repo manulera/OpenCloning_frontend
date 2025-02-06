@@ -85,7 +85,7 @@ function Source({ sourceId }) {
       specificSource = <SourcePCRorHybridization {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'PolymeraseExtensionSource':
       specificSource = <SourcePolymeraseExtension {...{ source, requestStatus, sendPostRequest }} />; break;
-    case 'elabftw':
+    case 'ELabFTWSource':
       specificSource = <ELabFTWSource {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CollectionSource':
       specificSource = <CollectionSource {...{ source, requestStatus, sendPostRequest }} />; break;

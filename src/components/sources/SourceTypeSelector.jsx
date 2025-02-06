@@ -31,8 +31,7 @@ function SourceTypeSelector({ source }) {
     options.push(<MenuItem key="GenomeCoordinatesSource" value="GenomeCoordinatesSource">Genome region</MenuItem>);
     options.push(<MenuItem key="ManuallyTypedSource" value="ManuallyTypedSource">Enter manually</MenuItem>);
     options.push(<MenuItem key="OligoHybridizationSource" value="OligoHybridizationSource">Oligonucleotide hybridization</MenuItem>);
-    // elab-demo
-    // options.push(<MenuItem key="elabftw" value="elabftw">Import from eLabFTW</MenuItem>);
+    options.push(<MenuItem key="ELabFTWSource" value="ELabFTWSource">Import from eLabFTW</MenuItem>);
     if (entitiesExist) {
       options.push(<MenuItem key="CopyEntity" value="CopyEntity">Use an existing sequence</MenuItem>);
     }

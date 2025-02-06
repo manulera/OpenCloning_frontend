@@ -2,7 +2,7 @@ import React from 'react';
 import GetRequestMultiSelect from '../GetRequestMultiSelect';
 
 function ElabFTWFileSelect({ itemId, apiKey, setFileInfo }) {
-  const url = `https://elab.local:3148/api/v2/items/${itemId}`;
+  const url = `https://localhost:443/api/v2/items/${itemId}`;
   const getOptionsFromResponse = ({ uploads }) => uploads;
   const label = 'File with sequence';
   const messages = { loadingMessage: 'retrieving attachments', errorMessage: 'Could not retrieve attachment from eLab' };

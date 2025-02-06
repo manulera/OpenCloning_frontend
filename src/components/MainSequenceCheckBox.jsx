@@ -4,22 +4,27 @@ import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Rule';
 import Tooltip from '@mui/material/Tooltip';
+import SaveIcon from '@mui/icons-material/Save';
 import { useDispatch, useSelector } from 'react-redux';
 import { cloningActions } from '../store/cloning';
 import useStoreEditor from '../hooks/useStoreEditor';
 import DownloadSequenceFileDialog from './DownloadSequenceFileDialog';
 import EditSequenceNameDialog from './EditSequenceNameDialog';
 import VerificationFileDialog from './verification/VerificationFileDialog';
+import DialogSubmitToElab from './form/eLabFTW/DialogSubmitToElab';
+import { getSourceDatabaseId } from '../store/cloning_utils';
 
 function MainSequenceCheckBox({ id }) {
   const [downloadDialogOpen, setDownloadDialogOpen] = React.useState(false);
   const [editNameDialogOpen, setEditNameDialogOpen] = React.useState(false);
   const [verificationDialogOpen, setVerificationDialogOpen] = React.useState(false);
+  const [eLabDialogOpen, setELabDialogOpen] = React.useState(false);
   const dispatch = useDispatch();
   const { updateStoreEditor } = useStoreEditor();
   const { setMainSequenceId, setCurrentTab } = cloningActions;
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
   const hasVerificationFiles = useSelector((state) => state.cloning.files.some((file) => file.sequence_id === id));
+  const hasDatabaseId = useSelector((state) => getSourceDatabaseId(state.cloning.sources, id) !== undefined);
 
   const toggleMain = () => {
     dispatch(setMainSequenceId(id));
@@ -35,6 +40,18 @@ function MainSequenceCheckBox({ id }) {
       {downloadDialogOpen && <DownloadSequenceFileDialog {...{ id, dialogOpen: downloadDialogOpen, setDialogOpen: setDownloadDialogOpen }} />}
       {editNameDialogOpen && <EditSequenceNameDialog {...{ id, dialogOpen: editNameDialogOpen, setDialogOpen: setEditNameDialogOpen }} />}
       {verificationDialogOpen && <VerificationFileDialog {...{ id, dialogOpen: verificationDialogOpen, setDialogOpen: setVerificationDialogOpen }} />}
+      {eLabDialogOpen && <DialogSubmitToElab {...{ id, dialogOpen: eLabDialogOpen, setDialogOpen: setELabDialogOpen }} />}
+      <Tooltip title={hasDatabaseId ? 'Saved to eLabFTW' : 'Submit to eLabFTW'} arrow placement="top">
+        <SaveIcon
+          onClick={() => !hasDatabaseId && setELabDialogOpen(true)}
+          type="button"
+          className="node-corner-icon"
+          sx={{
+            color: hasDatabaseId ? 'success.main' : 'gray',
+            cursor: hasDatabaseId ? 'default' : 'pointer',
+          }}
+        />
+      </Tooltip>
       <Tooltip title="Verification files" arrow placement="top">
         <CheckIcon onClick={() => setVerificationDialogOpen(true)} type="button" className="node-corner-icon" sx={{ color: hasVerificationFiles ? '#2e7d32' : 'gray', cursor: 'pointer', '&:hover': { filter: 'brightness(70%)' } }} />
       </Tooltip>
