@@ -2,7 +2,7 @@ import React from 'react';
 import GetRequestMultiSelect from '../GetRequestMultiSelect';
 
 function ElabFTWCategorySelect({ setCategory, apiKey }) {
-  const url = 'https://elab.local:3148/api/v2/items_types';
+  const url = 'https://localhost:443/api/v2/items_types';
   const getOptionsFromResponse = (data) => data;
   const label = 'Resource category';
   const messages = { loadingMessage: 'retrieving categories', errorMessage: 'Could not retrieve categories from eLab' };

@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import { Button, Tooltip } from '@mui/material';
 import './MainAppBar.css';
 import { useDispatch } from 'react-redux';
@@ -15,7 +14,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ButtonWithMenu from './ButtonWithMenu';
 import { downloadCloningStrategyAsSvg } from '../../utils/readNwrite';
 import SelectExampleDialog from './SelectExampleDialog';
-import DialogSubmitToElab from '../form/eLabFTW/DialogSubmitToElab';
 import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
 import MiscDialog from './MiscDialog';
@@ -39,17 +37,13 @@ function MainAppBar() {
   const [openCloningStrategyDialog, setOpenCloningStrategyDialog] = React.useState(false);
   const [fileList, setFileList] = React.useState([]);
   const [openVersionDialog, setOpenVersionDialog] = React.useState(false);
-  const [eLabDialogOpen, setELabDialogOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openMenu = Boolean(anchorEl);
 
-  const backendRoute = useBackendRoute();
-  const { updateStoreEditor } = useStoreEditor();
   const dispatch = useDispatch();
   const { addAlert } = useAlerts();
   const validateState = useValidateState();
 
-  const tooltipText = <div className="tooltip-text">See in GitHub</div>;
   // Hidden input field, used to load files.
   const fileInputRef = React.useRef(null);
 
@@ -61,8 +55,6 @@ function MainAppBar() {
         await dispatch(setCurrentTab(0));
         downloadCloningStrategyAsSvg('history.svg');
       } },
-    // elab-demo
-    // { display: 'Submit to eLabFTW', onClick: () => setELabDialogOpen(true) },
   ];
 
   const handleCloseDialog = async (url, isTemplate) => {
@@ -209,10 +201,6 @@ function MainAppBar() {
       {/* This one conditionally rendered since it uses hooks etc. */}
       {openMiscDialog && <MiscDialog open={openMiscDialog} setOpen={setOpenMiscDialog} />}
       {openCloningStrategyDialog && <DownloadCloningStrategyDialog open={openCloningStrategyDialog} setOpen={setOpenCloningStrategyDialog} />}
-      {/* elab-demo */}
-      {/* (
-      {eLabDialogOpen && (<DialogSubmitToElab dialogOpen={eLabDialogOpen} setDialogOpen={setELabDialogOpen} />)}
-      ) */}
       <VersionDialog open={openVersionDialog} setOpen={setOpenVersionDialog} />
     </AppBar>
   );

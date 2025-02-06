@@ -244,3 +244,8 @@ export function formatGatewaySites(sites) {
   });
   return foundSites;
 }
+
+export function getSourceDatabaseId(sources, entityId) {
+  const source = sources.find((s) => s.output === entityId);
+  return source?.database_id;
+}

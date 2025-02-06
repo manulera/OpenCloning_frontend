@@ -25,7 +25,7 @@ function ELabFTWSource({ source, requestStatus, sendPostRequest }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     // Read the file from eLabFTW
-    const url = `https://elab.local:3148/api/v2/items/${resource.id}/uploads/${fileInfo.id}?format=binary`;
+    const url = `https://localhost:443/api/v2/items/${resource.id}/uploads/${fileInfo.id}?format=binary`;
     const resp = await axios.get(url, { headers: { Authorization: import.meta.env.VITE_ELABFTW_API_KEY }, responseType: 'blob' });
     // Convert blob to file
     const file = new File([resp.data], fileInfo.real_name);
@@ -36,7 +36,7 @@ function ELabFTWSource({ source, requestStatus, sendPostRequest }) {
         'content-type': 'multipart/form-data',
       },
     };
-    const modifySource = (s) => ({ ...s, item_id: resource.id, upload_id: fileInfo.id, type: 'ELabFTWFileSource' });
+    const modifySource = (s) => ({ ...s, database_id: { item_id: resource.id, sequence_id: fileInfo.id }, type: 'ELabFTWFileSource' });
     sendPostRequest({ endpoint: 'read_from_file', requestData, config, source, modifySource });
   };
 

@@ -431,6 +431,19 @@ const reducer = {
     state.files = state.files.filter((f) => f.sequence_id !== sequenceId);
     deleteFilesFromSessionStorage(sequenceId);
   },
+
+  addDatabaseId(state, action) {
+    const { databaseId, id } = action.payload;
+    const entity = state.entities.find((e) => e.id === id);
+    if (!entity) {
+      throw new Error('Entity not found');
+    }
+    const source = state.sources.find((s) => s.output === id);
+    if (!source) {
+      throw new Error('Source not found');
+    }
+    source.database_id = databaseId;
+  },
 };
 /* eslint-enable no-param-reassign */
 

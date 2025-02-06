@@ -3,7 +3,7 @@ import React from 'react';
 import PostRequestSelect from '../PostRequestSelect';
 
 function ElabFTWResourceSelect({ setResource, categoryId, apiKey }) {
-  const url = 'https://elab.local:3148/api/v2/items';
+  const url = 'https://localhost:443/api/v2/items';
   const resourcePostRequestSettings = React.useMemo(() => ({
     setValue: setResource,
     getOptions: async (userInput) => {

@@ -1,16 +1,15 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, TextField } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, TextField } from '@mui/material';
 import React from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { uploadToELabFTWThunk } from '../../../utils/thunks';
 import ElabFTWCategorySelect from './ElabFTWCategorySelect';
 
-function DialogSubmitToElab({ dialogOpen, setDialogOpen }) {
+const apiKey = import.meta.env.VITE_ELABFTW_API_WRITE_KEY;
+
+function DialogSubmitToElab({ id, dialogOpen, setDialogOpen }) {
   const dispatch = useDispatch();
-  const apiKey = import.meta.env.VITE_ELABFTW_API_WRITE_KEY;
   const [category, setCategory] = React.useState('');
-  const entity2export = useSelector((state) => state.cloning.entities.find((e) => e.id === state.cloning.network[0].entity.id, shallowEqual));
-  // Read the name with a regex of the file_content
-  const name = entity2export ? entity2export.file_content.match(/(?<=LOCUS\s+)(\S+)/)[0] : '';
+  const name = useSelector((state) => state.cloning.teselaJsonCache[id].name);
   const [title, setTitle] = React.useState(name);
   const [errorMessage, setErrorMessage] = React.useState('');
 
@@ -32,7 +31,7 @@ function DialogSubmitToElab({ dialogOpen, setDialogOpen }) {
           setDialogOpen(false);
           setErrorMessage('');
           // TODO: dispatch does not return a promise
-          dispatch(uploadToELabFTWThunk(title, category.id, apiKey)).catch((error) => setErrorMessage(error.message));
+          dispatch(uploadToELabFTWThunk(id, title, category.id, apiKey)).catch((error) => setErrorMessage(error.message));
         },
       }}
     >
