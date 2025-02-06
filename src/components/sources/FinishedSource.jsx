@@ -6,6 +6,19 @@ import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport
 
 // TODO refactor this to use common part
 
+function ElabFTWMessage({ source }) {
+  const { item_id: itemId } = source.database_id;
+  return (
+    <>
+      Read from file
+      {' '}
+      <a target="_blank" rel="noopener noreferrer" href={`https://localhost:443/database.php?mode=view&id=${itemId}`}>{source.file_name}</a>
+      {' '}
+      from eLabFTW
+    </>
+  );
+}
+
 function EuroscarfMessage({ source }) {
   const { repository_id: repositoryId } = source;
   return (
@@ -255,17 +268,7 @@ function FinishedSource({ sourceId }) {
       );
       break;
     case 'PolymeraseExtensionSource': message = 'Polymerase extension'; break;
-    case 'ELabFTWFileSource':
-      message = (
-        <>
-          Read from file
-          {' '}
-          <a target="_blank" rel="noopener noreferrer" href={`https://elab.local:3148/database.php?mode=view&id=${source.item_id}`}>{source.file_name}</a>
-          {' '}
-          from eLabFTW
-        </>
-      );
-      break;
+    case 'ELabFTWFileSource': message = <ElabFTWMessage source={source} />; break;
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
     case 'ReverseComplementSource': message = 'Reverse complement'; break;

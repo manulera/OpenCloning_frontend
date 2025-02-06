@@ -1,6 +1,6 @@
 import React from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { Tooltip } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { Box, Tooltip } from '@mui/material';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -11,7 +11,7 @@ import SequenceEditor from './SequenceEditor';
 import FinishedSource from './sources/FinishedSource';
 import MainSequenceCheckBox from './MainSequenceCheckBox';
 import TemplateSequence from './TemplateSequence';
-import { isSourceATemplate } from '../store/cloning_utils';
+import { getSourceDatabaseId, isSourceATemplate } from '../store/cloning_utils';
 import { cloningActions } from '../store/cloning';
 import SourceBox from './sources/SourceBox';
 
@@ -21,9 +21,10 @@ const SequenceWrapper = React.memo(({ children, entityId, entityIsTemplate }) =>
   if (entityId === null) {
     return children;
   }
+  const hasDatabaseId = useSelector((state) => getSourceDatabaseId(state.cloning.sources, entityId) !== undefined);
   return (
     <li key={entityId} id={`sequence-${entityId}`} className="sequence-node">
-      <span className="tf-nc">
+      <span className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
         <span className="node-text">
           {
             entityIsTemplate ? (
@@ -35,7 +36,7 @@ const SequenceWrapper = React.memo(({ children, entityId, entityIsTemplate }) =>
               </>
             )
           }
-          <div className="corner-id">{entityId}</div>
+          <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>{entityId}</div>
         </span>
       </span>
       <ul>
@@ -47,17 +48,17 @@ const SequenceWrapper = React.memo(({ children, entityId, entityIsTemplate }) =>
 
 // A component that renders the ancestry tree
 function NetWorkNode({ sourceId }) {
-  const [entityId, sourceInput] = useSelector((state) => {
+  const [entityId, sourceInput, hasDatabaseId] = useSelector((state) => {
     const s = state.cloning.sources.find((source) => source.id === sourceId);
-    return [s.output, s.input];
+    return [s.output, s.input, getSourceDatabaseId(state.cloning.sources, s.output) !== undefined];
   }, isEqual);
   const entityIsTemplate = useSelector((state) => entityId && state.cloning.entities.find((entity) => entity.id === entityId).type === 'TemplateSequence');
-  const sourceIsTemplate = useSelector((state) => isSourceATemplate(state.cloning, sourceId), shallowEqual);
-  const ancestorsHidden = useSelector((state) => state.cloning.sourcesWithHiddenAncestors.includes(sourceId), shallowEqual);
+  const sourceIsTemplate = useSelector((state) => isSourceATemplate(state.cloning, sourceId), isEqual);
+  const ancestorsHidden = useSelector((state) => state.cloning.sourcesWithHiddenAncestors.includes(sourceId));
   const parentSourceIds = useSelector((state) => {
     const parentSources = state.cloning.sources.filter((source) => sourceInput.includes(source.output));
     return parentSources.map((source) => source.id);
-  }, shallowEqual);
+  }, isEqual);
   const dispatch = useDispatch();
 
   const onVisibilityClick = React.useCallback(() => {
@@ -83,7 +84,7 @@ function NetWorkNode({ sourceId }) {
   return (
     <SequenceWrapper {...{ entityId, entityIsTemplate }}>
       <li key={sourceId} id={`source-${sourceId}`} className={`source-node ${ancestorsHidden ? 'hidden-ancestors' : ''}`}>
-        <span className="tf-nc">
+        <Box component="span" className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
           <span className="node-text">
             <SourceBox {...{ sourceId }}>
               {(entityId !== null && !sourceIsTemplate) ? (
@@ -92,7 +93,7 @@ function NetWorkNode({ sourceId }) {
                 <Source {...{ sourceId }} />
               )}
             </SourceBox>
-            <div className="corner-id">
+            <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>
               {sourceId}
             </div>
             { (!sourceIsTemplate && sourceInput.length > 0 && entityId) && (
@@ -115,7 +116,7 @@ function NetWorkNode({ sourceId }) {
             </div>
             )}
           </span>
-        </span>
+        </Box>
         {parentSourceIds.length > 0 && (
         <ul className={ancestorsHidden ? 'hidden-ancestors' : ''}>
           {parentSourceIds.map((id) => (
