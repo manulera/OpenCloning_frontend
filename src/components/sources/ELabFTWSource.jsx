@@ -44,9 +44,9 @@ function ELabFTWSource({ source, requestStatus, sendPostRequest }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <ElabFTWCategorySelect setCategory={setCategory} apiKey={apiKey} />
-      {category && <ElabFTWResourceSelect setResource={setResource} categoryId={category.id} apiKey={apiKey} />}
-      {resource && <ElabFTWFileSelect setFileInfo={setFileInfo} itemId={resource.id} apiKey={apiKey} />}
+      <ElabFTWCategorySelect fullWidth setCategory={setCategory} apiKey={apiKey} />
+      {category && <ElabFTWResourceSelect fullWidth setResource={setResource} categoryId={category.id} apiKey={apiKey} />}
+      {resource && <ElabFTWFileSelect fullWidth setFileInfo={setFileInfo} itemId={resource.id} apiKey={apiKey} />}
       {fileInfo && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit </SubmitButtonBackendAPI>}
     </form>
   );

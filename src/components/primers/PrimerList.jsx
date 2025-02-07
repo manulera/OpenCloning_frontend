@@ -6,21 +6,8 @@ import PrimerTableRow from './PrimerTableRow';
 import './PrimerList.css';
 import { cloningActions } from '../../store/cloning';
 import ImportPrimersButton from './import_primers/ImportPrimersButton';
-import ImportPrimersFromDatabaseButton from './import_primers/ImportPrimersFromDatabaseButton';
-
-function getUsedPrimerIds(sources) {
-  const forPcr = sources
-    .filter((s) => s.type === 'PCRSource' && s.assembly?.length > 0)
-    .map((s) => [s.assembly[0].sequence, s.assembly[2].sequence]).flat();
-  const forHybridization = sources
-    .filter((s) => s.type === 'OligoHybridizationSource')
-    .flatMap((s) => [s.forward_oligo, s.reverse_oligo]);
-  const forCRISPR = sources
-    .filter((s) => s.type === 'CRISPRSource')
-    .flatMap((s) => s.guides);
-
-  return forPcr.concat(forHybridization).concat(forCRISPR);
-}
+import PrimerDatabaseImportForm from './import_primers/PrimerDatabaseImportForm';
+import { getUsedPrimerIds } from '../../store/cloning_utils';
 
 function PrimerList() {
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
@@ -31,6 +18,7 @@ function PrimerList() {
   const editPrimer = (editedPrimer) => dispatch(editAction(editedPrimer));
   const [addingPrimer, setAddingPrimer] = React.useState(false);
   const [editingPrimerId, setEditingPrimerId] = React.useState(null);
+  const [importingPrimer, setImportingPrimer] = React.useState(false);
   const onEditClick = (id) => {
     setEditingPrimerId(id);
     setAddingPrimer(false);
@@ -84,6 +72,12 @@ function PrimerList() {
           cancelForm={switchAddingPrimer}
           existingNames={primers.map((p) => p.name)}
         />
+        )) || (importingPrimer && (
+          <PrimerDatabaseImportForm
+            submitPrimer={addPrimer}
+            cancelForm={() => setImportingPrimer(false)}
+            existingNames={primers.map((p) => p.name)}
+          />
         )) || (
           <div className="primer-add-container">
             <Button
@@ -93,7 +87,12 @@ function PrimerList() {
               Add Primer
             </Button>
             <ImportPrimersButton addPrimer={addPrimer} />
-            <ImportPrimersFromDatabaseButton addPrimer={addPrimer} />
+            <Button
+              variant="contained"
+              onClick={() => setImportingPrimer(true)}
+            >
+              Import Primers
+            </Button>
           </div>
         )}
       </div>

@@ -15,6 +15,7 @@ function EnzymeMultiSelect({ setEnzymes, label = 'Enzymes used', multiple = true
   return (
 
     <GetRequestMultiSelect
+      fullWidth
       className="enzyme-multi-select"
       getOptionsFromResponse={getOptionsFromResponse}
       url={url}
