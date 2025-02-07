@@ -133,11 +133,10 @@ export const uploadSequenceToELabFTWThunk = (id, title, categoryId, apiKey, prim
   const entity2export = entities.find((e) => e.id === id);
 
   const primersToSave = [];
-  const primersToLink = [];
+  const primersInUse = getUsedPrimerIds(sources);
+  const existingPrimersToLink = primers.filter((p) => primersInUse.includes(p.id) && p.database_id).map((p) => p.database_id);
   if (primerCategoryId) {
-    const primersInUse = getUsedPrimerIds(sources);
     primersToSave.push(...primers.filter((p) => primersInUse.includes(p.id) && !p.database_id));
-    primersToLink.push(...primers.filter((p) => primersInUse.includes(p.id) && p.database_id));
   }
 
   // Create item
@@ -166,8 +165,9 @@ export const uploadSequenceToELabFTWThunk = (id, title, categoryId, apiKey, prim
     dispatch(uploadPrimerToELabFTWThunk(primer.id, primer.name, primerCategoryId, apiKey, itemId));
   });
 
+  // TODO: error handling here
   // Link existing primers to the sequence
-  await Promise.all(primersToLink.map((primer) => linkToParent(itemId, primer.database_id.item_id, apiKey)));
+  await Promise.all(existingPrimersToLink.map((pid) => linkToParent(itemId, pid, apiKey)));
 
   // Upload the sequence file
   const formData = new FormData();
