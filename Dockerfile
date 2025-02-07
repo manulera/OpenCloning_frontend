@@ -4,7 +4,9 @@
 # Stage 1: Build the application
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY . /app
+COPY package.json /app/package.json
+COPY yarn.lock /app/yarn.lock
+COPY .yarnrc.yml /app/.yarnrc.yml
 RUN corepack enable
 RUN yarn install
 # Add build argument for base URL with a default value
@@ -12,6 +14,7 @@ ARG BASE_URL="/"
 # Build arguments to set version and commit SHA
 ARG VERSION
 ARG COMMIT_SHA
+COPY . /app
 RUN yarn build --base "$BASE_URL"
 
 # Stage 2: Create a lightweight production image
