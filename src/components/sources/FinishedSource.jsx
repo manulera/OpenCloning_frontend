@@ -37,7 +37,6 @@ function EuroscarfMessage({ source }) {
 }
 
 function WekWikGeneMessage({ source }) {
-  console.log(source);
   const { repository_id: repositoryId } = source;
   return (
     <>

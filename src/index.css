@@ -38,6 +38,7 @@ li.hidden-ancestors {
     right: -1px;
     top: 1px;
     display: flex;
+    gap: .2em;
 }
 
 .overhang-representation {

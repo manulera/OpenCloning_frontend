@@ -1,7 +1,7 @@
 import React from 'react';
 import GetRequestMultiSelect from '../GetRequestMultiSelect';
 
-function ElabFTWFileSelect({ itemId, apiKey, setFileInfo }) {
+function ElabFTWFileSelect({ itemId, apiKey, setFileInfo, ...rest }) {
   const url = `https://localhost:443/api/v2/items/${itemId}`;
   const getOptionsFromResponse = ({ uploads }) => uploads;
   const label = 'File with sequence';
@@ -19,6 +19,7 @@ function ElabFTWFileSelect({ itemId, apiKey, setFileInfo }) {
       getOptionLabel={(option) => (option === '' ? '' : option.real_name)}
       multiple={false}
       autoComplete={false}
+      {...rest}
     />
   );
 }
