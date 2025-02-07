@@ -40,7 +40,7 @@ function MainSequenceCheckBox({ id }) {
       {downloadDialogOpen && <DownloadSequenceFileDialog {...{ id, dialogOpen: downloadDialogOpen, setDialogOpen: setDownloadDialogOpen }} />}
       {editNameDialogOpen && <EditSequenceNameDialog {...{ id, dialogOpen: editNameDialogOpen, setDialogOpen: setEditNameDialogOpen }} />}
       {verificationDialogOpen && <VerificationFileDialog {...{ id, dialogOpen: verificationDialogOpen, setDialogOpen: setVerificationDialogOpen }} />}
-      {eLabDialogOpen && <DialogSubmitToElab {...{ id, dialogOpen: eLabDialogOpen, setDialogOpen: setELabDialogOpen }} />}
+      {eLabDialogOpen && <DialogSubmitToElab {...{ id, dialogOpen: eLabDialogOpen, setDialogOpen: setELabDialogOpen, resourceType: 'sequence' }} />}
       <Tooltip title={hasDatabaseId ? 'Saved to eLabFTW' : 'Submit to eLabFTW'} arrow placement="top">
         <SaveIcon
           onClick={() => !hasDatabaseId && setELabDialogOpen(true)}
@@ -49,6 +49,9 @@ function MainSequenceCheckBox({ id }) {
           sx={{
             color: hasDatabaseId ? 'success.main' : 'gray',
             cursor: hasDatabaseId ? 'default' : 'pointer',
+            '&:hover': {
+              filter: hasDatabaseId ? 'none' : 'brightness(70%)',
+            },
           }}
         />
       </Tooltip>

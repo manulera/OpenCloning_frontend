@@ -249,3 +249,17 @@ export function getSourceDatabaseId(sources, entityId) {
   const source = sources.find((s) => s.output === entityId);
   return source?.database_id;
 }
+
+export function getUsedPrimerIds(sources) {
+  const forPcr = sources
+    .filter((s) => s.type === 'PCRSource' && s.assembly?.length > 0)
+    .map((s) => [s.assembly[0].sequence, s.assembly[2].sequence]).flat();
+  const forHybridization = sources
+    .filter((s) => s.type === 'OligoHybridizationSource')
+    .flatMap((s) => [s.forward_oligo, s.reverse_oligo]);
+  const forCRISPR = sources
+    .filter((s) => s.type === 'CRISPRSource')
+    .flatMap((s) => s.guides);
+
+  return forPcr.concat(forHybridization).concat(forCRISPR);
+}
