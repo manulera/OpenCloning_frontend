@@ -41,6 +41,8 @@ export default function PostRequestSelect({ setValue, getOptions, getOptionLabel
     // Reset the value when the component is re-rendered at the same position
     // with different functions
     setUserInput('');
+    setOptions([]);
+    setNoOptionsText('');
   }, [setValue, getOptions, getOptionLabel, isOptionEqualToValue, textLabel]);
 
   if (error) {

@@ -7,3 +7,7 @@ build/
 Dockerfile
 .git
 OpenCloning_backend
+
+.env.local
+.env.development
+.env.production
