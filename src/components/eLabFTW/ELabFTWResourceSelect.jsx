@@ -1,9 +1,12 @@
 import axios from 'axios';
 import React from 'react';
-import PostRequestSelect from '../PostRequestSelect';
+import PostRequestSelect from '../form/PostRequestSelect';
 
-function ElabFTWResourceSelect({ setResource, categoryId, apiKey, ...rest }) {
+const apiKey = import.meta.env.VITE_ELABFTW_API_KEY;
+
+function ELabFTWResourceSelect({ setResource, categoryId, ...rest }) {
   const url = 'https://localhost:443/api/v2/items';
+
   const resourcePostRequestSettings = React.useMemo(() => ({
     setValue: setResource,
     getOptions: async (userInput) => {
@@ -19,4 +22,4 @@ function ElabFTWResourceSelect({ setResource, categoryId, apiKey, ...rest }) {
   );
 }
 
-export default ElabFTWResourceSelect;
+export default ELabFTWResourceSelect;

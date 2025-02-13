@@ -1,7 +1,9 @@
 import React from 'react';
-import GetRequestMultiSelect from '../GetRequestMultiSelect';
+import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
 
-function ElabFTWCategorySelect({ setCategory, apiKey, label = 'Resource category', ...rest }) {
+const apiKey = import.meta.env.VITE_ELABFTW_API_KEY;
+
+function ELabFTWCategorySelect({ setCategory, label = 'Resource category', ...rest }) {
   const url = 'https://localhost:443/api/v2/items_types';
   const getOptionsFromResponse = (data) => data;
   const messages = { loadingMessage: 'retrieving categories', errorMessage: 'Could not retrieve categories from eLab' };
@@ -22,4 +24,4 @@ function ElabFTWCategorySelect({ setCategory, apiKey, label = 'Resource category
   );
 }
 
-export default ElabFTWCategorySelect;
+export default ELabFTWCategorySelect;

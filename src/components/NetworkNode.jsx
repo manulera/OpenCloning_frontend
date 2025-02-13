@@ -17,7 +17,7 @@ import SourceBox from './sources/SourceBox';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
-const SequenceWrapper = React.memo(({ children, entityId, entityIsTemplate }) => {
+function SequenceWrapper({ children, entityId, entityIsTemplate }) {
   if (entityId === null) {
     return children;
   }
@@ -44,7 +44,7 @@ const SequenceWrapper = React.memo(({ children, entityId, entityIsTemplate }) =>
       </ul>
     </li>
   );
-});
+}
 
 // A component that renders the ancestry tree
 function NetWorkNode({ sourceId }) {
