@@ -19,6 +19,7 @@ import useBackendAPI from '../../hooks/useBackendAPI';
 import MultipleOutputsSelector from './MultipleOutputsSelector';
 import { cloningActions } from '../../store/cloning';
 import SourceCopyEntity from './SourceCopyEntity';
+import SourceReverseComplement from './SourceReverseComplement';
 
 // There are several types of source, this components holds the common part,
 // which for now is a select element to pick which kind of source is created
@@ -93,6 +94,8 @@ function Source({ sourceId }) {
       specificSource = <SourceCopyEntity {...{ source }} />; break;
     case 'AnnotationSource':
       specificSource = <SourceAnnotation {...{ source, requestStatus, sendPostRequest }} />; break;
+    case 'ReverseComplementSource':
+      specificSource = <SourceReverseComplement {...{ source, requestStatus, sendPostRequest }} />; break;
     default:
       break;
     /* eslint-enable */
