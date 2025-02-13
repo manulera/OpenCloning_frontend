@@ -89,14 +89,14 @@ function GatewayRoiSelect({ id, greedy = false }) {
       setDonorSites(sites.filter(({ siteName }) => siteName.startsWith('attP')));
     }
   }, [sites]);
-  React.useEffect(() => {
-    if (knownCombination) {
-      const left = donorSites.find(({ siteName }) => knownCombination.siteNames[0] === siteName);
-      const right = donorSites.find(({ siteName }) => knownCombination.siteNames[1] === siteName);
-      setLeftSite(left);
-      setRightSite(right);
-    }
-  }, [knownCombination]);
+  // React.useEffect(() => {
+  //   if (knownCombination) {
+  //     const left = donorSites.find(({ siteName }) => knownCombination.siteNames[0] === siteName);
+  //     const right = donorSites.find(({ siteName }) => knownCombination.siteNames[1] === siteName);
+  //     setLeftSite(left);
+  //     setRightSite(right);
+  //   }
+  // }, [knownCombination]);
 
   // Update the store editor when the left and right site are selected
   React.useEffect(() => {
