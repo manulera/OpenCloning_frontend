@@ -1,5 +1,5 @@
 import { BlobReader, TextWriter, ZipReader } from '@zip.js/zip.js';
-import { skipGoogleSheetErrors, skipNcbiCheck, setInputValue, deleteSourceByContent, loadExample } from '../common_functions';
+import { setInputValue, deleteSourceByContent, loadExample } from '../common_functions';
 
 describe('Test download history file', () => {
   beforeEach(() => {

@@ -62,7 +62,11 @@ export function joinEntitiesIntoSingleSequence(sequences, locations, orientation
 }
 
 export function simulateHomologousRecombination(templateSequence, targetSequence, rois, invertFragment, spacers) {
-  const [amplifyRange, insertionRange] = rois;
+  const [amplifyRangeSelection, insertionRangeSelection] = rois;
+
+  const amplifyRange = amplifyRangeSelection.selectionLayer;
+
+  const insertionRangeOrPosition = insertionRangeSelection.caretPosition === -1 ? insertionRangeSelection.selectionLayer : insertionRangeSelection.caretPosition;
 
   let templateFragment = getSequenceDataBetweenRange(templateSequence, amplifyRange);
   if (invertFragment) {
@@ -79,5 +83,5 @@ export function simulateHomologousRecombination(templateSequence, targetSequence
     templateWithSpacers = insertSequenceDataAtPositionOrRange(spacerSequences[1], templateWithSpacers, templateWithSpacers.sequence.length);
   }
 
-  return insertSequenceDataAtPositionOrRange(templateWithSpacers, targetSequence, insertionRange);
+  return insertSequenceDataAtPositionOrRange(templateWithSpacers, targetSequence, insertionRangeOrPosition);
 }

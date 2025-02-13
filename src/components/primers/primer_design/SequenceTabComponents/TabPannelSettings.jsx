@@ -24,7 +24,7 @@ function TabPannelSettings() {
             />
           ))}
         </Box>
-        <RestrictionSpacerForm />
+        {designType === 'restriction_ligation' && <RestrictionSpacerForm />}
         <PrimerSpacerForm />
         {designType === 'gibson_assembly' && (
           <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>

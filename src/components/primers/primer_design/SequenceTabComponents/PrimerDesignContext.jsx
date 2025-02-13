@@ -101,7 +101,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
         newSequenceProduct = joinEntitiesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
         newSequenceProduct.name = 'Gibson Assembly product';
       } else if (designType === 'homologous_recombination') {
-        newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois.map((s) => s.selectionLayer), fragmentOrientations[0] === 'reverse', spacers);
+        newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois, fragmentOrientations[0] === 'reverse', spacers);
         newSequenceProduct.name = 'Homologous recombination product';
       } else if (designType === 'gateway_bp') {
         newSequenceProduct = joinEntitiesIntoSingleSequence([sequences[0]], [rois[0].selectionLayer], fragmentOrientations, spacers, false, 'primer tail');
