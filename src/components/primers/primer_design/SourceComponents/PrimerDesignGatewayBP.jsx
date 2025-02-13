@@ -40,8 +40,10 @@ function PrimerDesignGatewayBP({ source }) {
       dispatch(setMainSequenceId(source.input[0]));
       updateStoreEditor('mainEditor', source.input[0]);
       dispatch(setCurrentTab(3));
-      // Scroll to the top of the page
-      document.getElementById('opencloning-app-tabs')?.scrollIntoView();
+      // Scroll to the top of the page after 300ms
+      setTimeout(() => {
+        document.querySelector('.tab-panels-container')?.scrollTo({ top: 0, behavior: 'instant' });
+      }, 300);
     });
   };
   return (
