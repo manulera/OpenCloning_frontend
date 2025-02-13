@@ -6,12 +6,15 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
 import { cloningActions } from '../../store/cloning';
+import useDatabase from '../../hooks/useDatabase';
+
+const { replaceSource } = cloningActions;
 
 function SourceTypeSelector({ source }) {
   const { id: sourceId, type: sourceType } = source;
   const dispatch = useDispatch();
-  const sourceIsPrimerDesign = source.output && useSelector((state) => state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
-  const { replaceSource } = cloningActions;
+  const database = useDatabase();
+  const sourceIsPrimerDesign = useSelector((state) => source.output && state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
 
   const onChange = (event) => {
     // Clear the source other than these fields
@@ -31,7 +34,9 @@ function SourceTypeSelector({ source }) {
     options.push(<MenuItem key="GenomeCoordinatesSource" value="GenomeCoordinatesSource">Genome region</MenuItem>);
     options.push(<MenuItem key="ManuallyTypedSource" value="ManuallyTypedSource">Enter manually</MenuItem>);
     options.push(<MenuItem key="OligoHybridizationSource" value="OligoHybridizationSource">Oligonucleotide hybridization</MenuItem>);
-    options.push(<MenuItem key="ELabFTWSource" value="ELabFTWSource">Import from eLabFTW</MenuItem>);
+    if (database) {
+      options.push(<MenuItem key="DatabaseSource" value="DatabaseSource">{`Import from ${database.name}`}</MenuItem>);
+    }
     if (entitiesExist) {
       options.push(<MenuItem key="CopyEntity" value="CopyEntity">Use an existing sequence</MenuItem>);
     }

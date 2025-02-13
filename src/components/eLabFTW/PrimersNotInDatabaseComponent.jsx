@@ -3,11 +3,10 @@ import { useSelector } from 'react-redux';
 import { Alert } from '@mui/material';
 import { getSubState } from '../../utils/thunks';
 import { getUsedPrimerIds } from '../../store/cloning_utils';
-import ElabFTWCategorySelect from '../form/eLabFTW/ElabFTWCategorySelect';
+import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 
-const apiKey = import.meta.env.VITE_ELABFTW_API_WRITE_KEY;
-
-function PrimersNotInDabaseList({ id, primerCategoryId, setPrimerCategoryId }) {
+function PrimersNotInDabaseComponent({ id, submissionData, setSubmissionData }) {
+  const primerCategoryId = submissionData?.primerCategoryId;
   const primers = useSelector((state) => {
     const subState = getSubState(state, id);
     const primersInUse = getUsedPrimerIds(subState.sources);
@@ -42,9 +41,10 @@ function PrimersNotInDabaseList({ id, primerCategoryId, setPrimerCategoryId }) {
         </>
       )}
 
-      <ElabFTWCategorySelect
-        setCategory={(c) => setPrimerCategoryId(c.id)}
-        apiKey={apiKey}
+      <ELabFTWCategorySelect
+        setCategory={(c) => {
+          setSubmissionData((prev) => ({ ...prev, primerCategoryId: c ? c.id : null }));
+        }}
         label="Save primers as"
         fullWidth
       />
@@ -53,4 +53,4 @@ function PrimersNotInDabaseList({ id, primerCategoryId, setPrimerCategoryId }) {
   );
 }
 
-export default PrimersNotInDabaseList;
+export default PrimersNotInDabaseComponent;

@@ -4,10 +4,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
-import DialogSubmitToElab from '../form/eLabFTW/DialogSubmitToElab';
+import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
+import useDatabase from '../../hooks/useDatabase';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
+  const database = useDatabase();
 
   React.useEffect(() => {
     if (!primer.database_id) {
@@ -30,9 +32,12 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
             {primer.database_id ? <ClearIcon /> : <DeleteIcon />}
           </IconButton>
         </Tooltip>
-        <Tooltip arrow title={primer.database_id ? 'In eLabFTW database' : 'Edit'} placement="top">
+        <Tooltip arrow title={primer.database_id ? `Stored in ${database.name}` : 'Edit'} placement="top">
           {primer.database_id ? (
-            <IconButton sx={{ cursor: 'default' }}>
+            <IconButton
+              onClick={() => window.open(database.getPrimerLink(primer.database_id), '_blank')}
+              sx={{ cursor: 'pointer' }}
+            >
               <SaveIcon color="success" />
             </IconButton>
           ) : (
@@ -43,12 +48,12 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
         </Tooltip>
         {!primer.database_id && (
           <>
-            <Tooltip arrow title="Save to eLabFTW" placement="top">
+            <Tooltip arrow title={`Save to ${database.name}`} placement="top">
               <IconButton onClick={() => setSaveToDatabaseDialogOpen(true)}>
                 <SaveIcon />
               </IconButton>
             </Tooltip>
-            <DialogSubmitToElab
+            <SubmitToDatabaseDialog
               id={primer.id}
               dialogOpen={saveToDatabaseDialogOpen}
               setDialogOpen={setSaveToDatabaseDialogOpen}

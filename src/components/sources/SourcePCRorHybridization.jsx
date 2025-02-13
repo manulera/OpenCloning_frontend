@@ -21,7 +21,7 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   const inputEntities = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), shallowEqual);
   const primers = useSelector((state) => state.cloning.primers);
   const isPcr = inputEntities.length !== 0;
-  const outputIsPrimerDesign = isPcr && source.output && useSelector((state) => state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
+  const outputIsPrimerDesign = useSelector((state) => isPcr && source.output && state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
 
   const [forwardPrimerId, setForwardPrimerId] = React.useState('');
   const [reversePrimerId, setReversePrimerId] = React.useState('');
