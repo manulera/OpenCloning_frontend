@@ -218,6 +218,7 @@ describe('Test primer designer functionality', () => {
     getBottomButton('Choose region', 1).click();
 
     checkCurrentStep('Other settings');
+    cy.get('.primer-design').contains('Restriction enzyme sites').should('not.exist');
 
     // Initially ars1 is not reversed
     cy.contains('svg g', 'ars1').should('not.have.class', 'ann-reverse');
@@ -355,6 +356,7 @@ describe('Test primer designer functionality', () => {
 
     // Go to other settings tab
     checkCurrentStep('Other settings');
+    cy.get('.primer-design').contains('Restriction enzyme sites').should('exist');
 
     // Set the other settings (Impossible to remove the zero)
     setInputValue('Min. hybridization length', '1', '.primer-design');
@@ -448,6 +450,7 @@ describe('Test primer designer functionality', () => {
 
     // Go to other settings tab
     checkCurrentStep('Other settings');
+    cy.get('.primer-design').contains('Restriction enzyme sites').should('exist');
 
     // Select EcoRI, should not be possible to select inverted
     setAutocompleteValue('Left enzyme', 'EcoRI', '.primer-design');
@@ -522,6 +525,7 @@ describe('Test primer designer functionality', () => {
     // Set selection
     getBottomButton('Choose region', 0).click();
     checkCurrentStep('Other settings');
+    cy.get('.primer-design').contains('Restriction enzyme sites').should('not.exist');
 
     // Set the other settings (Impossible to remove the zero)
     setInputValue('Min. hybridization length', '1', '.primer-design');
@@ -647,6 +651,7 @@ describe('Test primer designer functionality', () => {
     // We still should not be able to submit (there should be Ns in the nucleotide sequences)
     getBottomButton('Choose region', 1).click();
     checkCurrentStep('Other settings');
+    cy.get('.primer-design').contains('Restriction enzyme sites').should('not.exist');
     getBottomButton('Design primers', 2).should('be.disabled');
 
     // Check that spacers contain right values
