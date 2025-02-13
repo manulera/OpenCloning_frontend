@@ -1,7 +1,14 @@
 import { FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import React from 'react';
+import { usePrimerDesign } from './PrimerDesignContext';
 
-function OrientationPicker({ value, onChange, label, index }) {
+function OrientationPicker({ id, index }) {
+  const { designType, fragmentOrientations, handleFragmentOrientationChange, templateSequenceNames } = usePrimerDesign();
+  const sequenceName = templateSequenceNames[index];
+  let label = sequenceName && sequenceName !== 'name' ? `Seq. ${id} (${sequenceName})` : `Seq. ${id}`;
+  if (designType === 'homologous_recombination') {
+    label = 'Orientation of insert';
+  }
   return (
     <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', margin: '0', padding: '0' }}>
       <tbody>
@@ -14,8 +21,8 @@ function OrientationPicker({ value, onChange, label, index }) {
               row
               aria-labelledby={`fragment-orientation-label-${index}`}
               name={`fragment-orientation-${index}`}
-              value={value}
-              onChange={onChange}
+              value={fragmentOrientations[index]}
+              onChange={(e) => handleFragmentOrientationChange(index, e.target.value)}
             >
               <FormControlLabel value="forward" control={<Radio />} label="Forward" />
               <FormControlLabel value="reverse" control={<Radio />} label="Reverse" />

@@ -14,16 +14,8 @@ function PrimerResultForm({
     nameError = 'Name is required';
   }
   return (
-    <div
-      className="primer-design-form"
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        marginBottom: nameError ? '12px' : '0',
-      }}
-    >
-      <FormControl sx={{ mx: 1, width: '30%' }}>
+    <div className="primer-design-form">
+      <FormControl sx={{ mx: 1, width: '30%', mb: 1 }}>
         <TextField
           label="Name"
           value={name}

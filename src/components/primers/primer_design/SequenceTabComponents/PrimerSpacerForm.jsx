@@ -2,18 +2,21 @@ import React from 'react';
 import { FormControl, TextField, Box } from '@mui/material';
 import { stringIsNotDNA } from '../../../../store/cloning_utils';
 import CollapsableLabel from './CollapsableLabel';
+import { usePrimerDesign } from './PrimerDesignContext';
 
-function PrimerSpacerForm({ spacers, setSpacers, fragmentCount, circularAssembly, sequenceNames, sequenceIds, open = false }) {
+function PrimerSpacerForm({ open = true }) {
+  const { spacers, setSpacers, circularAssembly, templateSequenceNames, templateSequenceIds } = usePrimerDesign();
   const handleSpacerChange = (index, value) => {
     setSpacers((current) => current.map((spacer, i) => (i === index ? value : spacer)));
   };
+  const fragmentCount = templateSequenceIds.length;
 
-  const sequenceNamesWrapped = [...sequenceNames, sequenceNames[0]];
-  const sequenceIdsWrapped = [...sequenceIds, sequenceIds[0]];
+  const sequenceNamesWrapped = [...templateSequenceNames, templateSequenceNames[0]];
+  const templateSequenceIdsWrapped = [...templateSequenceIds, templateSequenceIds[0]];
 
   const getSequenceName = (seqIndex) => {
     const name = sequenceNamesWrapped[seqIndex];
-    const id = sequenceIdsWrapped[seqIndex];
+    const id = templateSequenceIdsWrapped[seqIndex];
     return name && name !== 'name' ? `Seq. ${id} (${name})` : `Seq. ${id}`;
   };
 

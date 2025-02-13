@@ -306,3 +306,7 @@ div#global-error-message-wrapper > div {
 .tab-panels-container {
     text-align: center;
 }
+
+div[role="tooltip"] div.MuiTooltip-tooltip {
+    font-size: 1em;
+}
