@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Checkbox, FormControl, FormControlLabel, FormLabel } from '@mui/material';
+import { Alert, Box, Checkbox, FormControl, FormControlLabel, FormLabel } from '@mui/material';
 import StepNavigation from './StepNavigation';
 import TabPanel from '../../../navigation/TabPanel';
 import PrimerSettingsForm from './PrimerSettingsForm';
@@ -9,7 +9,7 @@ import { usePrimerDesign } from './PrimerDesignContext';
 import RestrictionSpacerForm from './RestrictionSpacerForm';
 
 function TabPannelSettings() {
-  const { templateSequenceIds, designType, selectedTab, sequenceIds, circularAssembly, onCircularAssemblyChange, designPrimers, primers, primerDesignSettings, submissionPreventedMessage } = usePrimerDesign();
+  const { error, templateSequenceIds, designType, selectedTab, sequenceIds, circularAssembly, onCircularAssemblyChange, designPrimers, primers, primerDesignSettings, submissionPreventedMessage } = usePrimerDesign();
   return (
     <TabPanel value={selectedTab} index={sequenceIds.length}>
       <Box sx={{ width: '80%', margin: 'auto' }}>
@@ -44,6 +44,7 @@ function TabPannelSettings() {
         )}
 
       </Box>
+      {error && (<Alert severity="error" sx={{ width: 'fit-content', margin: 'auto', mb: 2 }}>{error}</Alert>)}
       <StepNavigation
         onStepCompletion={designPrimers}
         stepCompletionText="Design primers"

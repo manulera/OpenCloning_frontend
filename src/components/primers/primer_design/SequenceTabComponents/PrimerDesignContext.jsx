@@ -19,7 +19,7 @@ function changeValueAtIndex(current, index, newValue) {
 
 const PrimerDesignContext = React.createContext();
 
-export function PrimerDesignProvider({ children, designType, sequenceIds, initialPrimerDesignSettings }) {
+export function PrimerDesignProvider({ children, designType, sequenceIds, initialPrimerDesignSettings, steps }) {
   let templateSequenceIds = sequenceIds;
   if (designType === 'homologous_recombination' || designType === 'gateway_bp') {
     templateSequenceIds = sequenceIds.slice(0, 1);
@@ -37,7 +37,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
   // Restriction ligation
   const { enzymePrimerDesignSettings, enzymePrimerDesignHandlingFunctions } = useEnzymePrimerDesignSettings();
 
-  console.log(enzymePrimerDesignSettings.enzymeSpacers);
   // Gateway BP
   const [knownCombination, setKnownCombination] = useState(null);
 
@@ -331,7 +330,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
     setPrimers,
     selectedTab,
     onTabChange,
-    setSequenceProduct,
     handleNext,
     handleBack,
     handleSelectRegion,
@@ -340,7 +338,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
     circularAssembly,
     spacers,
     setFragmentOrientations,
-    setCircularAssembly,
     setSpacers,
     handleFragmentOrientationChange,
     sequenceNames,
@@ -355,6 +352,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
     handleKnownCombinationChange,
     enzymePrimerDesignSettings,
     enzymePrimerDesignHandlingFunctions,
+    steps,
   }), [
     primers,
     error,
@@ -363,7 +361,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
     setPrimers,
     selectedTab,
     onTabChange,
-    setSequenceProduct,
     handleNext,
     handleBack,
     handleSelectRegion,
@@ -372,7 +369,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
     circularAssembly,
     spacers,
     setFragmentOrientations,
-    setCircularAssembly,
     setSpacers,
     handleFragmentOrientationChange,
     sequenceNames,
@@ -385,6 +381,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
     handleKnownCombinationChange,
     enzymePrimerDesignSettings,
     enzymePrimerDesignHandlingFunctions,
+    steps,
   ]);
 
   return (

@@ -2,9 +2,14 @@ import { Step, StepButton, Stepper } from '@mui/material';
 import React from 'react';
 import { usePrimerDesign } from './PrimerDesignContext';
 
-function PrimerDesignStepper({ steps }) {
-  const { selectedTab, onTabChange, rois, primers, submissionPreventedMessage } = usePrimerDesign();
+function PrimerDesignStepper() {
+  const { steps, selectedTab, onTabChange, rois, primers, submissionPreventedMessage } = usePrimerDesign();
 
+  const allSteps = [
+    ...steps,
+    { label: 'Other settings' },
+    { label: 'Results' },
+  ];
   const completedSteps = [
     ...rois.map((roi) => roi !== null),
     // We check submissionPreventedMessage, because you could design primers and then come back
@@ -32,7 +37,7 @@ function PrimerDesignStepper({ steps }) {
 
       }}
     >
-      {steps.map(({ label }, index) => (
+      {allSteps.map(({ label }, index) => (
 
         <Step key={label} completed={!disabledSteps[index] && completedSteps[index]}>
           <StepButton disabled={disabledSteps[index]} onClick={() => onTabChange(null, index)}>

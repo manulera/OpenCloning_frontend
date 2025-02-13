@@ -1,10 +1,6 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import PrimerDesignStepper from './PrimerDesignStepper';
-import TabPanelSelectRoi from './TabPanelSelectRoi';
 import { PrimerDesignProvider } from './PrimerDesignContext';
-import TabPanelResults from './TabPanelResults';
-import TabPannelSettings from './TabPannelSettings';
+import PrimerDesignForm from './PrimerDesignForm';
 
 export default function PrimerDesignHomologousRecombination({ homologousRecombinationTargetId, pcrSource }) {
   const templateSequenceId = pcrSource.input[0];
@@ -20,27 +16,16 @@ export default function PrimerDesignHomologousRecombination({ homologousRecombin
       inputLabel: `Replaced region (sequence ${homologousRecombinationTargetId})`,
       allowSinglePosition: true,
     },
-    { label: 'Other settings' },
-    { label: 'Results' },
   ], [templateSequenceId, homologousRecombinationTargetId]);
 
   return (
-    <PrimerDesignProvider designType="homologous_recombination" sequenceIds={sequenceIds} initialPrimerDesignSettings={initialPrimerDesignSettings}>
-      <Box>
-        <PrimerDesignStepper steps={steps} />
-        {steps.slice(0, sequenceIds.length).map((step, index) => (
-          <TabPanelSelectRoi
-            key={step.label}
-            step={step}
-            index={index}
-          />
-        ))}
-        <TabPannelSettings steps={steps} />
-        <TabPanelResults />
-
-        {/* {error && (<Alert severity="error" sx={{ width: 'fit-content', margin: 'auto', mb: 2 }}>{error}</Alert>)} */}
-      </Box>
+    <PrimerDesignProvider
+      designType="homologous_recombination"
+      sequenceIds={sequenceIds}
+      initialPrimerDesignSettings={initialPrimerDesignSettings}
+      steps={steps}
+    >
+      <PrimerDesignForm />
     </PrimerDesignProvider>
-
   );
 }
