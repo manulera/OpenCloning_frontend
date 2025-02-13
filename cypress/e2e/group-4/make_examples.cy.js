@@ -1,4 +1,4 @@
-import { addSource, clickMultiSelectOption, setInputValue, addPrimer, addLane} from '../common_functions';
+import { addSource, clickMultiSelectOption, setInputValue, addPrimer, addLane } from '../common_functions';
 
 describe('Makes all examples', () => {
   beforeEach(() => {
@@ -39,8 +39,9 @@ describe('Makes all examples', () => {
     cy.get('[role="menuitem"]').contains('Save cloning history to file').click();
     cy.get('button').contains('Save file').click();
     // Rename downloaded file
-    cy.readFile('cypress/downloads/cloning_strategy.json').then((file) => {
-      cy.writeFile('cypress/downloads/homologous_recombination.json', JSON.stringify(file, null, 2));
+    cy.task('moveFile', {
+      from: 'cypress/downloads/cloning_strategy.json',
+      to: 'cypress/downloads/homologous_recombination.json',
     });
   });
   it('Restriction-ligation single step', () => {
@@ -86,8 +87,9 @@ describe('Makes all examples', () => {
     cy.get('button').contains('Save file').click();
 
     // Rename downloaded file
-    cy.readFile('cypress/downloads/cloning_strategy.json').then((file) => {
-      cy.writeFile('cypress/downloads/restriction_ligation_assembly.json', JSON.stringify(file, null, 2));
+    cy.task('moveFile', {
+      from: 'cypress/downloads/cloning_strategy.json',
+      to: 'cypress/downloads/restriction_ligation_single_step.json',
     });
   });
 });

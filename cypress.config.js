@@ -13,6 +13,10 @@ module.exports = defineConfig({
 
           return null;
         },
+        moveFile({ from, to }) {
+          fs.renameSync(from, to);
+          return null;
+        },
       });
       if (process.env.VITE_COVERAGE) {
         require('@cypress/code-coverage/task')(on, config);
