@@ -583,7 +583,7 @@ describe('Test primer designer functionality', () => {
     // Click on the Open primer designer button
     cy.get('button').contains('Open primer designer').click();
     // The primer design info should be retained
-    checkInputValue('Amplified region', '2 - 30', '.primer-design');
+    checkInputValue('Amplified region', '2 - 30', '.primer-design #tab-panel-0');
   });
   it('Gateway BP primer design', () => {
     loadExample('Gateway');
