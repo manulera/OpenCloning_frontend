@@ -95,7 +95,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
       if (designType === 'simple_pair' || designType === 'restriction_ligation') {
         const { enzymeSpacers } = enzymePrimerDesignSettings;
         const extendedSpacers = [enzymeSpacers[0] + spacers[0], spacers[1] + enzymeSpacers[1]];
-        newSequenceProduct = joinEntitiesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly);
+        newSequenceProduct = joinEntitiesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
         newSequenceProduct.name = 'PCR product';
       } else if (designType === 'gibson_assembly') {
         newSequenceProduct = joinEntitiesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
@@ -235,7 +235,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, initia
         homology_length: primerDesignSettings.homologyLength,
         minimal_hybridization_length: primerDesignSettings.hybridizationLength,
         target_tm: primerDesignSettings.targetTm,
-        circular_assembly: circularAssembly,
+        circular: circularAssembly,
       };
       requestData = {
         pcr_templates: sequenceIds.map((id, index) => ({
