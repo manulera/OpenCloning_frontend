@@ -7,11 +7,11 @@ import TabPanelResults from './TabPanelResults';
 import { usePrimerDesign } from './PrimerDesignContext';
 
 function PrimerDesignForm() {
-  const { steps, templateSequenceIds } = usePrimerDesign();
+  const { steps, sequenceIds } = usePrimerDesign();
   return (
     <Box>
       <PrimerDesignStepper />
-      {steps.slice(0, templateSequenceIds.length).map((step, index) => (
+      {steps.slice(0, sequenceIds.length).map((step, index) => (
         <TabPanelSelectRoi
           key={step.label}
           step={step}

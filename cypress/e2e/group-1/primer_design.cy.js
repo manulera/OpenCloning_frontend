@@ -1,5 +1,18 @@
 import { addLane, addSource, changeTab, checkInputValue, clearAutocompleteValue, clearInputValue, clickMultiSelectOption, deleteSourceByContent, loadExample, manuallyTypeSequence, setAutocompleteValue, setInputValue } from '../common_functions';
 
+function getStepButton(label) {
+  return cy.get('button.MuiStepButton-root').contains(label).parents('button');
+}
+
+function getBottomButton(label, tab) {
+  return cy.get(`.primer-design #tab-panel-${tab} button`).contains(label);
+}
+
+function checkCurrentStep(label) {
+  cy.get('button.MuiStepButton-root').contains(label).parents('button').find('.Mui-active')
+    .should('exist');
+}
+
 describe('Test primer designer functionality', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -23,65 +36,71 @@ describe('Test primer designer functionality', () => {
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
     // Go back to the cloning tab and check that the button is displayed
-    cy.get('button.MuiTab-root').contains('Cloning').click();
-    cy.get('button').filter(':contains("Design primers")').should('have.length', 1);
+    changeTab('Cloning');
+    cy.get('.open-cloning button').filter(':contains("Design primers")').should('have.length', 1);
 
     // Click it, should bring us back to the Sequence tab
-    cy.get('button').contains('Design primers').click();
+    cy.get('.open-cloning button').contains('Design primers').click();
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
+    // Back button disabled on first tab
+    getBottomButton('Back', '0').should('be.disabled');
+    getBottomButton('Next', '0').should('not.be.disabled');
+
     // Moving between tabs displays the right sequence
-    cy.contains('span', 'pFA6a-5FLAG-hphMX6').should('be.visible');
+    cy.contains('.sequenceNameText', 'pFA6a-5FLAG-hphMX6').should('be.visible');
 
-    cy.get('button.MuiTab-root').contains('Replaced region').click();
-    cy.contains('span', 'pFA6a-5FLAG-hphMX6').should('exist');
-    cy.contains('span', 'CU329670').should('be.visible');
+    getStepButton('Replaced region').click();
+    cy.contains('.sequenceNameText', 'pFA6a-5FLAG-hphMX6').should('not.exist');
+    cy.contains('.sequenceNameText', 'CU329670').should('be.visible');
 
-    cy.get('button.MuiTab-root').contains('Other settings').click();
-    cy.contains('span', 'pFA6a-5FLAG-hphMX6').should('exist');
-    cy.contains('span', 'CU329670').should('exist');
-
-    // It should not be possible to submit without settings the regions
-    cy.contains('button', 'Design primers').should('exist');
+    // It should not be possible to access the settings tab without setting the regions
+    getStepButton('Other settings').should('be.disabled');
+    getBottomButton('Choose region', '1').should('be.disabled');
+    getBottomButton('Next', '1').should('be.disabled');
 
     // Back to the first tab
-    cy.get('button.MuiTab-root').contains('Amplified region').click();
+    getStepButton('Amplified region').click();
 
-    // Click before having selected anything, should show an error
-    cy.get('button').contains('Set from selection').click();
-    cy.get('.main-sequence-editor div.MuiAlert-standardError').contains('You have to select a region in the sequence editor');
+    // Choose region button is disabled, and shows tooltip when hovering
+    getBottomButton('Choose region', '0').should('be.disabled');
+    getBottomButton('Choose region', '0').trigger('mouseover', { force: true });
+    cy.get('.MuiTooltip-tooltip').should('exist');
+    cy.get('.MuiTooltip-tooltip').should('contain', 'Select a region in the editor');
 
     // We should not be able to select a single position in the sequence
     // Click on the name, that should set a single position selection
-    cy.contains('span', 'pFA6a-5FLAG-hphMX6').click({ force: true });
-    cy.get('button').contains('Set from selection').click();
+    cy.contains('.sequenceNameText', 'pFA6a-5FLAG-hphMX6').click({ force: true });
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').contains('Select a region (not a single position) to amplify');
 
     // Click on the hphMX6 feature
     cy.contains('svg', 'hphMX6').click();
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
+    // Should have take us to the Replaced region step
+    checkCurrentStep('Replaced region');
 
     // We still should not be able to submit
-    cy.get('button.MuiTab-root').contains('Other settings').click();
-    cy.contains('.primer-design button', 'Design primers').should('not.exist');
+    getStepButton('Other settings').should('be.disabled');
+    getBottomButton('Next', '1').should('be.disabled');
 
     // Go to replaced region tab, and select a single position
-    cy.get('button.MuiTab-root').contains('Replaced region').click();
-    cy.contains('span', 'CU329670').click({ force: true });
-    cy.get('button').contains('Set from selection').click();
+    cy.get('button.MuiStepButton-root').contains('Replaced region').click();
+    cy.contains('.sequenceNameText', 'CU329670').click({ force: true });
+    getBottomButton('Choose region', 1).click();
 
     // There should be no error message, but there is an info one, so we need that class
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('not.exist');
 
     // Go to "Other settings" tab
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    getStepButton('Other settings').click();
     // They will turn into 80, 50, 20 when written, since it's a number input and they write on top of the zero
     const newValues = [8, 5, 2];
     ['Homology length', 'Target hybridization Tm', 'Min. hybridization length'].forEach((label, index) => {
       setInputValue(label, '0', '.primer-design');
-      cy.get('button').contains('Design primers').should('exist');
+      getBottomButton('Design primers', 2).should('be.disabled');
       setInputValue(label, newValues[index], '.primer-design');
-      cy.get('button').contains('Design primers').should('be.visible');
+      getBottomButton('Design primers', 2).should('not.be.disabled');
     });
 
     // Get an error for very high hyb. length
@@ -118,7 +137,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Design primers').click();
 
     // We should be now in the Results tab
-    cy.get('button.MuiTab-root.Mui-selected').contains('Results').should('exist');
+    checkCurrentStep('Results');
 
     // These should be two primers: forward and reverse
     cy.get('.primer-design-form input').first().should('have.value', 'forward');
@@ -129,12 +148,12 @@ describe('Test primer designer functionality', () => {
     cy.get('button.MuiTab-root.Mui-selected').contains('Cloning').should('exist');
 
     // They should be present in the primers tab
-    cy.get('button.MuiTab-root').contains('Primers').click();
+    changeTab('Primers');
     cy.contains('td', 'forward').should('exist');
     cy.contains('td', 'reverse').should('exist');
 
     // Do the PCR
-    cy.get('button.MuiTab-root').contains('Cloning').click();
+    changeTab('Cloning');
     cy.get('button').contains('Perform PCR').click();
 
     // Do the recombination
@@ -172,22 +191,22 @@ describe('Test primer designer functionality', () => {
     cy.get('.main-sequence-editor button.MuiTab-root').contains('Other settings').should('exist');
 
     // We cannot submit without setting the regions
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    changeTab('Other settings');
     cy.contains('.main-sequence-editor button', 'Design primers').should('not.exist');
 
     // The current tab should be "Seq 2" and it displays the sequence pREP42-MCS+
     cy.get('.main-sequence-editor button.MuiTab-root').first().click();
     cy.get('.main-sequence-editor').should('contain', 'pREP42-MCS+');
     // Error if setting without selection
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('exist');
     // Error if setting with single position selection
     cy.get('.main-sequence-editor').contains('pREP42-MCS+').click({ force: true });
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('exist');
     // Select ars1 feature
     cy.contains('svg', 'ars1').click();
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('not.exist');
 
     // Go to next tab
@@ -195,7 +214,7 @@ describe('Test primer designer functionality', () => {
     cy.get('.main-sequence-editor').should('contain', 'NC_003424');
     // select ase1 region
     cy.contains('svg', 'ase1').first().click();
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('not.exist');
 
     // Go to Other settings tab
@@ -321,7 +340,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
     // Error if setting without selection
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('exist');
 
     // Click on axis tick 1
@@ -331,10 +350,10 @@ describe('Test primer designer functionality', () => {
     cy.get('.veAxisTick[data-test="30"]').first().click({ shiftKey: true });
 
     // Set selection
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
 
     // Go to other settings tab
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    changeTab('Other settings');
 
     // Set the other settings (Impossible to remove the zero)
     setInputValue('Min. hybridization length', '1', '.primer-design');
@@ -425,10 +444,10 @@ describe('Test primer designer functionality', () => {
     cy.get('.veAxisTick[data-test="30"]').first().click({ shiftKey: true });
 
     // Set selection
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
 
     // Go to other settings tab
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    changeTab('Other settings');
 
     // Select EcoRI, should not be possible to select inverted
     setAutocompleteValue('Left enzyme', 'EcoRI', '.primer-design');
@@ -492,7 +511,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
     // Error if setting without selection
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('exist');
 
     // Click on axis tick 1
@@ -502,10 +521,10 @@ describe('Test primer designer functionality', () => {
     cy.get('.veAxisTick[data-test="30"]').first().click({ shiftKey: true });
 
     // Set selection
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
 
     // Go to other settings tab
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    changeTab('Other settings');
 
     // Set the other settings (Impossible to remove the zero)
     setInputValue('Min. hybridization length', '1', '.primer-design');
@@ -554,7 +573,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
     cy.get('.veAxisTick[data-test="1"]').first().click();
     cy.get('.veAxisTick[data-test="30"]').first().click({ shiftKey: true });
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     checkInputValue('Amplified region', '2 - 30', '.primer-design');
     // Go back to cloning tab and change main sequence
     changeTab('Cloning');
@@ -599,25 +618,25 @@ describe('Test primer designer functionality', () => {
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
     // Click before having selected anything, should show an error
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').contains('You have to select a region in the sequence editor');
 
     // We should not be able to select a single position in the sequence
     // Click on the name, that should set a single position selection
     cy.contains('span', 'NC_000913').click({ force: true });
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').contains('Select a region (not a single position) to amplify');
 
     cy.get('svg.veRowViewAnnotationPosition title').filter(':contains("Feature (CDS) - lacZ")').first().click({ force: true });
-    cy.get('button').contains('Set from selection').click();
+    getBottomButton('Choose region', 0).click();
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('not.exist');
 
     // We still should not be able to submit
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    changeTab('Other settings');
     cy.contains('.primer-design button', 'Design primers').should('not.exist');
 
     // Select the att sites
-    cy.get('button.MuiTab-root').contains('Replaced region').click();
+    changeTab('Replaced region');
     clickMultiSelectOption('Left attP site', 'attP2', '.primer-design');
     // The other site should have been set to attP1
     checkInputValue('Right attP site', 'attP1-[569:801](+)', '.primer-design');
@@ -632,7 +651,7 @@ describe('Test primer designer functionality', () => {
     cy.contains('.primer-design div.MuiAlert-standardInfo', 'Primers tails designed based on pDONR™ 221').should('exist');
 
     // We still should not be able to submit (there should be Ns in the nucleotide sequences)
-    cy.get('button.MuiTab-root').contains('Other settings').click();
+    changeTab('Other settings');
     cy.contains('.primer-design button', 'Design primers').should('not.exist');
 
     // Check that spacers contain right values

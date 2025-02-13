@@ -25,7 +25,7 @@ function TabPanelSelectRoi({ step, index }) {
   const onStepCompletion = () => { setError(handleSelectRegion(index, allowSinglePosition)); };
 
   return (
-    <TabPanel value={selectedTab} index={index}>
+    <TabPanel value={selectedTab} index={index} className={`select-roi-tab-${index}`}>
       <Alert severity="info">{description}</Alert>
       {error && (<Alert severity="error">{error}</Alert>)}
       {mode === 'editor' && (
