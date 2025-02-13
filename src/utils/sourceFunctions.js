@@ -40,4 +40,5 @@ export const classNameToEndPointMap = {
   RestrictionAndLigationSource: 'restriction_and_ligation',
   GatewaySource: 'gateway',
   AnnotationSource: 'annotate',
+  ReverseComplementSource: 'reverse_complement',
 };

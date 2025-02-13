@@ -285,6 +285,7 @@ function FinishedSource({ sourceId }) {
       break;
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
+    case 'ReverseComplementSource': message = 'Reverse complement'; break;
     default: message = '';
   }
   return (

@@ -1,6 +1,6 @@
-import { clickMultiSelectOption, manuallyTypeSequence} from '../common_functions';
+import { clickMultiSelectOption, manuallyTypeSequence } from '../common_functions';
 
-const singleInputOptions = ['RestrictionEnzymeDigestionSource', 'PCRSource', 'PolymeraseExtensionSource', 'AnnotationSource'];
+const singleInputOptions = ['RestrictionEnzymeDigestionSource', 'PCRSource', 'PolymeraseExtensionSource', 'AnnotationSource', 'ReverseComplementSource'];
 const multiInputOptions = ['LigationSource', 'GibsonAssemblySource', 'HomologousRecombinationSource', 'RestrictionAndLigationSource', 'CRISPRSource', 'OverlapExtensionPCRLigationSource', 'GatewaySource', 'InFusionSource'];
 const allOptions = [...singleInputOptions, ...multiInputOptions];
 function checkAllOptions(sourceId) {

@@ -42,6 +42,7 @@ function SourceTypeSelector({ source }) {
       options.push(<MenuItem key="RestrictionEnzymeDigestionSource" value="RestrictionEnzymeDigestionSource">Restriction</MenuItem>);
       options.push(<MenuItem key="PCRSource" value="PCRSource">PCR</MenuItem>);
       options.push(<MenuItem key="PolymeraseExtensionSource" value="PolymeraseExtensionSource">Polymerase extension</MenuItem>);
+      options.push(<MenuItem key="ReverseComplementSource" value="ReverseComplementSource">Reverse complement</MenuItem>);
       options.push(<MenuItem key="AnnotationSource" value="AnnotationSource">Annotate features</MenuItem>);
     }
     options.push(<MenuItem key="LigationSource" value="LigationSource">Ligation (sticky / blunt)</MenuItem>);
