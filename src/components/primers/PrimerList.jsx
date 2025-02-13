@@ -8,10 +8,12 @@ import { cloningActions } from '../../store/cloning';
 import ImportPrimersButton from './import_primers/ImportPrimersButton';
 import PrimerDatabaseImportForm from './import_primers/PrimerDatabaseImportForm';
 import { getUsedPrimerIds } from '../../store/cloning_utils';
+import useDatabase from '../../hooks/useDatabase';
 
 function PrimerList() {
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
   const { deletePrimer: deleteAction, addPrimer: addAction, editPrimer: editAction } = cloningActions;
+  const database = useDatabase();
   const dispatch = useDispatch();
   const deletePrimer = (id) => dispatch(deleteAction(id));
   const addPrimer = (newPrimer) => dispatch(addAction(newPrimer));
@@ -87,12 +89,14 @@ function PrimerList() {
               Add Primer
             </Button>
             <ImportPrimersButton addPrimer={addPrimer} />
-            <Button
-              variant="contained"
-              onClick={() => setImportingPrimer(true)}
-            >
-              Import Primers
-            </Button>
+            {database && (
+              <Button
+                variant="contained"
+                onClick={() => setImportingPrimer(true)}
+              >
+                {`Import from ${database.name}`}
+              </Button>
+            )}
           </div>
         )}
       </div>

@@ -247,6 +247,7 @@ export function formatGatewaySites(sites) {
 
 export function getSourceDatabaseId(sources, entityId) {
   const source = sources.find((s) => s.output === entityId);
+  console.log('database_id', entityId, source?.database_id);
   return source?.database_id;
 }
 

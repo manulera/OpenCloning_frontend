@@ -3,18 +3,18 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
+import useDatabase from '../../hooks/useDatabase';
 
 // TODO refactor this to use common part
 
-function ElabFTWMessage({ source }) {
+function DatabaseMessage({ source }) {
+  const database = useDatabase();
   const { item_id: itemId } = source.database_id;
   return (
     <>
-      Read from file
+      Imported from
       {' '}
-      <a target="_blank" rel="noopener noreferrer" href={`https://localhost:443/database.php?mode=view&id=${itemId}`}>{source.file_name}</a>
-      {' '}
-      from eLabFTW
+      <a target="_blank" rel="noopener noreferrer" href={database.getSequenceLink(itemId)}>{database.name}</a>
     </>
   );
 }
@@ -267,7 +267,7 @@ function FinishedSource({ sourceId }) {
       );
       break;
     case 'PolymeraseExtensionSource': message = 'Polymerase extension'; break;
-    case 'ELabFTWFileSource': message = <ElabFTWMessage source={source} />; break;
+    case 'DatabaseSource': message = <DatabaseMessage source={source} />; break;
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
     case 'ReverseComplementSource': message = 'Reverse complement'; break;

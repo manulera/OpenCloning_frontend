@@ -1,7 +1,9 @@
 import React from 'react';
-import GetRequestMultiSelect from '../GetRequestMultiSelect';
+import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
 
-function ElabFTWFileSelect({ itemId, apiKey, setFileInfo, ...rest }) {
+const apiKey = import.meta.env.VITE_ELABFTW_API_KEY;
+
+function ELabFTWFileSelect({ itemId, setFileInfo, ...rest }) {
   const url = `https://localhost:443/api/v2/items/${itemId}`;
   const getOptionsFromResponse = ({ uploads }) => uploads;
   const label = 'File with sequence';
@@ -24,4 +26,4 @@ function ElabFTWFileSelect({ itemId, apiKey, setFileInfo, ...rest }) {
   );
 }
 
-export default ElabFTWFileSelect;
+export default ELabFTWFileSelect;

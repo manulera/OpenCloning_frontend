@@ -432,7 +432,7 @@ const reducer = {
     deleteFilesFromSessionStorage(sequenceId);
   },
 
-  addDatabaseId(state, action) {
+  addDatabaseIdToEntity(state, action) {
     const { databaseId, id } = action.payload;
     const entity = state.entities.find((e) => e.id === id);
     if (!entity) {
@@ -444,7 +444,16 @@ const reducer = {
     }
     source.database_id = databaseId;
   },
+  addDatabaseIdToPrimer(state, action) {
+    const { databaseId, localId } = action.payload;
+    const primer = state.primers.find((p) => p.id === localId);
+    if (!primer) {
+      throw new Error('Primer not found');
+    }
+    primer.database_id = databaseId;
+  },
 };
+
 /* eslint-enable no-param-reassign */
 
 const cloningSlice = createSlice({

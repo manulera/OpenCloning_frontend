@@ -1,66 +1,38 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import { Button, TextField } from '@mui/material';
-import ElabFTWResourceSelect from '../../form/eLabFTW/ElabFTWResourceSelect';
-import ElabFTWCategorySelect from '../../form/eLabFTW/ElabFTWCategorySelect';
-import './styles.css';
 
-const apiKey = import.meta.env.VITE_ELABFTW_API_KEY;
+import useDatabase from '../../../hooks/useDatabase';
+import { stringIsNotDNA } from '../../../store/cloning_utils';
 
 function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
   const existingNames = useSelector((state) => state.cloning.primers.map((p) => p.name), shallowEqual);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedPrimer, setSelectedPrimer] = useState(null);
+  const [primer, setPrimer] = useState(null);
   const [error, setError] = useState('');
+  const database = useDatabase();
 
   React.useEffect(() => {
-    if (selectedCategory === null) {
-      setSelectedPrimer(null);
+    if (!primer) {
+      setError('');
+    } else if (!primer.name) {
+      setError('Primer does not have a name');
+    } else if (!primer.sequence) {
+      setError('Primer does not have a sequence');
+    } else if (stringIsNotDNA(primer.sequence)) {
+      setError('Sequence contains invalid characters');
+    } else if (existingNames.includes(primer.name)) {
+      setError(`A primer with name "${primer.name}" already exists`);
+    } else {
+      setError('');
     }
-  }, [selectedCategory]);
-
-  const handleResourceSelect = useCallback(async (resource) => {
-    try {
-      if (resource === null) {
-        setSelectedPrimer(null);
-        return;
-      }
-      let sequence;
-      try {
-        sequence = JSON.parse(resource.metadata).extra_fields?.sequence?.value;
-        if (!sequence) {
-          throw new Error('No sequence found in metadata');
-        }
-      } catch (e) {
-        throw new Error('No sequence found in metadata');
-      }
-      if (!/^[ACGT]+$/.test(sequence.toUpperCase())) {
-        throw new Error('Sequence contains invalid characters');
-      }
-
-      if (existingNames.includes(resource.title)) {
-        setError(`A primer with name "${resource.title}" already exists`);
-        setSelectedPrimer(null);
-      } else {
-        setError('');
-        setSelectedPrimer({
-          name: resource.title,
-          sequence,
-          database_id: resource.id,
-        });
-      }
-    } catch (e) {
-      setSelectedPrimer(null);
-      setError(e.message);
-    }
-  }, [existingNames]);
+  }, [primer]);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (selectedPrimer) {
-      submitPrimer(selectedPrimer);
-      setSelectedPrimer(null);
+    if (primer) {
+      submitPrimer(primer);
+      setPrimer(null);
     }
   };
 
@@ -68,31 +40,29 @@ function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
     <form className="primer-row" onSubmit={onSubmit}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1em', width: '80%', margin: 'auto' }}>
         <div style={{ display: 'flex', gap: '2em', alignItems: 'center', justifyContent: 'center' }}>
-          <ElabFTWCategorySelect
-            setCategory={setSelectedCategory}
-            apiKey={apiKey}
-            fullWidth
+          <database.GetPrimerComponent
+            primer={primer}
+            setPrimer={setPrimer}
+            setError={setError}
           />
-
-          {selectedCategory && (
-            <ElabFTWResourceSelect
-              setResource={handleResourceSelect}
-              categoryId={selectedCategory.id}
-              apiKey={apiKey}
-              fullWidth
-            />
-          )}
         </div>
         {error && (
         <Alert severity="error" sx={{ mt: 1 }}>
           {error}
         </Alert>
         )}
-        {selectedPrimer && (
+        {primer && (
           <div style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
             <TextField
+              label="Name"
+              value={primer.name}
+              className="name"
+              disabled
+              sx={{ width: '30%' }}
+            />
+            <TextField
               label="Sequence"
-              value={selectedPrimer.sequence}
+              value={primer.sequence}
               className="sequence"
               disabled
               fullWidth
@@ -117,7 +87,7 @@ function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
             variant="contained"
             color="primary"
             type="submit"
-            disabled={!selectedPrimer}
+            disabled={!primer || error}
           >
             Import Primer
           </Button>
@@ -125,7 +95,7 @@ function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
 
       </div>
 
-      {selectedPrimer && (
+      {primer && (
         <div style={{ display: 'flex', alignItems: 'center', marginTop: '1em' }} />
       )}
 

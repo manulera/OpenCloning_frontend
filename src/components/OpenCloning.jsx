@@ -20,6 +20,7 @@ function OpenCloning() {
   const currentTab = useSelector((state) => state.cloning.currentTab);
   const tabPanelsRef = useRef(null);
   const [smallDevice, setSmallDevice] = useState(window.innerWidth < 600);
+  const hasAppBar = useSelector((state) => state.cloning.config.showAppBar, isEqual);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -40,7 +41,7 @@ function OpenCloning() {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ height: hasAppBar ? 'calc(100vh - 114px - 10px)' : '100vh' }}>
       <AppAlerts />
       <Tabs
         variant={smallDevice ? 'scrollable' : 'standard'}
