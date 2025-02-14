@@ -89,7 +89,6 @@ function RepositoryIdMessage({ source }) {
       <strong>
         <a href={url} target="_blank" rel="noopener noreferrer">
           {source.repository_id}
-          {' '}
         </a>
       </strong>
     </>
@@ -97,15 +96,7 @@ function RepositoryIdMessage({ source }) {
 }
 
 function GatewayMessage({ source }) {
-  return (
-    <>
-      Gateway
-      {' '}
-      {source.reaction_type}
-      {' '}
-      reaction
-    </>
-  );
+  return `Gateway ${source.reaction_type} reaction`;
 }
 
 function PlannotateAnnotationMessage({ source }) {
@@ -113,8 +104,7 @@ function PlannotateAnnotationMessage({ source }) {
   return (
     <>
       <div>
-        Annotation from
-        {' '}
+        {'Annotation from '}
         <a href="https://github.com/mmcguffi/pLannotate" target="_blank" rel="noopener noreferrer">pLannotate</a>
       </div>
       <Button onClick={() => setDialogOpen(true)}>
@@ -132,12 +122,7 @@ function IGEMMessage({ source }) {
   if (indexOfDash === -1) {
     return (
       <>
-        iGEM plasmid
-        {' '}
-        {source.repository_id}
-        {' '}
-        from
-        {' '}
+        {`iGEM plasmid ${source.repository_id} from `}
         <a href="https://airtable.com/appgWgf6EPX5gpnNU/shrb0c8oYTgpZDRgH/tblNqHsHbNNQP2HCX" target="_blank" rel="noopener noreferrer">2024 iGEM Distribution</a>
       </>
     );
@@ -148,37 +133,35 @@ function IGEMMessage({ source }) {
   return (
     <>
       <div>
-        iGEM
-        {' '}
+        {'iGEM '}
         <a href={source.sequence_file_url} target="_blank" rel="noopener noreferrer">
           plasmid
         </a>
-        {' '}
-        containing part
-        {' '}
+        {' containing part '}
         <a href={`https://parts.igem.org/Part:${partName}`} target="_blank" rel="noopener noreferrer">{partName}</a>
-        {' '}
-        in backbone
-        {' '}
-        {backbone}
-        {' '}
-        from
-        {' '}
+        {` in backbone ${backbone} from `}
         <a href="https://airtable.com/appgWgf6EPX5gpnNU/shrb0c8oYTgpZDRgH/tblNqHsHbNNQP2HCX" target="_blank" rel="noopener noreferrer">2024 iGEM Distribution</a>
       </div>
       <div style={{ marginTop: '10px' }}>
-        Annotated with
-        {' '}
+        {'Annotated with '}
         <a href="https://github.com/mmcguffi/pLannotate" target="_blank" rel="noopener noreferrer">
           pLannotate
         </a>
-        ,
-        {' '}
-        see report
-        {' '}
+        {', see report '}
         <a href={`https://github.com/manulera/annotated-igem-distribution/blob/master/results/reports/${indexInCollection}.csv`} target="_blank" rel="noopener noreferrer">here</a>
       </div>
     </>
+  );
+}
+
+function SEVAPlasmidMessage({ source }) {
+  return (
+    <div>
+      {'SEVA plasmid '}
+      <a href={source.sequence_file_url} target="_blank" rel="noopener noreferrer">
+        {source.repository_id}
+      </a>
+    </div>
   );
 }
 
@@ -286,6 +269,7 @@ function FinishedSource({ sourceId }) {
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
     case 'ReverseComplementSource': message = 'Reverse complement'; break;
+    case 'SEVASource': message = <SEVAPlasmidMessage source={source} />; break;
     default: message = '';
   }
   return (

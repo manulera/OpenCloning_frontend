@@ -24,7 +24,7 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 button.MuiButtonBase-root').click();
     cy.get('li#sequence-2 .corner-id', { timeout: 20000 }).first().should('have.text', '2');
     cy.get('li#sequence-2 li#source-1').should('exist');
-    cy.get('li#sequence-2 li#source-1').contains('Request to genbank with ID NM_001018957.2 ');
+    cy.get('li#sequence-2 li#source-1').contains('Request to genbank with ID NM_001018957.2');
     cy.get('li#sequence-2').contains('NM_001018957.2');
     cy.get('li#sequence-2').contains('2671 bps');
 
@@ -205,5 +205,20 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 a[href="https://parts.igem.org/Part:BBa_J428091"]').should('exist');
     cy.get('li#source-1 a[href="https://airtable.com/appgWgf6EPX5gpnNU/shrb0c8oYTgpZDRgH/tblNqHsHbNNQP2HCX"]').should('exist');
     cy.get('li#source-1 a[href="https://github.com/manulera/annotated-igem-distribution/blob/master/results/reports/1.csv"]').should('exist');
+  });
+  it('works with SEVA', () => {
+    clickMultiSelectOption('Select repository', 'SEVA', 'li#source-1');
+    setInputValue('Plasmid name', 'GFP', 'li#source-1');
+    // Cannot submit if nothing selected
+    cy.get('li#source-1 button').contains('Submit').should('not.exist');
+    clickMultiSelectOption('Plasmid name', 'pSEVA427', 'li#source-1');
+    // Should display the table
+    cy.get('li#source-1 table').contains('Resistance').should('exist');
+    cy.get('li#source-1 button').contains('Submit').click();
+    cy.get('li#sequence-2').contains('pSEVA427');
+    cy.get('li#sequence-2').contains('4611 bps');
+
+    // Links to the right page
+    cy.get('li#source-1 a[href="https://seva-plasmids.com/maps-canonical/maps-plasmids-SEVAs-canonical-versions-web-1-3-gbk/pSEVA427.gbk"]').should('exist');
   });
 });

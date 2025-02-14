@@ -24,6 +24,7 @@ export const classNameToEndPointMap = {
   SnapGenePlasmidSource: 'repository_id',
   EuroscarfSource: 'repository_id',
   IGEMSource: 'repository_id',
+  SEVASource: 'repository_id',
   WekWikGeneIdSource: 'repository_id',
   GenomeCoordinatesSource: 'genome_coordinates',
   ManuallyTypedSource: 'manually_typed',
