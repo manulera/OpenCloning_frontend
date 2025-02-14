@@ -24,7 +24,7 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 button.MuiButtonBase-root').click();
     cy.get('li#sequence-2 .corner-id', { timeout: 20000 }).first().should('have.text', '2');
     cy.get('li#sequence-2 li#source-1').should('exist');
-    cy.get('li#sequence-2 li#source-1').contains('Request to genbank with ID NM_001018957.2 ');
+    cy.get('li#sequence-2 li#source-1').contains('Request to genbank with ID NM_001018957.2');
     cy.get('li#sequence-2').contains('NM_001018957.2');
     cy.get('li#sequence-2').contains('2671 bps');
 
