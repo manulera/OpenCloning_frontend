@@ -247,7 +247,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
     }
     if (selectedRepository === 'seva') {
       extra.repository_id = inputValue.plasmid_name;
-      extra.genbank_link = inputValue.data.GenBank_link;
+      extra.sequence_file_url = inputValue.data.GenBank_link;
     }
     const requestData = { id: sourceId, ...extra, repository_name: selectedRepository };
     sendPostRequest({ endpoint: `repository_id/${selectedRepository}`, requestData, source });
