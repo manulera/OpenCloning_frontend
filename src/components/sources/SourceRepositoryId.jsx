@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Alert, Autocomplete } from '@mui/material';
+import { Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import axios from 'axios';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 
@@ -84,26 +84,54 @@ const iGEMGetOptions = (plasmids, inputValue) => plasmids.map((p) => ({
 function iGEMSuccessComponent({ option }) {
   return (
     <Alert severity="info" sx={{ mb: 1 }}>
-      Plasmid
-      {' '}
+      {'Plasmid '}
       <a href={option.url} target="_blank" rel="noopener noreferrer">{option.table_name}</a>
-      {' '}
-      containing part
-      {' '}
+      {' containing part '}
       <a href={option.part_url} target="_blank" rel="noopener noreferrer">{option.part_name}</a>
-      {' '}
-      in backbone
-      {' '}
-      {option.backbone}
-      {' '}
-      from
-      {' '}
+      {` in backbone ${option.backbone} from `}
       <a href="https://airtable.com/appgWgf6EPX5gpnNU/shrb0c8oYTgpZDRgH/tblNqHsHbNNQP2HCX" target="_blank" rel="noopener noreferrer">2024 iGEM Distribution</a>
     </Alert>
   );
 }
 
-function IndexJsonSelector({ url, setInputValue, getOptions, noOptionsText, inputLabel, SuccessComponent, requiredInput = 3 }) {
+const sevaGetOptions = (data, inputValue) => data.map((p) => {
+  const info = [p.Resistance, p.ORI, p.Cargo, p.Gadget, p.FunctionType].filter((i) => i !== '').join('/');
+  return {
+    name: `${p.Name} (${info})`,
+    plasmid_name: p.Name,
+    data: p,
+  };
+}).filter((p) => p.name.toLowerCase().includes(inputValue.toLowerCase()));
+
+function SEVASuccessComponent({ option }) {
+  return (
+    <Alert severity="info" sx={{ mb: 1 }} icon={false}>
+      <Table size="small">
+        <TableBody>
+          {Object.entries(option.data)
+            .filter(([key]) => ['Name', 'Resistance', 'ORI', 'Cargo', 'Gadget', 'FunctionType'].includes(key))
+            .map(([key, value]) => (
+              <TableRow key={key}>
+                <TableCell>{key}</TableCell>
+                <TableCell>{value || 'N/A'}</TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </Alert>
+  );
+}
+
+function IndexJsonSelector({
+  url,
+  setInputValue,
+  getOptions,
+  noOptionsText,
+  inputLabel,
+  SuccessComponent,
+  responseProcessCallback = (resp) => resp.data,
+  requiredInput = 3,
+}) {
   const [userInput, setUserInput] = React.useState('');
   const [data, setData] = React.useState(null);
   const [options, setOptions] = React.useState([]);
@@ -111,7 +139,7 @@ function IndexJsonSelector({ url, setInputValue, getOptions, noOptionsText, inpu
   React.useEffect(() => {
     const fetchOptions = async () => {
       const resp = await axios.get(url);
-      setData(resp.data);
+      setData(responseProcessCallback(resp));
       if (requiredInput === 0) {
         setOptions(getOptions(resp.data, ''));
       }
@@ -217,6 +245,10 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
       extra.repository_id = `${inputValue.part_name}-${inputValue.backbone}`;
       extra.sequence_file_url = inputValue.url;
     }
+    if (selectedRepository === 'seva') {
+      extra.repository_id = inputValue.plasmid_name;
+      extra.genbank_link = inputValue.data.GenBank_link;
+    }
     const requestData = { id: sourceId, ...extra, repository_name: selectedRepository };
     sendPostRequest({ endpoint: `repository_id/${selectedRepository}`, requestData, source });
   };
@@ -238,11 +270,12 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           <MenuItem value="euroscarf">Euroscarf</MenuItem>
           <MenuItem value="igem">iGEM</MenuItem>
           <MenuItem value="wekwikgene">WekWikGene</MenuItem>
+          <MenuItem value="seva">SEVA Plasmids</MenuItem>
         </Select>
       </FormControl>
       {selectedRepository !== '' && (
         <form onSubmit={onSubmit}>
-          {selectedRepository !== 'snapgene' && selectedRepository !== 'igem' && (
+          {selectedRepository !== 'snapgene' && selectedRepository !== 'igem' && selectedRepository !== 'seva' && (
             <>
               <FormControl fullWidth>
                 <TextField
@@ -287,6 +320,17 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
             SuccessComponent={iGEMSuccessComponent}
             requiredInput={0}
           />
+          )}
+          {selectedRepository === 'seva' && (
+            <IndexJsonSelector
+              url="https://raw.githubusercontent.com/manulera/seva_plasmids_index/master/index.json"
+              setInputValue={setInputValue}
+              getOptions={sevaGetOptions}
+              noOptionsText="Type at least 3 characters to search"
+              inputLabel="Plasmid name"
+              SuccessComponent={SEVASuccessComponent}
+              requiredInput={3}
+            />
           )}
           {inputValue && !error && (<SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>)}
 
