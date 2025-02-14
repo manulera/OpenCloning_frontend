@@ -189,7 +189,7 @@ function IndexJsonSelector({
           onInputChange={(event, newInputValue, reason) => (reason === 'input') && onInputChange(newInputValue)}
           id="tags-standard"
           options={options}
-          noOptionsText={noOptionsText}
+          noOptionsText={userInput.length < requiredInput ? noOptionsText : 'Nothing found'}
           getOptionLabel={(o) => o.name}
           isOptionEqualToValue={(o1, o2) => o1.subpath === o2.subpath}
           inputValue={userInput}
