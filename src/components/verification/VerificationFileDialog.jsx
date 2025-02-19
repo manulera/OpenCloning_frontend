@@ -22,19 +22,31 @@ import { getTeselaJsonFromBase64, file2base64 } from '../../utils/readNwrite';
 import SequencingFileRow from './SequencingFileRow';
 import { cloningActions } from '../../store/cloning';
 import useBackendRoute from '../../hooks/useBackendRoute';
+import useStoreEditor from '../../hooks/useStoreEditor';
 
-const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence } = cloningActions;
+const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
 export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }) {
   const fileNames = useSelector((state) => state.cloning.files.filter((f) => (f.sequence_id === id)).map((f) => f.file_name), shallowEqual);
+  const fileTypes = useSelector((state) => state.cloning.files.filter((f) => (f.sequence_id === id)).map((f) => f.file_type), shallowEqual);
+  const hasSequencingFile = fileTypes.includes('Sequencing file');
+
   const entity = useSelector((state) => state.cloning.entities.find((e) => e.id === id), shallowEqual);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
-
+  const { updateStoreEditor } = useStoreEditor();
   const backendRoute = useBackendRoute();
   const store = useStore();
+
+  const toggleMain = React.useCallback(() => {
+    dispatch(setMainSequenceId(id));
+    dispatch(setCurrentTab(3));
+    updateStoreEditor('mainEditor', id);
+    // TODO: ideally this should be done with a ref
+    document.getElementById('opencloning-app-tabs')?.scrollIntoView();
+  }, [id]);
 
   const handleFileUpload = async (newFiles) => {
     // Clear the input
@@ -194,13 +206,24 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
           </Box>
         )}
 
-        <Button
-          variant="contained"
-          onClick={handleClickUpload}
-          sx={{ mt: 2 }}
-        >
-          Add Files
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 2 }}>
+          <Button
+            variant="contained"
+            onClick={handleClickUpload}
+          >
+            Add Files
+          </Button>
+
+          {hasSequencingFile && (
+          <Button
+            variant="contained"
+            onClick={() => { setDialogOpen(false); toggleMain(); }}
+            color="success"
+          >
+            See alignments in editor
+          </Button>
+          )}
+        </Box>
 
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Close</Button>
