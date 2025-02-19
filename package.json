@@ -9,7 +9,7 @@
         "@mui/icons-material": "^5.15.17",
         "@mui/material": "^5.15.17",
         "@reduxjs/toolkit": "^1.9.7",
-        "@teselagen/bio-parsers": "^0.4.19",
+        "@teselagen/bio-parsers": "^0.4.24",
         "@teselagen/ove": "^0.5.22",
         "@teselagen/range-utils": "^0.3.8",
         "@teselagen/sequence-utils": "^0.3.25",
