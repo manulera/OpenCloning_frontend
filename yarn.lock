@@ -1861,7 +1861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teselagen/bio-parsers@npm:0.4.19, @teselagen/bio-parsers@npm:^0.4.19":
+"@teselagen/bio-parsers@npm:0.4.19":
   version: 0.4.19
   resolution: "@teselagen/bio-parsers@npm:0.4.19"
   dependencies:
@@ -1877,6 +1877,25 @@ __metadata:
     string_decoder: ^1.3.0
     validate.io-nonnegative-integer-array: ^1.0.1
   checksum: 58a916c50dec74d41e56bfeab6ce85754605f11f5147fc2a27963182cfb3d0967092829db6c5e9d1b8e07c53f72bc9d535f5c53757475826321188066fb4a473
+  languageName: node
+  linkType: hard
+
+"@teselagen/bio-parsers@npm:^0.4.24":
+  version: 0.4.24
+  resolution: "@teselagen/bio-parsers@npm:0.4.24"
+  dependencies:
+    "@gmod/gff": ^1.2.1
+    "@teselagen/range-utils": 0.3.10
+    "@teselagen/sequence-utils": 0.3.28
+    buffer: ^6.0.3
+    bufferpack: ^0.0.6
+    color: ^4.2.3
+    fast-xml-parser: ^4.2.5
+    fflate: ^0.8.0
+    lodash-es: ^4.17.21
+    string_decoder: ^1.3.0
+    validate.io-nonnegative-integer-array: ^1.0.1
+  checksum: 2ba41f1b4048186486f664458f9ef344ea280e788aa0459339c6ee8eb0c1f104d0f5422309f3695c879a81b53a5b9c316321cfb58bab9db8f3b2a34137a5fbb6
   languageName: node
   linkType: hard
 
@@ -1994,6 +2013,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@teselagen/range-utils@npm:0.3.10":
+  version: 0.3.10
+  resolution: "@teselagen/range-utils@npm:0.3.10"
+  dependencies:
+    lodash-es: ^4.17.21
+  checksum: 781073ff6d55d83e71b66863295b90765559bc54b308acd7f6668721ce955a76db28804694d83bee13813b3dc2d97a48f36baedef282898d75be0813ded91f59
+  languageName: node
+  linkType: hard
+
 "@teselagen/range-utils@npm:0.3.7":
   version: 0.3.7
   resolution: "@teselagen/range-utils@npm:0.3.7"
@@ -2047,6 +2075,19 @@ __metadata:
     jsondiffpatch: 0.4.1
     string-splice: ^1.3.0
   checksum: a6f3d03eaa95fb97b776ad2264ed04a00baafa56b35b4e99f1f038773b031cfd6f5fad0e65ff0787aac699dba695f6524aaebd7faad49b27e5cef99813b2fd08
+  languageName: node
+  linkType: hard
+
+"@teselagen/sequence-utils@npm:0.3.28":
+  version: 0.3.28
+  resolution: "@teselagen/sequence-utils@npm:0.3.28"
+  dependencies:
+    "@teselagen/range-utils": 0.3.10
+    bson-objectid: ^2.0.4
+    escape-string-regexp: ^5.0.0
+    jsondiffpatch: 0.4.1
+    string-splice: ^1.3.0
+  checksum: f55b8be8ff1d120b80c855ad9b4b5fe6f2b8e663240fd01b2c203b6c679222f2a6210900228adfaeb150e2ab9ff179796b213437bbac728ee69ca45c2c7c1db4
   languageName: node
   linkType: hard
 
@@ -8049,7 +8090,7 @@ __metadata:
     "@mui/icons-material": ^5.15.17
     "@mui/material": ^5.15.17
     "@reduxjs/toolkit": ^1.9.7
-    "@teselagen/bio-parsers": ^0.4.19
+    "@teselagen/bio-parsers": ^0.4.24
     "@teselagen/ove": ^0.5.22
     "@teselagen/range-utils": ^0.3.8
     "@teselagen/sequence-utils": ^0.3.25

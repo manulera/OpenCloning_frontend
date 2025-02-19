@@ -1,7 +1,7 @@
 import { useStore } from 'react-redux';
 import { updateEditor, addAlignment } from '@teselagen/ove';
 import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
-import { getJsonFromAb1Base64 } from '../utils/sequenceParsers';
+import { getTeselaJsonFromBase64 } from '../utils/readNwrite';
 
 function reverseComplementArray(arr) {
   return arr.slice().reverse();
@@ -57,13 +57,13 @@ export default function useStoreEditor() {
       delete entityWithoutSequencing.sequencing;
       const linkedPrimers = getPrimerLinks(cloning, id);
       const pcrPrimers = getPCRPrimers(cloning, id);
-      const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sanger sequencing');
+      const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sequencing file');
       let { panelsShown } = store.getState().VectorEditor.mainEditor;
       if (alignmentFiles.length > 0) {
         addAlignment(store, {
           id: 'simpleAlignment',
-          alignmentType: 'Simple Sequence Alignment',
-          name: 'My Alignment',
+          alignmentType: 'Sequencing alignment',
+          name: `Seq. ${id}`,
           // set the visibilities of the annotations you'd like to see
           alignmentAnnotationVisibility: {
             features: true,
@@ -79,7 +79,7 @@ export default function useStoreEditor() {
               },
             },
             ...await Promise.all(alignmentFiles.map(async (aln) => {
-              const { chromatogramData } = await getJsonFromAb1Base64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`));
+              const { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
               return {
                 sequenceData: {
                   name: aln.file_name,

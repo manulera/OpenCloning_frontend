@@ -18,11 +18,10 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { batch, shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
-import { getJsonFromAb1Base64 } from '../../utils/sequenceParsers';
+import { getTeselaJsonFromBase64, file2base64 } from '../../utils/readNwrite';
 import SequencingFileRow from './SequencingFileRow';
 import { cloningActions } from '../../store/cloning';
 import useBackendRoute from '../../hooks/useBackendRoute';
-import { file2base64 } from '../../utils/readNwrite';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence } = cloningActions;
 
@@ -40,46 +39,46 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
   const handleFileUpload = async (newFiles) => {
     // Clear the input
     fileInputRef.current.value = '';
-    if (newFiles.find((file) => !file.name.endsWith('.ab1'))) {
-      throw new Error('Only ab1 files are accepted');
+    if (newFiles.find((file) => !file.name.toLowerCase().match(/\.(ab1|fasta|gb|gbk)$/))) {
+      throw new Error('Only ab1, fasta, gb, and gbk files are accepted');
     }
 
-    // Read the new ab1 files
-    const parsedAb1Files = await Promise.all(newFiles.map(async (newFile) => {
+    // Read the new sequencing files
+    const parsedSequencingFiles = await Promise.all(newFiles.map(async (newFile) => {
       const base64str = await file2base64(newFile);
       return {
         sequence_id: id,
-        trace: (await getJsonFromAb1Base64(base64str, newFile.name)).sequence,
+        trace: (await getTeselaJsonFromBase64(base64str, newFile.name)).sequence,
         base64str,
         file_name: newFile.name,
-        file_type: 'Sanger sequencing',
+        file_type: 'Sequencing file',
       };
     }));
 
-    // Read the existing ab1 files
-    const existingAb1FilesInState = await Promise.all(store.getState().cloning.files
-      .filter((f) => f.sequence_id === id && f.file_type === 'Sanger sequencing')
+    // Read the existing sequencing files
+    const existingSequencingFilesInState = await Promise.all(store.getState().cloning.files
+      .filter((f) => f.sequence_id === id && f.file_type === 'Sequencing file')
       .map(async (f) => {
         const base64str = sessionStorage.getItem(`verification-${id}-${f.file_name}`);
-        const trace = (await getJsonFromAb1Base64(base64str, f.file_name)).sequence;
+        const trace = (await getTeselaJsonFromBase64(base64str, f.file_name)).sequence;
         return { ...f, base64str, trace };
       }));
 
     // Throw an error if repeated files are found
-    const existingAb1FilesInStateNames = existingAb1FilesInState.map((f) => f.file_name);
-    const repeatedFile = parsedAb1Files.find((f) => existingAb1FilesInStateNames.includes(f.file_name));
+    const existingSequencingFilesInStateNames = existingSequencingFilesInState.map((f) => f.file_name);
+    const repeatedFile = parsedSequencingFiles.find((f) => existingSequencingFilesInStateNames.includes(f.file_name));
     if (repeatedFile) {
       throw new Error(`A file named ${repeatedFile.file_name} is already associated to this sequence`);
     }
 
     // We have to align all again to have a common reference
-    const allAb1Files = [...existingAb1FilesInState, ...parsedAb1Files];
+    const allSequencingFiles = [...existingSequencingFilesInState, ...parsedSequencingFiles];
     const alignments = [];
-    const traces = allAb1Files.map((ab1File) => ab1File.trace);
+    const traces = allSequencingFiles.map((f) => f.trace);
     const resp = await axios.post(backendRoute('align_sanger'), { sequence: entity, traces });
 
-    for (let i = 0; i < allAb1Files.length; i++) {
-      alignments.push({ ...allAb1Files[i], alignment: [resp.data[0], resp.data[i + 1]] });
+    for (let i = 0; i < allSequencingFiles.length; i++) {
+      alignments.push({ ...allSequencingFiles[i], alignment: [resp.data[0], resp.data[i + 1]] });
     }
 
     // Add the files to the store
@@ -100,8 +99,8 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
     try {
       await handleFileUpload(Array.from(event.target.files));
       setLoadingMessage('');
-    } catch (error) {
-      setError(error.message);
+    } catch (e) {
+      setError(e.message);
       setLoadingMessage('');
     }
   }, [handleFileUpload]);
@@ -150,7 +149,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
       <DialogContent>
         <input
           type="file"
-          accept=".ab1"
+          accept=".ab1, .fasta, .gb, .gbk"
           multiple
           onChange={onFileChange}
           style={{ display: 'none' }}

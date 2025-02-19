@@ -10,7 +10,8 @@ const knownIssue = (
     <p><strong>Known issues:</strong></p>
 
     <p>Chromatogram data from Sanger sequencing traces matching the bottom strand or spanning the origin is not correctly displayed.</p>
-    <p>When displaying too many Sanger sequencing traces, you cannot scroll down to see all of them. I suggest to hide the chromatogram lane.</p>
+    <p>When displaying too many Sanger sequencing traces, you cannot scroll down to see all of them. Try hiding the chromatogram lane.</p>
+    <p>Peaks in Plasmidsaurus ab1 files are not aligned with the sequence.</p>
 
   </Alert>
 );
