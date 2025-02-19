@@ -1,5 +1,5 @@
 import { elementToSVG, inlineResources } from 'dom-to-svg';
-import { jsonToFasta, jsonToGenbank } from '@teselagen/bio-parsers';
+import { ab1ToJson, anyToJson, genbankToJson, jsonToFasta, jsonToGenbank } from '@teselagen/bio-parsers';
 import {
   BlobWriter,
   ZipWriter,
@@ -8,6 +8,7 @@ import {
   ZipReader,
   configure,
 } from '@zip.js/zip.js';
+import { tidyUpSequenceData } from '@teselagen/sequence-utils';
 
 configure({
   useWebWorkers: false,
@@ -163,7 +164,7 @@ export async function loadHistoryFile(file) {
     }
     cloningStrategyFile = await jsonFilesInZip[0].getData(new BlobWriter());
     verificationFiles = await Promise.all(entries
-      .filter((entry) => /verification-\d+-.*\.ab1/.test(entry.filename))
+      .filter((entry) => /verification-\d+-.*/.test(entry.filename))
       .map(async (entry) => {
         const blob = await entry.getData(new BlobWriter());
         return new File([blob], entry.filename, { type: blob.type });
@@ -195,6 +196,8 @@ export async function loadHistoryFile(file) {
     const stateFileNames = newCloningStrategy.files.map((f) => `verification-${f.sequence_id}-${f.file_name}`);
     const verificationFileNames = verificationFiles.map((f) => f.name);
 
+    console.log(stateFileNames, verificationFileNames);
+
     const missingFile = stateFileNames.find((name) => !verificationFileNames.includes(name));
     if (missingFile) {
       throw new Error(`File ${missingFile} not found in zip.`);
@@ -217,3 +220,26 @@ export const loadFilesToSessionStorage = async (files, networkShift = 0) => {
     sessionStorage.setItem(filename, fileContent);
   }));
 };
+
+export function convertToTeselaJson(sequence) {
+  // TODO: This might have been fixed in more recent versions of the library
+  // For some reason, as it is it does not read circular or linear properly from certain files
+  const { parsedSequence } = genbankToJson(sequence.file_content)[0];
+
+  if (sequence.file_content.split('\n')[0].includes('linear')) {
+    parsedSequence.circular = false;
+  }
+  parsedSequence.id = sequence.id;
+  return tidyUpSequenceData(parsedSequence);
+}
+
+export async function getTeselaJsonFromBase64(ab1Base64, fileName = null) {
+  try {
+    const blob = base64ToBlob(ab1Base64);
+    const results = await (fileName.endsWith('.ab1') ? ab1ToJson(blob) : anyToJson(blob));
+    return results[0].parsedSequence;
+  } catch (error) {
+    const fileNameError = fileName || 'file';
+    throw new Error(`Error parsing ${fileNameError}: ${error.message}`);
+  }
+}

@@ -2,14 +2,14 @@ import React from 'react';
 import VerificationFileDialog from './VerificationFileDialog';
 import store from '../../store';
 import { cloningActions } from '../../store/cloning';
-import { loadDataAndMount } from '../../../cypress/e2e/common_functions';
+import { loadDataAndMount } from '../../../cypress/e2e/common_funcions_store';
 
 const { setFiles, setConfig } = cloningActions;
 
 const dummyFiles = [
-  { file_name: 'file1.txt', sequence_id: 1, file_type: 'Sanger sequencing' },
-  { file_name: 'file2.txt', sequence_id: 1, file_type: 'Sanger sequencing' },
-  { file_name: 'file1.txt', sequence_id: 2, file_type: 'Sanger sequencing' },
+  { file_name: 'file1.txt', sequence_id: 1, file_type: 'Sequencing file' },
+  { file_name: 'file2.txt', sequence_id: 1, file_type: 'Sequencing file' },
+  { file_name: 'file1.txt', sequence_id: 2, file_type: 'Sequencing file' },
 ];
 // This is the base64 encoded string for the text "hello"
 const base64str = 'aGVsbG8=';
@@ -44,7 +44,7 @@ describe('<VerificationFileDialog />', () => {
     // Even though there are two files with the same name, only one should be displayed
     cy.get('table td').filter(':contains("file1.txt")').should('have.length', 1);
     cy.get('table').contains('file2.txt');
-    cy.get('table td').filter(':contains("Sanger sequencing")').should('have.length', 2);
+    cy.get('table td').filter(':contains("Sequencing file")').should('have.length', 2);
     cy.get('[data-testid="DownloadIcon"]').first().click();
     cy.readFile('cypress/downloads/file1.txt').should('eq', 'hello');
 
@@ -79,7 +79,7 @@ describe('<VerificationFileDialog />', () => {
       const file = store.getState().cloning.files.find(
         (f) => f.file_name === 'BZO902-13409020-13409020.ab1',
       );
-      cy.expect(file.file_type).to.equal('Sanger sequencing');
+      cy.expect(file.file_type).to.equal('Sequencing file');
       cy.expect(file.sequence_id).to.equal(2);
       cy.expect(file.alignment).to.have.length(2);
       // The file content is stored in sessionStorage
@@ -107,7 +107,7 @@ describe('<VerificationFileDialog />', () => {
           (f) => f.file_name === 'BZO903-13409037-13409037.ab1',
         );
         cy.expect(file).to.exist;
-        cy.expect(file.file_type).to.equal('Sanger sequencing');
+        cy.expect(file.file_type).to.equal('Sequencing file');
         cy.expect(file.sequence_id).to.equal(2);
         cy.expect(file.alignment).to.deep.equal(['A', 'C']);
         // The file content is stored in sessionStorage
@@ -125,10 +125,10 @@ describe('<VerificationFileDialog />', () => {
         cy.mount(<VerificationFileDialog id={2} dialogOpen setDialogOpen={() => {}} />);
       },
     ).then(() => {
-      // Error if submitting non-ab1 files
+      // Error if submitting non-allowed files
       cy.get('button').contains('Add Files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/cloning_strategy_linear.json', { force: true });
-      cy.contains('Only ab1 files are accepted');
+      cy.contains('Only ab1');
 
       // Error if submitting .ab1 files that are not valid
       cy.get('button').contains('Add Files').click();

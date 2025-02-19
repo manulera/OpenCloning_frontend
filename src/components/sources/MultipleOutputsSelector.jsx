@@ -2,7 +2,7 @@ import { SimpleCircularOrLinearView } from '@teselagen/ove';
 import React from 'react';
 import ForwardIcon from '@mui/icons-material/Forward';
 import { Button, IconButton } from '@mui/material';
-import { convertToTeselaJson } from '../../utils/sequenceParsers';
+import { convertToTeselaJson } from '../../utils/readNwrite';
 import OverhangsDisplay from '../OverhangsDisplay';
 import SubSequenceDisplayer from './SubSequenceDisplayer';
 import AssemblyPlanDisplayer from './AssemblyPlanDisplayer';

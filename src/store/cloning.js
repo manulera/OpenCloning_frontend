@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { constructNetwork } from '../utils/network';
 import { getNextPrimerId, getNextUniqueId } from './cloning_utils';
-import { convertToTeselaJson } from '../utils/sequenceParsers';
+import { convertToTeselaJson } from '../utils/readNwrite';
 
 function deleteFilesFromSessionStorage(sequenceId, fileName = null) {
   Object.keys(sessionStorage)
