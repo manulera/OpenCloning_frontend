@@ -1,21 +1,54 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import React from 'react';
-import { batch, useDispatch, useStore } from 'react-redux';
+import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import useDatabase from '../../hooks/useDatabase';
 import { cloningActions } from '../../store/cloning';
 import { getSubState } from '../../utils/thunks';
+import IntermediatesDisclaimer from './intermediates_disclaimer.svg';
 
 function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType }) {
   const dispatch = useDispatch();
   const store = useStore();
   const [submissionData, setSubmissionData] = React.useState(null);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [disclaimerAccepted, setDisclaimerAccepted] = React.useState(false);
   const database = useDatabase();
+
+  // Checks if there are parent sources that are not in the database
+  const hasUnsavedIntermediates = useSelector((state) => {
+    if (resourceType === 'primer') {
+      return false;
+    }
+    const substate = getSubState(state, id);
+    const immediateParent = substate.sources.find((source) => source.output === id);
+    return substate.sources.some((source) => (source.id !== immediateParent?.id) && !source.database_id);
+  });
 
   const handleClose = () => {
     setDialogOpen(false);
     setErrorMessage('');
+    setDisclaimerAccepted(false);
   };
+
+  if (hasUnsavedIntermediates && !disclaimerAccepted) {
+    return (
+      <Dialog open={dialogOpen} onClose={handleClose} sx={{ textAlign: 'center' }}>
+        <DialogTitle>Unsaved Intermediates</DialogTitle>
+        <DialogContent sx={{ fontSize: '1.2em' }}>
+          <p>There are intermediate sequences between the sequence being saved and its first ancestor in the database.</p>
+          <p>
+            Intermediate sequences will be stored in the history of the sequence you are saving, but not as separate entities
+            in the database.
+          </p>
+          <img style={{ marginTop: '10px' }} src={IntermediatesDisclaimer} alt="Intermediates Disclaimer" />
+        </DialogContent>
+        <DialogActions>
+          <Button color="success" onClick={() => setDisclaimerAccepted(true)}>I understand</Button>
+          <Button color="error" onClick={handleClose}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog

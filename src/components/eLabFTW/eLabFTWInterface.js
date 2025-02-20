@@ -4,7 +4,7 @@ import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import { getUsedPrimerIds } from '../../store/cloning_utils';
 import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-import { baseUrl, writeHeaders, readHeaders } from './common';
+import { baseUrl, writeHeaders } from './common';
 
 const linkToParent = async (childId, parentId) => {
   await axios.post(
