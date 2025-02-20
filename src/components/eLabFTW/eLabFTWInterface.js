@@ -71,7 +71,7 @@ async function submitSequenceToDatabase({ submissionData: { title, sequenceCateg
 
   const entity2export = entities.find((e) => e.id === id);
   // Get ancestor sources that are database sources to link to the sequence
-  const parentDatabaseSources = sources.filter((source) => source.type === 'DatabaseSource');
+  const parentDatabaseSources = sources.filter((source) => source.database_id);
   // Get the item_ids of those database sources
   const parentResourceIds = parentDatabaseSources.map((source) => source.database_id.item_id);
   // Get the primers used in the substate
