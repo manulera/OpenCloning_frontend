@@ -14,6 +14,7 @@ function GetPrimerComponent({ primer, setPrimer, setError }) {
   const handleResourceSelect = useCallback(async (resource) => {
     if (resource === null) {
       setPrimer(null);
+      setError('');
       return;
     }
     let sequence;
@@ -21,10 +22,12 @@ function GetPrimerComponent({ primer, setPrimer, setError }) {
       sequence = JSON.parse(resource.metadata).extra_fields?.sequence?.value;
       if (!sequence) {
         setError('No sequence found in metadata');
+        setPrimer(null);
         return;
       }
     } catch (e) {
       setError('No sequence found in metadata');
+      setPrimer(null);
       return;
     }
 

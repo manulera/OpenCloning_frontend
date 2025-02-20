@@ -14,8 +14,9 @@ function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
 
   React.useEffect(() => {
     if (!primer) {
-      setError('');
-    } else if (!primer.name) {
+      return;
+    }
+    if (!primer.name) {
       setError('Primer does not have a name');
     } else if (!primer.sequence) {
       setError('Primer does not have a sequence');
@@ -46,11 +47,6 @@ function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
             setError={setError}
           />
         </div>
-        {error && (
-        <Alert severity="error" sx={{ mt: 1 }}>
-          {error}
-        </Alert>
-        )}
         {primer && (
           <div style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
             <TextField
@@ -73,6 +69,11 @@ function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
               }}
             />
           </div>
+        )}
+        {error && (
+        <Alert severity="error" sx={{ mt: 1 }}>
+          {error}
+        </Alert>
         )}
 
         <div style={{ display: 'flex', gap: '1em', justifyContent: 'center' }}>
