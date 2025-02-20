@@ -4,33 +4,32 @@ import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import { getUsedPrimerIds } from '../../store/cloning_utils';
 import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-
-const apiKey = import.meta.env.VITE_ELABFTW_API_WRITE_KEY;
+import { baseUrl, writeHeaders, readHeaders } from './common';
 
 const linkToParent = async (childId, parentId) => {
   await axios.post(
-    `https://localhost:443/api/v2/items/${childId}/items_links/${parentId}`,
+    `${baseUrl}/api/v2/items/${childId}/items_links/${parentId}`,
     { parent_id: parentId },
-    { headers: { Authorization: apiKey } },
+    { headers: writeHeaders },
   );
 };
 
 const createResource = async (categoryId) => {
   const createdItemResponse = await axios.post(
-    'https://localhost:443/api/v2/items',
+    `${baseUrl}/api/v2/items`,
     {
       category_id: categoryId,
       tags: [],
     },
-    { headers: { Authorization: apiKey } },
+    { headers: writeHeaders },
   );
   return Number(createdItemResponse.headers.location.split('/').pop());
 };
 
 const patchResource = async (resourceId, title, metadata = undefined) => axios.patch(
-  `https://localhost:443/api/v2/items/${resourceId}`,
+  `${baseUrl}/api/v2/items/${resourceId}`,
   { title, metadata },
-  { headers: { Authorization: apiKey } },
+  { headers: writeHeaders },
 );
 
 async function submitPrimerToDatabase({ submissionData: { title, categoryId }, primer, linkedSequenceId = null }) {
@@ -49,7 +48,7 @@ async function uploadTextFileToResource(resourceId, fileName, textContent, comme
   const formData = new FormData();
   formData.append('file', blob, fileName);
   formData.append('comment', comment);
-  const response = await axios.post(`https://localhost:443/api/v2/items/${resourceId}/uploads`, formData, { headers: { Authorization: apiKey } });
+  const response = await axios.post(`${baseUrl}/api/v2/items/${resourceId}/uploads`, formData, { headers: writeHeaders });
   return Number(response.headers.location.split('/').pop());
 }
 
@@ -118,9 +117,9 @@ export default function eLabFTWInterface() {
     // Name of the database interface
     name: 'eLabFTW',
     // Returns a link to the sequence in the database
-    getSequenceLink: (databaseId) => `https://localhost:443/database.php?mode=view&id=${databaseId.item_id}`,
+    getSequenceLink: (databaseId) => `${baseUrl}/database.php?mode=view&id=${databaseId.item_id}`,
     // Returns a link to the primer in the database
-    getPrimerLink: (databaseId) => `https://localhost:443/database.php?mode=view&id=${databaseId}`,
+    getPrimerLink: (databaseId) => `${baseUrl}/database.php?mode=view&id=${databaseId}`,
     // Component for selecting and loading sequence files from the database
     GetSequenceFileAndDatabaseIdComponent,
     // Component for selecting and loading primers from the database

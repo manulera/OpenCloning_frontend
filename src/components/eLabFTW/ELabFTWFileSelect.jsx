@@ -1,10 +1,9 @@
 import React from 'react';
 import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
-
-const apiKey = import.meta.env.VITE_ELABFTW_API_KEY;
+import { baseUrl, readHeaders } from './common';
 
 function ELabFTWFileSelect({ itemId, setFileInfo, ...rest }) {
-  const url = `https://localhost:443/api/v2/items/${itemId}`;
+  const url = `${baseUrl}/api/v2/items/${itemId}`;
   const getOptionsFromResponse = ({ uploads }) => uploads;
   const label = 'File with sequence';
   const messages = { loadingMessage: 'retrieving attachments', errorMessage: 'Could not retrieve attachment from eLab' };
@@ -13,7 +12,7 @@ function ELabFTWFileSelect({ itemId, setFileInfo, ...rest }) {
   return (
     <GetRequestMultiSelect
       getOptionsFromResponse={getOptionsFromResponse}
-      requestHeaders={{ Authorization: apiKey }}
+      requestHeaders={readHeaders}
       url={url}
       label={label}
       messages={messages}

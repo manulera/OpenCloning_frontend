@@ -1,16 +1,15 @@
 import axios from 'axios';
 import React from 'react';
 import PostRequestSelect from '../form/PostRequestSelect';
-
-const apiKey = import.meta.env.VITE_ELABFTW_API_KEY;
+import { baseUrl, readHeaders } from './common';
 
 function ELabFTWResourceSelect({ setResource, categoryId, ...rest }) {
-  const url = 'https://localhost:443/api/v2/items';
+  const url = `${baseUrl}/api/v2/items`;
 
   const resourcePostRequestSettings = React.useMemo(() => ({
     setValue: setResource,
     getOptions: async (userInput) => {
-      const resp = await axios.get(url, { headers: { Authorization: apiKey }, params: { cat: categoryId, extended: `title:${userInput}` } });
+      const resp = await axios.get(url, { headers: readHeaders, params: { cat: categoryId, extended: `title:${userInput}` } });
       return resp.data;
     },
     getOptionLabel: (option) => (option ? option.title : ''),
