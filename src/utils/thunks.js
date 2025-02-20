@@ -5,20 +5,23 @@ import { shiftStateIds } from '../store/cloning_utils';
 
 const { setState: setCloningState } = cloningActions;
 
-const collectParentEntitiesAndSources = (source, sources, entities, entitiesToExport, sourcesToExport) => {
+const collectParentEntitiesAndSources = (source, sources, entities, entitiesToExport, sourcesToExport, stopAtDatabaseId = false) => {
   source.input.forEach((entityId) => {
     entitiesToExport.push(entities.find((e) => e.id === entityId));
     const parentSource = sources.find((s) => s.output === entityId);
     sourcesToExport.push(parentSource);
-    collectParentEntitiesAndSources(parentSource, sources, entities, entitiesToExport, sourcesToExport);
+    if (stopAtDatabaseId && parentSource.database_id) {
+      return;
+    }
+    collectParentEntitiesAndSources(parentSource, sources, entities, entitiesToExport, sourcesToExport, stopAtDatabaseId);
   });
 };
 
-export const getSubState = (state, id) => {
+export const getSubState = (state, id, stopAtDatabaseId = false) => {
   const { entities, sources, primers } = state.cloning;
   const entitiesToExport = entities.filter((e) => e.id === id);
   const sourcesToExport = sources.filter((s) => s.output === id);
-  collectParentEntitiesAndSources(sourcesToExport[0], sources, entities, entitiesToExport, sourcesToExport);
+  collectParentEntitiesAndSources(sourcesToExport[0], sources, entities, entitiesToExport, sourcesToExport, stopAtDatabaseId);
   return { entities: entitiesToExport, sources: sourcesToExport, primers };
 };
 
@@ -52,6 +55,7 @@ export const mergeStateThunk = (newState, skipPrimers = false, files = []) => (d
       files: [...oldState.files, ...newState2.files],
     }));
   } catch (e) {
+    console.error(e);
     throw new Error('Failed to merge state');
   }
 

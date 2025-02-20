@@ -19,7 +19,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
     if (resourceType === 'primer') {
       return false;
     }
-    const substate = getSubState(state, id);
+    const substate = getSubState(state, id, true);
     const immediateParent = substate.sources.find((source) => source.output === id);
     return substate.sources.some((source) => (source.id !== immediateParent?.id) && !source.database_id);
   });
@@ -77,7 +77,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
                 }));
               });
             } else if (resourceType === 'sequence') {
-              const substate = getSubState(store.getState(), id);
+              const substate = getSubState(store.getState(), id, true);
               const { databaseId, primerMappings } = await database.submitSequenceToDatabase({ submissionData, substate, id });
 
               batch(() => {

@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { batch, useDispatch } from 'react-redux';
+import { Alert } from '@mui/material';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import useDatabase from '../../hooks/useDatabase';
 import { loadHistoryFile } from '../../utils/readNwrite';
-import useAlerts from '../../hooks/useAlerts';
 import { mergeStateThunk } from '../../utils/thunks';
 import useValidateState from '../../hooks/useValidateState';
 import { cloningActions } from '../../store/cloning';
@@ -15,8 +15,8 @@ const { deleteSourceAndItsChildren, restoreSource } = cloningActions;
 function SourceDatabase({ source, requestStatus, sendPostRequest }) {
   const [file, setFile] = React.useState(null);
   const [databaseId, setDatabaseId] = React.useState(null);
+  const [historyFileError, setHistoryFileError] = React.useState(null);
   const database = useDatabase();
-  const setAlert = useAlerts();
   const dispatch = useDispatch();
   const validateState = useValidateState();
 
@@ -33,9 +33,17 @@ function SourceDatabase({ source, requestStatus, sendPostRequest }) {
           const lastSource = cloningStrategy.sources.find((s) => s.output === terminalEntities[0]);
           lastSource.database_id = databaseId;
         }
+        // When importing sources that had inputs that we don't want to load, we need to add some templatesequences
+        const allEntityIds = cloningStrategy.entities.map((e) => e.id);
+        cloningStrategy.sources = cloningStrategy.sources.map((s) => {
+          if (s.input.some((id) => !allEntityIds.includes(id))) {
+            return { id: s.id, type: 'DatabaseSource', input: [], output: s.output, database_id: s.database_id };
+          }
+          return s;
+        });
       } catch (e) {
         console.error(e);
-        setAlert({ message: e.message, severity: 'error' });
+        setHistoryFileError(e.message);
         return;
       }
       batch(() => {
@@ -45,8 +53,8 @@ function SourceDatabase({ source, requestStatus, sendPostRequest }) {
           dispatch(mergeStateThunk(cloningStrategy, false, []));
           validateState(cloningStrategy);
         } catch (e) {
-          setAlert({ message: e.message, severity: 'error' });
-          dispatch(restoreSource({ ...source, type: 'UploadedFileSource' }));
+          setHistoryFileError(e.message);
+          dispatch(restoreSource({ ...source, type: 'DatabaseSource' }));
         }
       });
     } else {
@@ -65,7 +73,9 @@ function SourceDatabase({ source, requestStatus, sendPostRequest }) {
   return (
     <form onSubmit={onSubmit}>
       {database && <database.GetSequenceFileAndDatabaseIdComponent setFile={setFile} setDatabaseId={setDatabaseId} />}
+      {historyFileError && <Alert severity="error">{historyFileError}</Alert>}
       {file && databaseId && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit </SubmitButtonBackendAPI>}
+
     </form>
   );
 }

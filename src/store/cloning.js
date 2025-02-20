@@ -303,7 +303,7 @@ const reducer = {
     state.description = description || '';
     state.files = files || [];
     entities.forEach((e) => {
-      if (e.type !== 'TemplateSequence') {
+      if (e.type === 'TextFileSequence') {
         state.teselaJsonCache[e.id] = convertToTeselaJson(e);
       }
     });

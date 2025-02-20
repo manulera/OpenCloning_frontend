@@ -3,6 +3,18 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
+import useDatabase from '../../hooks/useDatabase';
+
+function DatabaseMessage({ source }) {
+  const database = useDatabase();
+  return (
+    <>
+      Imported from
+      {' '}
+      <a target="_blank" rel="noopener noreferrer" href={database.getSequenceLink(source.database_id)}>{database.name}</a>
+    </>
+  );
+}
 
 function EuroscarfMessage({ source }) {
   const { repository_id: repositoryId } = source;
@@ -256,13 +268,13 @@ function FinishedSource({ sourceId }) {
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
     case 'ReverseComplementSource': message = 'Reverse complement'; break;
     case 'SEVASource': message = <SEVAPlasmidMessage source={source} />; break;
+    case 'DatabaseSource': message = <DatabaseMessage source={source} />; break;
     default: message = '';
   }
   return (
     <div className="finished-source">
-      <div>
-        {message}
-      </div>
+      <div />
+      {message}
     </div>
   );
 }

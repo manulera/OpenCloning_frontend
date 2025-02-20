@@ -8,7 +8,7 @@ import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 function PrimersNotInDabaseComponent({ id, submissionData, setSubmissionData }) {
   const primerCategoryId = submissionData?.primerCategoryId;
   const primers = useSelector((state) => {
-    const subState = getSubState(state, id);
+    const subState = getSubState(state, id, true);
     const primersInUse = getUsedPrimerIds(subState.sources);
     return subState.primers.filter((p) => !p.database_id && primersInUse.includes(p.id));
   });
