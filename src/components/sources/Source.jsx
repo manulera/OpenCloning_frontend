@@ -11,7 +11,7 @@ import SourceHomologousRecombination from './SourceHomologousRecombination';
 import SourceGenomeRegion from './SourceGenomeRegion';
 import SourceManuallyTyped from './SourceManuallyTyped';
 import SourceAnnotation from './SourceAnnotation';
-import DataBaseSource from './DatabaseSource';
+import SourceDatabase from './SourceDatabase';
 import SourcePolymeraseExtension from './SourcePolymeraseExtension';
 import CollectionSource from './CollectionSource';
 import KnownSourceErrors from './KnownSourceErrors';
@@ -87,7 +87,7 @@ function Source({ sourceId }) {
     case 'PolymeraseExtensionSource':
       specificSource = <SourcePolymeraseExtension {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'DatabaseSource':
-      specificSource = <DataBaseSource {...{ source, requestStatus, sendPostRequest }} />; break;
+      specificSource = <SourceDatabase {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CollectionSource':
       specificSource = <CollectionSource {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CopyEntity':

@@ -14,12 +14,21 @@ function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   React.useEffect(() => {
     setResource(null);
     setFileInfo(null);
+    setFile(null);
+    setDatabaseId(null);
   }, [category]);
 
   // Reset if resource changes
   React.useEffect(() => {
     setFileInfo(null);
+    setFile(null);
+    setDatabaseId(null);
   }, [resource]);
+
+  React.useEffect(() => {
+    setFile(null);
+    setDatabaseId(null);
+  }, [fileInfo]);
 
   React.useEffect(() => {
     const loadFile = async () => {

@@ -3,21 +3,6 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
-import useDatabase from '../../hooks/useDatabase';
-
-// TODO refactor this to use common part
-
-function DatabaseMessage({ source }) {
-  const database = useDatabase();
-  const { item_id: itemId } = source.database_id;
-  return (
-    <>
-      Imported from
-      {' '}
-      <a target="_blank" rel="noopener noreferrer" href={database.getSequenceLink(itemId)}>{database.name}</a>
-    </>
-  );
-}
 
 function EuroscarfMessage({ source }) {
   const { repository_id: repositoryId } = source;
@@ -182,7 +167,7 @@ function FinishedSource({ sourceId }) {
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
   let message = '';
   switch (source.type) {
-    case 'UploadedFileSource': message = `Read from uploaded file ${source.file_name}`; break;
+    case 'UploadedFileSource': message = `Read from file ${source.file_name}`; break;
     case 'ManuallyTypedSource': message = 'Manually typed sequence'; break;
     case 'LigationSource': message = (source.input.length === 1) ? 'Circularization of fragment' : 'Ligation of fragments'; break;
     case 'GibsonAssemblySource': message = 'Gibson assembly of fragments'; break;
@@ -267,7 +252,6 @@ function FinishedSource({ sourceId }) {
       );
       break;
     case 'PolymeraseExtensionSource': message = 'Polymerase extension'; break;
-    case 'DatabaseSource': message = <DatabaseMessage source={source} />; break;
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
     case 'ReverseComplementSource': message = 'Reverse complement'; break;
@@ -275,7 +259,11 @@ function FinishedSource({ sourceId }) {
     default: message = '';
   }
   return (
-    <div className="finished-source">{message}</div>
+    <div className="finished-source">
+      <div>
+        {message}
+      </div>
+    </div>
   );
 }
 

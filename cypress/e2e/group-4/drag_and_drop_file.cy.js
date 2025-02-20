@@ -1,4 +1,4 @@
-import { loadExample} from '../common_functions';
+import { loadExample } from '../common_functions';
 
 describe('Test drag and drop functionality', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('Test drag and drop functionality', () => {
     cy.get('div.cloning-history').selectFile('public/examples/ase1.gb', { action: 'drag-drop' });
     // This also checks that the empty source was replaced
     cy.get('li#sequence-2', { timeout: 20000 }).contains('CU329670');
-    cy.get('li#sequence-2 li#source-1').contains('Read from uploaded file ase1.gb');
+    cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb');
   });
   it('Can load multiple sequence files, with multiple sequences in them', () => {
     cy.get('div.cloning-history').selectFile(['public/examples/ase1.gb', 'public/examples/dummy_multi_fasta.fasta'], { action: 'drag-drop' });
