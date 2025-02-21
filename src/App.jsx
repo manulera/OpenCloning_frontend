@@ -6,11 +6,27 @@ import { isEqual } from 'lodash-es';
 import MainAppBar from './components/navigation/MainAppBar';
 import OpenCloning from './components/OpenCloning';
 import { cloningActions } from './store/cloning';
+import useDatabase from './hooks/useDatabase';
+import useUrlParameters from './hooks/useUrlParameters';
+import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 
 const { setConfig, setKnownErrors } = cloningActions;
 
 function App() {
   const dispatch = useDispatch();
+  const database = useDatabase();
+  const urlParams = useUrlParameters();
+  const { loadDatabaseFile, historyFileError } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null });
+
+  React.useEffect(() => {
+    async function loadSequenceFromUrlParams() {
+      if (database && urlParams.database && urlParams.database === database.name) {
+        const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
+        loadDatabaseFile(file, databaseId);
+      }
+    }
+    loadSequenceFromUrlParams();
+  }, [database, urlParams]);
 
   React.useEffect(() => {
     // Load application configuration

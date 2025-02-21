@@ -5,7 +5,7 @@ import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseI
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-import { baseUrl, writeHeaders } from './common';
+import { baseUrl, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders } from './common';
 import LoadHistoryComponent from './LoadHistoryComponent';
 
 const linkToParent = async (childId, parentId) => {
@@ -119,6 +119,17 @@ function isSubmissionDataValid(submissionData) {
   return submissionData.title && submissionData.sequenceCategoryId;
 }
 
+async function loadSequenceFromUrlParams(urlParams) {
+  const { item_id: itemId, file_id: fileId } = urlParams;
+
+  if (itemId && fileId) {
+    const fileInfo = await getFileInfoFromELabFTW(itemId, fileId);
+    const file = await getFileFromELabFTW(itemId, fileInfo);
+    return { file, databaseId: { item_id: itemId, file_id: fileId } };
+  }
+  return null;
+}
+
 export default function eLabFTWInterface() {
   return {
     // Name of the database interface
@@ -148,5 +159,7 @@ export default function eLabFTWInterface() {
     // OPTIONAL =======================================================================
     // Component for loading history from the database (can be hook-like does not have to render anything)
     LoadHistoryComponent,
+    // Function to load sequences from url parameters
+    loadSequenceFromUrlParams,
   };
 }

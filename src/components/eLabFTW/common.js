@@ -13,3 +13,9 @@ export const getFileFromELabFTW = async (itemId, fileInfo) => {
   // Convert blob to file
   return new File([resp.data], fileInfo.real_name);
 };
+
+export const getFileInfoFromELabFTW = async (itemId, fileId) => {
+  const url = `${baseUrl}/api/v2/items/${itemId}/uploads/${fileId}`;
+  const resp = await axios.get(url, { headers: readHeaders });
+  return resp.data;
+};

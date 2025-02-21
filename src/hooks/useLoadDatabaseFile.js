@@ -40,7 +40,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest }) {
       }
       batch(() => {
         const prevState = store.getState().cloning;
-        // Replace the source with the new one
+        // Replace the source with the new one if called from a source
         dispatch(deleteSourceAndItsChildren(source.id));
         try {
           dispatch(mergeStateThunk(cloningStrategy, false, []));
