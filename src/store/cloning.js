@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { constructNetwork } from '../utils/network';
 import { getNextPrimerId, getNextUniqueId } from './cloning_utils';
 import { convertToTeselaJson } from '../utils/readNwrite';
 
@@ -69,7 +68,6 @@ const reducer = {
       output: null,
       type: null,
     });
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   restoreSource(state, action) {
@@ -77,7 +75,6 @@ const reducer = {
     const source = action.payload;
     const { sources } = state;
     sources.push(source);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   addTemplateChildAndSubsequentSource(state, action) {
@@ -109,8 +106,6 @@ const reducer = {
       ...newSource,
       input: [...newSource.input || [], newEntityId],
     });
-
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   addPCRsAndSubsequentSourcesForAssembly(state, action) {
@@ -160,8 +155,6 @@ const reducer = {
         type: sourceType,
       });
     }
-
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   addSourceAndItsOutputEntity(state, action) {
@@ -182,7 +175,6 @@ const reducer = {
     entities.push(newEntity);
     sources.push(newSource);
     state.teselaJsonCache[entityId] = convertToTeselaJson(newEntity);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   addSequenceInBetween(state, action) {
@@ -202,7 +194,6 @@ const reducer = {
     existingSource.input = [newEntity.id];
     state.sources.push(newSource);
     state.entities.push(newEntity);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   addEntityAndUpdateItsSource(state, action) {
@@ -219,7 +210,6 @@ const reducer = {
     sources.splice(sourceIndex, 1, newSource);
     entities.push(newEntity);
     state.teselaJsonCache[newEntity.id] = convertToTeselaJson(newEntity);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   updateEntityAndItsSource(state, action) {
@@ -239,7 +229,6 @@ const reducer = {
     }
     entities.splice(entityIndex, 1, newEntity);
     state.teselaJsonCache[newEntity.id] = convertToTeselaJson(newEntity);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   updateSource(state, action) {
@@ -247,7 +236,6 @@ const reducer = {
     const { sources } = state;
     const source = sources.find((s) => s.id === newSource.id);
     Object.assign(source, newSource);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   replaceSource(state, action) {
@@ -258,7 +246,6 @@ const reducer = {
       throw new Error('Source not found');
     }
     sources.splice(sourceIndex, 1, newSource);
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   deleteSourceAndItsChildren(state, action) {
@@ -277,7 +264,6 @@ const reducer = {
     }
     state.sources = sources.filter((s) => !sources2delete.includes(s.id));
     state.entities = entities.filter((e) => !entities2delete.includes(e.id));
-    state.network = constructNetwork(state.entities, state.sources);
     state.files = state.files.filter((f) => !entities2delete.includes(f.sequence_id));
     entities2delete.forEach((e) => {
       delete state.teselaJsonCache[e];
@@ -307,7 +293,6 @@ const reducer = {
         state.teselaJsonCache[e.id] = convertToTeselaJson(e);
       }
     });
-    state.network = constructNetwork(entities, sources);
   },
 
   setDescription(state, action) {
@@ -390,8 +375,6 @@ const reducer = {
     }
     source.forward_primer = nextId;
     source.reverse_primer = nextId + 1;
-
-    state.network = constructNetwork(state.entities, state.sources);
   },
 
   addToSourcesWithHiddenAncestors(state, action) {
@@ -458,7 +441,7 @@ const reducer = {
 
 const cloningSlice = createSlice({
   name: 'cloning',
-  initialState: { ...initialState, network: constructNetwork(initialState.entities, initialState.sources) },
+  initialState: { ...initialState },
   reducers: reducer,
 });
 

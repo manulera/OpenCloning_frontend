@@ -16,7 +16,6 @@ const { setCurrentTab } = cloningActions;
 
 function OpenCloning() {
   const dispatch = useDispatch();
-  const network = useSelector((state) => state.cloning.network, isEqual);
   const currentTab = useSelector((state) => state.cloning.currentTab);
   const tabPanelsRef = useRef(null);
   const [smallDevice, setSmallDevice] = useState(window.innerWidth < 600);
@@ -78,7 +77,7 @@ function OpenCloning() {
         </TabPanel>
         <TabPanel index={0} value={currentTab} className="cloning-tab-pannel">
           <div className="open-cloning">
-            <CloningHistory network={network} />
+            <CloningHistory />
           </div>
         </TabPanel>
         <TabPanel index={4} value={currentTab} className="data-model-tab-pannel">

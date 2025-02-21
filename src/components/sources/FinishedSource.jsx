@@ -203,6 +203,7 @@ function SEVAPlasmidMessage({ source }) {
 }
 
 function FinishedSource({ sourceId }) {
+  console.log('sourceId', sourceId);
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), shallowEqual);
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
   let message = '';
