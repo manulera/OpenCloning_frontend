@@ -14,7 +14,7 @@ function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
         const historyFiles = uploads.filter((upload) => upload.real_name.endsWith('history.json'));
         if (historyFiles.length === 1) {
           const file = await getFileFromELabFTW(databaseId.item_id, historyFiles[0]);
-          loadDatabaseFile(file, databaseId);
+          loadDatabaseFile(file, databaseId, true);
         }
       } catch (error) {
         console.error(error);

@@ -34,8 +34,7 @@ export const exportSubStateThunk = (fileName, entityId) => async (dispatch, getS
   downloadStateAsJson({ ...substate, description: '' }, fileName);
 };
 
-export const mergeStateThunk = (newState, skipPrimers = false, files = []) => (dispatch, getState) => {
-  const { cloning: oldState } = getState();
+export const shiftState = (newState, oldState, skipPrimers = false) => {
   const existingPrimerNames = oldState.primers.map((p) => p.name);
 
   if (newState.primers === undefined || newState.entities === undefined || newState.sources === undefined) {
@@ -48,20 +47,18 @@ export const mergeStateThunk = (newState, skipPrimers = false, files = []) => (d
     throw new Error('Primer name from loaded file exists in current session');
   }
 
-  const { newState2, networkShift } = shiftStateIds(newState, oldState, skipPrimers);
-  try {
-    dispatch(setCloningState({
-      sources: [...oldState.sources, ...newState2.sources],
-      entities: [...oldState.entities, ...newState2.entities],
-      primers: [...oldState.primers, ...newState2.primers],
-      files: [...oldState.files, ...newState2.files],
-    }));
-  } catch (e) {
-    console.error(e);
-    throw new Error('Failed to merge state');
-  }
+  return shiftStateIds(newState, oldState, skipPrimers);
+};
 
-  loadFilesToSessionStorage(files, networkShift);
+export const mergeStates = (newState, oldState, skipPrimers = false) => {
+  const { shiftedState, networkShift } = shiftState(newState, oldState, skipPrimers);
+  const mergedState = {
+    sources: [...oldState.sources, ...shiftedState.sources],
+    entities: [...oldState.entities, ...shiftedState.entities],
+    primers: [...oldState.primers, ...shiftedState.primers],
+    files: [...oldState.files, ...shiftedState.files],
+  };
+  return { mergedState, networkShift };
 };
 
 export const copyEntityThunk = (entityId) => async (dispatch, getState) => {
@@ -83,5 +80,7 @@ export const copyEntityThunk = (entityId) => async (dispatch, getState) => {
     `verification-${f.sequence_id}-${f.file_name}`,
     { type: 'application/octet-stream' },
   ));
-  dispatch(mergeStateThunk(newState, true, files));
+  const { mergedState, networkShift } = mergeStates(newState, state.cloning, true);
+  dispatch(setCloningState(mergedState));
+  await loadFilesToSessionStorage(files, networkShift);
 };

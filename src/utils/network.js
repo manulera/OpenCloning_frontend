@@ -36,3 +36,29 @@ export function constructNetwork(entities, sources) {
 
   return unsortedNetwork.sort(parentNodeSorter);
 }
+
+export function graftState(parentState, childState, graftSourceId) {
+  // Find the source in the parent state that should be merged with the graft source
+  const entityIdsThatAreInput = parentState.sources.reduce((result, source) => result.concat(source.input), []);
+  const entityIdsThatAreNotInput = parentState.entities.filter((entity) => !entityIdsThatAreInput.includes(entity.id)).map((entity) => entity.id);
+  const sourcesWithoutOutput = parentState.sources.filter((source) => source.output === null);
+
+  if (sourcesWithoutOutput.length > 0 || entityIdsThatAreNotInput.length !== 1) {
+    throw new Error('Invalid parent state');
+  }
+
+  const parentGraftSource = parentState.sources.find((source) => source.output === entityIdsThatAreNotInput[0]);
+  const childGraftSource = childState.sources.find((source) => source.id === graftSourceId);
+  const mergedSource = { ...parentGraftSource, id: childGraftSource.id, output: childGraftSource.output };
+
+  const parentSources = parentState.sources.filter((source) => source.id !== parentGraftSource.id);
+  const parentEntities = parentState.entities.filter((entity) => entity.id !== entityIdsThatAreNotInput[0]);
+  const childSources = childState.sources.filter((source) => source.id !== childGraftSource.id);
+
+  return {
+    sources: [...parentSources, ...childSources, mergedSource],
+    entities: [...parentEntities, ...childState.entities],
+    primers: [...parentState.primers, ...childState.primers],
+    files: [...parentState.files, ...childState.files],
+  };
+}

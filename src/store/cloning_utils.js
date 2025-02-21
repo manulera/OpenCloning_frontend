@@ -222,7 +222,7 @@ export function shiftStateIds(newState, oldState, skipPrimers = false) {
   networkShift -= Math.min(...[...newSources.map((s) => s.id), ...newEntities.map((e) => e.id)]);
   const primerShift = skipPrimers ? 0 : getNextPrimerId(oldPrimers);
   return {
-    newState2: {
+    shiftedState: {
       entities: newEntities.map((e) => ({ ...e, id: e.id + networkShift })),
       primers: newPrimers.map((p) => ({ ...p, id: p.id + primerShift })),
       sources: newSources.map((s) => shiftSource(s, networkShift, primerShift)),

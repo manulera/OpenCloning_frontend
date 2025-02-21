@@ -7,7 +7,7 @@ import MainAppBar from './components/navigation/MainAppBar';
 import OpenCloning from './components/OpenCloning';
 import { cloningActions } from './store/cloning';
 import useDatabase from './hooks/useDatabase';
-import useUrlParameters from './hooks/useUrlParameters';
+import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 
 const { setConfig, setKnownErrors } = cloningActions;
@@ -15,18 +15,21 @@ const { setConfig, setKnownErrors } = cloningActions;
 function App() {
   const dispatch = useDispatch();
   const database = useDatabase();
-  const urlParams = useUrlParameters();
   const { loadDatabaseFile, historyFileError } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null });
 
   React.useEffect(() => {
     async function loadSequenceFromUrlParams() {
-      if (database && urlParams.database && urlParams.database === database.name) {
+      if (!database) {
+        return;
+      }
+      const urlParams = getUrlParameters();
+      if (urlParams.database && urlParams.database === database.name) {
         const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
         loadDatabaseFile(file, databaseId);
       }
     }
     loadSequenceFromUrlParams();
-  }, [database, urlParams]);
+  }, [database]);
 
   React.useEffect(() => {
     // Load application configuration

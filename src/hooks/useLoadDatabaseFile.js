@@ -4,7 +4,8 @@ import useValidateState from './useValidateState';
 import { loadHistoryFile } from '../utils/readNwrite';
 import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
 import { cloningActions } from '../store/cloning';
-import { mergeStateThunk } from '../utils/thunks';
+import { mergeStates, shiftState } from '../utils/thunks';
+import { graftState } from '../utils/network';
 
 const { deleteSourceAndItsChildren, setState: setCloningState } = cloningActions;
 
@@ -14,7 +15,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest }) {
   const validateState = useValidateState();
   const store = useStore();
 
-  const loadDatabaseFile = async (file, databaseId) => {
+  const loadDatabaseFile = async (file, databaseId, ancestors = false) => {
     if (file.name.endsWith('.zip') || file.name.endsWith('.json')) {
       let cloningStrategy;
       try {
@@ -41,9 +42,20 @@ export default function useLoadDatabaseFile({ source, sendPostRequest }) {
       batch(() => {
         const prevState = store.getState().cloning;
         // Replace the source with the new one if called from a source
-        dispatch(deleteSourceAndItsChildren(source.id));
+        if (!ancestors) {
+          dispatch(deleteSourceAndItsChildren(source.id));
+        }
         try {
-          dispatch(mergeStateThunk(cloningStrategy, false, []));
+          const cloningState = store.getState().cloning;
+          let mergedState;
+          if (!ancestors) {
+            ({ mergedState } = mergeStates(cloningStrategy, cloningState));
+          } else {
+            const { shiftedState } = shiftState(cloningStrategy, cloningState);
+            mergedState = graftState(shiftedState, cloningState, source.id);
+          }
+
+          dispatch(setCloningState(mergedState));
           validateState(cloningStrategy);
         } catch (e) {
           setHistoryFileError(e.message);
