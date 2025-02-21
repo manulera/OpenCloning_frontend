@@ -8,8 +8,8 @@ function SourceDatabase({ source, requestStatus, sendPostRequest }) {
   const [file, setFile] = React.useState(null);
   const [databaseId, setDatabaseId] = React.useState(null);
   const database = useDatabase();
-
-  const { loadDatabaseFile, historyFileError } = useLoadDatabaseFile({ source, sendPostRequest });
+  const [historyFileError, setHistoryFileError] = React.useState(null);
+  const { loadDatabaseFile } = useLoadDatabaseFile({ source, sendPostRequest, setHistoryFileError });
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +21,6 @@ function SourceDatabase({ source, requestStatus, sendPostRequest }) {
       {database && <database.GetSequenceFileAndDatabaseIdComponent setFile={setFile} setDatabaseId={setDatabaseId} />}
       {historyFileError && <Alert severity="error">{historyFileError}</Alert>}
       {file && databaseId && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit </SubmitButtonBackendAPI>}
-
     </form>
   );
 }

@@ -4,16 +4,16 @@ import axios from 'axios';
 import { baseUrl, getFileFromELabFTW, readHeaders } from './common';
 
 function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
-  const url = `${baseUrl}/api/v2/items/${databaseId.item_id}`;
+  const url = `${baseUrl}/api/v2/items/${databaseId}`;
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(url, { headers: readHeaders });
         const { uploads } = response.data;
-        const historyFiles = uploads.filter((upload) => upload.real_name.endsWith('history.json'));
+        const historyFiles = uploads.filter((upload) => upload.real_name.endsWith('.json') && upload.comment.includes('OpenCloning'));
         if (historyFiles.length === 1) {
-          const file = await getFileFromELabFTW(databaseId.item_id, historyFiles[0]);
+          const file = await getFileFromELabFTW(databaseId, historyFiles[0]);
           loadDatabaseFile(file, databaseId, true);
         }
       } catch (error) {

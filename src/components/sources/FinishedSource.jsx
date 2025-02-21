@@ -11,7 +11,8 @@ function DatabaseMessage({ source }) {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
   const database = useDatabase();
   const handleClose = React.useCallback(() => setLoadingHistory(false), [setLoadingHistory]);
-  const { loadDatabaseFile, historyFileError } = useLoadDatabaseFile({ source });
+  const [historyFileError, setHistoryFileError] = React.useState(null);
+  const { loadDatabaseFile } = useLoadDatabaseFile({ source, setHistoryFileError });
   const { LoadHistoryComponent } = database;
   return (
     <>

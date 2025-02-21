@@ -9,13 +9,16 @@ import { cloningActions } from './store/cloning';
 import useDatabase from './hooks/useDatabase';
 import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
+import useAlerts from './hooks/useAlerts';
 
 const { setConfig, setKnownErrors } = cloningActions;
 
 function App() {
   const dispatch = useDispatch();
   const database = useDatabase();
-  const { loadDatabaseFile, historyFileError } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null });
+  const { addAlert } = useAlerts();
+  const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
+  const { loadDatabaseFile } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null, setHistoryFileError });
 
   React.useEffect(() => {
     async function loadSequenceFromUrlParams() {
@@ -23,9 +26,19 @@ function App() {
         return;
       }
       const urlParams = getUrlParameters();
-      if (urlParams.database && urlParams.database === database.name) {
-        const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
-        loadDatabaseFile(file, databaseId);
+      if (urlParams.source === 'database') {
+        try {
+          const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
+          loadDatabaseFile(file, databaseId);
+          // Clear URL parameters after successful loading
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+          addAlert({
+            message: 'Error loading sequence from URL parameters',
+            severity: 'error',
+          });
+          console.error(error);
+        }
       }
     }
     loadSequenceFromUrlParams();

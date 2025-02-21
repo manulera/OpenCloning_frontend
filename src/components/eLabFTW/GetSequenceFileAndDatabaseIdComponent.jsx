@@ -34,7 +34,7 @@ function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
       if (!resource || !fileInfo) return;
       const file = await getFileFromELabFTW(resource.id, fileInfo);
       setFile(file);
-      setDatabaseId({ item_id: resource.id, sequence_id: fileInfo.id });
+      setDatabaseId(resource.id);
     };
 
     loadFile();

@@ -1,4 +1,3 @@
-import React from 'react';
 import { batch, useDispatch, useStore } from 'react-redux';
 import useValidateState from './useValidateState';
 import { loadHistoryFile } from '../utils/readNwrite';
@@ -9,8 +8,7 @@ import { graftState } from '../utils/network';
 
 const { deleteSourceAndItsChildren, setState: setCloningState } = cloningActions;
 
-export default function useLoadDatabaseFile({ source, sendPostRequest }) {
-  const [historyFileError, setHistoryFileError] = React.useState(null);
+export default function useLoadDatabaseFile({ source, sendPostRequest, setHistoryFileError }) {
   const dispatch = useDispatch();
   const validateState = useValidateState();
   const store = useStore();
@@ -75,5 +73,5 @@ export default function useLoadDatabaseFile({ source, sendPostRequest }) {
       sendPostRequest({ endpoint: 'read_from_file', requestData, config, source, modifySource });
     }
   };
-  return { loadDatabaseFile, historyFileError };
+  return { loadDatabaseFile };
 }
