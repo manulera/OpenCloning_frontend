@@ -1,17 +1,45 @@
 import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { Button } from '@mui/material';
+import { Alert, Button } from '@mui/material';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
 import useDatabase from '../../hooks/useDatabase';
+import useLoadDatabaseFile from '../../hooks/useLoadDatabaseFile';
 
 function DatabaseMessage({ source }) {
+  const [loadingHistory, setLoadingHistory] = React.useState(false);
   const database = useDatabase();
+  const handleClose = React.useCallback(() => setLoadingHistory(false), [setLoadingHistory]);
+  const { loadDatabaseFile, historyFileError } = useLoadDatabaseFile({ source });
+  const { LoadHistoryComponent } = database;
   return (
     <>
-      Imported from
-      {' '}
-      <a target="_blank" rel="noopener noreferrer" href={database.getSequenceLink(source.database_id)}>{database.name}</a>
+      <div>
+        Imported from
+        {' '}
+        <a target="_blank" rel="noopener noreferrer" href={database.getSequenceLink(source.database_id)}>{database.name}</a>
+      </div>
+      {/* If the database interface has a LoadHistoryComponent, show a button to load the history */}
+      {LoadHistoryComponent && (
+      <>
+        {!loadingHistory && (
+        <div>
+          <Button sx={{ marginTop: 2 }} variant="contained" color="primary" onClick={() => setLoadingHistory(true)}>
+            Load history
+          </Button>
+        </div>
+        )}
+        {loadingHistory && (
+          <>
+            <div>
+              <LoadHistoryComponent loadDatabaseFile={loadDatabaseFile} handleClose={handleClose} databaseId={source.database_id} />
+            </div>
+            {historyFileError && <Alert sx={{ marginTop: 2 }} severity="error">{historyFileError}</Alert>}
+          </>
+        )}
+
+      </>
+      )}
     </>
   );
 }

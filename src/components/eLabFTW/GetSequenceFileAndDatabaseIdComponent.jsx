@@ -1,9 +1,8 @@
 import React from 'react';
-import axios from 'axios';
 import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 import ELabFTWResourceSelect from './ELabFTWResourceSelect';
 import ELabFTWFileSelect from './ELabFTWFileSelect';
-import { baseUrl, readHeaders } from './common';
+import { getFileFromELabFTW } from './common';
 
 function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   const [category, setCategory] = React.useState(null);
@@ -33,10 +32,7 @@ function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   React.useEffect(() => {
     const loadFile = async () => {
       if (!resource || !fileInfo) return;
-      const url = `${baseUrl}/api/v2/items/${resource.id}/uploads/${fileInfo.id}?format=binary`;
-      const resp = await axios.get(url, { headers: readHeaders, responseType: 'blob' });
-      // Convert blob to file
-      const file = new File([resp.data], fileInfo.real_name);
+      const file = await getFileFromELabFTW(resource.id, fileInfo);
       setFile(file);
       setDatabaseId({ item_id: resource.id, sequence_id: fileInfo.id });
     };

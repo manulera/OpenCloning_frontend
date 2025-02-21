@@ -4,11 +4,11 @@ import { getReverseComplementSequenceString as reverseComplement } from '@tesela
 import { isEqual } from 'lodash-es';
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { useDispatch, useSelector } from 'react-redux';
-import RetryAlert from '../../../form/RetryAlert';
 import useGatewaySites from '../../../../hooks/useGatewaySites';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '../../../../store/cloning';
 import { usePrimerDesign } from './PrimerDesignContext';
+import RequestStatusWrapper from '../../../form/RequestStatusWrapper';
 
 const knownCombinations = [
   {
@@ -55,22 +55,6 @@ function SiteSelect({ donorSites, site, setSite, label }) {
       </Select>
     </FormControl>
   );
-}
-
-function ComponentWrapper({ children, requestStatus, retry, donorSites }) {
-  if (requestStatus.status === 'success') {
-    if (donorSites.length < 2) {
-      return <Alert severity="error">The sequence must have at least two AttP sites</Alert>;
-    }
-    return children;
-  }
-  if (requestStatus.status === 'loading') {
-    return <div>Loading...</div>;
-  }
-  if (requestStatus.status === 'error') {
-    return <RetryAlert onRetry={retry} sx={{ margin: 'auto', width: '80%', my: 2 }}>{requestStatus.message}</RetryAlert>;
-  }
-  return null;
 }
 
 const { setMainSequenceSelection } = cloningActions;
@@ -157,7 +141,7 @@ function GatewayRoiSelect({ id, greedy = false }) {
     checkKnownCombination(leftSite, site);
   }, [leftSite, donorSites]);
   return (
-    <ComponentWrapper requestStatus={requestStatus} retry={attemptAgain} donorSites={donorSites}>
+    <RequestStatusWrapper requestStatus={requestStatus} retry={attemptAgain} donorSites={donorSites}>
 
       <Box sx={{ my: 2, '& > div': { mx: 1 } }}>
         <SiteSelect donorSites={donorSites} site={leftSite} setSite={onSiteSelectLeft} label="Left attP site" />
@@ -165,7 +149,7 @@ function GatewayRoiSelect({ id, greedy = false }) {
       </Box>
       {knownCombination && (<Alert sx={{ width: '80%', margin: 'auto', mb: 2 }} severity="info">{knownCombination.message}</Alert>)}
       {knownCombination === null && (leftSite && rightSite) && (<Alert sx={{ width: '80%', margin: 'auto', mb: 2 }} severity="error">No recommended primer tails found</Alert>)}
-    </ComponentWrapper>
+    </RequestStatusWrapper>
   );
 }
 

@@ -3,10 +3,10 @@ import SaveIcon from '@mui/icons-material/Save';
 import LinkIcon from '@mui/icons-material/Link';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
-import { getUsedPrimerIds } from '../../store/cloning_utils';
 import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
 import { baseUrl, writeHeaders } from './common';
+import LoadHistoryComponent from './LoadHistoryComponent';
 
 const linkToParent = async (childId, parentId) => {
   await axios.post(
@@ -76,14 +76,13 @@ async function submitSequenceToDatabase({ submissionData: { title, sequenceCateg
   const parentDatabaseSources = sources.filter((source) => source.database_id);
   // Get the item_ids of those database sources
   const parentResourceIds = parentDatabaseSources.map((source) => source.database_id.item_id);
-  // Get the primers used in the substate
-  const idsOfPrimersInUse = getUsedPrimerIds(sources);
+  const primerIds = primers.map((p) => p.id);
 
   // Link and/or add used primers
   const newPrimersToSave = [];
-  const existingPrimersToLink = primers.filter((p) => idsOfPrimersInUse.includes(p.id) && p.database_id).map((p) => p.database_id);
+  const existingPrimersToLink = primers.filter((p) => primerIds.includes(p.id) && p.database_id).map((p) => p.database_id);
   if (primerCategoryId) {
-    newPrimersToSave.push(...primers.filter((p) => idsOfPrimersInUse.includes(p.id) && !p.database_id));
+    newPrimersToSave.push(...primers.filter((p) => primerIds.includes(p.id) && !p.database_id));
   }
 
   // Create and name the resource
@@ -146,5 +145,8 @@ export default function eLabFTWInterface() {
     SubmitIcon: SaveIcon,
     // Icon displayed on the node corner for entities in the database
     DatabaseIcon: LinkIcon,
+    // OPTIONAL =======================================================================
+    // Component for loading history from the database (can be hook-like does not have to render anything)
+    LoadHistoryComponent,
   };
 }

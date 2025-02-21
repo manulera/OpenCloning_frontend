@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash-es';
 import { base64ToBlob, downloadStateAsJson, loadFilesToSessionStorage } from './readNwrite';
 import { cloningActions } from '../store/cloning';
-import { shiftStateIds } from '../store/cloning_utils';
+import { getUsedPrimerIds, shiftStateIds } from '../store/cloning_utils';
 
 const { setState: setCloningState } = cloningActions;
 
@@ -22,7 +22,9 @@ export const getSubState = (state, id, stopAtDatabaseId = false) => {
   const entitiesToExport = entities.filter((e) => e.id === id);
   const sourcesToExport = sources.filter((s) => s.output === id);
   collectParentEntitiesAndSources(sourcesToExport[0], sources, entities, entitiesToExport, sourcesToExport, stopAtDatabaseId);
-  return { entities: entitiesToExport, sources: sourcesToExport, primers };
+  const primerIdsToExport = getUsedPrimerIds(sourcesToExport);
+  const primersToExport = primers.filter((p) => primerIdsToExport.includes(p.id));
+  return { entities: entitiesToExport, sources: sourcesToExport, primers: primersToExport };
 };
 
 export const exportSubStateThunk = (fileName, entityId) => async (dispatch, getState) => {
