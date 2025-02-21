@@ -1,6 +1,7 @@
 import React from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Alert, Button } from '@mui/material';
+import { isEqual } from 'lodash-es';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
 import useDatabase from '../../hooks/useDatabase';
@@ -203,9 +204,8 @@ function SEVAPlasmidMessage({ source }) {
 }
 
 function FinishedSource({ sourceId }) {
-  console.log('sourceId', sourceId);
-  const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), shallowEqual);
-  const primers = useSelector((state) => state.cloning.primers, shallowEqual);
+  const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
+  const primers = useSelector((state) => state.cloning.primers, isEqual);
   let message = '';
   switch (source.type) {
     case 'UploadedFileSource': message = `Read from file ${source.file_name}`; break;
