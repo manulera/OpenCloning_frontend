@@ -1,11 +1,20 @@
 import { stringIsNotDNA } from '../store/cloning_utils';
 import { readSubmittedTextFile } from './readNwrite';
 
-export const primersFromTsv = async (fileUploaded, existingNames) => {
+export const primersFromTextFile = async (fileUploaded, existingNames) => {
   const fileContent = await readSubmittedTextFile(fileUploaded);
   const lines = fileContent.split('\n');
 
-  const headers = lines[0].split('\t');
+  let delimiter = null;
+  if (fileUploaded.name.endsWith('.csv')) {
+    delimiter = ',';
+  } else if (fileUploaded.name.endsWith('.tsv')) {
+    delimiter = '\t';
+  } else {
+    throw new Error('File must be a .csv or .tsv file');
+  }
+
+  const headers = lines[0].split(delimiter);
 
   const requiredHeaders = ['name', 'sequence'];
   const missingHeaders = requiredHeaders.filter(
@@ -18,7 +27,7 @@ export const primersFromTsv = async (fileUploaded, existingNames) => {
   }
 
   // All lines should have the same number of tabs
-  if (lines.some((line) => line.split('\t').length !== headers.length)) {
+  if (lines.some((line) => line.split(delimiter).length !== headers.length)) {
     throw new Error('All lines should have the same number of columns');
   }
 
@@ -28,7 +37,7 @@ export const primersFromTsv = async (fileUploaded, existingNames) => {
   }
 
   const primersToAdd = lines.slice(1).map((line) => {
-    const values = line.split('\t');
+    const values = line.split(delimiter);
     const obj = { error: '' };
     headers.forEach((header, i) => {
       obj[header] = values[i];

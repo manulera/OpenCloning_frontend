@@ -71,7 +71,6 @@ function NetWorkNode({ sourceId }) {
     return parentSources.map((source) => source.id);
   }, isEqual);
 
-  console.log('NetWorkNode', sourceId, entityId, sourceInput, hasDatabaseId, entityIsTemplate, sourceIsTemplate, ancestorsHidden, parentSourceIds);
   const dispatch = useDispatch();
 
   const onVisibilityClick = React.useCallback(() => {

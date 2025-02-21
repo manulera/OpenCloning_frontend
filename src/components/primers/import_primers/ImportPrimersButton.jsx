@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import useAlerts from '../../../hooks/useAlerts';
 import './styles.css';
 
-import { primersFromTsv } from '../../../utils/fileParsers';
+import { primersFromTextFile } from '../../../utils/fileParsers';
 import PrimersImportTable from './ImportPrimersTable';
 
 function ImportPrimersButton({ addPrimer }) {
@@ -29,7 +29,7 @@ function ImportPrimersButton({ addPrimer }) {
   const handleFileUpload = async (event) => {
     const fileUploaded = event.target.files[0];
     try {
-      const uploadedPrimers = await primersFromTsv(fileUploaded, existingNames);
+      const uploadedPrimers = await primersFromTextFile(fileUploaded, existingNames);
       setImportedPrimers(uploadedPrimers);
       setOpenModal(true);
     } catch (error) {
@@ -52,7 +52,7 @@ function ImportPrimersButton({ addPrimer }) {
 
   return (
     <>
-      <Tooltip arrow title={<span style={{ fontSize: '1.4em' }}>Upload a .tsv file with headers &apos;name&apos; and &apos;sequence&apos;</span>}>
+      <Tooltip arrow title={<span style={{ fontSize: '1.4em' }}>Upload a .csv or .tsv file with headers &apos;name&apos; and &apos;sequence&apos;</span>}>
         <Button
           onClick={handleUploadClick}
           variant="contained"
@@ -64,6 +64,7 @@ function ImportPrimersButton({ addPrimer }) {
       <input
         style={{ display: 'none' }}
         type="file"
+        accept=".csv,.tsv"
         ref={hiddenFileInput}
         onChange={handleFileUpload}
       />
