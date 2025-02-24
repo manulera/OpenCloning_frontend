@@ -42,9 +42,9 @@ jobs:
           context: .
           push: true
           tags: |
-            manulera/opencloningfrontend:latest-oc-base
-            manulera/opencloningfrontend:prod-oc-base
-            manulera/opencloningfrontend:${{ github.ref_name }}-oc-base
+            manulera/opencloningfrontend:latest-baseurl-opencloning
+            manulera/opencloningfrontend:prod-baseurl-opencloning
+            manulera/opencloningfrontend:${{ github.ref_name }}-baseurl-opencloning
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_URL=/opencloning/
