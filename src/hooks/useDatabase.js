@@ -7,7 +7,7 @@ export default function useDatabase() {
 
   return React.useMemo(() => {
     if (databaseName === 'elabftw') {
-      return eLabFTWInterface();
+      return eLabFTWInterface;
     }
     return null;
   }, [databaseName]);

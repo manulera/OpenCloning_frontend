@@ -1,9 +1,7 @@
 import axios from 'axios';
+import { readApiKey, writeApiKey, baseUrl as envBaseUrl } from './envValues';
 
-const writeApiKey = import.meta.env.VITE_ELABFTW_API_WRITE_KEY || '';
-const readApiKey = import.meta.env.VITE_ELABFTW_API_READ_KEY || '';
-
-export const baseUrl = import.meta.env.VITE_ELABFTW_BASE_URL || '';
+export const baseUrl = envBaseUrl;
 export const readHeaders = readApiKey ? { Authorization: readApiKey } : {};
 export const writeHeaders = writeApiKey ? { Authorization: writeApiKey } : {};
 

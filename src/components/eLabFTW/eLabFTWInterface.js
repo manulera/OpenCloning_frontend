@@ -31,7 +31,7 @@ async function deleteResource(resourceId) {
 const linkToParent = async (childId, parentId) => {
   await axios.post(
     `${baseUrl}/api/v2/items/${childId}/items_links/${parentId}`,
-    { parent_id: parentId },
+    {},
     { headers: writeHeaders },
   );
 };
@@ -199,38 +199,36 @@ async function getPrimerName(databaseId) {
   return resp.data.title;
 }
 
-export default function eLabFTWInterface() {
-  return {
-    // Name of the database interface
-    name: 'eLabFTW',
-    // Returns a link to the sequence in the database
-    getSequenceLink: (databaseId) => `${baseUrl}/database.php?mode=view&id=${databaseId}`,
-    // Returns a link to the primer in the database
-    getPrimerLink: (databaseId) => `${baseUrl}/database.php?mode=view&id=${databaseId}`,
-    // Component for selecting and loading sequence files from the database
-    GetSequenceFileAndDatabaseIdComponent,
-    // Component for selecting and loading primers from the database
-    GetPrimerComponent,
-    // Component for submitting resources to the database
-    SubmitToDatabaseComponent,
-    // Component for handling primers not yet in database
-    PrimersNotInDabaseComponent,
-    // Function to submit a primer to the database
-    submitPrimerToDatabase,
-    // Function to submit a sequence and its history to the database
-    submitSequenceToDatabase,
-    // Function to validate submission data
-    isSubmissionDataValid,
-    // Icon displayed on the node corner to submit
-    SubmitIcon: SaveIcon,
-    // Icon displayed on the node corner for entities in the database
-    DatabaseIcon: LinkIcon,
-    // OPTIONAL =======================================================================
-    // Component for loading history from the database (can be hook-like does not have to render anything)
-    LoadHistoryComponent,
-    // Function to load sequences from url parameters
-    loadSequenceFromUrlParams,
-    // Function to get the name of a primer from the database
-    getPrimerName,
-  };
-}
+export default {
+  // Name of the database interface
+  name: 'eLabFTW',
+  // Returns a link to the sequence in the database
+  getSequenceLink: (databaseId) => `${baseUrl}/database.php?mode=view&id=${databaseId}`,
+  // Returns a link to the primer in the database
+  getPrimerLink: (databaseId) => `${baseUrl}/database.php?mode=view&id=${databaseId}`,
+  // Component for selecting and loading sequence files from the database
+  GetSequenceFileAndDatabaseIdComponent,
+  // Component for selecting and loading primers from the database
+  GetPrimerComponent,
+  // Component for submitting resources to the database
+  SubmitToDatabaseComponent,
+  // Component for handling primers not yet in database
+  PrimersNotInDabaseComponent,
+  // Function to submit a primer to the database
+  submitPrimerToDatabase,
+  // Function to submit a sequence and its history to the database
+  submitSequenceToDatabase,
+  // Function to validate submission data
+  isSubmissionDataValid,
+  // Icon displayed on the node corner to submit
+  SubmitIcon: SaveIcon,
+  // Icon displayed on the node corner for entities in the database
+  DatabaseIcon: LinkIcon,
+  // OPTIONAL =======================================================================
+  // Component for loading history from the database (can be hook-like does not have to render anything)
+  LoadHistoryComponent,
+  // Function to load sequences from url parameters
+  loadSequenceFromUrlParams,
+  // Function to get the name of a primer from the database
+  getPrimerName,
+};
