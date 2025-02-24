@@ -5,7 +5,7 @@ import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseI
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-import { baseUrl, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders } from './common';
+import { baseUrl, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders, readHeaders } from './common';
 import LoadHistoryComponent from './LoadHistoryComponent';
 
 const linkToParent = async (childId, parentId) => {
@@ -129,6 +129,12 @@ async function loadSequenceFromUrlParams(urlParams) {
   return null;
 }
 
+async function getPrimerName(databaseId) {
+  const url = `${baseUrl}/api/v2/items/${databaseId}`;
+  const resp = await axios.get(url, { headers: readHeaders });
+  return resp.data.title;
+}
+
 export default function eLabFTWInterface() {
   return {
     // Name of the database interface
@@ -160,5 +166,7 @@ export default function eLabFTWInterface() {
     LoadHistoryComponent,
     // Function to load sequences from url parameters
     loadSequenceFromUrlParams,
+    // Function to get the name of a primer from the database
+    getPrimerName,
   };
 }

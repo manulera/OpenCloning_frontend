@@ -5,6 +5,7 @@ import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
 import { cloningActions } from '../store/cloning';
 import { mergeStates, shiftState } from '../utils/thunks';
 import { graftState } from '../utils/network';
+import useDatabase from './useDatabase';
 
 const { deleteSourceAndItsChildren, setState: setCloningState } = cloningActions;
 
@@ -12,9 +13,10 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
   const dispatch = useDispatch();
   const validateState = useValidateState();
   const store = useStore();
+  const database = useDatabase();
 
   const loadDatabaseFile = async (file, databaseId, ancestors = false) => {
-    if (file.name.endsWith('.zip') || file.name.endsWith('.json')) {
+    if (file.name.endsWith('.json')) {
       let cloningStrategy;
       try {
         ({ cloningStrategy } = await loadHistoryFile(file));
@@ -37,6 +39,16 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
         setHistoryFileError(e.message);
         return;
       }
+      // Get primer names (in case they have changed with respect to what was in the file)
+      const primerDatabaseIds = cloningStrategy.primers.filter((p) => p.database_id).map((p) => p.database_id);
+      const primerNames = await Promise.all(primerDatabaseIds.map(database.getPrimerName));
+      primerDatabaseIds.forEach((id, index) => {
+        const primer = cloningStrategy.primers.find((p) => p.database_id === id);
+        if (primer) {
+          primer.name = primerNames[index];
+        }
+      });
+
       batch(() => {
         const prevState = store.getState().cloning;
         // Replace the source with the new one if called from a source
