@@ -137,6 +137,14 @@ CYPRESS_NO_COMMAND_LOG=1 yarn cypress run --spec cypress/e2e/source_genome_regio
 
 The API keys should be in the ignored file `.env.development.local`
 
+Example file:
+
+```bash
+VITE_ELABFTW_BASE_URL=https://localhost
+VITE_ELABFTW_API_READ_KEY=<key>
+VITE_ELABFTW_API_WRITE_KEY=<key>
+```
+
 ### Running scripts
 
 > There is probably a better way to do this, but this is what I have found for now.
