@@ -19,6 +19,7 @@ function App() {
   const { addAlert } = useAlerts();
   const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null, setHistoryFileError });
+  const [urlLoaded, setUrlLoaded] = React.useState(false);
 
   React.useEffect(() => {
     async function loadSequenceFromUrlParams() {
@@ -26,12 +27,11 @@ function App() {
         return;
       }
       const urlParams = getUrlParameters();
-      if (urlParams.source === 'database') {
+      if (!urlLoaded && urlParams.source === 'database') {
+        setUrlLoaded(true);
         try {
           const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
           loadDatabaseFile(file, databaseId);
-          // Clear URL parameters after successful loading
-          window.history.replaceState({}, document.title, window.location.pathname);
         } catch (error) {
           addAlert({
             message: 'Error loading sequence from URL parameters',
