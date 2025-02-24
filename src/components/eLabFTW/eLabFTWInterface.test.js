@@ -39,6 +39,8 @@ function getScenario(method, url, data, config) {
     && JSON.stringify(s.config) === JSON.stringify(config)
   ));
   if (index === -1) {
+    // reset the mocked scenarios to not fail the afterEach
+    mockedScenarios = [];
     throw new Error(`Scenario not found: ${JSON.stringify({ method, url, data, config }, null, 2)}`);
   }
   return mockedScenarios.splice(index, 1)[0];
