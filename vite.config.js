@@ -7,8 +7,17 @@ import fs from 'fs';
 import istanbul from 'vite-plugin-istanbul';
 
 export default ({ mode }) => {
-  const configFileName = mode === 'production' ? 'config.prod.json' : 'config.dev.json';
   const env = loadEnv(mode, process.cwd());
+
+  // Determine the config file to use based on the mode and the presence of the ELABFTW API read key
+  let configFileName;
+  if (mode === 'production') {
+    configFileName = 'config.prod.json';
+  } else if (mode === 'development' && env.VITE_ELABFTW_API_READ_KEY) {
+    configFileName = 'config.elabftw.json';
+  } else {
+    configFileName = 'config.dev.json';
+  }
 
   return {
     logLevel: env.VITE_LOG_LEVEL,
