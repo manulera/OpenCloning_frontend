@@ -78,8 +78,15 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
               });
             } else if (resourceType === 'sequence') {
               const substate = getSubState(store.getState(), id, true);
-              const { databaseId, primerMappings } = await database.submitSequenceToDatabase({ submissionData, substate, id });
-
+              let databaseId;
+              let primerMappings;
+              try {
+                ({ databaseId, primerMappings } = await database.submitSequenceToDatabase({ submissionData, substate, id }));
+              } catch (error) {
+                console.log(error.message);
+                setErrorMessage(error.message);
+                return;
+              }
               batch(() => {
                 primerMappings.forEach((mapping) => dispatch(cloningActions.addDatabaseIdToPrimer(mapping)));
                 dispatch(cloningActions.addDatabaseIdToEntity({ databaseId, id }));
@@ -102,7 +109,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
       <DialogContent>
         <database.SubmitToDatabaseComponent id={id} submissionData={submissionData} setSubmissionData={setSubmissionData} resourceType={resourceType} />
         {resourceType === 'sequence' && <database.PrimersNotInDabaseComponent id={id} submissionData={submissionData} setSubmissionData={setSubmissionData} />}
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        {errorMessage && <Alert sx={{ marginTop: 2 }} severity="error">{errorMessage}</Alert>}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>

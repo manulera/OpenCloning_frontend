@@ -8,6 +8,26 @@ import GetPrimerComponent from './GetPrimerComponent';
 import { baseUrl, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders, readHeaders } from './common';
 import LoadHistoryComponent from './LoadHistoryComponent';
 
+function error2String(error) {
+  if (error.code === 'ERR_NETWORK') { return 'Network error: Cannot connect to eLabFTW'; }
+  if (!error.code) {
+    return 'Internal error, please contact the developers.';
+  }
+  const { description } = error.response.data;
+  if (error.response.status === 500) return 'Internal server error';
+  if (typeof description === 'string') {
+    return description;
+  }
+  return 'Request error, please contact the developers.';
+}
+
+async function deleteResource(resourceId) {
+  const url = `${baseUrl}/api/v2/items/${resourceId}`;
+  // eLabFTW requires application/json for delete requests, axios seems to require a data field for it to work
+  const resp = await axios.delete(url, { data: {}, headers: { ...writeHeaders, 'Content-Type': 'application/json' } });
+  return resp.data;
+}
+
 const linkToParent = async (childId, parentId) => {
   await axios.post(
     `${baseUrl}/api/v2/items/${childId}/items_links/${parentId}`,
@@ -35,12 +55,30 @@ const patchResource = async (resourceId, title, metadata = undefined) => axios.p
 );
 
 async function submitPrimerToDatabase({ submissionData: { title, categoryId }, primer, linkedSequenceId = null }) {
-  const resourceId = await createResource(categoryId);
+  let resourceId;
+  try {
+    resourceId = await createResource(categoryId);
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Error creating primer: ${error2String(e)}`);
+  }
   const metadata = JSON.stringify({ extra_fields: { sequence: { type: 'text', value: primer.sequence, group_id: null } } });
-  await patchResource(resourceId, title, metadata);
-  // If the primer is linked to a sequence, link the primer to the sequence
-  if (linkedSequenceId) {
-    await linkToParent(linkedSequenceId, resourceId);
+  let stage;
+  try {
+    stage = 'naming primer';
+    await patchResource(resourceId, title, metadata);
+    if (linkedSequenceId) {
+      await linkToParent(linkedSequenceId, resourceId);
+    }
+  } catch (e) {
+    console.error(e);
+    try {
+      await deleteResource(resourceId);
+    } catch (e2) {
+      console.error(e2);
+      throw new Error(`There was an error (${error2String(e2)}) while trying to delete primer after an error ${stage}`);
+    }
+    throw new Error(`Error ${stage}: ${error2String(e)}`);
   }
   return resourceId;
 }
@@ -85,32 +123,58 @@ async function submitSequenceToDatabase({ submissionData: { title, sequenceCateg
   }
 
   // Create and name the resource
-  const resourceId = await createResource(sequenceCategoryId);
-  await patchResource(resourceId, title);
+  let resourceId;
+  let newPrimerDatabaseIds;
+  try {
+    resourceId = await createResource(sequenceCategoryId);
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Error creating resource: ${error2String(e)}`);
+  }
+  let stage;
+  try {
+    // Patch the resource with the title
+    stage = 'setting resource title';
+    await patchResource(resourceId, title);
 
-  // Add the links to parent Resources
-  await Promise.all(parentResourceIds.map((parentId) => linkToParent(resourceId, parentId)));
+    // Add the links to parent Resources
+    stage = 'linking to parent resources';
+    await Promise.all(parentResourceIds.map((parentId) => linkToParent(resourceId, parentId)));
 
-  // Add the links to the existing primers
-  await Promise.all(existingPrimersToLink.map((primerId) => linkToParent(resourceId, primerId)));
+    // Add the links to the existing primers
+    stage = 'linking to existing primers';
+    await Promise.all(existingPrimersToLink.map((primerId) => linkToParent(resourceId, primerId)));
 
-  // Add the new primers to the database and link them to the resource
-  const newPrimerDatabaseIds = await Promise.all(newPrimersToSave.map((primer) => submitPrimerToDatabase({ submissionData: { title: primer.name, categoryId: primerCategoryId }, primer, linkedSequenceId: resourceId })));
-  const primerMappings = newPrimerDatabaseIds.map((databaseId, index) => ({ databaseId, localId: newPrimersToSave[index].id }));
+    // Add the new primers to the database and link them to the resource
+    stage = 'submitting new primers';
+    newPrimerDatabaseIds = await Promise.all(newPrimersToSave.map((primer) => submitPrimerToDatabase({ submissionData: { title: primer.name, categoryId: primerCategoryId }, primer, linkedSequenceId: resourceId })));
+    const primerMappings = newPrimerDatabaseIds.map((databaseId, index) => ({ databaseId, localId: newPrimersToSave[index].id }));
 
-  // Deep-copy primers and update the primers with the database IDs before storing the history
-  const primersCopy = primers.map((p) => ({ ...p }));
-  primerMappings.forEach(({ databaseId: dbId, localId }) => {
-    primersCopy.find((p) => p.id === localId).database_id = dbId;
-  });
+    // Deep-copy primers and update the primers with the database IDs before storing the history
+    const primersCopy = primers.map((p) => ({ ...p }));
+    primerMappings.forEach(({ databaseId: dbId, localId }) => {
+      primersCopy.find((p) => p.id === localId).database_id = dbId;
+    });
 
-  // Add the sequence and history files to the resource
-  await uploadTextFileToResource(resourceId, `${title}.gb`, entity2export.file_content, 'resource sequence - generated by OpenCloning');
-  await uploadTextFileToResource(resourceId, `${title}_history.json`, JSON.stringify({ sources, primers: primersCopy, sequences: entities }), 'history file - generated by OpenCloning');
-
-  // Format output values
-  const databaseId = resourceId;
-  return { primerMappings, databaseId };
+    // Add the sequence and history files to the resource
+    stage = 'uploading sequence file';
+    await uploadTextFileToResource(resourceId, `${title}.gb`, entity2export.file_content, 'resource sequence - generated by OpenCloning');
+    stage = 'uploading history file';
+    await uploadTextFileToResource(resourceId, `${title}_history.json`, JSON.stringify({ sources, primers: primersCopy, sequences: entities }), 'history file - generated by OpenCloning');
+    // Format output values
+    const databaseId = resourceId;
+    return { primerMappings, databaseId };
+  } catch (e) {
+    console.error(e);
+    try {
+      await deleteResource(resourceId);
+      await Promise.all(newPrimerDatabaseIds.map(deleteResource));
+    } catch (e2) {
+      console.error(e2);
+      throw new Error(`There was an error (${error2String(e2)}) while trying to delete the sequence after an error ${stage}`);
+    }
+    throw new Error(`Error ${stage}: ${error2String(e)}`);
+  }
 }
 
 function isSubmissionDataValid(submissionData) {
