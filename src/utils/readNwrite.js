@@ -196,8 +196,6 @@ export async function loadHistoryFile(file) {
     const stateFileNames = newCloningStrategy.files.map((f) => `verification-${f.sequence_id}-${f.file_name}`);
     const verificationFileNames = verificationFiles.map((f) => f.name);
 
-    console.log(stateFileNames, verificationFileNames);
-
     const missingFile = stateFileNames.find((name) => !verificationFileNames.includes(name));
     if (missingFile) {
       throw new Error(`File ${missingFile} not found in zip.`);

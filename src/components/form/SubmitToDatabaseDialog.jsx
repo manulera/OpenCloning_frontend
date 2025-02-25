@@ -83,7 +83,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
               try {
                 ({ databaseId, primerMappings } = await database.submitSequenceToDatabase({ submissionData, substate, id }));
               } catch (error) {
-                console.log(error.message);
+                console.error(error.message);
                 setErrorMessage(error.message);
                 return;
               }
