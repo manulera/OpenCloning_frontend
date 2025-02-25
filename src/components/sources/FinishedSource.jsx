@@ -1,10 +1,50 @@
 import React from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
-import { Button } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { Alert, Button } from '@mui/material';
+import { isEqual } from 'lodash-es';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
+import useDatabase from '../../hooks/useDatabase';
+import useLoadDatabaseFile from '../../hooks/useLoadDatabaseFile';
 
-// TODO refactor this to use common part
+function DatabaseMessage({ source }) {
+  const [loadingHistory, setLoadingHistory] = React.useState(false);
+  const database = useDatabase();
+  const handleClose = React.useCallback(() => setLoadingHistory(false), [setLoadingHistory]);
+  const [historyFileError, setHistoryFileError] = React.useState(null);
+  const { loadDatabaseFile } = useLoadDatabaseFile({ source, setHistoryFileError });
+  const { LoadHistoryComponent } = database;
+  return (
+    <>
+      <div>
+        Imported from
+        {' '}
+        <a target="_blank" rel="noopener noreferrer" href={database.getSequenceLink(source.database_id)}>{database.name}</a>
+      </div>
+      {/* If the database interface has a LoadHistoryComponent, show a button to load the history */}
+      {LoadHistoryComponent && (
+      <>
+        {!loadingHistory && (
+        <div>
+          <Button sx={{ marginTop: 2 }} variant="contained" color="primary" onClick={() => setLoadingHistory(true)}>
+            Load history
+          </Button>
+        </div>
+        )}
+        {loadingHistory && (
+          <>
+            <div>
+              <LoadHistoryComponent loadDatabaseFile={loadDatabaseFile} handleClose={handleClose} databaseId={source.database_id} />
+            </div>
+            {historyFileError && <Alert sx={{ marginTop: 2 }} severity="error">{historyFileError}</Alert>}
+          </>
+        )}
+
+      </>
+      )}
+    </>
+  );
+}
 
 function EuroscarfMessage({ source }) {
   const { repository_id: repositoryId } = source;
@@ -24,7 +64,6 @@ function EuroscarfMessage({ source }) {
 }
 
 function WekWikGeneMessage({ source }) {
-  console.log(source);
   const { repository_id: repositoryId } = source;
   return (
     <>
@@ -166,11 +205,11 @@ function SEVAPlasmidMessage({ source }) {
 }
 
 function FinishedSource({ sourceId }) {
-  const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), shallowEqual);
-  const primers = useSelector((state) => state.cloning.primers, shallowEqual);
+  const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
+  const primers = useSelector((state) => state.cloning.primers, isEqual);
   let message = '';
   switch (source.type) {
-    case 'UploadedFileSource': message = `Read from uploaded file ${source.file_name}`; break;
+    case 'UploadedFileSource': message = `Read from file ${source.file_name}`; break;
     case 'ManuallyTypedSource': message = 'Manually typed sequence'; break;
     case 'LigationSource': message = (source.input.length === 1) ? 'Circularization of fragment' : 'Ligation of fragments'; break;
     case 'GibsonAssemblySource': message = 'Gibson assembly of fragments'; break;
@@ -255,25 +294,18 @@ function FinishedSource({ sourceId }) {
       );
       break;
     case 'PolymeraseExtensionSource': message = 'Polymerase extension'; break;
-    case 'ELabFTWFileSource':
-      message = (
-        <>
-          Read from file
-          {' '}
-          <a target="_blank" rel="noopener noreferrer" href={`https://elab.local:3148/database.php?mode=view&id=${source.item_id}`}>{source.file_name}</a>
-          {' '}
-          from eLabFTW
-        </>
-      );
-      break;
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
     case 'IGEMSource': message = <IGEMMessage source={source} />; break;
     case 'ReverseComplementSource': message = 'Reverse complement'; break;
     case 'SEVASource': message = <SEVAPlasmidMessage source={source} />; break;
+    case 'DatabaseSource': message = <DatabaseMessage source={source} />; break;
     default: message = '';
   }
   return (
-    <div className="finished-source">{message}</div>
+    <div className="finished-source">
+      <div />
+      {message}
+    </div>
   );
 }
 

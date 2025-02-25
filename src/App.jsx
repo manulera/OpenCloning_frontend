@@ -2,13 +2,47 @@ import React from 'react';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import { isEqual } from 'lodash-es';
 import MainAppBar from './components/navigation/MainAppBar';
 import OpenCloning from './components/OpenCloning';
 import { cloningActions } from './store/cloning';
+import useDatabase from './hooks/useDatabase';
+import { getUrlParameters } from './utils/other';
+import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
+import useAlerts from './hooks/useAlerts';
+
+const { setConfig, setKnownErrors } = cloningActions;
 
 function App() {
   const dispatch = useDispatch();
-  const { setConfig, setKnownErrors } = cloningActions;
+  const database = useDatabase();
+  const { addAlert } = useAlerts();
+  const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
+  const { loadDatabaseFile } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null, setHistoryFileError });
+  const [urlLoaded, setUrlLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    async function loadSequenceFromUrlParams() {
+      if (!database) {
+        return;
+      }
+      const urlParams = getUrlParameters();
+      if (!urlLoaded && urlParams.source === 'database') {
+        setUrlLoaded(true);
+        try {
+          const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
+          loadDatabaseFile(file, databaseId);
+        } catch (error) {
+          addAlert({
+            message: 'Error loading sequence from URL parameters',
+            severity: 'error',
+          });
+          console.error(error);
+        }
+      }
+    }
+    loadSequenceFromUrlParams();
+  }, [database]);
 
   React.useEffect(() => {
     // Load application configuration
@@ -25,18 +59,20 @@ function App() {
     sessionStorage.clear();
   }, []);
 
-  const stateLoaded = useSelector((state) => state.cloning.config.loaded);
+  const [stateLoaded, showAppBar] = useSelector((state) => [state.cloning.config.loaded, state.cloning.config.showAppBar], isEqual);
 
   if (!stateLoaded) {
     return <div className="loading-state-message">Loading...</div>;
   }
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="app-title">
-          <MainAppBar />
-        </div>
-      </header>
+      {showAppBar && (
+        <header className="App-header">
+          <div className="app-title">
+            <MainAppBar />
+          </div>
+        </header>
+      )}
       <OpenCloning />
     </div>
   );

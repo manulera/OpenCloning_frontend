@@ -11,7 +11,7 @@ import SourceHomologousRecombination from './SourceHomologousRecombination';
 import SourceGenomeRegion from './SourceGenomeRegion';
 import SourceManuallyTyped from './SourceManuallyTyped';
 import SourceAnnotation from './SourceAnnotation';
-import ELabFTWSource from './ELabFTWSource';
+import SourceDatabase from './SourceDatabase';
 import SourcePolymeraseExtension from './SourcePolymeraseExtension';
 import CollectionSource from './CollectionSource';
 import KnownSourceErrors from './KnownSourceErrors';
@@ -86,8 +86,8 @@ function Source({ sourceId }) {
       specificSource = <SourcePCRorHybridization {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'PolymeraseExtensionSource':
       specificSource = <SourcePolymeraseExtension {...{ source, requestStatus, sendPostRequest }} />; break;
-    case 'elabftw':
-      specificSource = <ELabFTWSource {...{ source, requestStatus, sendPostRequest }} />; break;
+    case 'DatabaseSource':
+      specificSource = <SourceDatabase {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CollectionSource':
       specificSource = <CollectionSource {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CopyEntity':

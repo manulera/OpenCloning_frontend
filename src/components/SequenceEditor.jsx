@@ -17,13 +17,24 @@ const transformToRegion = (eventOutput) => {
   return { selectionLayer: { start: eventOutput.start, end: eventOutput.end }, caretPosition: -1 };
 };
 
-function SequenceEditor({ entityId }) {
+function AddSourceComponent({ entityId }) {
   const isRootNode = useSelector((state) => !state.cloning.sources.some((source) => source.input.includes(entityId)));
+  return isRootNode ? (
+    <div className="hang-from-node">
+      <div>
+        <NewSourceBox {...{ inputEntitiesIds: [entityId] }} />
+      </div>
+    </div>
+  ) : null;
+}
+
+function SequenceEditor({ entityId }) {
   const editorName = `editor_${entityId}`;
   const entity = useSelector((state) => state.cloning.entities.find((e) => e.id === entityId), isEqual);
   const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, entityId), isEqual);
   const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, entityId), isEqual);
-  const seq = { ...useSelector((state) => state.cloning.teselaJsonCache[entityId], isEqual) };
+  const unmutableSeq = useSelector((state) => state.cloning.teselaJsonCache[entityId], isEqual);
+  const seq = { ...unmutableSeq };
 
   // Make a copy
   const seqCopy = React.useMemo(() => structuredClone(seq), [seq]);
@@ -86,14 +97,6 @@ function SequenceEditor({ entityId }) {
     }
   };
 
-  const addSourceButton = !isRootNode ? null : (
-    <div className="hang-from-node">
-      <div>
-        <NewSourceBox {...{ inputEntitiesIds: [entityId] }} />
-      </div>
-    </div>
-  );
-
   return (
     <div>
       <SimpleCircularOrLinearView {...{
@@ -110,7 +113,7 @@ function SequenceEditor({ entityId }) {
       }}
       />
       <OverhangsDisplay {...{ sequenceData: seq, entity }} />
-      {addSourceButton}
+      <AddSourceComponent {...{ entityId }} />
     </div>
   );
 }

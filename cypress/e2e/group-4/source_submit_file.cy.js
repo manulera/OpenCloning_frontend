@@ -1,4 +1,4 @@
-import { addLane, addSource, clickMultiSelectOption} from '../common_functions';
+import { addLane, addSource, clickMultiSelectOption } from '../common_functions';
 
 describe('File Source', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('File Source', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how
     cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('public/examples/ase1.gb', { force: true });
     cy.get('li#sequence-2', { timeout: 20000 }).contains('CU329670');
-    cy.get('li#sequence-2 li#source-1').contains('Read from uploaded file ase1.gb');
+    cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb');
   });
   it('gives the right error when file has a wrong extension', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how

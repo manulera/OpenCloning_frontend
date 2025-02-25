@@ -18,7 +18,6 @@ jobs:
         run: |
           echo "backend_sha=$(git rev-parse @:OpenCloning_backend)" >> $GITHUB_OUTPUT
 
-
   check-cache:
     runs-on: ubuntu-latest
     needs: get-backend-sha
@@ -40,7 +39,6 @@ jobs:
         with:
           path: .venv
           key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
-
 
   install-python-dependencies:
     needs: [check-cache, get-backend-sha]
@@ -79,7 +77,6 @@ jobs:
           path: .venv
           key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
 
-
   install-frontend-dependencies:
     runs-on: ubuntu-latest
     steps:
@@ -99,23 +96,26 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '18.18'
+          node-version: "18.18"
 
       - name: Install frontend dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: corepack enable && yarn install
 
-
   cypress-tests:
     name: Run Cypress tests
-    needs: [install-python-dependencies, install-frontend-dependencies, get-backend-sha]
+    needs:
+      [
+        install-python-dependencies,
+        install-frontend-dependencies,
+        get-backend-sha,
+      ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4,  "component"]
+        group: [1, 2, 3, 4, "component"]
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -274,7 +274,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: manulera/opencloningfrontend:latest-oc-base
+          tags: manulera/opencloningfrontend:latest-baseurl-opencloning
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_URL=/opencloning/

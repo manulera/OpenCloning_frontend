@@ -3,7 +3,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { Alert, Button, FormControl } from '@mui/material';
 
-export default function PostRequestSelect({ setValue, getOptions, getOptionLabel, isOptionEqualToValue, textLabel, disableFiltering = true }) {
+export default function PostRequestSelect({ setValue, getOptions, getOptionLabel, isOptionEqualToValue, textLabel, disableFiltering = true, ...rest }) {
   // The reason for disableFiltering is that we allow the server to filter the options,
   // and whatever matches may not end up in the option label. For instance, when querying
   // for species, we show the species name + id, but it may be that something else matches
@@ -41,6 +41,8 @@ export default function PostRequestSelect({ setValue, getOptions, getOptionLabel
     // Reset the value when the component is re-rendered at the same position
     // with different functions
     setUserInput('');
+    setOptions([]);
+    setNoOptionsText('');
   }, [setValue, getOptions, getOptionLabel, isOptionEqualToValue, textLabel]);
 
   if (error) {
@@ -60,7 +62,7 @@ export default function PostRequestSelect({ setValue, getOptions, getOptionLabel
   }
 
   return (
-    <FormControl fullWidth>
+    <FormControl {...rest}>
       <Autocomplete
         onChange={(event, value) => { setValue(value); setUserInput(getOptionLabel(value)); }}
         // Change options only when input changes (not when an option is picked)

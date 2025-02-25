@@ -1,15 +1,15 @@
 import React from 'react';
 import FormHelperText from '@mui/material/FormHelperText';
 import { Alert, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material';
-import { useDispatch, batch } from 'react-redux';
+import { useDispatch, batch, useStore } from 'react-redux';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import LabelWithTooltip from '../form/LabelWithTooltip';
 import { cloningActions } from '../../store/cloning';
-import { loadHistoryFile } from '../../utils/readNwrite';
+import { loadFilesToSessionStorage, loadHistoryFile } from '../../utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
-import { mergeStateThunk } from '../../utils/thunks';
+import { mergeStates } from '../../utils/thunks';
 
-const { deleteSourceAndItsChildren, restoreSource } = cloningActions;
+const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 
 // A component providing an interface to import a file
 function SourceFile({ source, requestStatus, sendPostRequest }) {
@@ -19,6 +19,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
   const [alert, setAlert] = React.useState(null);
   const dispatch = useDispatch();
   const validateState = useValidateState();
+  const store = useStore();
 
   const onChange = async (event) => {
     setAlert(null);
@@ -43,11 +44,14 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         setAlert({ message: e.message, severity: 'error' });
         return;
       }
-      batch(() => {
+      batch(async () => {
         // Replace the source with the new one
         dispatch(deleteSourceAndItsChildren(source.id));
         try {
-          dispatch(mergeStateThunk(cloningStrategy, false, verificationFiles));
+          const cloningState = store.getState().cloning;
+          const { mergedState, networkShift } = mergeStates(cloningStrategy, cloningState);
+          dispatch(setCloningState(mergedState));
+          await loadFilesToSessionStorage(verificationFiles, networkShift);
           validateState(cloningStrategy);
         } catch (e) {
           setAlert({ message: e.message, severity: 'error' });

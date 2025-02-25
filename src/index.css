@@ -19,7 +19,8 @@ li.hidden-ancestors {
 .app-container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 114px - 10px); /* Adjust based on your app bar height */
+    /* height: calc(100vh - 114px - 10px); - moved to component to depend on presence of appbar */
+    background-color: white;
 }
 
 .tab-panels-container {
@@ -38,6 +39,7 @@ li.hidden-ancestors {
     right: -1px;
     top: 1px;
     display: flex;
+    gap: .2em;
 }
 
 .overhang-representation {

@@ -10,3 +10,9 @@ export function escapeStringRegexp(string) {
     .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
     .replace(/-/g, '\\x2d');
 }
+
+export function getUrlParameters() {
+  const query = window.location.search;
+  const searchParams = new URLSearchParams(query);
+  return Object.fromEntries(searchParams.entries());
+}

@@ -5,7 +5,7 @@ import useAlerts from '../hooks/useAlerts';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useValidateState from '../hooks/useValidateState';
 import { cloningActions } from '../store/cloning';
-import { mergeStateThunk } from '../utils/thunks';
+import { mergeStates } from '../utils/thunks';
 import { loadFilesToSessionStorage, loadHistoryFile } from '../utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 
@@ -86,34 +86,33 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
           return;
         }
 
-        const replaceState = async () => {
-          try {
-            dispatch(setCloningState(cloningStrategy));
-            await loadFilesToSessionStorage(verificationFiles);
-            validateState(cloningStrategy);
-          } catch (e) {
-            addAlert({
-              message: 'Cloning strategy not valid',
-              severity: 'error',
-            });
-          }
+        const updateState = async (newState, networkShift) => {
+          dispatch(setCloningState(newState));
+          await loadFilesToSessionStorage(verificationFiles, networkShift);
+          validateState(newState);
         };
+
+        const replaceState = async () => {
+          await updateState(cloningStrategy, 0);
+        };
+
         const addState = async () => {
+          const { mergedState, networkShift } = mergeStates(cloningStrategy, cloningState);
+          await updateState(mergedState, networkShift);
+        };
+
+        const errorWrapper = (fn) => async () => {
           try {
-            dispatch(mergeStateThunk(cloningStrategy, false, verificationFiles));
-            validateState(cloningStrategy);
+            await fn();
           } catch (e) {
-            addAlert({
-              message: e.message,
-              severity: 'error',
-            });
+            addAlert({ message: e.message, severity: 'error' });
           }
         };
           // If there are no sequences in the cloning state, load the history file
         if (cloningState.entities.length === 0) {
-          replaceState();
+          errorWrapper(replaceState)();
         } else {
-          setFileLoaderFunctions({ addState, replaceState, clear: () => setFileLoaderFunctions(null) });
+          setFileLoaderFunctions({ addState: errorWrapper(addState), replaceState: errorWrapper(replaceState), clear: () => setFileLoaderFunctions(null) });
         }
         // If there are sequences in the cloning state, give the option to merge or replace
 
