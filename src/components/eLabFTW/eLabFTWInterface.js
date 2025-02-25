@@ -193,7 +193,19 @@ async function loadSequenceFromUrlParams(urlParams) {
   return null;
 }
 
-async function getPrimerName(databaseId) {
+async function getPrimer(databaseId) {
+  const url = `${baseUrl}/api/v2/items/${databaseId}`;
+  try {
+    const resp = await axios.get(url, { headers: readHeaders });
+    resp.data.metadata = JSON.parse(resp.data.metadata);
+    return { name: resp.data.title, database_id: databaseId, sequence: resp.data.metadata.extra_fields.sequence.value };
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Error getting primer with id ${databaseId}, it might have been deleted or you can no longer access it`);
+  }
+}
+
+async function getSequenceName(databaseId) {
   const url = `${baseUrl}/api/v2/items/${databaseId}`;
   const resp = await axios.get(url, { headers: readHeaders });
   return resp.data.title;
@@ -229,6 +241,8 @@ export default {
   LoadHistoryComponent,
   // Function to load sequences from url parameters
   loadSequenceFromUrlParams,
-  // Function to get the name of a primer from the database
-  getPrimerName,
+  // Function to get the primer ({name, database_id, sequence}) from the database
+  getPrimer,
+  // Function to get the name of a sequence from the database
+  getSequenceName,
 };

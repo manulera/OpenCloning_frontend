@@ -1,6 +1,7 @@
 import { batch, useDispatch, useStore } from 'react-redux';
+import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
-import { loadHistoryFile } from '../utils/readNwrite';
+import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
 import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
 import { cloningActions } from '../store/cloning';
 import { mergeStates, shiftState } from '../utils/thunks';
@@ -34,20 +35,38 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
           }
           return s;
         });
+
+        // Get primer names (in case they have changed with respect to what was in the file)
+        // and verify that the sequence of the primer in the database is the same as the sequence in the cloning strategy
+        const primerDatabaseIds = cloningStrategy.primers.filter((p) => p.database_id).map((p) => p.database_id);
+        const databasePrimers = await Promise.all(primerDatabaseIds.map(database.getPrimer));
+        databasePrimers.forEach((databasePrimer, index) => {
+          const primerInCloningStrategy = cloningStrategy.primers.find((p) => p.database_id === databasePrimer.database_id);
+          primerInCloningStrategy.name = databasePrimer.name;
+          if (primerInCloningStrategy.sequence !== databasePrimer.sequence) {
+            throw new Error(`The sequence of primer ${primerInCloningStrategy.name} (${primerInCloningStrategy.database_id}) conflicts with the sequence in the database`);
+          }
+        });
+
+        // Get the sequence name from the database and update the cloning strategy with it if it is different
+        await Promise.all(cloningStrategy.sources.filter((s) => s.database_id).map(async (cloningSource) => {
+          const seqDatabaseId = cloningSource.database_id;
+          const entity = cloningStrategy.entities.find((e) => e.id === cloningSource.output);
+          const seq = convertToTeselaJson(entity);
+          const databaseName = await database.getSequenceName(seqDatabaseId);
+          if (seq.name !== databaseName) {
+            seq.name = databaseName;
+            const genbank = jsonToGenbank(seq);
+            entity.file_content = genbank;
+            // Maybe this is unnecessary
+            cloningSource.output_name = databaseName;
+          }
+        }));
       } catch (e) {
         console.error(e);
         setHistoryFileError(e.message);
         return;
       }
-      // Get primer names (in case they have changed with respect to what was in the file)
-      const primerDatabaseIds = cloningStrategy.primers.filter((p) => p.database_id).map((p) => p.database_id);
-      const primerNames = await Promise.all(primerDatabaseIds.map(database.getPrimerName));
-      primerDatabaseIds.forEach((id, index) => {
-        const primer = cloningStrategy.primers.find((p) => p.database_id === id);
-        if (primer) {
-          primer.name = primerNames[index];
-        }
-      });
 
       batch(() => {
         const prevState = store.getState().cloning;
