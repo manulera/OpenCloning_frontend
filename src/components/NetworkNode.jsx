@@ -18,7 +18,7 @@ import SourceBox from './sources/SourceBox';
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
 const SequenceContent = React.memo(({ entityId, entityIsTemplate }) => {
-  const hasDatabaseId = useSelector((state) => getSourceDatabaseId(state.cloning.sources, entityId) !== undefined);
+  const hasDatabaseId = useSelector((state) => Boolean(getSourceDatabaseId(state.cloning.sources, entityId)));
   return (
     <span className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
       <span className="node-text">
@@ -58,7 +58,7 @@ function NetWorkNode({ sourceId }) {
     return {
       entityId,
       sourceInput: s.input,
-      hasDatabaseId: getSourceDatabaseId(state.cloning.sources, s.output) !== undefined,
+      hasDatabaseId: Boolean(getSourceDatabaseId(state.cloning.sources, s.output)),
       entityIsTemplate: entityId && state.cloning.entities.find((entity) => entity.id === entityId).type === 'TemplateSequence',
       sourceIsTemplate: isSourceATemplate(state.cloning, sourceId),
     };

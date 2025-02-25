@@ -273,6 +273,9 @@ const reducer = {
 
   setState(state, action) {
     const { sources, entities, primers, description, files } = action.payload;
+    if (!Array.isArray(sources) || !Array.isArray(entities)) {
+      throw new Error('Cloning strategy not valid: fields `sources` and `entities` should exist and be arrays');
+    }
     const ids = [...sources.map((s) => s.id), ...entities.map((e) => e.id)];
     // They should all be positive integers
     if (ids.some((id) => id < 1 || !Number.isInteger(id))) {

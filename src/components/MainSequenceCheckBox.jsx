@@ -28,7 +28,7 @@ function MainSequenceCheckBox({ id }) {
   const hasVerificationFiles = useSelector((state) => state.cloning.files.some((file) => file.sequence_id === id));
 
   const databaseId = useSelector((state) => getSourceDatabaseId(state.cloning.sources, id), isEqual);
-  const hasDatabaseId = databaseId !== undefined;
+  const hasDatabaseId = Boolean(databaseId);
   const toggleMain = () => {
     dispatch(setMainSequenceId(id));
     dispatch(setCurrentTab(3));

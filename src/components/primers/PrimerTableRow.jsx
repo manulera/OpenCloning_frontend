@@ -46,7 +46,7 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
             </IconButton>
           )}
         </Tooltip>
-        {!primer.database_id && (
+        {database && !primer.database_id && (
           <>
             <Tooltip arrow title={`Save to ${database.name}`} placement="top">
               <IconButton onClick={() => setSaveToDatabaseDialogOpen(true)}>

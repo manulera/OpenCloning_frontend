@@ -1,4 +1,4 @@
-import { loadExample, skipNcbiCheck, addPrimer, changeTab } from '../common_functions';
+import { loadExample, addPrimer, changeTab } from '../common_functions';
 
 describe('Tests primer functionality', () => {
   beforeEach(() => {
@@ -230,7 +230,7 @@ describe('Tests primer functionality', () => {
     cy.get('.primer-table-container tr').contains('fwd').should('exist');
     cy.get('.primer-table-container tr').contains('gatctcgccataaaagacag').should('exist');
   });
-  it('Can import primers from tsv file', () => {
+  it('Can import primers from tsv or csv file', () => {
     cy.get('.primer-form-container').contains('Import from file').click();
     cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/valid.tsv', { force: true });
     // There should be a table with the primers displayed
@@ -256,7 +256,7 @@ describe('Tests primer functionality', () => {
     // Import wrong file should show error
     cy.get('.primer-form-container').contains('Import from file').click();
     cy.get('.primer-form-container input').selectFile('cypress/test_files/wrong_extension.txt', { force: true });
-    cy.get('#global-error-message-wrapper').contains('Headers should have').should('exist');
+    cy.get('#global-error-message-wrapper').contains('File must be a .csv or .tsv file').should('exist');
     // Close the error
     cy.get('#global-error-message-wrapper button').click();
 
@@ -288,9 +288,18 @@ describe('Tests primer functionality', () => {
     cy.get('.import-primers-modal-content button').contains('Import').click();
     cy.get('.primer-table-container tr').contains('good_oligo2').should('exist');
 
-    // Should fail with csv file
+    // Should work with csv file
     cy.get('.primer-form-container').contains('Import from file').click();
     cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/valid.csv', { force: true });
-    cy.get('#global-error-message-wrapper').contains('Headers should have').should('exist');
+    cy.get('.import-primers-modal-content').should('exist');
+    cy.get('.import-primers-modal-content tbody tr').should('have.length', 2);
+    cy.get('.import-primers-modal-content [data-testid="CheckCircleIcon"]').should('have.length', 2);
+    cy.get('.import-primers-modal-content tbody tr').eq(0).contains('oligo3');
+    cy.get('.import-primers-modal-content tbody tr').eq(0).contains('cagctagctac');
+    cy.get('.import-primers-modal-content tbody tr').eq(1).contains('oligo4');
+    cy.get('.import-primers-modal-content tbody tr').eq(1).contains('cggttagct');
+    cy.get('.import-primers-modal-content button').contains('Import').click();
+    cy.get('.primer-table-container tr').contains('oligo1').should('exist');
+    cy.get('.primer-table-container tr').contains('oligo2').should('exist');
   });
 });
