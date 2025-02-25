@@ -1,13 +1,18 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import React from 'react';
 import axios from 'axios';
 import { baseUrl, getFileFromELabFTW, readHeaders } from './common';
+import RetryAlert from '../form/RetryAlert';
 
 function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
   const url = `${baseUrl}/api/v2/items/${databaseId}`;
-
+  const [error, setError] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [retry, setRetry] = React.useState(0);
   React.useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const response = await axios.get(url, { headers: readHeaders });
         const { uploads } = response.data;
@@ -15,16 +20,28 @@ function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
         if (historyFiles.length === 1) {
           const file = await getFileFromELabFTW(databaseId, historyFiles[0]);
           loadDatabaseFile(file, databaseId, true);
+        } else if (historyFiles.length > 1) {
+          setError('Multiple history files found for this ancestor sequence.');
+        } else {
+          setError('No history files found for this ancestor sequence.');
         }
-      } catch (error) {
-        console.error(error);
+        setLoading(false);
+      } catch (e) {
+        console.error(e);
+        if (e.response.status === 403) {
+          setError('Ancestor sequence might have been deleted or you can no longer access it');
+        }
+        setLoading(false);
       }
     };
     fetchData();
-  }, [url]);
+  }, [url, retry]);
   return (
     <div>
+      {loading && <CircularProgress />}
+      {error && <RetryAlert onRetry={() => setRetry((prev) => prev + 1)}>{error}</RetryAlert>}
       <Button onClick={handleClose}>Close</Button>
+
     </div>
   );
 }
