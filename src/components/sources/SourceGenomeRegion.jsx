@@ -59,7 +59,7 @@ function SpeciesPicker({ setSpecies, setAssemblyId }) {
     isOptionEqualToValue: (option, value) => option.tax_id === value.tax_id,
     textLabel: 'Species / taxon ID',
   }), []);
-  return (<PostRequestSelect {...speciesPostRequestSettings} />);
+  return (<PostRequestSelect {...speciesPostRequestSettings} fullWidth />);
 }
 
 function SequenceAccessionPicker({ assemblyAccesion, sequenceAccession, setSequenceAccession }) {
@@ -391,7 +391,7 @@ function SourceGenomeRegionSelectGene({ gene, upstreamBasesRef, downstreamBasesR
 
   return (
     <>
-      <PostRequestSelect {...genePostRequestSettings} />
+      <PostRequestSelect {...genePostRequestSettings} fullWidth />
       {error && (<Alert severity="error">{error}</Alert>)}
       {gene && (
       <>
