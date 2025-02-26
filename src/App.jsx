@@ -11,7 +11,7 @@ import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 
-const { setConfig, setKnownErrors } = cloningActions;
+const { setConfig, setKnownErrors, setState: setCloningState } = cloningActions;
 
 function App() {
   const dispatch = useDispatch();
@@ -23,21 +23,36 @@ function App() {
 
   React.useEffect(() => {
     async function loadSequenceFromUrlParams() {
-      if (!database) {
-        return;
-      }
       const urlParams = getUrlParameters();
-      if (!urlLoaded && urlParams.source === 'database') {
+      if (!urlLoaded) {
         setUrlLoaded(true);
-        try {
-          const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
-          loadDatabaseFile(file, databaseId);
-        } catch (error) {
-          addAlert({
-            message: 'Error loading sequence from URL parameters',
-            severity: 'error',
-          });
-          console.error(error);
+        if (urlParams.source === 'database') {
+          try {
+            if (!database) {
+              return;
+            }
+            const { file, databaseId } = await database.loadSequenceFromUrlParams(urlParams);
+            loadDatabaseFile(file, databaseId);
+          } catch (error) {
+            addAlert({
+              message: 'Error loading sequence from URL parameters',
+              severity: 'error',
+            });
+            console.error(error);
+          }
+        } else if (urlParams.source === 'example') {
+          try {
+            const { data } = await axios.get(`${import.meta.env.BASE_URL}examples/${urlParams.example}`);
+            const newState = { ...data, entities: data.sequences };
+            delete newState.sequences;
+            dispatch(setCloningState(newState));
+          } catch (error) {
+            addAlert({
+              message: 'Error loading example',
+              severity: 'error',
+            });
+            console.error(error);
+          }
         }
       }
     }
