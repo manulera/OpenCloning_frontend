@@ -5,9 +5,10 @@ import TabPanelSelectRoi from './TabPanelSelectRoi';
 import TabPannelSettings from './TabPannelSettings';
 import TabPanelResults from './TabPanelResults';
 import { usePrimerDesign } from './PrimerDesignContext';
+import TabPanelEBIC from './TabPanelEBIC';
 
 function PrimerDesignForm() {
-  const { steps, sequenceIds } = usePrimerDesign();
+  const { steps, sequenceIds, designType } = usePrimerDesign();
   return (
     <Box>
       <PrimerDesignStepper />
@@ -18,7 +19,8 @@ function PrimerDesignForm() {
           index={index}
         />
       ))}
-      <TabPannelSettings />
+      {designType !== 'ebic' && <TabPannelSettings />}
+      {designType === 'ebic' && <TabPanelEBIC />}
       <TabPanelResults />
     </Box>
   );
