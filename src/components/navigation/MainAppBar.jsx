@@ -16,7 +16,7 @@ import { downloadCloningStrategyAsSvg } from '../../utils/readNwrite';
 import SelectExampleDialog from './SelectExampleDialog';
 import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
-import MiscDialog from './MiscDialog';
+import QuickGenomeDialog from './QuickGenomeDialog';
 import { cloningActions } from '../../store/cloning';
 import useStoreEditor from '../../hooks/useStoreEditor';
 import useBackendRoute from '../../hooks/useBackendRoute';
@@ -33,7 +33,7 @@ function MainAppBar() {
   const [openExampleDialog, setOpenExampleDialog] = React.useState(false);
   const [openTemplateDialog, setOpenTemplateDialog] = React.useState(false);
   const [openFeedbackDialog, setOpenFeedbackDialog] = React.useState(false);
-  const [openMiscDialog, setOpenMiscDialog] = React.useState(false);
+  const [openQuickGenomeDialog, setOpenQuickGenomeDialog] = React.useState(false);
   const [openCloningStrategyDialog, setOpenCloningStrategyDialog] = React.useState(false);
   const [fileList, setFileList] = React.useState([]);
   const [openVersionDialog, setOpenVersionDialog] = React.useState(false);
@@ -55,6 +55,10 @@ function MainAppBar() {
         await dispatch(setCurrentTab(0));
         downloadCloningStrategyAsSvg('history.svg');
       } },
+  ];
+
+  const miscMenu = [
+    { display: 'Quick genome region download', onClick: () => setOpenQuickGenomeDialog(true) },
   ];
 
   const handleCloseDialog = async (url, isTemplate) => {
@@ -99,23 +103,18 @@ function MainAppBar() {
     event.target.value = '';
   };
 
-  // If you want to load a particular example on page load, you can do it here.
+  // If you want to do something on page load, you can do it here.
   React.useEffect(() => {
     const fetchExample = async () => {
-      // const { data } = await axios.get('examples/golden_gate.json');
-      // data.entities = data.sequences;
-      // dispatch(setCloningState(data));
-      // dispatch(setCurrentTab(3));
+      dispatch(setCurrentTab(3));
       // Wait for the primer designer to be rendered
-      // setTimeout(() => {
-      //   // Click on button that says Open primer designer
-      //   const primerDesignerButton = document.querySelector('.main-sequence-editor button');
-      //   if (primerDesignerButton) {
-      //     primerDesignerButton.click();
-      //   }
-      //   dispatch(setMainSequenceId(2));
-      //   updateStoreEditor('mainEditor', 2);
-      // }, 300);
+      setTimeout(() => {
+        // Click on button that says Open primer designer
+        const primerDesignerButton = document.querySelector('.main-sequence-editor button');
+        if (primerDesignerButton) {
+          primerDesignerButton.click();
+        }
+      }, 300);
     };
     fetchExample();
   }, []);
@@ -176,7 +175,11 @@ function MainAppBar() {
               <MenuItem onClick={() => { setOpenExampleDialog(true); handleMenuClose(); }}>Examples</MenuItem>
               <MenuItem onClick={() => { setOpenTemplateDialog(true); handleMenuClose(); }}>Templates</MenuItem>
               <MenuItem onClick={() => { setOpenFeedbackDialog(true); handleMenuClose(); }}>Feedback</MenuItem>
-              <MenuItem onClick={() => { setOpenMiscDialog(true); handleMenuClose(); }}>Misc</MenuItem>
+              {miscMenu.map((item) => (
+                <MenuItem key={item.display} onClick={() => { item.onClick(); handleMenuClose(); }}>
+                  {item.display}
+                </MenuItem>
+              ))}
             </Menu>
           </Box>
 
@@ -189,7 +192,7 @@ function MainAppBar() {
             <Button onClick={() => setOpenExampleDialog(true)}>Examples</Button>
             <Button onClick={() => setOpenTemplateDialog(true)}>Templates</Button>
             <Button onClick={() => setOpenFeedbackDialog(true)}>Feedback</Button>
-            <Button onClick={() => setOpenMiscDialog(true)}>Misc</Button>
+            <ButtonWithMenu menuItems={miscMenu}>Misc</ButtonWithMenu>
           </Box>
 
         </Toolbar>
@@ -199,7 +202,7 @@ function MainAppBar() {
       {openTemplateDialog && <SelectTemplateDialog onClose={handleCloseDialog} open={openTemplateDialog} />}
       <FeedbackDialog open={openFeedbackDialog} setOpen={setOpenFeedbackDialog} />
       {/* This one conditionally rendered since it uses hooks etc. */}
-      {openMiscDialog && <MiscDialog open={openMiscDialog} setOpen={setOpenMiscDialog} />}
+      {openQuickGenomeDialog && <QuickGenomeDialog open={openQuickGenomeDialog} setOpen={setOpenQuickGenomeDialog} />}
       {openCloningStrategyDialog && <DownloadCloningStrategyDialog open={openCloningStrategyDialog} setOpen={setOpenCloningStrategyDialog} />}
       <VersionDialog open={openVersionDialog} setOpen={setOpenVersionDialog} />
     </AppBar>

@@ -24,6 +24,7 @@ function PrimerDesigner() {
     dispatch(setMainSequenceId(templateSequencesIds[0]));
   };
 
+  console.log('finalSource', finalSource);
   // Nothing to design
   if (templateSequencesIds.length === 0) {
     return null;
@@ -53,6 +54,9 @@ function PrimerDesigner() {
   }
   if (finalSource?.type === 'GatewaySource' && otherInputIds.length === 1 && pcrSources.length === 1 && outputSequences[0].primer_design === 'gateway_bp') {
     component = <PrimerDesignGatewayBP donorVectorId={otherInputIds[0]} pcrSource={pcrSources[0]} />;
+  }
+  if (finalSource?.type === 'RestrictionAndLigationSource') {
+    component = 'hello';
   }
   return (
     <>
