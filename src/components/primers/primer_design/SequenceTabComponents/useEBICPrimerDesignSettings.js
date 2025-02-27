@@ -12,8 +12,8 @@ const getError = (s) => {
 
 export default function useEBICPrimerDesignSettings() {
   const [settings, setSettings] = React.useState({
-    max_inside: 30,
-    max_outside: 70,
+    max_inside: 50,
+    max_outside: 20,
   });
   const [error, setError] = React.useState(getError(settings));
   const updateSettings = (newSettings) => {
