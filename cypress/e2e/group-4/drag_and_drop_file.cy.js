@@ -65,15 +65,21 @@ describe('Test drag and drop functionality', () => {
     // Newly loaded
     cy.get('div.cloning-tab-pannel').contains('Homologous recombination');
 
-    // Cannot load one with the same primer names again
-
+    // Can load one with the same primer names again as long as they have the same sequence as well
     cy.get('div.cloning-history').selectFile('public/examples/homologous_recombination.json', { action: 'drag-drop', force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
+    cy.get('div.cloning-tab-pannel div.finished-source').filter(':contains("Homologous recombination")').should('have.length', 2);
+
+    // Error if two primers have the same name but different sequence
+    cy.get('div.cloning-history').selectFile('cypress/test_files/primer_same_name_different_sequence.json', { action: 'drag-drop', force: true });
+    cy.get('.history-loaded-dialog').contains('Add to existing').click();
+    cy.get('.history-loaded-dialog button').contains('Select').click();
+
     // Shows error and does not load them again
-    cy.get('.MuiAlert-message').contains('Primer name from loaded file exists in current session').should('exist');
-    cy.get('div.cloning-tab-pannel').filter(':contains("Homologous recombination")').should('have.length', 1);
+    cy.get('.MuiAlert-message').contains('Primer name fwd exists in current').should('exist');
+    cy.get('div.cloning-tab-pannel div.finished-source').filter(':contains("Homologous recombination")').should('have.length', 2);
 
     // Can replace the history
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/crispr_hdr.json', { force: true });
