@@ -78,7 +78,7 @@ describe('Test drag and drop functionality', () => {
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
     // Shows error and does not load them again
-    cy.get('.MuiAlert-message').contains('Primer name fwd exists in current').should('exist');
+    cy.get('.MuiAlert-message').contains('Primer name vector_rvs exists in current').should('exist');
     cy.get('div.cloning-tab-pannel div.finished-source').filter(':contains("Homologous recombination")').should('have.length', 2);
 
     // Can replace the history
