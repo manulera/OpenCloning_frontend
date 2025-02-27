@@ -18,7 +18,6 @@ function PrimerSpacerForm({ open = true }) {
 
     // Set new timeout and store its ID in the ref
     timeoutRef.current = setTimeout(() => {
-      console.log('updating spacers');
       setSpacers((current) => current.map((spacer, i) => (i === index ? value : spacer)));
     }, 500);
   };

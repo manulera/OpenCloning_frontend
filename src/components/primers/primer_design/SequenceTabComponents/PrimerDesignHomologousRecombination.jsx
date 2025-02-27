@@ -1,11 +1,11 @@
 import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
+import usePrimerDesignSettings from './usePrimerDesignSettings';
 
 export default function PrimerDesignHomologousRecombination({ homologousRecombinationTargetId, pcrSource }) {
   const templateSequenceId = pcrSource.input[0];
   const sequenceIds = React.useMemo(() => [templateSequenceId, homologousRecombinationTargetId], [templateSequenceId, homologousRecombinationTargetId]);
-  const initialPrimerDesignSettings = { homologyLength: 80, hybridizationLength: 20, targetTm: 55 };
 
   const steps = React.useMemo(() => [
     { label: 'Amplified region',
@@ -18,11 +18,12 @@ export default function PrimerDesignHomologousRecombination({ homologousRecombin
     },
   ], [templateSequenceId, homologousRecombinationTargetId]);
 
+  const primerDesignSettings = usePrimerDesignSettings({ homology_length: 80, minimal_hybridization_length: 20, target_tm: 55 });
   return (
     <PrimerDesignProvider
       designType="homologous_recombination"
       sequenceIds={sequenceIds}
-      initialPrimerDesignSettings={initialPrimerDesignSettings}
+      primerDesignSettings={primerDesignSettings}
       steps={steps}
     >
       <PrimerDesignForm />

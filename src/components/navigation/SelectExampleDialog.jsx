@@ -24,7 +24,7 @@ const examples = [
   },
   {
     title: 'Templateless PCR',
-    link: 'templateless_PCR.json',
+    link: 'templateless_pcr.json',
   },
   {
     title: 'CRISPR HDR',

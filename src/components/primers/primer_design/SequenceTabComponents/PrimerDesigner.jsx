@@ -10,6 +10,7 @@ import PrimerDesignGibsonAssembly from './PrimerDesignGibsonAssembly';
 import PrimerDesignSimplePair from './PrimerDesignSimplePair';
 import PrimerDesignGatewayBP from './PrimerDesignGatewayBP';
 import PrimerDesignEBIC from './PrimerDesignEBIC';
+import PrimerDesignRestriction from './PrimerDesignRestriction';
 
 function PrimerDesigner() {
   const { updateStoreEditor } = useStoreEditor();
@@ -36,7 +37,7 @@ function PrimerDesigner() {
   let component = null;
   // Check conditions for different types of primer design
   if (finalSource === null && pcrSources.length === 1 && outputSequences[0].primer_design === 'restriction_ligation') {
-    component = <PrimerDesignSimplePair pcrSource={pcrSources[0]} restrictionLigation />;
+    component = <PrimerDesignRestriction pcrSource={pcrSources[0]} />;
   }
   if (finalSource === null && pcrSources.length === 1 && outputSequences[0].primer_design === 'simple_pair') {
     component = <PrimerDesignSimplePair pcrSource={pcrSources[0]} />;

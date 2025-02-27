@@ -1,9 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getReverseComplementSequenceString as reverseComplement } from '@teselagen/sequence-utils';
 import { getEnzymeRecognitionSequence } from '../../../../utils/enzyme_utils';
 import { stringIsNotDNA } from '../../../../store/cloning_utils';
+import usePrimerDesignSettings from './usePrimerDesignSettings';
 
-export default function useEnzymePrimerDesignSettings() {
+function getError(enzymePrimerDesignSettings) {
+  const { left_enzyme: leftEnzyme, right_enzyme: rightEnzyme, filler_bases: fillerBases } = enzymePrimerDesignSettings;
+  if (!leftEnzyme && !rightEnzyme) {
+    return 'You must select and enzyme';
+  }
+  if (stringIsNotDNA(fillerBases)) {
+    return 'Filler bases not valid';
+  }
+  return '';
+}
+
+export default function useEnzymePrimerDesignSettings(defaultSettings) {
+  const primerDesignSettings = usePrimerDesignSettings(defaultSettings);
   const [enzymePrimerDesignSettings, setEnzymePrimerDesignSettings] = useState({
     left_enzyme: null,
     right_enzyme: null,
@@ -12,25 +25,10 @@ export default function useEnzymePrimerDesignSettings() {
     filler_bases: 'TTT',
     enzymeSpacers: ['', ''],
   });
+  const [enzymeError, setEnzymeError] = useState(getError(enzymePrimerDesignSettings));
 
-  const handleLeftEnzymeChange = (enzyme) => {
-    setEnzymePrimerDesignSettings((prev) => ({ ...prev, left_enzyme: enzyme, left_enzyme_inverted: false }));
-  };
-
-  const handleRightEnzymeChange = (enzyme) => {
-    setEnzymePrimerDesignSettings((prev) => ({ ...prev, right_enzyme: enzyme, right_enzyme_inverted: false }));
-  };
-
-  const handleLeftEnzymeInversionChange = (inverted) => {
-    setEnzymePrimerDesignSettings((prev) => ({ ...prev, left_enzyme_inverted: inverted }));
-  };
-
-  const handleRightEnzymeInversionChange = (inverted) => {
-    setEnzymePrimerDesignSettings((prev) => ({ ...prev, right_enzyme_inverted: inverted }));
-  };
-
-  const handleFillerBasesChange = (e) => {
-    setEnzymePrimerDesignSettings((prev) => ({ ...prev, filler_bases: e.target.value }));
+  const updateEnzymeSettings = (newSettings) => {
+    setEnzymePrimerDesignSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
   useEffect(() => {
@@ -44,6 +42,7 @@ export default function useEnzymePrimerDesignSettings() {
     } else {
       setEnzymePrimerDesignSettings((prev) => ({ ...prev, enzymeSpacers: ['', ''] }));
     }
+    setEnzymeError(getError(enzymePrimerDesignSettings));
   }, [
     enzymePrimerDesignSettings.left_enzyme,
     enzymePrimerDesignSettings.right_enzyme,
@@ -52,9 +51,7 @@ export default function useEnzymePrimerDesignSettings() {
     enzymePrimerDesignSettings.right_enzyme_inverted,
   ]);
 
-  const enzymePrimerDesignHandlingFunctions = React.useMemo(() => ({
-    handleLeftEnzymeChange, handleRightEnzymeChange, handleLeftEnzymeInversionChange, handleRightEnzymeInversionChange, handleFillerBasesChange,
-  }), []);
+  const error = primerDesignSettings.error || enzymeError;
 
-  return { enzymePrimerDesignSettings, enzymePrimerDesignHandlingFunctions };
+  return { ...primerDesignSettings, ...enzymePrimerDesignSettings, updateEnzymeSettings, error };
 }
