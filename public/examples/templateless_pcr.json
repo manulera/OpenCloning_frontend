@@ -1,0 +1,52 @@
+{
+  "sequences": [
+    {
+      "id": 2,
+      "type": "TextFileSequence",
+      "sequence_file_format": "genbank",
+      "file_content": "LOCUS       name                     139 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   id\nVERSION     id\nKEYWORDS    .\nSOURCE      .\n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\nORIGIN\n        1 agaactcaac cattacgggt ttgacgaata tagacgagat tcgcaattac ttgtctgatg\n       61 gattaccaag atgatgggct tggtgaaatg attgagtttt tggagggtat gcatgaagtt\n      121 taactcaaat atctcgtaa\n//",
+      "overhang_crick_3prime": -59,
+      "overhang_watson_3prime": -59
+    },
+    {
+      "id": 4,
+      "type": "TextFileSequence",
+      "sequence_file_format": "genbank",
+      "file_content": "LOCUS       name                     139 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   id\nVERSION     id\nKEYWORDS    .\nSOURCE      .\n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\nORIGIN\n        1 agaactcaac cattacgggt ttgacgaata tagacgagat tcgcaattac ttgtctgatg\n       61 gattaccaag atgatgggct tggtgaaatg attgagtttt tggagggtat gcatgaagtt\n      121 taactcaaat atctcgtaa\n//",
+      "overhang_crick_3prime": 0,
+      "overhang_watson_3prime": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "input": [],
+      "output": 2,
+      "type": "OligoHybridizationSource",
+      "forward_oligo": 1,
+      "reverse_oligo": 2,
+      "overhang_crick_3prime": -59
+    },
+    {
+      "id": 3,
+      "input": [
+        2
+      ],
+      "output": 4,
+      "type": "PolymeraseExtensionSource"
+    }
+  ],
+  "description": "",
+  "primers": [
+    {
+      "id": 1,
+      "name": "fwd_hyb",
+      "sequence": "agaactcaaccattacgggtttgacgaatatagacgagattcgcaattacttgtctgatggattaccaagatgatgggct"
+    },
+    {
+      "id": 2,
+      "name": "rvs_hyb",
+      "sequence": "ttacgagatatttgagttaaacttcatgcataccctccaaaaactcaatcatttcaccaagcccatcatcttggtaatcc"
+    }
+  ]
+}
