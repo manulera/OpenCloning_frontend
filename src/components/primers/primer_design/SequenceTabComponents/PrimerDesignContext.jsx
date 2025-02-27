@@ -241,6 +241,16 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
         spacers,
       };
       endpoint = 'simple_pair';
+    } else if (designType === 'ebic') {
+      endpoint = 'ebic';
+      requestData = {
+        sequence: entities.find((e) => e.id === templateSequenceIds[0]),
+        location: selectedRegion2SequenceLocation(rois[0]),
+        // forward_orientation: fragmentOrientations[0] === 'forward',
+      };
+      params = {
+        ...primerDesignSettings,
+      };
     }
 
     const url = backendRoute(`/primer_design/${endpoint}`);
@@ -261,7 +271,13 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
 
   const addPrimers = () => {
     const pcrSources = store.getState().cloning.sources.filter((source) => source.type === 'PCRSource');
-    const usedPCRSources = templateSequenceIds.map((id) => pcrSources.find((source) => source.input.includes(id)));
+    let usedPCRSources;
+    if (designType === 'ebic') {
+      usedPCRSources = pcrSources.filter((source) => source.input.includes(templateSequenceIds[0]));
+    } else {
+      usedPCRSources = templateSequenceIds.map((id) => pcrSources.find((source) => source.input.includes(id)));
+    }
+
     batch(() => {
       usedPCRSources.forEach((pcrSource, index) => {
         dispatch(addPrimersToPCRSource({

@@ -65,7 +65,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const onSubmit = (event) => {
     event.preventDefault();
     const requestData = {
-      source: { id: sourceId, input: inputEntities.map((e) => e.id) },
+      source: { id: sourceId, input: inputEntities.map((e) => e.id), output_name: source.output_name },
       sequences: inputEntities,
     };
     if (['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource'].includes(assemblyType)) {

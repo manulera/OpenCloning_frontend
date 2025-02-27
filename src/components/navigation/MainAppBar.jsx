@@ -18,8 +18,6 @@ import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
 import QuickGenomeDialog from './QuickGenomeDialog';
 import { cloningActions } from '../../store/cloning';
-import useStoreEditor from '../../hooks/useStoreEditor';
-import useBackendRoute from '../../hooks/useBackendRoute';
 import VersionDialog from './VersionDialog';
 import useAlerts from '../../hooks/useAlerts';
 import DownloadCloningStrategyDialog from '../DownloadCloningStrategyDialog';
@@ -104,20 +102,20 @@ function MainAppBar() {
   };
 
   // If you want to do something on page load, you can do it here.
-  React.useEffect(() => {
-    const fetchExample = async () => {
-      dispatch(setCurrentTab(3));
-      // Wait for the primer designer to be rendered
-      setTimeout(() => {
-        // Click on button that says Open primer designer
-        const primerDesignerButton = document.querySelector('.main-sequence-editor button');
-        if (primerDesignerButton) {
-          primerDesignerButton.click();
-        }
-      }, 300);
-    };
-    fetchExample();
-  }, []);
+  // React.useEffect(() => {
+  //   const fetchExample = async () => {
+  //     dispatch(setCurrentTab(3));
+  //     // Wait for the primer designer to be rendered
+  //     setTimeout(() => {
+  //       // Click on button that says Open primer designer
+  //       const primerDesignerButton = document.querySelector('.main-sequence-editor button');
+  //       if (primerDesignerButton) {
+  //         primerDesignerButton.click();
+  //       }
+  //     }, 300);
+  //   };
+  //   fetchExample();
+  // }, []);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
