@@ -3,8 +3,8 @@ import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
 import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
 import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
+import { mergePrimersInState, mergeStates, shiftState } from '../utils/thunks';
 import { cloningActions } from '../store/cloning';
-import { mergeStates, shiftState } from '../utils/thunks';
 import { graftState } from '../utils/network';
 import useDatabase from './useDatabase';
 
@@ -82,6 +82,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
           } else {
             const { shiftedState } = shiftState(cloningStrategy, cloningState);
             mergedState = graftState(shiftedState, cloningState, source.id);
+            mergedState = mergePrimersInState(mergedState);
           }
 
           dispatch(setCloningState(mergedState));

@@ -20,6 +20,6 @@ assignees: ''
 * [ ] You may have to add it to the right place in `source_input_constrains.cy.js`.
 * [ ] If it has primers,
   * [ ] Prevent primers used in the source from being deleted in `PrimerList.jsx` > `getUsedPrimerIds`.
-  * [ ] Implement the `shiftSource` functionality in `cloning_utils.js`.
+  * [ ] Implement the `shiftSource` and `mergePrimersInSource` functionality in `cloning_utils.js`.
 * [ ] Make a test
 

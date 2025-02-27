@@ -214,6 +214,29 @@ export function shiftSource(source, networkShift, primerShift) {
   return newSource;
 }
 
+export function mergePrimersInSource(source, keepId, removeId) {
+  const newSource = { ...source };
+  if (newSource.type === 'PCRSource' && newSource.assembly?.length > 0) {
+    if (newSource.assembly[0].sequence === removeId) {
+      newSource.assembly[0].sequence = keepId;
+    }
+    if (newSource.assembly[2].sequence === removeId) {
+      newSource.assembly[2].sequence = keepId;
+    }
+  } else if (newSource.type === 'OligoHybridizationSource') {
+    if (newSource.forward_oligo === removeId) {
+      newSource.forward_oligo = keepId;
+    }
+    if (newSource.reverse_oligo === removeId) {
+      newSource.reverse_oligo = keepId;
+    }
+  } else if (newSource.type === 'CRISPRSource') {
+    newSource.guides = newSource.guides?.map((i) => (i === removeId ? keepId : i));
+  }
+
+  return newSource;
+}
+
 export function shiftStateIds(newState, oldState, skipPrimers = false) {
   const { sources: newSources, entities: newEntities, primers: newPrimers, files: newFiles } = newState;
   const { sources: oldSources, entities: oldEntities, primers: oldPrimers } = oldState;
