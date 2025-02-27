@@ -105,6 +105,7 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
           try {
             await fn();
           } catch (e) {
+            console.error(e);
             addAlert({ message: e.message, severity: 'error' });
           }
         };
@@ -137,6 +138,7 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
             warnings.forEach((warning) => addAlert({ message: warning, severity: 'warning' }));
           });
         } catch (e) {
+          console.error(e);
           addAlert({
             message: e.message,
             severity: 'error',

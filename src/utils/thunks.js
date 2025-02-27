@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash-es';
 import { base64ToBlob, downloadStateAsJson, loadFilesToSessionStorage } from './readNwrite';
 import { cloningActions } from '../store/cloning';
-import { getUsedPrimerIds, shiftStateIds } from '../store/cloning_utils';
+import { getUsedPrimerIds, mergePrimersInSource, shiftStateIds } from '../store/cloning_utils';
 
 const { setState: setCloningState } = cloningActions;
 
@@ -35,29 +35,48 @@ export const exportSubStateThunk = (fileName, entityId) => async (dispatch, getS
 };
 
 export const shiftState = (newState, oldState, skipPrimers = false) => {
-  const existingPrimerNames = oldState.primers.map((p) => p.name);
-
   if (newState.primers === undefined || newState.entities === undefined || newState.sources === undefined) {
     throw new Error('JSON file should contain at least keys: primers, sequences and sources');
   }
   if (newState.primers.length > 0 && skipPrimers) {
     throw new Error('Primers cannot be loaded when skipping primers');
   }
-  if (newState.primers.some((p) => existingPrimerNames.includes(p.name))) {
-    throw new Error('Primer name from loaded file exists in current session');
-  }
 
   return shiftStateIds(newState, oldState, skipPrimers);
 };
 
+export const mergePrimersInState = (mergedState) => {
+  const newState = cloneDeep(mergedState);
+  const removedPrimerIds = [];
+  for (let i = 0; i < newState.primers.length - 1; i++) {
+    const p1 = newState.primers[i];
+    for (let j = i + 1; j < newState.primers.length; j++) {
+      const p2 = newState.primers[j];
+      if (p1.name === p2.name) {
+        if (p1.sequence === p2.sequence && p1.database_id === p2.database_id) {
+          newState.sources = newState.sources.map((s) => mergePrimersInSource(s, p1.id, p2.id));
+          removedPrimerIds.push(p2.id);
+        } else {
+          throw new Error(`Primer name ${p1.name} exists in current session but has different sequence or database_id`);
+        }
+      }
+    }
+  }
+  newState.primers = newState.primers.filter((p) => !removedPrimerIds.includes(p.id));
+  return newState;
+};
+
 export const mergeStates = (newState, oldState, skipPrimers = false) => {
   const { shiftedState, networkShift } = shiftState(newState, oldState, skipPrimers);
-  const mergedState = {
+  let mergedState = {
     sources: [...oldState.sources, ...shiftedState.sources],
     entities: [...oldState.entities, ...shiftedState.entities],
     primers: [...oldState.primers, ...shiftedState.primers],
     files: [...oldState.files, ...shiftedState.files],
   };
+  if (!skipPrimers) {
+    mergedState = mergePrimersInState(mergedState);
+  }
   return { mergedState, networkShift };
 };
 

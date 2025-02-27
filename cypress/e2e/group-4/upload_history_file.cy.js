@@ -32,12 +32,12 @@ describe('Test upload history from file', () => {
     cy.get('div.cloning-tab-pannel').contains('Ligation of fragments');
 
     // Cannot load one with the same primer names again
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/crispr_hdr.json', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/primer_same_name_different_sequence.json', { force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
     // Shows error and does not load them again
-    cy.get('.MuiAlert-message').contains('Primer name from loaded file exists in current session').should('exist');
+    cy.get('.MuiAlert-message').contains('Primer name').should('exist');
     cy.get('div.cloning-tab-pannel').filter(':contains("CRISPR HDR with")').should('have.length', 1);
 
     // Can replace the history
@@ -79,23 +79,29 @@ describe('Test upload history from file', () => {
   });
   it('Zip: Can merge with existing history', () => {
     loadExample('CRISPR HDR');
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_primer.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
     cy.get('div.cloning-tab-pannel').contains('PCR with primers');
     cy.get('div.cloning-tab-pannel').contains('final_product.gb');
 
+    // Can load and merge with existing history
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
+    cy.get('.history-loaded-dialog').contains('Add to existing').click();
+    cy.get('.history-loaded-dialog button').contains('Select').click();
+    cy.get('.MuiAlert-message').contains('Primer name').should('not.exist');
+
     // Cannot load one with the same primer names again
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_primer.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_conflicting_primer.zip', { force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
     // Shows error and does not load them again
-    cy.get('.MuiAlert-message').contains('Primer name from loaded file exists in current session').should('exist');
+    cy.get('.MuiAlert-message').contains('Primer name').should('exist');
     cy.get('div.cloning-tab-pannel').filter(':contains("final_product.gb")').should('have.length', 1);
 
     // Can replace the history
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_primer.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
     cy.get('.history-loaded-dialog').contains('Replace existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
@@ -110,7 +116,7 @@ describe('Test upload history from file', () => {
     });
     closeAlerts();
     // If something was in session storage, it remains there
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_primer.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
     cy.get('div.cloning-tab-pannel').contains('final_product.gb').should('exist');
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/wrong_json_in_zip.zip', { force: true });
     cy.get('.history-loaded-dialog').contains('Replace existing').click();

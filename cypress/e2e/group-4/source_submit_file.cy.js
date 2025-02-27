@@ -61,8 +61,8 @@ describe('File Source', () => {
     // Cannot submit one with primers with the same names
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('public/examples/gibson_assembly.json', { force: true });
-    cy.get('.open-cloning li .MuiAlert-message').contains('Primer name from loaded file exists in current session');
+    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/primer_same_name_different_sequence.json', { force: true });
+    cy.get('.open-cloning li .MuiAlert-message').contains('Primer name fwd exists');
 
     // Loading a history file with invalid JSON gives an error
     clickMultiSelectOption('File format', 'JSON (history file)', '.open-cloning li');
@@ -76,7 +76,7 @@ describe('File Source', () => {
   });
   it('works when loading a zip file', () => {
     // Load normal zip file
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_with_primer.zip', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
     cy.get('li#source-1').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 3);
     });
@@ -99,8 +99,8 @@ describe('File Source', () => {
     // Error handling
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_with_primer.zip', { force: true });
-    cy.get('.open-cloning .MuiAlert-message').contains('Primer name from loaded file exists in current session');
+    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_with_conflicting_primer.zip', { force: true });
+    cy.get('.open-cloning .MuiAlert-message').contains('Primer name dummy exists');
 
     cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/wrong_json_in_zip.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('should contain');
