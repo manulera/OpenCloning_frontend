@@ -6,7 +6,7 @@ import SourceGenomeRegion from '../sources/SourceGenomeRegion';
 import { downloadTextFile } from '../../utils/readNwrite';
 import DownloadSequenceFileDialog from '../DownloadSequenceFileDialog';
 
-function MiscDialog({ open, setOpen }) {
+function QuickGenomeDialog({ open, setOpen }) {
   const { requestStatus, sendPostRequest, sources, entities } = useBackendAPI();
 
   const [downloadSequence, setDownloadSequence] = React.useState(() => null);
@@ -39,4 +39,4 @@ function MiscDialog({ open, setOpen }) {
   );
 }
 
-export default MiscDialog;
+export default QuickGenomeDialog;

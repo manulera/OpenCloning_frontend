@@ -13,6 +13,13 @@ function checkCurrentStep(label) {
     .should('exist');
 }
 
+function updateSpacer(index, value) {
+  cy.get('.primer-spacer-form input').eq(index).clear('');
+  cy.get('.primer-spacer-form input').eq(index).type(value);
+  // Wait for the sequence to update
+  cy.wait(500);
+}
+
 describe('Test primer designer functionality', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -239,8 +246,8 @@ describe('Test primer designer functionality', () => {
     setInputValue('Min. hybridization length', '2', '.primer-design');
 
     // Add spacers
-    cy.get('.primer-spacer-form input').first().type('AAAAAAAAA');
-    cy.get('.primer-spacer-form input').last().type('CCCCCCCCC');
+    updateSpacer(0, 'AAAAAAAAA');
+    updateSpacer(1, 'CCCCCCCCC');
 
     // Verify that the right values are being submitted
     setInputValue('Homology length', '2', '.primer-design');
@@ -391,8 +398,8 @@ describe('Test primer designer functionality', () => {
     cy.get('svg.rowViewTextContainer text').contains(`TTTgaattc${selectedSequence}ggatccAAA`);
 
     // Add spacers
-    setInputValue('Before', 'AAA', '.primer-spacer-form');
-    setInputValue('After', 'CCC', '.primer-spacer-form');
+    updateSpacer(0, 'AAA');
+    updateSpacer(1, 'CCC');
     cy.get('svg.rowViewTextContainer text').contains(`TTTgaattcAAA${selectedSequence}CCCggatccAAA`);
 
     // Create primers and check that the right values are being submitted
@@ -662,8 +669,8 @@ describe('Test primer designer functionality', () => {
     cy.get('.primer-design p').filter(':contains("Invalid DNA sequence")').should('have.length', 2);
 
     // Replace the Ns with valid sequences
-    setInputValue('Before', 'GGGGACAAGTTTGTACAAAAAAGCAGGCTAA', '.primer-spacer-form');
-    setInputValue('After', 'TACCCAGCTTTCTTGTACAAAGTGGTCCCC', '.primer-spacer-form');
+    updateSpacer(0, 'GGGGACAAGTTTGTACAAAAAAGCAGGCTAA');
+    updateSpacer(1, 'TACCCAGCTTTCTTGTACAAAGTGGTCCCC');
 
     // We should be able to submit now
     getBottomButton('Design primers', 2).should('not.be.disabled');
@@ -681,11 +688,11 @@ describe('Test primer designer functionality', () => {
     // Adding an out of frame spacer in the before spacer gives an X incomplete aminoacid
     cy.get('div.veTabSequenceMap').contains('Sequence Map').click();
     cy.get('div.mainEditor path.X').should('not.exist');
-    setInputValue('Before', 'GGGGACAAGTTTGTACAAAAAAGCAGGCTAAaa', '.primer-spacer-form');
+    updateSpacer(0, 'GGGGACAAGTTTGTACAAAAAAGCAGGCTAAaa');
     cy.get('div.mainEditor path.X').should('exist');
     cy.get('div.veTabLinearMap').contains('Linear Map').click();
     cy.get('.veLabel[title*="translation frame - Start: 5 End: 33"]').should('exist');
-    setInputValue('Before', 'GGGGACAAGTTTGTACAAAAAAGCAGGCTAA', '.primer-spacer-form');
+    updateSpacer(0, 'GGGGACAAGTTTGTACAAAAAAGCAGGCTAA');
 
     // Adding an out of frame spacer in the after spacer sequence makes a gap
 
@@ -694,12 +701,12 @@ describe('Test primer designer functionality', () => {
 
     cy.get('div.veTabSequenceMap').contains('Sequence Map').click();
     cy.get('.tg-editor-container').contains('path.X').should('not.exist');
-    setInputValue('After', 'aaTACCCAGCTTTCTTGTACAAAGTGGTCCCC', '.primer-spacer-form');
+    updateSpacer(1, 'aaTACCCAGCTTTCTTGTACAAAGTGGTCCCC');
     cy.get('.tg-editor-container').contains('path.X').should('not.exist');
 
     cy.get('div.veTabLinearMap').contains('Linear Map').click();
     cy.get('.veLabel[title*="translation frame - Start: 3109 End: 3132"]').should('exist');
-    setInputValue('After', 'TACCCAGCTTTCTTGTACAAAGTGGTCCCC', '.primer-spacer-form');
+    updateSpacer(1, 'TACCCAGCTTTCTTGTACAAAGTGGTCCCC');
 
     // Click on design primers
     getBottomButton('Design primers', 2).click();

@@ -1,19 +1,20 @@
 import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
+import usePrimerDesignSettings from './usePrimerDesignSettings';
 
-function PrimerDesignSimplePair({ pcrSource, restrictionLigation = false }) {
+function PrimerDesignSimplePair({ pcrSource }) {
   const templateSequenceId = pcrSource.input[0];
   const sequenceIds = React.useMemo(() => [templateSequenceId], [templateSequenceId]);
-  const initialPrimerDesignSettings = { homologyLength: null, hybridizationLength: 20, targetTm: 55 };
 
   const steps = React.useMemo(() => [
     { label: 'Amplified region' },
   ], []);
 
-  const designType = restrictionLigation ? 'restriction_ligation' : 'simple_pair';
+  const primerDesignSettings = usePrimerDesignSettings({ homology_length: null, minimal_hybridization_length: 20, target_tm: 55 });
+
   return (
-    <PrimerDesignProvider designType={designType} sequenceIds={sequenceIds} initialPrimerDesignSettings={initialPrimerDesignSettings} steps={steps}>
+    <PrimerDesignProvider designType="simple_pair" sequenceIds={sequenceIds} primerDesignSettings={primerDesignSettings} steps={steps}>
       <PrimerDesignForm />
     </PrimerDesignProvider>
 

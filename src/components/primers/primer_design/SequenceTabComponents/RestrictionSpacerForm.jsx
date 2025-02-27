@@ -9,9 +9,15 @@ import { usePrimerDesign } from './PrimerDesignContext';
 import { isEnzymePalyndromic } from '../../../../utils/enzyme_utils';
 
 function RestrictionSpacerForm() {
-  const { enzymePrimerDesignSettings, enzymePrimerDesignHandlingFunctions } = usePrimerDesign();
-  const { handleLeftEnzymeChange, handleRightEnzymeChange, handleLeftEnzymeInversionChange, handleRightEnzymeInversionChange, handleFillerBasesChange } = enzymePrimerDesignHandlingFunctions;
-  const { left_enzyme: leftEnzyme, right_enzyme: rightEnzyme, left_enzyme_inverted: leftEnzymeInverted, right_enzyme_inverted: rightEnzymeInverted, filler_bases: fillerBases } = enzymePrimerDesignSettings;
+  const { primerDesignSettings } = usePrimerDesign();
+  const {
+    left_enzyme: leftEnzyme,
+    right_enzyme: rightEnzyme,
+    left_enzyme_inverted: leftEnzymeInverted,
+    right_enzyme_inverted: rightEnzymeInverted,
+    filler_bases: fillerBases,
+    updateEnzymeSettings,
+  } = primerDesignSettings;
 
   const store = useStore();
 
@@ -31,22 +37,22 @@ function RestrictionSpacerForm() {
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <FormControl sx={{ width: '10em', mt: 1.5, mr: 2 }}>
-            <EnzymeMultiSelect value={leftEnzyme} setEnzymes={handleLeftEnzymeChange} label="Left enzyme" multiple={false} />
+            <EnzymeMultiSelect value={leftEnzyme} setEnzymes={(v) => updateEnzymeSettings({ left_enzyme: v })} label="Left enzyme" multiple={false} />
           </FormControl>
           {leftEnzyme && !isEnzymePalyndromic(leftEnzyme) && (
           <FormControlLabel
-            control={<Checkbox checked={leftEnzymeInverted} onChange={(e) => handleLeftEnzymeInversionChange(e.target.checked)} />}
+            control={<Checkbox checked={leftEnzymeInverted} onChange={(e) => updateEnzymeSettings({ left_enzyme_inverted: e.target.checked })} />}
             label="Invert site"
           />
           )}
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <FormControl sx={{ width: '10em', mt: 1.5, mr: 2 }}>
-            <EnzymeMultiSelect value={rightEnzyme} setEnzymes={handleRightEnzymeChange} label="Right enzyme" multiple={false} />
+            <EnzymeMultiSelect value={rightEnzyme} setEnzymes={(v) => updateEnzymeSettings({ right_enzyme: v })} label="Right enzyme" multiple={false} />
           </FormControl>
           {rightEnzyme && !isEnzymePalyndromic(rightEnzyme) && (
           <FormControlLabel
-            control={<Checkbox checked={rightEnzymeInverted} onChange={(e) => handleRightEnzymeInversionChange(e.target.checked)} />}
+            control={<Checkbox checked={rightEnzymeInverted} onChange={(e) => updateEnzymeSettings({ right_enzyme_inverted: e.target.checked })} />}
             label="Invert site"
           />
           )}
@@ -62,7 +68,7 @@ function RestrictionSpacerForm() {
               </Box>
                   )}
             value={fillerBases}
-            onChange={handleFillerBasesChange}
+            onChange={(e) => updateEnzymeSettings({ filler_bases: e.target.value })}
             variant="outlined"
             inputProps={{
               id: 'sequence',

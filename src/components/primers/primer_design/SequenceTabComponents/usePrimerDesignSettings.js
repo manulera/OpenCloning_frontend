@@ -1,34 +1,31 @@
 import React from 'react';
 import primerDesignMinimalValues from './primerDesignMinimalValues.json';
 
-export default function usePrimerDesignSettings({ homologyLength: homol, hybridizationLength: hybl, targetTm: tm }) {
-  const [homologyLength, setHomologyLength] = React.useState(homol);
-  const [hybridizationLength, setHybridizationLength] = React.useState(hybl);
-  const [targetTm, setTargetTm] = React.useState(tm);
+const getError = (s) => {
+  const valid = (s.homology_length === null || s.homology_length >= primerDesignMinimalValues.homology_length)
+  && s.minimal_hybridization_length >= primerDesignMinimalValues.hybridization_length
+  && s.target_tm >= primerDesignMinimalValues.target_tm;
+  if (!valid) {
+    return 'Invalid settings';
+  }
+  return null;
+};
 
-  const [valid, setValid] = React.useState(false);
+export default function usePrimerDesignSettings(defaultSettings) {
+  const [settings, setSettings] = React.useState(defaultSettings);
+  const [error, setError] = React.useState(getError(defaultSettings));
+
+  const updateSettings = (newSettings) => {
+    setSettings((prev) => ({ ...prev, ...newSettings }));
+  };
 
   React.useEffect(() => {
-    setHomologyLength(homol);
-    setHybridizationLength(hybl);
-    setTargetTm(tm);
-  }, [homol, hybl, tm]);
-
-  React.useEffect(() => {
-    setValid(
-      (homologyLength === null || homologyLength >= primerDesignMinimalValues.homology_length)
-      && hybridizationLength >= primerDesignMinimalValues.hybridization_length
-      && targetTm >= primerDesignMinimalValues.target_tm,
-    );
-  }, [homologyLength, hybridizationLength, targetTm]);
+    setError(getError(settings));
+  }, [settings]);
 
   return {
-    homologyLength,
-    setHomologyLength,
-    hybridizationLength,
-    setHybridizationLength,
-    targetTm,
-    setTargetTm,
-    valid,
+    ...settings,
+    error,
+    updateSettings,
   };
 }

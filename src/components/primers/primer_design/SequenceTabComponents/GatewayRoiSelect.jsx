@@ -67,31 +67,34 @@ function GatewayRoiSelect({ id, greedy = false }) {
   const { updateStoreEditor } = useStoreEditor();
   const donorVectorSequenceLength = useSelector((state) => state.cloning.teselaJsonCache[id].sequence.length);
   const dispatch = useDispatch();
-  const { knownCombination, handleKnownCombinationChange } = usePrimerDesign();
+  const { primerDesignSettings, setSpacers } = usePrimerDesign();
+  const [gatewaySelection, setGatewaySelection] = React.useState(null);
+  const editorSelection = useSelector((state) => state.cloning.mainSequenceSelection, isEqual);
+
+  const { knownCombination, setKnownCombination } = primerDesignSettings;
+
+  const handleKnownCombinationChange = (newKnownCombination, selection) => {
+    setGatewaySelection(selection);
+    if (newKnownCombination) {
+      setKnownCombination(newKnownCombination);
+      setSpacers(newKnownCombination.spacers);
+    } else {
+      setKnownCombination(null);
+      setSpacers(['', '']);
+    }
+  };
   React.useEffect(() => {
     if (requestStatus.status === 'success') {
       setDonorSites(sites.filter(({ siteName }) => siteName.startsWith('attP')));
     }
   }, [sites]);
-  // React.useEffect(() => {
-  //   if (knownCombination) {
-  //     const left = donorSites.find(({ siteName }) => knownCombination.siteNames[0] === siteName);
-  //     const right = donorSites.find(({ siteName }) => knownCombination.siteNames[1] === siteName);
-  //     setLeftSite(left);
-  //     setRightSite(right);
-  //   }
-  // }, [knownCombination]);
 
-  // Update the store editor when the left and right site are selected
   React.useEffect(() => {
-    if (leftSite && rightSite) {
-      const leftSiteLocation = parseFeatureLocation(leftSite.location, 0, 0, 0, 1, donorVectorSequenceLength)[0];
-      const rightSiteLocation = parseFeatureLocation(rightSite.location, 0, 0, 0, 1, donorVectorSequenceLength)[0];
-      const selectionLayer = { start: leftSiteLocation.start, end: rightSiteLocation.end };
-      updateStoreEditor('mainEditor', null, selectionLayer);
-      dispatch(setMainSequenceSelection({ selectionLayer, caretPosition: -1 }));
+    if (gatewaySelection && !isEqual(editorSelection, gatewaySelection)) {
+      updateStoreEditor('mainEditor', null, gatewaySelection.selectionLayer);
+      dispatch(setMainSequenceSelection(gatewaySelection));
     }
-  }, [leftSite, rightSite, donorSites, donorVectorSequenceLength]);
+  }, [editorSelection, gatewaySelection]);
 
   const checkKnownCombination = React.useCallback((newLeftSite, newRightSite) => {
     if (newLeftSite && newRightSite) {
@@ -138,6 +141,7 @@ function GatewayRoiSelect({ id, greedy = false }) {
       checkKnownCombination(differentSite, site);
       return;
     }
+
     checkKnownCombination(leftSite, site);
   }, [leftSite, donorSites]);
   return (

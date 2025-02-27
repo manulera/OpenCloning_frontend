@@ -2,10 +2,11 @@ import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 
+import useGatewayPrimerDesignSettings from './useGatewayPrimerDesignSettings';
+
 function PrimerDesignGatewayBP({ donorVectorId, pcrSource }) {
   const templateSequenceId = pcrSource.input[0];
   const sequenceIds = React.useMemo(() => [templateSequenceId, donorVectorId], [templateSequenceId, donorVectorId]);
-  const initialPrimerDesignSettings = { homologyLength: null, hybridizationLength: 20, targetTm: 55 };
   const steps = React.useMemo(() => [
     { label: 'Amplified region',
       description: `Select the fragment of sequence ${templateSequenceId} to be amplified in the editor and click "Choose region"`,
@@ -17,11 +18,13 @@ function PrimerDesignGatewayBP({ donorVectorId, pcrSource }) {
     },
   ], [templateSequenceId, donorVectorId]);
 
+  const primerDesignSettings = useGatewayPrimerDesignSettings({ homology_length: null, minimal_hybridization_length: 20, target_tm: 55 });
+
   return (
     <PrimerDesignProvider
       designType="gateway_bp"
       sequenceIds={sequenceIds}
-      initialPrimerDesignSettings={initialPrimerDesignSettings}
+      primerDesignSettings={primerDesignSettings}
       steps={steps}
     >
       <PrimerDesignForm />
