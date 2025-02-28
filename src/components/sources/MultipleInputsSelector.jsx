@@ -10,7 +10,7 @@ function MultipleInputsSelector({ inputEntityIds, onChange, label }) {
   // The possible options should include the already selected ones + the one without children
   // we eliminate duplicates (can happen if the change of input does not update the source)
   const options = [...new Set(inputEntityIds.concat(entityNotChildSourceIds))];
-  const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id].name })), isEqual);
+  const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })), isEqual);
 
   const onInputChange = (event) => {
     const selectedIds = event.target.value;

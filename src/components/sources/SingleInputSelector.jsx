@@ -7,7 +7,8 @@ import { getIdsOfEntitiesWithoutChildSource } from '../../store/cloning_utils';
 function SingleInputSelector({ selectedId, onChange, label, inputEntityIds, allowUnset = false, helperText = '', disabled = false }) {
   const idsWithoutChild = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.entities), shallowEqual);
   const options = [...new Set([...idsWithoutChild, ...inputEntityIds])];
-  const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id].name })), isEqual);
+  console.log(options);
+  const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })), isEqual);
   const renderedOptions = options.sort().map((id) => (
     <MenuItem key={id} value={id}>
       {`${id} - ${sequenceNames.find(({ id: id2 }) => id2 === id).name}`}
