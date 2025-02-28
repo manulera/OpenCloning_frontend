@@ -1,19 +1,24 @@
 import React from 'react';
 import { Button, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel } from '@mui/material';
 import useDatabase from '../../hooks/useDatabase';
-import useAlerts from '../../hooks/useAlerts';
+import { sequencingFileExtensions } from './utils';
 
-function LoadFromDatabaseButton({ databaseId, handleFileUpload }) {
+function LoadFromDatabaseButton({ databaseId, onFileChange, setError, existingFileNames }) {
   const database = useDatabase();
   const [open, setOpen] = React.useState(false);
   const [files, setFiles] = React.useState([]);
   const [selectedFiles, setSelectedFiles] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const addAlert = useAlerts();
+
+  React.useEffect(() => {
+    setSelectedFiles([]);
+  }, [open]);
+
   React.useEffect(() => {
     async function getFiles() {
       setLoading(true);
-      setFiles(await database.getSequencingFiles(databaseId));
+      const allFiles = await database.getSequencingFiles(databaseId);
+      setFiles(allFiles.filter((file) => sequencingFileExtensions.includes(file.name.toLowerCase().split('.').pop())));
       setLoading(false);
     }
     if (open) {
@@ -25,12 +30,9 @@ function LoadFromDatabaseButton({ databaseId, handleFileUpload }) {
     setOpen(false);
     try {
       const filesToLoad = await Promise.all(selectedFiles.map((file) => files.find((f) => f.name === file).getFile()));
-      handleFileUpload(filesToLoad);
+      onFileChange(filesToLoad);
     } catch (error) {
-      addAlert({
-        message: 'Error loading files',
-        severity: 'error',
-      });
+      setError(error.message);
     }
   };
 
@@ -53,7 +55,8 @@ function LoadFromDatabaseButton({ databaseId, handleFileUpload }) {
                   <FormControlLabel
                     control={(
                       <Checkbox
-                        checked={selectedFiles.includes(file.name)}
+                        disabled={existingFileNames.includes(file.name)}
+                        checked={selectedFiles.includes(file.name) || existingFileNames.includes(file.name)}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setSelectedFiles([...selectedFiles, file.name]);
@@ -76,8 +79,8 @@ function LoadFromDatabaseButton({ databaseId, handleFileUpload }) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleSubmit}>Load</Button>
+          <Button color="error" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button color="primary" onClick={handleSubmit}>Load</Button>
         </DialogActions>
       </Dialog>
     </>

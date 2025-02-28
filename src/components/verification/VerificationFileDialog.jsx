@@ -25,6 +25,7 @@ import { cloningActions } from '../../store/cloning';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useStoreEditor from '../../hooks/useStoreEditor';
 import LoadFromDatabaseButton from './LoadFromDatabaseButton';
+import { sequencingFileExtensions } from './utils';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
@@ -54,8 +55,8 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
   const handleFileUpload = async (newFiles) => {
     // Clear the input
     fileInputRef.current.value = '';
-    if (newFiles.find((file) => !file.name.toLowerCase().match(/\.(ab1|fasta|gb|gbk)$/))) {
-      throw new Error('Only ab1, fasta, gb, and gbk files are accepted');
+    if (newFiles.some((file) => !sequencingFileExtensions.includes(file.name.toLowerCase().split('.').pop()))) {
+      throw new Error(`Only ${sequencingFileExtensions.join(', ')} files are accepted`);
     }
 
     // Read the new sequencing files
@@ -108,11 +109,11 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
     setLoadingMessage('');
   };
 
-  const onFileChange = useCallback(async (event) => {
+  const onFileChange = useCallback(async (files) => {
     setLoadingMessage('Aligning...');
     setError('');
     try {
-      await handleFileUpload(Array.from(event.target.files));
+      await handleFileUpload(files);
       setLoadingMessage('');
     } catch (e) {
       setError(e.message);
@@ -164,9 +165,9 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
       <DialogContent>
         <input
           type="file"
-          accept=".ab1, .fasta, .gb, .gbk"
+          accept={sequencingFileExtensions.map((ext) => `.${ext}`).join(', ')}
           multiple
-          onChange={onFileChange}
+          onChange={(event) => onFileChange(Array.from(event.target.files))}
           style={{ display: 'none' }}
           ref={fileInputRef}
         />
@@ -219,8 +220,9 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
 
           {databaseId && (
             <LoadFromDatabaseButton
+              existingFileNames={fileNames}
               databaseId={databaseId}
-              handleFileUpload={handleFileUpload}
+              onFileChange={onFileChange}
             />
           )}
 
