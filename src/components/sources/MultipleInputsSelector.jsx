@@ -1,14 +1,16 @@
 import React from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, Chip, InputLabel, MenuItem, Select } from '@mui/material';
+import { isEqual } from 'lodash-es';
 import { getIdsOfEntitiesWithoutChildSource } from '../../store/cloning_utils';
 
 function MultipleInputsSelector({ inputEntityIds, onChange, label }) {
-  const entityNotChildSourceIds = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.entities), shallowEqual);
+  const entityNotChildSourceIds = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.entities), isEqual);
 
   // The possible options should include the already selected ones + the one without children
   // we eliminate duplicates (can happen if the change of input does not update the source)
   const options = [...new Set(inputEntityIds.concat(entityNotChildSourceIds))];
+  const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })), isEqual);
 
   const onInputChange = (event) => {
     const selectedIds = event.target.value;
@@ -33,7 +35,7 @@ function MultipleInputsSelector({ inputEntityIds, onChange, label }) {
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((value) => (
-              <Chip key={value} label={value} />
+              <Chip key={value} label={`${value} - ${sequenceNames.find(({ id }) => id === value).name}`} />
             ))}
           </Box>
         )}
@@ -44,12 +46,12 @@ function MultipleInputsSelector({ inputEntityIds, onChange, label }) {
         >
           <em>Select all</em>
         </MenuItem>
-        {options.map((id) => (
+        {options.map((id, index) => (
           <MenuItem
             key={id}
             value={id}
           >
-            {id}
+            {`${id} - ${sequenceNames[index].name}`}
           </MenuItem>
         ))}
 

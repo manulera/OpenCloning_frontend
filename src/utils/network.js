@@ -62,3 +62,11 @@ export function graftState(parentState, childState, graftSourceId) {
     files: [...parentState.files, ...childState.files],
   };
 }
+
+export function getAllParentSources(source, sources, parentSources = []) {
+  const thisParentSources = source.input.map((input) => sources.find((s) => s.output === input));
+  parentSources.push(...thisParentSources);
+  thisParentSources.forEach((parentSource) => {
+    getAllParentSources(parentSource, sources, parentSources);
+  });
+}
