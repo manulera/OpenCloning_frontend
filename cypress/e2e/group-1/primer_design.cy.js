@@ -184,7 +184,7 @@ describe('Test primer designer functionality', () => {
     // Click on design primers
     cy.get('button').contains('Design primers').click();
     clickMultiSelectOption('Purpose of primers', 'Gibson Assembly', 'li');
-    clickMultiSelectOption('Input sequences', '4', 'li');
+    clickMultiSelectOption('Input sequences', 'NC_003424', 'li');
 
     cy.get('button').contains('Design primers').click();
 
@@ -318,7 +318,7 @@ describe('Test primer designer functionality', () => {
     // Click on design primers
     cy.get('button').contains('Design primers').click();
     clickMultiSelectOption('Purpose of primers', 'In-Fusion', 'li');
-    clickMultiSelectOption('Input sequences', '4', 'li');
+    clickMultiSelectOption('Input sequences', 'NC_003424', 'li');
 
     cy.get('button').contains('Design primers').click();
 

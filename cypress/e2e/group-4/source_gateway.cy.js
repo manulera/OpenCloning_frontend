@@ -1,6 +1,6 @@
-import { addSource, clickMultiSelectOption, skipNcbiCheck, loadExample, deleteSourceByContent } from '../common_functions';
+import { addSource, clickMultiSelectOption, loadExample, deleteSourceByContent } from '../common_functions';
 
-describe('Tests PCR functionality', () => {
+describe('Tests Gateway cloning functionality', () => {
   beforeEach(() => {
     cy.visit('/');
   });
@@ -9,7 +9,6 @@ describe('Tests PCR functionality', () => {
     deleteSourceByContent('Gateway BP reaction');
     addSource('GatewaySource');
     clickMultiSelectOption('Assembly inputs', '4');
-    clickMultiSelectOption('Assembly inputs', '8');
 
     // Submit icon not visible
     cy.get('.open-cloning button.submit-backend-api').should('not.exist');
@@ -48,7 +47,6 @@ describe('Tests PCR functionality', () => {
     deleteSourceByContent('Gateway BP reaction');
     addSource('GatewaySource');
     clickMultiSelectOption('Assembly inputs', '4');
-    clickMultiSelectOption('Assembly inputs', '8');
     clickMultiSelectOption('Reaction type', 'BP');
     cy.get('span').contains('Single-site recombination').click({ force: true });
     cy.get('span').contains('Circular assemblies').click({ force: true });
