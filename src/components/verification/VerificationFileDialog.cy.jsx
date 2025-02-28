@@ -62,7 +62,7 @@ describe('<VerificationFileDialog />', () => {
       .should('not.be.null');
   });
 
-  it('can add files and aligns them', () => {
+  it('can submit files and aligns them', () => {
     store.dispatch(setConfig({ backendUrl: 'http://127.0.0.1:8000' }));
 
     loadDataAndMount(
@@ -72,7 +72,7 @@ describe('<VerificationFileDialog />', () => {
         cy.mount(<VerificationFileDialog id={2} dialogOpen setDialogOpen={() => {}} />);
       },
     ).then(() => {
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/BZO902-13409020-13409020.ab1', { force: true });
       cy.get('table').contains('BZO902-13409020-13409020.ab1', { timeout: 20000 });
     }).then(() => {
@@ -92,7 +92,7 @@ describe('<VerificationFileDialog />', () => {
         body: ['A', 'T', 'C'],
       }).as('alignSanger');
       // We upload another file now
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/BZO903-13409037-13409037.ab1', { force: true });
 
       cy.get('table').contains('BZO903-13409037-13409037.ab1', { timeout: 20000 });
@@ -126,12 +126,12 @@ describe('<VerificationFileDialog />', () => {
       },
     ).then(() => {
       // Error if submitting non-allowed files
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/cloning_strategy_linear.json', { force: true });
       cy.contains('Only ab1');
 
       // Error if submitting .ab1 files that are not valid
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/wrong.ab1', { force: true });
       cy.contains('Error parsing wrong.ab1:', { timeout: 20000 });
 
@@ -141,12 +141,12 @@ describe('<VerificationFileDialog />', () => {
       });
       // Error if name already exists
       // Add it once
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/BZO903-13409037-13409037.ab1', { force: true });
       cy.get('table').contains('BZO903-13409037-13409037.ab1', { timeout: 20000 });
 
       // Add it again
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/BZO903-13409037-13409037.ab1', { force: true });
       cy.contains('A file named BZO903-13409037-13409037.ab1 is already associated to this sequence');
 
@@ -154,7 +154,7 @@ describe('<VerificationFileDialog />', () => {
       cy.intercept('POST', 'http://127.0.0.1:8000/align_sanger*', {
         statusCode: 500,
       });
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/BZO902-13409020-13409020.ab1', { force: true });
       cy.contains('Request failed');
       // It has not been added
@@ -167,7 +167,7 @@ describe('<VerificationFileDialog />', () => {
       cy.intercept('POST', 'http://127.0.0.1:8000/align_sanger*', {
         forceNetworkError: true,
       });
-      cy.get('button').contains('Add Files').click();
+      cy.get('button').contains('Submit files').click();
       cy.get('input[type="file"]').selectFile('cypress/test_files/sequencing/BZO902-13409020-13409020.ab1', { force: true });
       cy.contains('Network Error');
     });

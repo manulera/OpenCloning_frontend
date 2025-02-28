@@ -20,9 +20,13 @@ function App() {
   const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null, setHistoryFileError });
   const [urlLoaded, setUrlLoaded] = React.useState(false);
+  const configLoaded = useSelector((state) => state.cloning.config.loaded);
 
   React.useEffect(() => {
     async function loadSequenceFromUrlParams() {
+      if (!configLoaded) {
+        return;
+      }
       const urlParams = getUrlParameters();
       if (!urlLoaded) {
         setUrlLoaded(true);
