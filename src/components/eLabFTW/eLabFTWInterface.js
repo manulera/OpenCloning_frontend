@@ -211,6 +211,18 @@ async function getSequenceName(databaseId) {
   return resp.data.title;
 }
 
+async function getSequencingFiles(databaseId) {
+  // This function should return an array of objects:
+  // name: the name of the file
+  // getFile: an async function that returns the file content
+  const url = `${baseUrl}/api/v2/items/${databaseId}/uploads`;
+  const resp = await axios.get(url, { headers: readHeaders });
+  return resp.data.map((fileInfo) => ({
+    name: fileInfo.real_name,
+    getFile: async () => getFileFromELabFTW(databaseId, fileInfo),
+  }));
+}
+
 export default {
   // Name of the database interface
   name: 'eLabFTW',
@@ -245,4 +257,6 @@ export default {
   getPrimer,
   // Function to get the name of a sequence from the database
   getSequenceName,
+  // Function to get the sequencing files from the database, see docs for what the return value should be
+  getSequencingFiles,
 };

@@ -18,11 +18,13 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { batch, shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
+import { isEqual } from 'lodash-es';
 import { getTeselaJsonFromBase64, file2base64 } from '../../utils/readNwrite';
 import SequencingFileRow from './SequencingFileRow';
 import { cloningActions } from '../../store/cloning';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useStoreEditor from '../../hooks/useStoreEditor';
+import LoadFromDatabaseButton from './LoadFromDatabaseButton';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
@@ -30,6 +32,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
   const fileNames = useSelector((state) => state.cloning.files.filter((f) => (f.sequence_id === id)).map((f) => f.file_name), shallowEqual);
   const fileTypes = useSelector((state) => state.cloning.files.filter((f) => (f.sequence_id === id)).map((f) => f.file_type), shallowEqual);
   const hasSequencingFile = fileTypes.includes('Sequencing file');
+  const databaseId = useSelector((state) => state.cloning.sources.find((s) => s.output === id)?.database_id, isEqual);
 
   const entity = useSelector((state) => state.cloning.entities.find((e) => e.id === id), shallowEqual);
   const [loadingMessage, setLoadingMessage] = useState('');
@@ -211,8 +214,15 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
             variant="contained"
             onClick={handleClickUpload}
           >
-            Add Files
+            Submit Files
           </Button>
+
+          {databaseId && (
+            <LoadFromDatabaseButton
+              databaseId={databaseId}
+              handleFileUpload={handleFileUpload}
+            />
+          )}
 
           {hasSequencingFile && (
           <Button

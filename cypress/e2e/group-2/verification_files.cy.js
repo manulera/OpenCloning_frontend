@@ -9,7 +9,7 @@ describe('Test verification files', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/cloning_strategy_with_sequencing.json', { force: true });
     cy.get('#sequence-2 svg[data-testid="RuleIcon"]').click();
 
-    cy.get('button').contains('Add Files').click();
+    cy.get('button').contains('Submit files').click();
     // Add sequencing files
     cy.get('.verification-file-dialog input[type="file"]').selectFile([
       'cypress/test_files/sequencing/BZO902-13409020-13409020.ab1',
