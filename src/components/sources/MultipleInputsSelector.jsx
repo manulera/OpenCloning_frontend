@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, Chip, InputLabel, MenuItem, Select } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { getIdsOfEntitiesWithoutChildSource } from '../../store/cloning_utils';
