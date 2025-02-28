@@ -215,7 +215,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
             variant="contained"
             onClick={handleClickUpload}
           >
-            Submit Files
+            Submit files
           </Button>
 
           {databaseId && (
