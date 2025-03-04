@@ -95,12 +95,11 @@ export function graftState(parentState, childState, graftSourceId) {
   const parentEntities = shiftedParentState.entities.filter((entity) => entity.id !== graftEntityId);
   const childSources = childState.sources.filter((source) => source.id !== childGraftSource.id);
 
-  const childEntities = childState.entities.filter((entity) => entity.id !== graftEntityInChild.id);
-  if (graftEntityInChild.type === 'TemplateSequence') {
+  let childEntities = [...childState.entities];
+  if (graftEntityInChild && graftEntityInChild.type === 'TemplateSequence') {
     const updatedEntity = { ...graftEntityInParent, id: graftEntityInChild.id };
+    childEntities = childEntities.filter((entity) => entity.id !== graftEntityInChild.id);
     childEntities.push(updatedEntity);
-  } else {
-    childEntities.push(graftEntityInChild);
   }
 
   let mergedState = {

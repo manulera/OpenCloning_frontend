@@ -48,19 +48,13 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         setAlert({ message: e.message, severity: 'error' });
         return;
       }
-      const cloningState = store.getState().cloning;
-      const graft = getGraftEntityId(cloningStrategy) !== null;
 
-      if (Boolean(source.output) && !graft) {
+      const hasOutput = Boolean(source.output);
+      const canGraft = getGraftEntityId(cloningStrategy) !== null;
+      const graft = hasOutput && canGraft;
+      if (hasOutput && !canGraft) {
         setAlert({ message: 'Cannot graft cloning strategy as it does not converge on a single sequence, you can load it on a source without outputs', severity: 'error' });
         return;
-      }
-      let mergedState;
-      let networkShift;
-      if (graft) {
-        ({ mergedState, networkShift } = graftState(cloningStrategy, cloningState, source.id));
-      } else {
-        ({ mergedState, networkShift } = mergeStates(cloningStrategy, cloningState));
       }
 
       batch(async () => {
@@ -69,6 +63,14 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
           dispatch(deleteSourceAndItsChildren(source.id));
         }
         try {
+          const cloningState = store.getState().cloning;
+          let mergedState;
+          let networkShift;
+          if (graft) {
+            ({ mergedState, networkShift } = graftState(cloningStrategy, cloningState, source.id));
+          } else {
+            ({ mergedState, networkShift } = mergeStates(cloningStrategy, cloningState));
+          }
           dispatch(setCloningState(mergedState));
           await loadFilesToSessionStorage(verificationFiles, networkShift);
           validateState(cloningStrategy);
