@@ -15,6 +15,7 @@ function SourceTypeSelector({ source }) {
   const dispatch = useDispatch();
   const database = useDatabase();
   const sourceIsPrimerDesign = useSelector((state) => source.output && state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
+  const noExternalRequests = useSelector((state) => state.cloning.config.noExternalRequests);
 
   const onChange = (event) => {
     // Clear the source other than these fields
@@ -30,8 +31,10 @@ function SourceTypeSelector({ source }) {
   const options = [];
   if (inputEntities.length === 0) {
     options.push(<MenuItem key="UploadedFileSource" value="UploadedFileSource">Submit file</MenuItem>);
-    options.push(<MenuItem key="RepositoryIdSource" value="RepositoryIdSource">Repository ID</MenuItem>);
-    options.push(<MenuItem key="GenomeCoordinatesSource" value="GenomeCoordinatesSource">Genome region</MenuItem>);
+    if (!noExternalRequests) {
+      options.push(<MenuItem key="RepositoryIdSource" value="RepositoryIdSource">Repository ID</MenuItem>);
+      options.push(<MenuItem key="GenomeCoordinatesSource" value="GenomeCoordinatesSource">Genome region</MenuItem>);
+    }
     options.push(<MenuItem key="ManuallyTypedSource" value="ManuallyTypedSource">Enter manually</MenuItem>);
     options.push(<MenuItem key="OligoHybridizationSource" value="OligoHybridizationSource">Oligonucleotide hybridization</MenuItem>);
     if (database) {
