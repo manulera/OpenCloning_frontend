@@ -1,11 +1,10 @@
 import { Button, CircularProgress } from '@mui/material';
 import React from 'react';
-import axios from 'axios';
-import { baseUrl, getFileFromELabFTW, readHeaders } from './common';
+import { eLabFTWHttpClient, getFileFromELabFTW, readHeaders } from './common';
 import RetryAlert from '../form/RetryAlert';
 
 function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
-  const url = `${baseUrl}/api/v2/items/${databaseId}`;
+  const url = `/api/v2/items/${databaseId}`;
   const [error, setError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [retry, setRetry] = React.useState(0);
@@ -14,7 +13,7 @@ function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(url, { headers: readHeaders });
+        const response = await eLabFTWHttpClient.get(url, { headers: readHeaders });
         const { uploads } = response.data;
         const historyFiles = uploads.filter((upload) => upload.real_name.endsWith('.json') && upload.comment.includes('OpenCloning'));
         if (historyFiles.length === 1) {

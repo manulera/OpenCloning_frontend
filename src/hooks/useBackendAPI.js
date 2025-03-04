@@ -1,14 +1,15 @@
-import axios from 'axios';
 import { useState, useCallback } from 'react';
 import error2String from '../utils/error2String';
 import useBackendRoute from './useBackendRoute';
 import useAlerts from './useAlerts';
+import useHttpClient from './useHttpClient';
 
 export default function useBackendAPI() {
   const [requestStatus, setRequestStatus] = useState({ status: null, message: '' });
   const [sources, setSources] = useState([]);
   const [entities, setEntities] = useState([]);
   const backendRoute = useBackendRoute();
+  const httpClient = useHttpClient();
   const { addAlert } = useAlerts();
 
   const sendPostRequest = useCallback(async ({ endpoint, requestData, config = {}, source: { output }, modifySource = (s) => s }) => {
@@ -19,7 +20,7 @@ export default function useBackendAPI() {
     // paramsSerializer: { indexes: null } is to correctly serialize arrays in the URL
     const fullConfig = { ...config, paramsSerializer: { indexes: null } };
     try {
-      const resp = await axios.post(url, requestData, fullConfig);
+      const resp = await httpClient.post(url, requestData, fullConfig);
       if (resp.headers['x-warning']) {
         addAlert({ message: resp.headers['x-warning'], severity: 'warning' });
       }

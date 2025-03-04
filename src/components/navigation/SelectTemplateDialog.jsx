@@ -1,19 +1,21 @@
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Button, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
-import axios from 'axios';
+
 import React from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import useHttpClient from '../../hooks/useHttpClient';
 
 function SelectTemplateDialog({ onClose, open }) {
   const [templates, setTemplates] = React.useState(null);
   const [connectAttempt, setConnectAttemp] = React.useState(0);
   const [error, setError] = React.useState(null);
   const baseUrl = 'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master';
+  const httpClient = useHttpClient();
 
   // const baseUrl = '';
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const resp = await axios.get(`${baseUrl}/index.json`);
+        const resp = await httpClient.get(`${baseUrl}/index.json`);
         setTemplates(resp.data);
         setError('');
       } catch {

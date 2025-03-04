@@ -1,15 +1,14 @@
-import axios from 'axios';
 import React from 'react';
 import PostRequestSelect from '../form/PostRequestSelect';
-import { baseUrl, readHeaders } from './common';
+import { eLabFTWHttpClient, readHeaders } from './common';
 
 function ELabFTWResourceSelect({ setResource, categoryId, ...rest }) {
-  const url = `${baseUrl}/api/v2/items`;
+  const url = '/api/v2/items';
 
   const resourcePostRequestSettings = React.useMemo(() => ({
     setValue: setResource,
     getOptions: async (userInput) => {
-      const resp = await axios.get(url, { headers: readHeaders, params: { cat: categoryId, extended: `title:${userInput}` } });
+      const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders, params: { cat: categoryId, extended: `title:${userInput}` } });
       return resp.data;
     },
     getOptionLabel: (option) => (option ? option.title : ''),

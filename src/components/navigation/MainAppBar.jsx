@@ -6,7 +6,6 @@ import Container from '@mui/material/Container';
 import { Button, Tooltip } from '@mui/material';
 import './MainAppBar.css';
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -24,6 +23,7 @@ import DownloadCloningStrategyDialog from '../DownloadCloningStrategyDialog';
 import LoadCloningHistoryWrapper from '../LoadCloningHistoryWrapper';
 import useValidateState from '../../hooks/useValidateState';
 import GithubCornerRight from './GithubCornerRight';
+import useHttpClient from '../../hooks/useHttpClient';
 
 const { setCurrentTab, setState: setCloningState } = cloningActions;
 
@@ -37,6 +37,7 @@ function MainAppBar() {
   const [openVersionDialog, setOpenVersionDialog] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openMenu = Boolean(anchorEl);
+  const httpClient = useHttpClient();
 
   const dispatch = useDispatch();
   const { addAlert } = useAlerts();
@@ -63,7 +64,7 @@ function MainAppBar() {
     setOpenExampleDialog(false);
     setOpenTemplateDialog(false);
     if (url) {
-      const { data } = await axios.get(url);
+      const { data } = await httpClient.get(url);
       if (isTemplate) {
         const segments = url.split('/');
         const kitUrl = segments[segments.length - 3];

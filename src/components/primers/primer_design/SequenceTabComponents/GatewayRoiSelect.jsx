@@ -145,14 +145,18 @@ function GatewayRoiSelect({ id, greedy = false }) {
     checkKnownCombination(leftSite, site);
   }, [leftSite, donorSites]);
   return (
-    <RequestStatusWrapper requestStatus={requestStatus} retry={attemptAgain} donorSites={donorSites}>
-
-      <Box sx={{ my: 2, '& > div': { mx: 1 } }}>
-        <SiteSelect donorSites={donorSites} site={leftSite} setSite={onSiteSelectLeft} label="Left attP site" />
-        <SiteSelect donorSites={donorSites} site={rightSite} setSite={onSiteSelectRight} label="Right attP site" />
-      </Box>
-      {knownCombination && (<Alert sx={{ width: '80%', margin: 'auto', mb: 2 }} severity="info">{knownCombination.message}</Alert>)}
-      {knownCombination === null && (leftSite && rightSite) && (<Alert sx={{ width: '80%', margin: 'auto', mb: 2 }} severity="error">No recommended primer tails found</Alert>)}
+    <RequestStatusWrapper requestStatus={requestStatus} retry={attemptAgain}>
+      {donorSites.length < 2 && (<Alert severity="error">The sequence must have at least two AttP sites</Alert>)}
+      {donorSites.length >= 2 && (
+        <>
+          <Box sx={{ my: 2, '& > div': { mx: 1 } }}>
+            <SiteSelect donorSites={donorSites} site={leftSite} setSite={onSiteSelectLeft} label="Left attP site" />
+            <SiteSelect donorSites={donorSites} site={rightSite} setSite={onSiteSelectRight} label="Right attP site" />
+          </Box>
+          {knownCombination && (<Alert sx={{ width: '80%', margin: 'auto', mb: 2 }} severity="info">{knownCombination.message}</Alert>)}
+          {knownCombination === null && (leftSite && rightSite) && (<Alert sx={{ width: '80%', margin: 'auto', mb: 2 }} severity="error">No recommended primer tails found</Alert>)}
+        </>
+      )}
     </RequestStatusWrapper>
   );
 }

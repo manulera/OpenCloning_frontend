@@ -1,22 +1,21 @@
 import * as React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import axios from 'axios';
 import { Alert, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
-export default function GetRequestMultiSelect({ getOptionsFromResponse, url, label, messages, onChange, multiple = true, autoComplete = true, getOptionLabel, requestHeaders = {}, ...rest }) {
+export default function GetRequestMultiSelect({ getOptionsFromResponse, url, label, messages, onChange, httpClient, multiple = true, autoComplete = true, getOptionLabel, requestHeaders = {}, ...rest }) {
   const { loadingMessage, errorMessage } = messages;
   const [options, setOptions] = React.useState([]);
   const [connectAttempt, setConnectAttemp] = React.useState(0);
   const [error, setError] = React.useState(false);
   const [waitingMessage, setWaitingMessage] = React.useState(loadingMessage);
+
   React.useEffect(() => {
-    axios
-      .get(url, { headers: requestHeaders }).then(({ data }) => {
-        setWaitingMessage(null);
-        setOptions(getOptionsFromResponse(data));
-        setError(false);
-      }).catch((e) => { setWaitingMessage(errorMessage); setError(true); });
+    httpClient.get(url, { headers: requestHeaders }).then(({ data }) => {
+      setWaitingMessage(null);
+      setOptions(getOptionsFromResponse(data));
+      setError(false);
+    }).catch((e) => { setWaitingMessage(errorMessage); setError(true); });
   }, [connectAttempt]);
 
   if (error) {

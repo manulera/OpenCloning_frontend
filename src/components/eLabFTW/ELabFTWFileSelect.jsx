@@ -1,9 +1,9 @@
 import React from 'react';
 import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
-import { baseUrl, readHeaders } from './common';
+import { eLabFTWHttpClient, readHeaders } from './common';
 
 function ELabFTWFileSelect({ itemId, setFileInfo, ...rest }) {
-  const url = `${baseUrl}/api/v2/items/${itemId}`;
+  const url = `/api/v2/items/${itemId}`;
   const getOptionsFromResponse = ({ uploads }) => uploads;
   const label = 'File with sequence';
   const messages = { loadingMessage: 'retrieving attachments', errorMessage: 'Could not retrieve attachment from eLab' };
@@ -12,6 +12,7 @@ function ELabFTWFileSelect({ itemId, setFileInfo, ...rest }) {
   return (
     <GetRequestMultiSelect
       getOptionsFromResponse={getOptionsFromResponse}
+      httpClient={eLabFTWHttpClient}
       requestHeaders={readHeaders}
       url={url}
       label={label}

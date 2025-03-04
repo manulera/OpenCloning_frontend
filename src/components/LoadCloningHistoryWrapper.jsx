@@ -1,6 +1,5 @@
 import React from 'react';
 import { batch, useDispatch, useStore } from 'react-redux';
-import axios from 'axios';
 import useAlerts from '../hooks/useAlerts';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useValidateState from '../hooks/useValidateState';
@@ -8,10 +7,11 @@ import { cloningActions } from '../store/cloning';
 import { mergeStates } from '../utils/thunks';
 import { loadFilesToSessionStorage, loadHistoryFile } from '../utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
+import useHttpClient from '../hooks/useHttpClient';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputEntity } = cloningActions;
 
-async function processSequenceFiles(files, backendRoute) {
+async function processSequenceFiles(files, backendRoute, httpClient) {
   const allSources = [];
   const allEntities = [];
   const allWarnings = [];
@@ -30,7 +30,7 @@ async function processSequenceFiles(files, backendRoute) {
     };
     const url = backendRoute('read_from_file');
     try {
-      const { data: { sources, sequences }, headers } = await axios.post(url, formData, config);
+      const { data: { sources, sequences }, headers } = await httpClient.post(url, formData, config);
       // If there are warnings, add them to the list of warnings
       const warnings = headers['x-warning'] ? [`${fileName}: ${headers['x-warning']}`] : [];
       return { sources, sequences, warnings };
@@ -61,6 +61,8 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
   const backendRoute = useBackendRoute();
   const store = useStore();
   const validateState = useValidateState();
+  const httpClient = useHttpClient();
+
   const [fileLoaderFunctions, setFileLoaderFunctions] = React.useState(null);
 
   React.useEffect(() => {
@@ -126,7 +128,7 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         // Process a bunch of sequence files
       } else {
         try {
-          const { sources, entities, warnings } = await processSequenceFiles(files, backendRoute);
+          const { sources, entities, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
           batch(() => {
             // If there is only one source and it is empty, delete it
             if (cloningState.sources.length === 1 && cloningState.sources[0].type === null) {

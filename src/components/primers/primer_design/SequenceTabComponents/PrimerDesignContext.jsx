@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import { updateEditor } from '@teselagen/ove';
 import { isEqual } from 'lodash-es';
@@ -10,6 +9,7 @@ import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '../../../../store/cloning';
 import { stringIsNotDNA } from '../../../../store/cloning_utils';
 import { joinEntitiesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
+import useHttpClient from '../../../../hooks/useHttpClient';
 
 function changeValueAtIndex(current, index, newValue) {
   return current.map((_, i) => (i === index ? newValue : current[i]));
@@ -42,6 +42,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
   const dispatch = useDispatch();
   const { updateStoreEditor } = useStoreEditor();
   const { setMainSequenceId, addPrimersToPCRSource, setCurrentTab } = cloningActions;
+  const httpClient = useHttpClient();
 
   const getSubmissionPreventedMessage = () => {
     if (rois.some((region) => region === null)) {
@@ -256,7 +257,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     const url = backendRoute(`/primer_design/${endpoint}`);
 
     try {
-      const resp = await axios.post(url, requestData, { params });
+      const resp = await httpClient.post(url, requestData, { params });
       setError('');
       const newPrimers = resp.data.primers;
       setPrimers(newPrimers);

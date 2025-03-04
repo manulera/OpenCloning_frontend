@@ -1,17 +1,18 @@
 import React from 'react';
-import axios from 'axios';
 import useAlerts from './useAlerts';
 import useBackendRoute from './useBackendRoute';
+import useHttpClient from './useHttpClient';
 
 export default function useValidateState() {
   const backendRoute = useBackendRoute();
   const { addAlert } = useAlerts();
+  const httpClient = useHttpClient();
 
   const validateState = React.useCallback(async (newState) => {
     try {
       const newState2 = { ...newState, sequences: newState.entities };
       delete newState2.entities;
-      await axios.post(backendRoute('validate'), newState2);
+      await httpClient.post(backendRoute('validate'), newState2);
     } catch (e) {
       if (e.code === 'ERR_NETWORK') {
         addAlert({

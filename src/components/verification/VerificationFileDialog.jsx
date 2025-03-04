@@ -16,7 +16,6 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import axios from 'axios';
 import { batch, shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import { getTeselaJsonFromBase64, file2base64 } from '../../utils/readNwrite';
@@ -26,6 +25,7 @@ import useBackendRoute from '../../hooks/useBackendRoute';
 import useStoreEditor from '../../hooks/useStoreEditor';
 import LoadFromDatabaseButton from './LoadFromDatabaseButton';
 import { sequencingFileExtensions } from './utils';
+import useHttpClient from '../../hooks/useHttpClient';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
@@ -43,6 +43,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
   const { updateStoreEditor } = useStoreEditor();
   const backendRoute = useBackendRoute();
   const store = useStore();
+  const httpClient = useHttpClient();
 
   const toggleMain = React.useCallback(() => {
     dispatch(setMainSequenceId(id));
@@ -91,7 +92,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
     const allSequencingFiles = [...existingSequencingFilesInState, ...parsedSequencingFiles];
     const alignments = [];
     const traces = allSequencingFiles.map((f) => f.trace);
-    const resp = await axios.post(backendRoute('align_sanger'), { sequence: entity, traces });
+    const resp = await httpClient.post(backendRoute('align_sanger'), { sequence: entity, traces });
 
     for (let i = 0; i < allSequencingFiles.length; i++) {
       alignments.push({ ...allSequencingFiles[i], alignment: [resp.data[0], resp.data[i + 1]] });

@@ -1,7 +1,7 @@
 export default function error2String(error) {
   if (error.code === 'ERR_NETWORK') { return 'Cannot connect to backend server'; }
   if (!error.code) {
-    return 'Internal error, please contact the developers.';
+    return error.message;
   }
   const { detail } = error.response.data;
   if (error.response.status === 500) return 'Internal server error';

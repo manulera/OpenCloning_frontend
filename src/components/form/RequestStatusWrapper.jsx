@@ -1,12 +1,8 @@
 import React from 'react';
-import { Alert } from '@mui/material';
 import RetryAlert from './RetryAlert';
 
-function RequestStatusWrapper({ children, requestStatus, retry, donorSites }) {
+function RequestStatusWrapper({ children, requestStatus, retry }) {
   if (requestStatus.status === 'success') {
-    if (donorSites.length < 2) {
-      return <Alert severity="error">The sequence must have at least two AttP sites</Alert>;
-    }
     return children;
   }
   if (requestStatus.status === 'loading') {
