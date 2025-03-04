@@ -52,7 +52,7 @@ describe('Test upload history from file', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/ase1.gb', { force: true });
     cy.get('.MuiAlert-message').contains('Only JSON and zip files are accepted');
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/wrong_history.json', { force: true });
-    cy.get('.MuiAlert-message').contains('Cloning strategy not valid');
+    cy.get('.MuiAlert-message').contains('should contain at least');
   });
   it('Zip: Can upload a correct zip file', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
@@ -110,7 +110,7 @@ describe('Test upload history from file', () => {
   });
   it('Zip: error handling', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/wrong_json_in_zip.zip', { force: true });
-    cy.get('.MuiAlert-message').contains('Cloning strategy not valid').then(() => {
+    cy.get('.MuiAlert-message').contains('should contain at least').then(() => {
       // Check that nothing was added to session storage
       cy.window().its('sessionStorage').its('length').should('eq', 0);
     });
@@ -119,9 +119,7 @@ describe('Test upload history from file', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
     cy.get('div.cloning-tab-pannel').contains('final_product.gb').should('exist');
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/wrong_json_in_zip.zip', { force: true });
-    cy.get('.history-loaded-dialog').contains('Replace existing').click();
-    cy.get('.history-loaded-dialog button').contains('Select').click();
-    cy.get('.MuiAlert-message').contains('Cloning strategy not valid').then(() => {
+    cy.get('.MuiAlert-message').contains('should contain at least').then(() => {
       // Check that nothing was removed from session storage
       cy.window().its('sessionStorage').its('length').should('eq', 3);
     });
