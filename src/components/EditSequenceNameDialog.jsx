@@ -2,10 +2,10 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormC
 import React from 'react';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import axios from 'axios';
 import { cloningActions } from '../store/cloning';
 import error2String from '../utils/error2String';
 import useBackendRoute from '../hooks/useBackendRoute';
+import useHttpClient from '../hooks/useHttpClient';
 
 function EditSequenceNameDialog({ id, dialogOpen, setDialogOpen }) {
   const [name, setName] = React.useState('');
@@ -17,6 +17,7 @@ function EditSequenceNameDialog({ id, dialogOpen, setDialogOpen }) {
   ], isEqual);
   const store = useStore();
   const backendRoute = useBackendRoute();
+  const httpClient = useHttpClient();
 
   const { updateEntityAndItsSource } = cloningActions;
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ function EditSequenceNameDialog({ id, dialogOpen, setDialogOpen }) {
     setError('');
     const url = backendRoute('rename_sequence');
     try {
-      const { data: newEntity } = await axios.post(url, entity, { params: { name } });
+      const { data: newEntity } = await httpClient.post(url, entity, { params: { name } });
       const newSource = { ...source, output_name: newName };
       dispatch(updateEntityAndItsSource({ newEntity, newSource }));
       setDialogOpen(false);

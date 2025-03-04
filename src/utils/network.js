@@ -70,3 +70,17 @@ export function getAllParentSources(source, sources, parentSources = []) {
     getAllParentSources(parentSource, sources, parentSources);
   });
 }
+
+export function getSortedSourceIds(sources2sort, sources) {
+  const sortedSources = [...sources2sort];
+  sortedSources.sort((source1, source2) => {
+    const parentSources1 = [];
+    const parentSources2 = [];
+    getAllParentSources(source1, sources, parentSources1);
+    getAllParentSources(source2, sources, parentSources2);
+    const parentSources1Ids = parentSources1.map((source) => source.id);
+    const parentSources2Ids = parentSources2.map((source) => source.id);
+    return Math.min(...parentSources1Ids) - Math.min(...parentSources2Ids);
+  });
+  return sortedSources.map((source) => source.id);
+}

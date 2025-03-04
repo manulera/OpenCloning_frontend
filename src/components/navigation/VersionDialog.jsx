@@ -1,20 +1,21 @@
 import { Dialog, DialogContent, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import React from 'react';
-import axios from 'axios';
 import useBackendRoute from '../../hooks/useBackendRoute';
+import useHttpClient from '../../hooks/useHttpClient';
 
 function VersionDialog({ open, setOpen }) {
   const backendRoute = useBackendRoute();
   const [backendVersion, setBackendVersion] = React.useState(null);
   const [frontendVersion, setFrontendVersion] = React.useState(null);
+  const httpClient = useHttpClient();
   React.useEffect(() => {
     if (open) {
       const url = backendRoute('/version');
-      axios.get(url).then(({ data }) => {
+      httpClient.get(url).then(({ data }) => {
         const { version, commit_sha: commitSha } = data;
         setBackendVersion({ version, commitSha });
       });
-      axios.get(`${import.meta.env.BASE_URL}version.json`).then(({ data }) => {
+      httpClient.get(`${import.meta.env.BASE_URL}version.json`).then(({ data }) => {
         const { version, commit_sha: commitSha } = data;
         setFrontendVersion({ version, commitSha });
       });

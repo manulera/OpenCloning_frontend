@@ -1,11 +1,10 @@
-import axios from 'axios';
 import SaveIcon from '@mui/icons-material/Save';
 import LinkIcon from '@mui/icons-material/Link';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-import { baseUrl, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders, readHeaders } from './common';
+import { eLabFTWHttpClient, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders, readHeaders, baseUrl } from './common';
 import LoadHistoryComponent from './LoadHistoryComponent';
 
 function error2String(error) {
@@ -22,23 +21,23 @@ function error2String(error) {
 }
 
 async function deleteResource(resourceId) {
-  const url = `${baseUrl}/api/v2/items/${resourceId}`;
+  const url = `/api/v2/items/${resourceId}`;
   // eLabFTW requires application/json for delete requests, axios seems to require a data field for it to work
-  const resp = await axios.delete(url, { data: {}, headers: { ...writeHeaders, 'Content-Type': 'application/json' } });
+  const resp = await eLabFTWHttpClient.delete(url, { data: {}, headers: { ...writeHeaders, 'Content-Type': 'application/json' } });
   return resp.data;
 }
 
 const linkToParent = async (childId, parentId) => {
-  await axios.post(
-    `${baseUrl}/api/v2/items/${childId}/items_links/${parentId}`,
+  await eLabFTWHttpClient.post(
+    `/api/v2/items/${childId}/items_links/${parentId}`,
     {},
     { headers: writeHeaders },
   );
 };
 
 const createResource = async (categoryId) => {
-  const createdItemResponse = await axios.post(
-    `${baseUrl}/api/v2/items`,
+  const createdItemResponse = await eLabFTWHttpClient.post(
+    '/api/v2/items',
     {
       category_id: categoryId,
       tags: [],
@@ -48,8 +47,8 @@ const createResource = async (categoryId) => {
   return Number(createdItemResponse.headers.location.split('/').pop());
 };
 
-const patchResource = async (resourceId, title, metadata = undefined) => axios.patch(
-  `${baseUrl}/api/v2/items/${resourceId}`,
+const patchResource = async (resourceId, title, metadata = undefined) => eLabFTWHttpClient.patch(
+  `/api/v2/items/${resourceId}`,
   { title, metadata },
   { headers: writeHeaders },
 );
@@ -88,7 +87,7 @@ async function uploadTextFileToResource(resourceId, fileName, textContent, comme
   const formData = new FormData();
   formData.append('file', blob, fileName);
   formData.append('comment', comment);
-  const response = await axios.post(`${baseUrl}/api/v2/items/${resourceId}/uploads`, formData, { headers: writeHeaders });
+  const response = await eLabFTWHttpClient.post(`/api/v2/items/${resourceId}/uploads`, formData, { headers: writeHeaders });
   return Number(response.headers.location.split('/').pop());
 }
 
@@ -194,9 +193,9 @@ async function loadSequenceFromUrlParams(urlParams) {
 }
 
 async function getPrimer(databaseId) {
-  const url = `${baseUrl}/api/v2/items/${databaseId}`;
+  const url = `/api/v2/items/${databaseId}`;
   try {
-    const resp = await axios.get(url, { headers: readHeaders });
+    const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
     resp.data.metadata = JSON.parse(resp.data.metadata);
     return { name: resp.data.title, database_id: databaseId, sequence: resp.data.metadata.extra_fields.sequence.value };
   } catch (e) {
@@ -206,8 +205,8 @@ async function getPrimer(databaseId) {
 }
 
 async function getSequenceName(databaseId) {
-  const url = `${baseUrl}/api/v2/items/${databaseId}`;
-  const resp = await axios.get(url, { headers: readHeaders });
+  const url = `/api/v2/items/${databaseId}`;
+  const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
   return resp.data.title;
 }
 
@@ -215,8 +214,8 @@ async function getSequencingFiles(databaseId) {
   // This function should return an array of objects:
   // name: the name of the file
   // getFile: an async function that returns the file content
-  const url = `${baseUrl}/api/v2/items/${databaseId}/uploads`;
-  const resp = await axios.get(url, { headers: readHeaders });
+  const url = `/api/v2/items/${databaseId}/uploads`;
+  const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
   return resp.data.map((fileInfo) => ({
     name: fileInfo.real_name,
     getFile: async () => getFileFromELabFTW(databaseId, fileInfo),

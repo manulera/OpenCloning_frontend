@@ -1,7 +1,7 @@
 import { Alert, Button, CircularProgress } from '@mui/material';
-import axios from 'axios';
 import React from 'react';
 import useBackendRoute from '../hooks/useBackendRoute';
+import useHttpClient from '../hooks/useHttpClient';
 
 function ExternalServicesStatusCheck() {
   const [servicesDown, setServicesDown] = React.useState([]);
@@ -9,6 +9,7 @@ function ExternalServicesStatusCheck() {
   const [loading, setLoading] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState('');
   const backendRoute = useBackendRoute();
+  const httpClient = useHttpClient();
   React.useEffect(() => {
     setLoading(true);
     const checkServices = async () => {
@@ -23,7 +24,7 @@ function ExternalServicesStatusCheck() {
       await Promise.all(
         services.map(async (service) => {
           try {
-            const resp = await axios.get(service.url);
+            const resp = await httpClient.get(service.url);
             if (!service.check(resp)) {
               downServices.push(service);
             }

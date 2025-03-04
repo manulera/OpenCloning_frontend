@@ -1,6 +1,7 @@
 import * as React from 'react';
 import GetRequestMultiSelect from './GetRequestMultiSelect';
 import useBackendRoute from '../../hooks/useBackendRoute';
+import useHttpClient from '../../hooks/useHttpClient';
 
 function EnzymeMultiSelect({ setEnzymes, label = 'Enzymes used', multiple = true }) {
   const backendRoute = useBackendRoute();
@@ -11,6 +12,7 @@ function EnzymeMultiSelect({ setEnzymes, label = 'Enzymes used', multiple = true
     errorMessage: 'Could not retrieve enzymes from server',
   }), []);
   const onChange = React.useCallback((value) => setEnzymes(value), [setEnzymes]);
+  const httpClient = useHttpClient();
 
   return (
 
@@ -20,6 +22,7 @@ function EnzymeMultiSelect({ setEnzymes, label = 'Enzymes used', multiple = true
       getOptionsFromResponse={getOptionsFromResponse}
       url={url}
       label={label}
+      httpClient={httpClient}
       messages={messages}
       onChange={onChange}
       multiple={multiple}

@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import axios from 'axios';
 import { useStore } from 'react-redux';
 import error2String from '../utils/error2String';
 import { formatGatewaySites } from '../store/cloning_utils';
 import useBackendRoute from './useBackendRoute';
+import useHttpClient from './useHttpClient';
 
 export default function useGatewaySites({ target, greedy }) {
   const store = useStore();
@@ -11,6 +11,7 @@ export default function useGatewaySites({ target, greedy }) {
   const [connectAttempt, setConnectAttempt] = useState(0);
   const [sites, setSites] = useState([]);
   const backendRoute = useBackendRoute();
+  const httpClient = useHttpClient();
 
   const attemptAgain = useCallback(() => {
     setConnectAttempt((p) => p + 1);
@@ -23,7 +24,7 @@ export default function useGatewaySites({ target, greedy }) {
       const state = store.getState();
       const sequence = state.cloning.entities.find((entity) => entity.id === target);
       try {
-        const { data: donorSites } = await axios.post(url, sequence, { params: { greedy } });
+        const { data: donorSites } = await httpClient.post(url, sequence, { params: { greedy } });
         setRequestStatus({ status: 'success', message: '' });
         setSites(formatGatewaySites(donorSites, 'att'));
       } catch (error) {

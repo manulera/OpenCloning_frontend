@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
 import { isEqual } from 'lodash-es';
 import MainAppBar from './components/navigation/MainAppBar';
 import OpenCloning from './components/OpenCloning';
@@ -10,6 +9,7 @@ import useDatabase from './hooks/useDatabase';
 import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
+import useHttpClient from './hooks/useHttpClient';
 
 const { setConfig, setKnownErrors, setState: setCloningState } = cloningActions;
 
@@ -21,6 +21,8 @@ function App() {
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null, setHistoryFileError });
   const [urlLoaded, setUrlLoaded] = React.useState(false);
   const configLoaded = useSelector((state) => state.cloning.config.loaded);
+
+  const httpClient = useHttpClient();
 
   React.useEffect(() => {
     async function loadSequenceFromUrlParams() {
@@ -46,7 +48,7 @@ function App() {
           }
         } else if (urlParams.source === 'example') {
           try {
-            const { data } = await axios.get(`${import.meta.env.BASE_URL}examples/${urlParams.example}`);
+            const { data } = await httpClient.get(`${import.meta.env.BASE_URL}examples/${urlParams.example}`);
             const newState = { ...data, entities: data.sequences };
             delete newState.sequences;
             dispatch(setCloningState(newState));
@@ -65,11 +67,11 @@ function App() {
 
   React.useEffect(() => {
     // Load application configuration
-    axios.get(`${import.meta.env.BASE_URL}config.json`).then(({ data }) => {
+    httpClient.get(`${import.meta.env.BASE_URL}config.json`).then(({ data }) => {
       dispatch(setConfig(data));
     });
     // Load known errors from google sheet
-    axios.get(`${import.meta.env.BASE_URL}known_errors.json`)
+    httpClient.get(`${import.meta.env.BASE_URL}known_errors.json`)
       .then(({ data }) => { dispatch(setKnownErrors(data || {})); })
       .catch(() => {
         dispatch(setKnownErrors({}));

@@ -5,8 +5,11 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui/material';
-import axios from 'axios';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
+import RequestStatusWrapper from '../form/RequestStatusWrapper';
+import getHttpClient from '../../utils/getHttpClient';
+
+const httpClient = getHttpClient();
 
 function validateRepositoryId(repositoryId, repository) {
   switch (repository) {
@@ -135,17 +138,26 @@ function IndexJsonSelector({
   const [userInput, setUserInput] = React.useState('');
   const [data, setData] = React.useState(null);
   const [options, setOptions] = React.useState([]);
+  const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' });
+  const [retry, setRetry] = React.useState(0);
 
   React.useEffect(() => {
     const fetchOptions = async () => {
-      const resp = await axios.get(url);
-      setData(responseProcessCallback(resp));
-      if (requiredInput === 0) {
-        setOptions(getOptions(resp.data, ''));
+      setRequestStatus({ status: 'loading' });
+      try {
+        const resp = await httpClient.get(url);
+        setData(responseProcessCallback(resp));
+        if (requiredInput === 0) {
+          setOptions(getOptions(resp.data, ''));
+        }
+        setRequestStatus({ status: 'success' });
+      } catch (error) {
+        setRequestStatus({ status: 'error', message: error.message });
       }
     };
     fetchOptions();
-  }, []);
+  }, [retry]);
+
   const onInputChange = (newInputValue) => {
     if (newInputValue === undefined) {
       // When clearing the input via x button
@@ -166,15 +178,10 @@ function IndexJsonSelector({
     setOptions(getOptions(data, newInputValue));
   };
 
-  if (data === null) {
-    return <div>Loading...</div>;
-  }
-
   const selectedOption = options.find((option) => option.name === userInput);
 
   return (
-    <>
-
+    <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry(retry + 1)}>
       <FormControl fullWidth>
         <Autocomplete
           onChange={(event, value) => {
@@ -202,7 +209,7 @@ function IndexJsonSelector({
         />
       </FormControl>
       {selectedOption && <SuccessComponent option={selectedOption} />}
-    </>
+    </RequestStatusWrapper>
   );
 }
 
@@ -329,6 +336,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               noOptionsText="Type at least 3 characters to search"
               inputLabel="Plasmid name"
               SuccessComponent={SEVASuccessComponent}
+
               requiredInput={3}
             />
           )}

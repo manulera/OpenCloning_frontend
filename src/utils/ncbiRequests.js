@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { escapeStringRegexp } from './other';
+import getHttpClient from './getHttpClient';
+
+const httpClient = getHttpClient();
 
 export async function querySpecies(userInput) {
   // Get ids from search
@@ -10,7 +11,7 @@ export async function querySpecies(userInput) {
   const ids = [];
   while (retStart >= 0) {
     const url1 = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=taxonomy&term=*${query}*[WORD]+species[rank]&retmax=${retMax}&retmode=json&retstart=${retStart}`;
-    const resp1 = await axios.get(url1);
+    const resp1 = await httpClient.get(url1);
     resp1.data.esearchresult.idlist.forEach((e) => ids.push(e));
     if (Number(resp1.data.esearchresult.count) > ids.length) {
       retStart += retMax;
@@ -28,7 +29,7 @@ export async function querySpecies(userInput) {
   for (let i = 0; i < ids.length; i += maxRequestIds) {
     const requestedIds = ids.slice(i, i + maxRequestIds).join(',');
     const url2 = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=taxonomy&id=${requestedIds}&retmode=json`;
-    const resp2Data = await axios.get(url2);
+    const resp2Data = await httpClient.get(url2);
     resp2Data.data.result.uids.forEach((e) => taxons.push(resp2Data.data.result[e]));
     // NCBI is very sensitive to the number of requests, so we need to wait a bit
     if (i + maxRequestIds < ids.length) { await setTimeout(() => {}, 2000); }
@@ -45,7 +46,7 @@ export async function taxonSuggest(userInput) {
     taxon_resource_filter: 'TAXON_RESOURCE_FILTER_GENOME',
     tax_rank_filter: 'higher_taxon',
   };
-  const resp = await axios.get(url, { params });
+  const resp = await httpClient.get(url, { params });
   const taxons = resp.data.sci_name_and_ids;
 
   // This might change if the API endpoint changes
@@ -54,16 +55,16 @@ export async function taxonSuggest(userInput) {
 
 export async function getReferenceAssemblyId(taxonId) {
   const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/taxon/${taxonId}/dataset_report?filters.reference_only=true`;
-  const resp = await axios.get(url);
+  const resp = await httpClient.get(url);
   const { reports } = resp.data;
   return reports === undefined ? null : resp.data.reports[0].accession;
 }
 
 export async function geneSuggest(assemblyId, userInput) {
   const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyId}/annotation_report?search_text=${userInput}`;
-  const resp = await axios.get(url);
+  const resp = await httpClient.get(url);
   // TODO: add support for api key
-  // const resp = await axios.get(url, { params: {
+  // const resp = await httpClient.get(url, { params: {
   //   api_key: 'blah',
   // } });
   const { reports } = resp.data;
@@ -72,7 +73,7 @@ export async function geneSuggest(assemblyId, userInput) {
 
 export async function getInfoFromAssemblyId(assemblyId) {
   const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyId}/dataset_report?filters.assembly_version=all_assemblies`;
-  const resp = await axios.get(url, { validateStatus: false });
+  const resp = await httpClient.get(url, { validateStatus: false });
 
   if (resp.status === 404 || resp.data.reports === undefined) {
     return null;
@@ -87,7 +88,7 @@ export async function getInfoFromAssemblyId(assemblyId) {
 
   // const url2 = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyId}/annotation_report/download_summary`;
   // try {
-  //   const resp2 = await axios.get(url2);
+  //   const resp2 = await httpClient.get(url2);
   //   const hasAnnotation = resp2.data.record_count !== undefined;
   //   return { species, hasAnnotation, newerAssembly };
   // } catch (error) {
@@ -104,7 +105,7 @@ export async function getInfoFromSequenceAccession(sequenceAccession) {
   const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?id=${sequenceAccession}&db=nuccore&retmode=json`;
   // For example: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?id=CP046095.1&db=nuccore&retmode=json
 
-  const resp = await axios.get(url);
+  const resp = await httpClient.get(url);
   // I don't think this ever happens, but just in case
   if (resp.status === 404 || resp.data.result.uids.length === 0) {
     return null;
@@ -117,7 +118,7 @@ export async function getInfoFromSequenceAccession(sequenceAccession) {
   }
 
   const url2 = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?id=${taxId}&db=taxonomy&retmode=json`;
-  const resp2 = await axios.get(url2);
+  const resp2 = await httpClient.get(url2);
   const { scientificname: organismName } = resp2.data.result[resp2.data.result.uids[0]];
   return { species: { tax_id: taxId, organism_name: organismName }, sequenceAccessionStandard };
 }
@@ -126,7 +127,7 @@ export async function getSequenceAccessionsFromAssemblyAccession(assemblyAccessi
   const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyAccession}/sequence_reports`;
   // For example: https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_000005845.2/sequence_reports
   try {
-    const resp = await axios.get(url);
+    const resp = await httpClient.get(url);
     return resp.data.reports;
   } catch (error) {
     return [];
