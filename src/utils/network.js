@@ -37,32 +37,6 @@ export function constructNetwork(entities, sources) {
   return unsortedNetwork.sort(parentNodeSorter);
 }
 
-export function graftState(parentState, childState, graftSourceId) {
-  // Find the source in the parent state that should be merged with the graft source
-  const entityIdsThatAreInput = parentState.sources.reduce((result, source) => result.concat(source.input), []);
-  const entityIdsThatAreNotInput = parentState.entities.filter((entity) => !entityIdsThatAreInput.includes(entity.id)).map((entity) => entity.id);
-  const sourcesWithoutOutput = parentState.sources.filter((source) => source.output === null);
-
-  if (sourcesWithoutOutput.length > 0 || entityIdsThatAreNotInput.length !== 1) {
-    throw new Error('Invalid parent state');
-  }
-
-  const parentGraftSource = parentState.sources.find((source) => source.output === entityIdsThatAreNotInput[0]);
-  const childGraftSource = childState.sources.find((source) => source.id === graftSourceId);
-  const mergedSource = { ...parentGraftSource, id: childGraftSource.id, output: childGraftSource.output };
-
-  const parentSources = parentState.sources.filter((source) => source.id !== parentGraftSource.id);
-  const parentEntities = parentState.entities.filter((entity) => entity.id !== entityIdsThatAreNotInput[0]);
-  const childSources = childState.sources.filter((source) => source.id !== childGraftSource.id);
-
-  return {
-    sources: [...parentSources, ...childSources, mergedSource],
-    entities: [...parentEntities, ...childState.entities],
-    primers: [...parentState.primers, ...childState.primers],
-    files: [...parentState.files, ...childState.files],
-  };
-}
-
 export function getAllParentSources(source, sources, parentSources = []) {
   const thisParentSources = source.input.map((input) => sources.find((s) => s.output === input));
   parentSources.push(...thisParentSources);
@@ -74,8 +48,9 @@ export function getAllParentSources(source, sources, parentSources = []) {
 export function getSortedSourceIds(sources2sort, sources) {
   const sortedSources = [...sources2sort];
   sortedSources.sort((source1, source2) => {
-    const parentSources1 = [];
-    const parentSources2 = [];
+    // We also include the source itself for sorting, in case of grafting state
+    const parentSources1 = [source1];
+    const parentSources2 = [source2];
     getAllParentSources(source1, sources, parentSources1);
     getAllParentSources(source2, sources, parentSources2);
     const parentSources1Ids = parentSources1.map((source) => source.id);

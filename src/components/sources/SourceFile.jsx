@@ -7,7 +7,7 @@ import LabelWithTooltip from '../form/LabelWithTooltip';
 import { cloningActions } from '../../store/cloning';
 import { loadFilesToSessionStorage, loadHistoryFile } from '../../utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
-import { mergeStates } from '../../utils/thunks';
+import { mergeStates, getGraftEntityId, graftState } from '../../utils/thunks';
 
 const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 
@@ -24,6 +24,10 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
   const onChange = async (event) => {
     setAlert(null);
     const files = Array.from(event.target.files);
+    if (files.length === 0) {
+      return;
+    }
+    event.target.value = null;
     // If the file is a history file, we load it
     if (
       fileFormat === 'json' || fileFormat === 'zip'
@@ -44,12 +48,27 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         setAlert({ message: e.message, severity: 'error' });
         return;
       }
+      const cloningState = store.getState().cloning;
+      const graft = getGraftEntityId(cloningStrategy) !== null;
+
+      if (Boolean(source.output) && !graft) {
+        setAlert({ message: 'Cannot graft cloning strategy as it does not converge on a single sequence, you can load it on a source without outputs', severity: 'error' });
+        return;
+      }
+      let mergedState;
+      let networkShift;
+      if (graft) {
+        ({ mergedState, networkShift } = graftState(cloningStrategy, cloningState, source.id));
+      } else {
+        ({ mergedState, networkShift } = mergeStates(cloningStrategy, cloningState));
+      }
+
       batch(async () => {
-        // Replace the source with the new one
-        dispatch(deleteSourceAndItsChildren(source.id));
+        if (!graft) {
+          // Replace the source with the new one
+          dispatch(deleteSourceAndItsChildren(source.id));
+        }
         try {
-          const cloningState = store.getState().cloning;
-          const { mergedState, networkShift } = mergeStates(cloningStrategy, cloningState);
           dispatch(setCloningState(mergedState));
           await loadFilesToSessionStorage(verificationFiles, networkShift);
           validateState(cloningStrategy);

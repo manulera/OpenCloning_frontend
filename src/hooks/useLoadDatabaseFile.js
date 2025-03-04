@@ -3,9 +3,8 @@ import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
 import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
 import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
-import { mergePrimersInState, mergeStates, shiftState } from '../utils/thunks';
+import { mergeStates, graftState } from '../utils/thunks';
 import { cloningActions } from '../store/cloning';
-import { graftState } from '../utils/network';
 import useDatabase from './useDatabase';
 
 const { deleteSourceAndItsChildren, setState: setCloningState } = cloningActions;
@@ -67,30 +66,30 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
         setHistoryFileError(e.message);
         return;
       }
+      // This one won't have the source.id deleted
+      const prevState = store.getState().cloning;
 
       batch(() => {
-        const prevState = store.getState().cloning;
         // Replace the source with the new one if called from a source
         if (!ancestors) {
           dispatch(deleteSourceAndItsChildren(source.id));
         }
+        const cloningState = store.getState().cloning;
         try {
-          const cloningState = store.getState().cloning;
           let mergedState;
-          if (!ancestors) {
-            ({ mergedState } = mergeStates(cloningStrategy, cloningState));
+          if (ancestors) {
+            ({ mergedState } = graftState(cloningStrategy, cloningState, source.id));
           } else {
-            const { shiftedState } = shiftState(cloningStrategy, cloningState);
-            mergedState = graftState(shiftedState, cloningState, source.id);
-            mergedState = mergePrimersInState(mergedState);
+            ({ mergedState } = mergeStates(cloningStrategy, cloningState));
           }
-
           dispatch(setCloningState(mergedState));
           validateState(cloningStrategy);
         } catch (e) {
           setHistoryFileError(e.message);
           console.error(e);
-          dispatch(setCloningState(prevState));
+          if (!ancestors) {
+            dispatch(setCloningState(prevState));
+          }
         }
       });
     } else {
