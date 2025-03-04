@@ -46,7 +46,7 @@ function App() {
             });
             console.error(error);
           }
-        } else if (urlParams.source === 'example') {
+        } else if (urlParams.source === 'example' && urlParams.example) {
           try {
             const { data } = await httpClient.get(`${import.meta.env.BASE_URL}examples/${urlParams.example}`);
             const newState = { ...data, entities: data.sequences };

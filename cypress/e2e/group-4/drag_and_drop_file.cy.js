@@ -43,7 +43,7 @@ describe('Test drag and drop functionality', () => {
 
     // JSON file with wrong content
     cy.get('div.cloning-history').selectFile('cypress/test_files/wrong_history.json', { action: 'drag-drop' });
-    cy.get('div.MuiAlert-message').contains('Cloning strategy not valid');
+    cy.get('div.MuiAlert-message').contains('should contain at least');
 
     // Files which are not sequences
     cy.get('div.cloning-history').selectFile('public/favicon.ico', { action: 'drag-drop' });

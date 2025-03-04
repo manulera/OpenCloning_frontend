@@ -208,6 +208,21 @@ export async function loadHistoryFile(file) {
     }
   }
 
+  // Validate the cloning strategy
+  if (newCloningStrategy.primers === undefined || newCloningStrategy.entities === undefined || newCloningStrategy.sources === undefined) {
+    throw new Error('JSON file should contain at least keys: primers, sequences and sources');
+  }
+  // They should be arrays
+  if (!Array.isArray(newCloningStrategy.primers)) {
+    throw new Error('primers should be an array');
+  }
+  if (!Array.isArray(newCloningStrategy.entities)) {
+    throw new Error('entities should be an array');
+  }
+  if (!Array.isArray(newCloningStrategy.sources)) {
+    throw new Error('sources should be an array');
+  }
+
   return { cloningStrategy: newCloningStrategy, verificationFiles };
 }
 

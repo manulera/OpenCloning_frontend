@@ -9,7 +9,18 @@ import { cloningActions } from '../../store/cloning';
 function NewSourceBox({ inputEntitiesIds = [] }) {
   const dispatch = useDispatch();
   const { addEmptySource } = cloningActions;
-  const onClick = () => { dispatch(addEmptySource(inputEntitiesIds)); };
+  const onClick = () => {
+    dispatch(addEmptySource(inputEntitiesIds));
+    setTimeout(() => {
+      const tabPanelsContainer = document.querySelector('.tab-panels-container');
+      if (tabPanelsContainer) {
+        tabPanelsContainer.scrollTo({
+          left: tabPanelsContainer.scrollWidth,
+          behavior: 'instant',
+        });
+      }
+    }, 100);
+  };
   const tooltipText = <div className="tooltip-text">Add source</div>;
   return (
     <IconButton type="submit" sx={{ height: 'fit-content' }} onClick={onClick}>

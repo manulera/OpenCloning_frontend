@@ -45,7 +45,18 @@ export const shiftState = (newState, oldState, skipPrimers = false) => {
   return shiftStateIds(newState, oldState, skipPrimers);
 };
 
-export const mergePrimersInState = (mergedState) => {
+export function getGraftEntityId(parentState) {
+  const entityIdsThatAreInput = parentState.sources.reduce((result, source) => result.concat(source.input), []);
+  const entityIdsThatAreNotInput = parentState.entities.filter((entity) => !entityIdsThatAreInput.includes(entity.id)).map((entity) => entity.id);
+  const sourcesWithoutOutput = parentState.sources.filter((source) => source.output === null);
+
+  if (sourcesWithoutOutput.length === 0 && entityIdsThatAreNotInput.length === 1) {
+    return entityIdsThatAreNotInput[0];
+  }
+  return null;
+}
+
+export function mergePrimersInState(mergedState) {
   const newState = cloneDeep(mergedState);
   const removedPrimerIds = [];
   for (let i = 0; i < newState.primers.length - 1; i++) {
@@ -64,7 +75,42 @@ export const mergePrimersInState = (mergedState) => {
   }
   newState.primers = newState.primers.filter((p) => !removedPrimerIds.includes(p.id));
   return newState;
-};
+}
+
+export function graftState(parentState, childState, graftSourceId) {
+  const { shiftedState: shiftedParentState, networkShift } = shiftState(parentState, childState);
+
+  const graftEntityId = getGraftEntityId(shiftedParentState);
+  if (graftEntityId === null) {
+    throw new Error('Invalid parent state');
+  }
+  const graftEntityInParent = shiftedParentState.entities.find((entity) => entity.id === graftEntityId);
+
+  const parentGraftSource = shiftedParentState.sources.find((source) => source.output === graftEntityId);
+  const childGraftSource = childState.sources.find((source) => source.id === graftSourceId);
+  const graftEntityInChild = childState.entities.find((entity) => entity.id === childGraftSource.output);
+  const mergedSource = { ...parentGraftSource, id: childGraftSource.id, output: childGraftSource.output };
+
+  const parentSources = shiftedParentState.sources.filter((source) => source.id !== parentGraftSource.id);
+  const parentEntities = shiftedParentState.entities.filter((entity) => entity.id !== graftEntityId);
+  const childSources = childState.sources.filter((source) => source.id !== childGraftSource.id);
+
+  let childEntities = [...childState.entities];
+  if (graftEntityInChild && graftEntityInChild.type === 'TemplateSequence') {
+    const updatedEntity = { ...graftEntityInParent, id: graftEntityInChild.id };
+    childEntities = childEntities.filter((entity) => entity.id !== graftEntityInChild.id);
+    childEntities.push(updatedEntity);
+  }
+
+  let mergedState = {
+    sources: [...parentSources, ...childSources, mergedSource],
+    entities: [...parentEntities, ...childEntities],
+    primers: [...shiftedParentState.primers, ...childState.primers],
+    files: [...shiftedParentState.files, ...childState.files],
+  };
+  mergedState = mergePrimersInState(mergedState);
+  return { mergedState, networkShift };
+}
 
 export const mergeStates = (newState, oldState, skipPrimers = false) => {
   const { shiftedState, networkShift } = shiftState(newState, oldState, skipPrimers);
