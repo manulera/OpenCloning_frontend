@@ -14,6 +14,7 @@ import TemplateSequence from './TemplateSequence';
 import { getSourceDatabaseId, isSourceATemplate } from '../store/cloning_utils';
 import { cloningActions } from '../store/cloning';
 import SourceBox from './sources/SourceBox';
+import { getSortedSourceIds } from '../utils/network';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
@@ -68,7 +69,7 @@ function NetWorkNode({ sourceId }) {
   const ancestorsHidden = useSelector((state) => state.cloning.sourcesWithHiddenAncestors.includes(sourceId));
   const parentSourceIds = useSelector((state) => {
     const parentSources = state.cloning.sources.filter((source) => sourceInput.includes(source.output));
-    return parentSources.map((source) => source.id);
+    return getSortedSourceIds(parentSources, state.cloning.sources);
   }, isEqual);
 
   const dispatch = useDispatch();
