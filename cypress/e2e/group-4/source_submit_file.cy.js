@@ -1,4 +1,4 @@
-import { addLane, addSource, clickMultiSelectOption } from '../common_functions';
+import { addLane, addSource, clickMultiSelectOption, loadHistory } from '../common_functions';
 
 describe('File Source', () => {
   beforeEach(() => {
@@ -113,5 +113,14 @@ describe('File Source', () => {
 
     cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_no_json.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('Zip file must contain');
+  });
+  it('grafts on sources from templates', () => {
+    loadHistory('cypress/test_files/template_example.json');
+    clickMultiSelectOption('Source type', 'Submit file', 'li#source-1');
+    cy.get('li#source-1 .submit-sequence-file input[type="file"]').first().selectFile('public/examples/templateless_pcr.json', { force: true });
+    // Replaces the template sequence by the actual input
+    cy.get('li#sequence-2').contains('139 bps', { timeout: 20000 });
+    cy.get('li#source-1').contains('Polymerase extension');
+    cy.get('.open-cloning li').contains('Hybridization of primers fwd_hyb and rvs_hyb');
   });
 });

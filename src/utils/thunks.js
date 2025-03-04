@@ -84,18 +84,28 @@ export function graftState(parentState, childState, graftSourceId) {
   if (graftEntityId === null) {
     throw new Error('Invalid parent state');
   }
+  const graftEntityInParent = shiftedParentState.entities.find((entity) => entity.id === graftEntityId);
 
   const parentGraftSource = shiftedParentState.sources.find((source) => source.output === graftEntityId);
   const childGraftSource = childState.sources.find((source) => source.id === graftSourceId);
+  const graftEntityInChild = childState.entities.find((entity) => entity.id === childGraftSource.output);
   const mergedSource = { ...parentGraftSource, id: childGraftSource.id, output: childGraftSource.output };
 
   const parentSources = shiftedParentState.sources.filter((source) => source.id !== parentGraftSource.id);
   const parentEntities = shiftedParentState.entities.filter((entity) => entity.id !== graftEntityId);
   const childSources = childState.sources.filter((source) => source.id !== childGraftSource.id);
 
+  const childEntities = childState.entities.filter((entity) => entity.id !== graftEntityInChild.id);
+  if (graftEntityInChild.type === 'TemplateSequence') {
+    const updatedEntity = { ...graftEntityInParent, id: graftEntityInChild.id };
+    childEntities.push(updatedEntity);
+  } else {
+    childEntities.push(graftEntityInChild);
+  }
+
   let mergedState = {
     sources: [...parentSources, ...childSources, mergedSource],
-    entities: [...parentEntities, ...childState.entities],
+    entities: [...parentEntities, ...childEntities],
     primers: [...shiftedParentState.primers, ...childState.primers],
     files: [...shiftedParentState.files, ...childState.files],
   };
