@@ -20,6 +20,7 @@ const {
 // For testing purposes, we need an empty metadata object
 export const emptyMetadata = JSON.stringify({ extra_fields: {} });
 
+// Get the text content of a Blob
 const getFileText = async (file) => {
   const reader = new FileReader();
   return new Promise((resolve) => {
@@ -30,6 +31,21 @@ const getFileText = async (file) => {
   });
 };
 
+// Take a scenario and return a new scenario with a network error
+const mockNetworkError = (scenario) => ({
+  ...scenario,
+  code: 'ERR_NETWORK',
+  response: undefined,
+});
+
+// Take a scenario and return a new scenario with a not found error
+const mockNotFound = (scenario) => ({
+  ...scenario,
+  response: { status: 403, data: { description: 'Not found' } },
+  code: 'hello',
+});
+
+// Mock the envValues module
 vi.mock('./envValues', () => ({
   readApiKey: '',
   writeApiKey: '',
@@ -44,6 +60,21 @@ vi.mock('./SubmitToDatabaseComponent', () => ({ default: 'SubmitToDatabaseCompon
 vi.mock('./PrimersNotInDatabaseComponent', () => ({ default: 'PrimersNotInDatabaseComponent' }));
 vi.mock('./GetPrimerComponent', () => ({ default: 'GetPrimerComponent' }));
 vi.mock('./LoadHistoryComponent', () => ({ default: 'LoadHistoryComponent' }));
+
+// mockedScenarios is an array that contains mock API requests combined
+// with their responses, for instance:
+// [
+//   {
+//     method: 'get',
+//     url: '/api/v2/items/1',
+//     response: { data: { id: 1, title: 'test' } },
+//   },
+// ]
+// If a request is received by the mock client where the method, url and data
+// match one of the scenarios, the response from the scenario is returned. Otherwise,
+// the request will fail with an error. At the end of each test, we check that all
+// scenarios were used and fail it otherwise. Scenarios are removed from the array
+// when they are used, so they are not used twice.
 
 let mockedScenarios;
 
@@ -62,18 +93,16 @@ afterEach(({ error }) => {
   expect(mockedScenarios).toHaveLength(0);
 });
 
+// Get a scenario from the mockedScenarios array
 async function getScenario(method, url, data, config) {
   let index = -1;
   for (let i = 0; i < mockedScenarios.length; i++) {
     const s = mockedScenarios[i];
-    console.log(s);
     if (s.method !== method || s.url !== url || !isEqual(s.config, config)) {
       continue;
     }
-    console.log('passed 1');
     if (s.data instanceof FormData && data instanceof FormData) {
       const commentsAreEqual = s.data.get('comment') === data.get('comment');
-      console.log('passed 2', s.data.get('comment'), data.get('comment'));
       const scenarioFile = s.data.get('file');
       const requestFile = data.get('file');
       const scenarioFileText = await getFileText(scenarioFile);
@@ -87,18 +116,14 @@ async function getScenario(method, url, data, config) {
         requestHistory.entities = requestHistory.sequences;
         delete requestHistory.sequences;
         filesAreEqual = isEqual(scenarioHistory, requestHistory);
-        console.log('passed 3', filesAreEqual);
       } catch (e) {
         filesAreEqual = scenarioFileText === requestFileText;
-        console.log('passed 4', filesAreEqual);
       }
       if (commentsAreEqual && filesAreEqual) {
-        console.log('passed 5');
         index = i;
         break;
       }
     } else if (isEqual(s.data, data)) {
-      console.log('passed 6');
       index = i;
       break;
     }
@@ -112,6 +137,7 @@ async function getScenario(method, url, data, config) {
   return mockedScenarios.splice(index, 1)[0];
 }
 
+// Common function to mock requests of a given method
 function requestMocker(method) {
   return async (...args) => {
     let url;
@@ -136,6 +162,7 @@ function requestMocker(method) {
   };
 }
 
+// Mock the eLabFTWHttpClient module
 vi.mock('./common', async (importOriginal) => {
   const actual = await importOriginal();
   return {
@@ -171,11 +198,7 @@ const mockPrimerCreate = {
   config: { headers: {} },
   response: { headers: { location: '/api/v2/items/1' } },
 };
-const mockPrimerCreateNetworkError = {
-  ...mockPrimerCreate,
-  response: { },
-  code: 'ERR_NETWORK',
-};
+
 const mockPrimerUpdate = {
   method: 'patch',
   url: '/api/v2/items/1',
@@ -194,11 +217,7 @@ const mockPrimerUpdate = {
   config: { headers: {} },
   response: {},
 };
-const mockPrimerUpdateNetworkError = {
-  ...mockPrimerUpdate,
-  response: { },
-  code: 'ERR_NETWORK',
-};
+
 const mockPrimerLink = {
   method: 'post',
   url: '/api/v2/items/24/items_links/1',
@@ -206,22 +225,7 @@ const mockPrimerLink = {
   config: { headers: {} },
   response: {},
 };
-const mockPrimerLinkFail = {
-  method: 'post',
-  url: '/api/v2/items/24/items_links/1',
-  data: {},
-  config: { headers: {} },
-  response: { status: 403, data: { description: 'Not found' } },
-  code: 'hello',
-};
-const mockPrimerLinkFailNetwork = {
-  method: 'post',
-  url: '/api/v2/items/24/items_links/1',
-  data: {},
-  config: { headers: {} },
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
+
 const mockPrimerDelete = {
   method: 'delete',
   url: '/api/v2/items/1',
@@ -230,11 +234,6 @@ const mockPrimerDelete = {
     'Content-Type': 'application/json',
   } },
   response: {},
-};
-const mockPrimerDeleteNetworkError = {
-  ...mockPrimerDelete,
-  response: undefined,
-  code: 'ERR_NETWORK',
 };
 
 describe('test submitPrimerToDatabase', () => {
@@ -271,7 +270,7 @@ describe('test submitPrimerToDatabase', () => {
   it('linking to missing sequence', async () => {
     mockedScenarios.push(mockPrimerCreate);
     mockedScenarios.push(mockPrimerUpdate);
-    mockedScenarios.push(mockPrimerLinkFail);
+    mockedScenarios.push(mockNotFound(mockPrimerLink));
     mockedScenarios.push(mockPrimerDelete);
 
     const result = submitPrimerToDatabase({
@@ -287,7 +286,7 @@ describe('test submitPrimerToDatabase', () => {
   it('fail linking network error', async () => {
     mockedScenarios.push(mockPrimerCreate);
     mockedScenarios.push(mockPrimerUpdate);
-    mockedScenarios.push(mockPrimerLinkFailNetwork);
+    mockedScenarios.push(mockNetworkError(mockPrimerLink));
     mockedScenarios.push(mockPrimerDelete);
     const result = submitPrimerToDatabase({
       submissionData: {
@@ -301,7 +300,7 @@ describe('test submitPrimerToDatabase', () => {
   });
   it('fail naming network error', async () => {
     mockedScenarios.push(mockPrimerCreate);
-    mockedScenarios.push(mockPrimerUpdateNetworkError);
+    mockedScenarios.push(mockNetworkError(mockPrimerUpdate));
     mockedScenarios.push(mockPrimerDelete);
     const result = submitPrimerToDatabase({
       submissionData: {
@@ -313,7 +312,7 @@ describe('test submitPrimerToDatabase', () => {
     expect(result).rejects.toThrow('Error naming primer: Network error: Cannot connect to eLabFTW');
   });
   it('fail creating primer', async () => {
-    mockedScenarios.push(mockPrimerCreateNetworkError);
+    mockedScenarios.push(mockNetworkError(mockPrimerCreate));
     const result = submitPrimerToDatabase({
       submissionData: {
         title: 'test',
@@ -325,8 +324,8 @@ describe('test submitPrimerToDatabase', () => {
   });
   it('fail removing primer if error occurs', async () => {
     mockedScenarios.push(mockPrimerCreate);
-    mockedScenarios.push(mockPrimerUpdateNetworkError);
-    mockedScenarios.push(mockPrimerDeleteNetworkError);
+    mockedScenarios.push(mockNetworkError(mockPrimerUpdate));
+    mockedScenarios.push(mockNetworkError(mockPrimerDelete));
     const result = submitPrimerToDatabase({
       submissionData: {
         title: 'test',
@@ -357,16 +356,6 @@ const mockPrimerGetNoSequence = {
   },
   },
 };
-const mockPrimerGetNetworkError = {
-  ...mockPrimerGet,
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
-const mockPrimerGetNotFound = {
-  ...mockPrimerGet,
-  response: { status: 403, data: { description: 'Not found' } },
-  code: 'hello',
-};
 
 describe('test getPrimer', () => {
   it('get primer', async () => {
@@ -387,12 +376,12 @@ describe('test getPrimer', () => {
     });
   });
   it('fail getting primer - network error', async () => {
-    mockedScenarios.push(mockPrimerGetNetworkError);
+    mockedScenarios.push(mockNetworkError(mockPrimerGet));
     const result = getPrimer(1);
     expect(result).rejects.toThrow('Error getting primer: Network error: Cannot connect to eLabFTW');
   });
   it('fail getting primer - not found', async () => {
-    mockedScenarios.push(mockPrimerGetNotFound);
+    mockedScenarios.push(mockNotFound(mockPrimerGet));
     const result = getPrimer(1);
     expect(result).rejects.toThrow('Error getting primer with id 1, it might have been deleted or you can no longer access it');
   });
@@ -404,16 +393,6 @@ const mockSequenceName = {
   config: { headers: {} },
   response: { data: { id: 1, title: 'sequence-name' } },
 };
-const mockSequenceNameNetworkError = {
-  ...mockSequenceName,
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
-const mockSequenceNameNotFound = {
-  ...mockSequenceName,
-  response: { status: 403, data: { description: 'Not found' } },
-  code: 'hello',
-};
 
 describe('test getSequenceName', () => {
   it('get sequence name', async () => {
@@ -422,12 +401,12 @@ describe('test getSequenceName', () => {
     expect(result).toBe('sequence-name');
   });
   it('fail getting sequence name - network error', async () => {
-    mockedScenarios.push(mockSequenceNameNetworkError);
+    mockedScenarios.push(mockNetworkError(mockSequenceName));
     const result = getSequenceName(1);
     expect(result).rejects.toThrow('Error getting sequence name: Network error: Cannot connect to eLabFTW');
   });
   it('fail getting sequence name - not found', async () => {
-    mockedScenarios.push(mockSequenceNameNotFound);
+    mockedScenarios.push(mockNotFound(mockSequenceName));
     const result = getSequenceName(1);
     expect(result).rejects.toThrow('Error getting name of sequence with id 1, it might have been deleted or you can no longer access it');
   });
@@ -461,23 +440,6 @@ const mockSequencingFilesSecondFile = {
   response: { data: new Blob(['seq-content-2'], { type: 'application/octet-stream' }) },
 };
 
-const mockSequencingFilesNetworkError = {
-  ...mockSequencingFilesFirstRequest,
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
-const mockSequencingFilesNotFound = {
-  ...mockSequencingFilesFirstRequest,
-  response: { status: 403, data: { description: 'Not found' } },
-  code: 'hello',
-};
-
-const mockSequencingFilesFirstFileNetworkError = {
-  ...mockSequencingFilesFirstFile,
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
-
 describe('test getSequencingFiles', () => {
   it('get sequencing files', async () => {
     mockedScenarios.push(mockSequencingFilesFirstRequest);
@@ -500,18 +462,18 @@ describe('test getSequencingFiles', () => {
     reader2.readAsText(await result[1].getFile());
   });
   it('get sequencing files - network error', async () => {
-    mockedScenarios.push(mockSequencingFilesNetworkError);
+    mockedScenarios.push(mockNetworkError(mockSequencingFilesFirstRequest));
     const result = getSequencingFiles(1);
     expect(result).rejects.toThrow('Network error: Cannot connect to eLabFTW');
   });
   it('get sequencing files - not found', async () => {
-    mockedScenarios.push(mockSequencingFilesNotFound);
+    mockedScenarios.push(mockNotFound(mockSequencingFilesFirstRequest));
     const result = getSequencingFiles(1);
     expect(result).rejects.toThrow('Not found');
   });
   it('get sequencing files - getFile() - network error', async () => {
     mockedScenarios.push(mockSequencingFilesFirstRequest);
-    mockedScenarios.push(mockSequencingFilesFirstFileNetworkError);
+    mockedScenarios.push(mockNetworkError(mockSequencingFilesFirstFile));
     const result = await getSequencingFiles(1);
     expect(result[0].getFile()).rejects.toThrow('Network error: Cannot connect to eLabFTW');
   });
@@ -529,26 +491,6 @@ const mockFileContent = {
   url: '/api/v2/items/1/uploads/2?format=binary',
   config: { headers: {}, responseType: 'blob' },
   response: { data: new Blob(['seq-content-1'], { type: 'application/octet-stream' }) },
-};
-const mockFileContentNetworkError = {
-  ...mockFileContent,
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
-const mockFileContentNotFound = {
-  ...mockFileContent,
-  response: { status: 403, data: { description: 'Not found' } },
-  code: 'hello',
-};
-const mockFileInfoNetworkError = {
-  ...mockFileInfo,
-  response: undefined,
-  code: 'ERR_NETWORK',
-};
-const mockFileInfoNotFound = {
-  ...mockFileInfo,
-  response: { status: 403, data: { description: 'Not found' } },
-  code: 'hello',
 };
 
 describe('test loadSequenceFromUrlParams', () => {
@@ -574,24 +516,24 @@ describe('test loadSequenceFromUrlParams', () => {
     expect(result3).toBeNull();
   });
   it('load sequence from url params - fileInfo network error', async () => {
-    mockedScenarios.push(mockFileInfoNetworkError);
+    mockedScenarios.push(mockNetworkError(mockFileInfo));
     const result = loadSequenceFromUrlParams({ item_id: 1, file_id: 2 });
     expect(result).rejects.toThrow('Network error: Cannot connect to eLabFTW');
   });
   it('load sequence from url params - fileInfo not found', async () => {
-    mockedScenarios.push(mockFileInfoNotFound);
+    mockedScenarios.push(mockNotFound(mockFileInfo));
     const result = loadSequenceFromUrlParams({ item_id: 1, file_id: 2 });
     expect(result).rejects.toThrow('Not found');
   });
   it('load sequence from url params - fileContent network error', async () => {
     mockedScenarios.push(mockFileInfo);
-    mockedScenarios.push(mockFileContentNetworkError);
+    mockedScenarios.push(mockNetworkError(mockFileContent));
     const result = loadSequenceFromUrlParams({ item_id: 1, file_id: 2 });
     expect(result).rejects.toThrow('Network error: Cannot connect to eLabFTW');
   });
   it('load sequence from url params - fileContent not found', async () => {
     mockedScenarios.push(mockFileInfo);
-    mockedScenarios.push(mockFileContentNotFound);
+    mockedScenarios.push(mockNotFound(mockFileContent));
     const result = loadSequenceFromUrlParams({ item_id: 1, file_id: 2 });
     expect(result).rejects.toThrow('Not found');
   });
@@ -673,7 +615,7 @@ const mockUploadHistoryFile = {
   response: { headers: { location: '/api/v2/items/2/uploads/2' } },
 };
 describe('test submitSequenceToDatabase', () => {
-  it.only('submitSequenceToDatabase', async () => {
+  it('submitSequenceToDatabase', async () => {
     mockedScenarios.push(mockSubmitSequenceWithoutPrimers);
     mockedScenarios.push(mockRenameSequence);
     mockedScenarios.push(mockUploadSequenceFile);
