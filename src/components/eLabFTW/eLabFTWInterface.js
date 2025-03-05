@@ -2,23 +2,11 @@ import SaveIcon from '@mui/icons-material/Save';
 import LinkIcon from '@mui/icons-material/Link';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
-import PrimersNotInDabaseComponent from './PrimersNotInDatabaseComponent';
+import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-import { eLabFTWHttpClient, getFileFromELabFTW, getFileInfoFromELabFTW, writeHeaders, readHeaders, baseUrl } from './common';
+import { eLabFTWHttpClient, writeHeaders, readHeaders, baseUrl } from './common';
+import { getFileFromELabFTW, error2String } from './utils';
 import LoadHistoryComponent from './LoadHistoryComponent';
-
-function error2String(error) {
-  if (error.code === 'ERR_NETWORK') { return 'Network error: Cannot connect to eLabFTW'; }
-  if (!error.code) {
-    return 'Internal error, please contact the developers.';
-  }
-  const { description } = error.response.data;
-  if (error.response.status === 500) return 'Internal server error';
-  if (typeof description === 'string') {
-    return description;
-  }
-  return 'Request error, please contact the developers.';
-}
 
 async function deleteResource(resourceId) {
   const url = `/api/v2/items/${resourceId}`;
@@ -49,7 +37,7 @@ const createResource = async (categoryId) => {
 
 const patchResource = async (resourceId, title, metadata = undefined) => eLabFTWHttpClient.patch(
   `/api/v2/items/${resourceId}`,
-  { title, metadata },
+  { title, ...(metadata !== undefined && { metadata }) },
   { headers: writeHeaders },
 );
 
@@ -67,6 +55,7 @@ async function submitPrimerToDatabase({ submissionData: { title, categoryId }, p
     stage = 'naming primer';
     await patchResource(resourceId, title, metadata);
     if (linkedSequenceId) {
+      stage = 'linking to sequence';
       await linkToParent(linkedSequenceId, resourceId);
     }
   } catch (e) {
@@ -178,14 +167,23 @@ async function submitSequenceToDatabase({ submissionData: { title, sequenceCateg
 
 function isSubmissionDataValid(submissionData) {
   // This function is necessary because you might be setting submissionData from multiple components
-  return submissionData.title && submissionData.sequenceCategoryId;
+  return Boolean(submissionData.title && submissionData.sequenceCategoryId);
 }
 
 async function loadSequenceFromUrlParams(urlParams) {
   const { item_id: itemId, file_id: fileId } = urlParams;
 
   if (itemId && fileId) {
-    const fileInfo = await getFileInfoFromELabFTW(itemId, fileId);
+    const url = `/api/v2/items/${itemId}/uploads/${fileId}`;
+    let fileInfo;
+    try {
+      const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
+      fileInfo = resp.data;
+    } catch (e) {
+      throw new Error(`${error2String(e)}`);
+    }
+
+    // getFileFromELabFTW already handles errors
     const file = await getFileFromELabFTW(itemId, fileInfo);
     return { file, databaseId: itemId };
   }
@@ -197,17 +195,28 @@ async function getPrimer(databaseId) {
   try {
     const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
     resp.data.metadata = JSON.parse(resp.data.metadata);
-    return { name: resp.data.title, database_id: databaseId, sequence: resp.data.metadata.extra_fields.sequence.value };
+    return { name: resp.data.title, database_id: databaseId, sequence: resp.data.metadata.extra_fields.sequence?.value };
   } catch (e) {
     console.error(e);
+    if (e.code === 'ERR_NETWORK') {
+      throw new Error(`Error getting primer: ${error2String(e)}`);
+    }
     throw new Error(`Error getting primer with id ${databaseId}, it might have been deleted or you can no longer access it`);
   }
 }
 
 async function getSequenceName(databaseId) {
   const url = `/api/v2/items/${databaseId}`;
-  const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
-  return resp.data.title;
+  try {
+    const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
+    return resp.data.title;
+  } catch (e) {
+    console.error(e);
+    if (e.code === 'ERR_NETWORK') {
+      throw new Error(`Error getting sequence name: ${error2String(e)}`);
+    }
+    throw new Error(`Error getting name of sequence with id ${databaseId}, it might have been deleted or you can no longer access it`);
+  }
 }
 
 async function getSequencingFiles(databaseId) {
@@ -215,11 +224,16 @@ async function getSequencingFiles(databaseId) {
   // name: the name of the file
   // getFile: an async function that returns the file content
   const url = `/api/v2/items/${databaseId}/uploads`;
-  const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
-  return resp.data.map((fileInfo) => ({
-    name: fileInfo.real_name,
-    getFile: async () => getFileFromELabFTW(databaseId, fileInfo),
-  }));
+  try {
+    const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
+    return resp.data.map((fileInfo) => ({
+      name: fileInfo.real_name,
+      getFile: async () => getFileFromELabFTW(databaseId, fileInfo),
+    }));
+  } catch (e) {
+    console.error(e);
+    throw new Error(`${error2String(e)}`);
+  }
 }
 
 export default {
@@ -236,7 +250,7 @@ export default {
   // Component for submitting resources to the database
   SubmitToDatabaseComponent,
   // Component for handling primers not yet in database
-  PrimersNotInDabaseComponent,
+  PrimersNotInDatabaseComponent,
   // Function to submit a primer to the database
   submitPrimerToDatabase,
   // Function to submit a sequence and its history to the database

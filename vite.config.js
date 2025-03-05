@@ -78,6 +78,9 @@ export default ({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: './tests/setup.js',
+      coverage: {
+        provider: 'v8',
+      },
     },
     build: {
       outDir: 'build',

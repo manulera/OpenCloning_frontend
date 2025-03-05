@@ -108,7 +108,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
       <DialogTitle>{`Save ${resourceType} to ${database.name}`}</DialogTitle>
       <DialogContent>
         <database.SubmitToDatabaseComponent id={id} submissionData={submissionData} setSubmissionData={setSubmissionData} resourceType={resourceType} />
-        {resourceType === 'sequence' && <database.PrimersNotInDabaseComponent id={id} submissionData={submissionData} setSubmissionData={setSubmissionData} />}
+        {resourceType === 'sequence' && <database.PrimersNotInDatabaseComponent id={id} submissionData={submissionData} setSubmissionData={setSubmissionData} />}
         {errorMessage && <Alert sx={{ marginTop: 2 }} severity="error">{errorMessage}</Alert>}
       </DialogContent>
       <DialogActions>
