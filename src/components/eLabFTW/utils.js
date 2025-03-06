@@ -6,7 +6,7 @@ import { eLabFTWHttpClient, readHeaders } from './common';
 export function error2String(error) {
   if (error.code === 'ERR_NETWORK') { return 'Network error: Cannot connect to eLabFTW'; }
   if (!error.code) {
-    return 'Internal error, please contact the developers.';
+    return error.message || 'Internal error, please contact the developers.';
   }
 
   if (error.response.status === 500) return 'Internal server error';
