@@ -5,7 +5,7 @@ import { getSubState } from '../../utils/thunks';
 import { getUsedPrimerIds } from '../../store/cloning_utils';
 import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 
-function PrimersNotInDabaseComponent({ id, submissionData, setSubmissionData }) {
+function PrimersNotInDatabaseComponent({ id, submissionData, setSubmissionData }) {
   const primerCategoryId = submissionData?.primerCategoryId;
   const primers = useSelector((state) => {
     const subState = getSubState(state, id, true);
@@ -53,4 +53,4 @@ function PrimersNotInDabaseComponent({ id, submissionData, setSubmissionData }) 
   );
 }
 
-export default PrimersNotInDabaseComponent;
+export default PrimersNotInDatabaseComponent;

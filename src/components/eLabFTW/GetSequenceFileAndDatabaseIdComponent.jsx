@@ -2,7 +2,7 @@ import React from 'react';
 import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 import ELabFTWResourceSelect from './ELabFTWResourceSelect';
 import ELabFTWFileSelect from './ELabFTWFileSelect';
-import { getFileFromELabFTW } from './common';
+import { getFileFromELabFTW } from './utils';
 
 function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   const [category, setCategory] = React.useState(null);

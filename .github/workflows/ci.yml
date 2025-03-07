@@ -114,7 +114,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4, "component"]
+        group: [1, 2, 3, 4, "component", "unit-tests"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -173,7 +173,7 @@ jobs:
         run: corepack enable
 
       - name: Cypress run E2E tests
-        if: matrix.group != 'component'
+        if: matrix.group != 'component' && matrix.group != 'unit-tests'
         uses: cypress-io/github-action@v6
         env:
           VITE_COVERAGE: "true"
@@ -192,6 +192,10 @@ jobs:
         with:
           component: true
           install: false
+
+      - name: vitest unit tests
+        if: matrix.group == 'unit-tests'
+        run: yarn vitest run --coverage
 
       - name: Upload coverage file
         uses: actions/upload-artifact@v4.6.0

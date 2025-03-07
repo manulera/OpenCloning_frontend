@@ -1,7 +1,8 @@
 import { Button, CircularProgress } from '@mui/material';
 import React from 'react';
-import { eLabFTWHttpClient, getFileFromELabFTW, readHeaders } from './common';
+import { eLabFTWHttpClient, readHeaders } from './common';
 import RetryAlert from '../form/RetryAlert';
+import { getFileFromELabFTW } from './utils';
 
 function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
   const url = `/api/v2/items/${databaseId}`;
