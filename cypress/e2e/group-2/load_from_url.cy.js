@@ -1,14 +1,14 @@
 describe('Test load from URL', () => {
-  xit('can load example', () => {
+  it('can load example', () => {
     cy.visit('/?source=example&example=gibson_assembly.json');
-    cy.contains('Gibson assembly of fragments').should('exist');
+    cy.contains('Gibson assembly of fragments', { timeout: 10000 }).should('exist');
   });
-  xit('displays error if example does not exist', () => {
+  it('displays error if example does not exist', () => {
     cy.visit('/?source=example&example=nonexistent.json');
-    cy.contains('Error loading example').should('exist');
+    cy.contains('Error loading example', { timeout: 10000 }).should('exist');
   });
-  xit('no error if example is not provided', () => {
+  it('no error if example is not provided', () => {
     cy.visit('/?source=example');
-    cy.get('.MuiAlert-message').should('not.exist');
+    cy.get('.MuiAlert-message', { timeout: 10000 }).should('not.exist');
   });
 });
