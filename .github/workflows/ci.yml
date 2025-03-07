@@ -233,6 +233,8 @@ jobs:
           mv coverage/*.json .nyc_output
           rm -rf coverage
           npx nyc report --reporter json --report-dir coverage
+          # Remove the absolute path from the coverage file
+          sed -i "s|\"$(pwd)/|\"|g" coverage/coverage-final.json
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
