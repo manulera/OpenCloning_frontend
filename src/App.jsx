@@ -63,7 +63,7 @@ function App() {
       }
     }
     loadSequenceFromUrlParams();
-  }, [database]);
+  }, [configLoaded]);
 
   React.useEffect(() => {
     // Load application configuration
