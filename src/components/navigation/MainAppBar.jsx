@@ -11,7 +11,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
 import ButtonWithMenu from './ButtonWithMenu';
-import { downloadCloningStrategyAsSvg } from '../../utils/readNwrite';
+import { downloadCloningStrategyAsSvg, formatTemplate } from '../../utils/readNwrite';
 import SelectExampleDialog from './SelectExampleDialog';
 import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
@@ -64,14 +64,9 @@ function MainAppBar() {
     setOpenExampleDialog(false);
     setOpenTemplateDialog(false);
     if (url) {
-      const { data } = await httpClient.get(url);
+      let { data } = await httpClient.get(url);
       if (isTemplate) {
-        const segments = url.split('/');
-        const kitUrl = segments[segments.length - 3];
-        const rootGithubUrl = 'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master/submissions';
-        data.sources = data.sources.map((s) => ((s.image === undefined || s.image[0] === null) ? s : {
-          ...s, image: [`${rootGithubUrl}/${kitUrl}/${s.image[0]}`, s.image[1]],
-        }));
+        data = formatTemplate(data, url);
       }
       const newState = { ...data, entities: data.sequences };
       delete newState.sequences;

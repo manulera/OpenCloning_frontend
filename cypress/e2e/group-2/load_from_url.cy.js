@@ -11,4 +11,8 @@ describe('Test load from URL', () => {
     cy.visit('/?source=example');
     cy.get('.MuiAlert-message', { timeout: 10000 }).should('not.exist');
   });
+  it('can load template', () => {
+    cy.visit('/?source=template&key=kits-moclo-ytk&template=assembly_template_001.json');
+    cy.contains('You can use the ATG', { timeout: 10000 }).should('exist');
+  });
 });
