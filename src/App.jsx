@@ -10,6 +10,7 @@ import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
+import { formatTemplate } from './utils/readNwrite';
 
 const { setConfig, setKnownErrors, setState: setCloningState } = cloningActions;
 
@@ -55,6 +56,21 @@ function App() {
           } catch (error) {
             addAlert({
               message: 'Error loading example',
+              severity: 'error',
+            });
+            console.error(error);
+          }
+        } else if (urlParams.source === 'template' && urlParams.template && urlParams.key) {
+          try {
+            const baseUrl = 'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master';
+            const url = `${baseUrl}/processed/${urlParams.key}/templates/${urlParams.template}`;
+            const { data } = await httpClient.get(url);
+            const newState = formatTemplate({ ...data, entities: data.sequences }, url);
+            delete newState.sequences;
+            dispatch(setCloningState(newState));
+          } catch (error) {
+            addAlert({
+              message: 'Error loading template',
               severity: 'error',
             });
             console.error(error);
