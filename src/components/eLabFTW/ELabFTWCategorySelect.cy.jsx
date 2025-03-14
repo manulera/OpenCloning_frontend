@@ -1,16 +1,11 @@
 import React from 'react';
 import ELabFTWCategorySelect from './ELabFTWCategorySelect';
-import { eLabFTWHttpClient, readHeaders } from './common';
-
-// Stub readHeaders
-beforeEach(() => {
-  cy.stub(readHeaders, 'Authorization').value('test');
-});
+import { eLabFTWHttpClient } from './common';
 
 describe('<ELabFTWCategorySelect />', () => {
   it('shows the right options', () => {
     const setCategorySpy = cy.spy().as('setCategorySpy');
-    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items_types', { headers: { Authorization: 'test' } }).resolves({
+    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items_types', { headers: { Authorization: 'test-read-key' } }).resolves({
       data: [
         { id: 1, title: 'Category 1' },
         { id: 2, title: 'Category 2' },
@@ -26,7 +21,7 @@ describe('<ELabFTWCategorySelect />', () => {
 
   it('shows empty options if no categories are found', () => {
     cy.mount(<ELabFTWCategorySelect fullWidth />);
-    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items_types', { headers: { Authorization: 'test' } }).resolves({
+    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items_types', { headers: { Authorization: 'test-read-key' } }).resolves({
       data: [],
     });
     cy.get('.MuiAutocomplete-root').click();
@@ -39,6 +34,6 @@ describe('<ELabFTWCategorySelect />', () => {
     // Clicking the retry button makes the request again
     cy.spy(eLabFTWHttpClient, 'get').as('eLabFTWHttpClientSpy');
     cy.get('button').contains('Retry').click();
-    cy.get('@eLabFTWHttpClientSpy').should('have.been.calledWith', '/api/v2/items_types', { headers: { Authorization: 'test' } });
+    cy.get('@eLabFTWHttpClientSpy').should('have.been.calledWith', '/api/v2/items_types', { headers: { Authorization: 'test-read-key' } });
   });
 });

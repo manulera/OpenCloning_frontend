@@ -1,11 +1,6 @@
 import React from 'react';
 import GetPrimerComponent from './GetPrimerComponent';
-import { eLabFTWHttpClient, readHeaders } from './common';
-
-// Stub readHeaders
-beforeEach(() => {
-  cy.stub(readHeaders, 'Authorization').value('test');
-});
+import { eLabFTWHttpClient } from './common';
 
 describe('<GetPrimerComponent />', () => {
   it('shows category select and then resource select after category is chosen', () => {

@@ -1,12 +1,7 @@
 import React from 'react';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
-import { eLabFTWHttpClient, readHeaders } from './common';
+import { eLabFTWHttpClient } from './common';
 import { clearAutocompleteValue, clickMultiSelectOption, setAutocompleteValue } from '../../../cypress/e2e/common_functions';
-
-// Stub readHeaders
-beforeEach(() => {
-  cy.stub(readHeaders, 'Authorization').value('test');
-});
 
 let uniqueId = 1;
 const newUniqueId = () => uniqueId++;

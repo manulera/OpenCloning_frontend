@@ -39,6 +39,7 @@ module.exports = defineConfig({
       framework: 'react',
       bundler: 'vite',
       viteConfig: {
+        mode: 'test',
         plugins: [
           (process.env.VITE_COVERAGE) && istanbul({
             include: 'src/*',

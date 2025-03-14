@@ -1,18 +1,13 @@
 import React from 'react';
 import ELabFTWResourceSelect from './ELabFTWResourceSelect';
-import { eLabFTWHttpClient, readHeaders } from './common';
-
-// Stub readHeaders
-beforeEach(() => {
-  cy.stub(readHeaders, 'Authorization').value('test');
-});
+import { eLabFTWHttpClient } from './common';
 
 describe('<ELabFTWResourceSelect />', () => {
   it('shows the right options when searching', () => {
     const setResourceSpy = cy.spy().as('setResourceSpy');
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items', {
-        headers: { Authorization: 'test' },
+        headers: { Authorization: 'test-read-key' },
         params: { cat: 1, extended: 'title:test' },
       })
       .resolves({
@@ -39,7 +34,7 @@ describe('<ELabFTWResourceSelect />', () => {
   it('shows empty options if no resources are found', () => {
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items', {
-        headers: { Authorization: 'test' },
+        headers: { Authorization: 'test-read-key' },
         params: { cat: 1, extended: 'title:nonexistent' },
       })
       .resolves({
@@ -55,7 +50,7 @@ describe('<ELabFTWResourceSelect />', () => {
     let firstCall = true;
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items', {
-        headers: { Authorization: 'test' },
+        headers: { Authorization: 'test-read-key' },
         params: { cat: 1, extended: 'title:test' },
       })
       .callsFake(() => {
@@ -86,7 +81,7 @@ describe('<ELabFTWResourceSelect />', () => {
 
     // First category results
     getStub.withArgs('/api/v2/items', {
-      headers: { Authorization: 'test' },
+      headers: { Authorization: 'test-read-key' },
       params: { cat: 1, extended: 'title:test' },
     }).resolves({
       data: [{ id: 1, title: 'Category 1 Resource' }],
@@ -94,7 +89,7 @@ describe('<ELabFTWResourceSelect />', () => {
 
     // Second category results
     getStub.withArgs('/api/v2/items', {
-      headers: { Authorization: 'test' },
+      headers: { Authorization: 'test-read-key' },
       params: { cat: 2, extended: 'title:test' },
     }).resolves({
       data: [{ id: 2, title: 'Category 2 Resource' }],
