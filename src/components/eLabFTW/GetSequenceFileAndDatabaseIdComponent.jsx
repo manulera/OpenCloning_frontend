@@ -3,11 +3,14 @@ import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 import ELabFTWResourceSelect from './ELabFTWResourceSelect';
 import ELabFTWFileSelect from './ELabFTWFileSelect';
 import { getFileFromELabFTW } from './utils';
+import RetryAlert from '../form/RetryAlert';
 
 function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   const [category, setCategory] = React.useState(null);
   const [resource, setResource] = React.useState(null);
   const [fileInfo, setFileInfo] = React.useState(null);
+  const [fileLoadError, setFileLoadError] = React.useState('');
+  const [retry, setRetry] = React.useState(0);
 
   // Reset if category changes
   React.useEffect(() => {
@@ -32,19 +35,26 @@ function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   React.useEffect(() => {
     const loadFile = async () => {
       if (!resource || !fileInfo) return;
-      const file = await getFileFromELabFTW(resource.id, fileInfo);
-      setFile(file);
-      setDatabaseId(resource.id);
+      try {
+        const file = await getFileFromELabFTW(resource.id, fileInfo);
+        setFile(file);
+        setDatabaseId(resource.id);
+        setFileLoadError('');
+      } catch (error) {
+        setFileLoadError('Error loading file');
+        console.error('Error loading file', error);
+      }
     };
 
     loadFile();
-  }, [resource, fileInfo]);
+  }, [resource, fileInfo, retry]);
 
   return (
     <>
-      <ELabFTWCategorySelect fullWidth setCategory={setCategory} />
-      {category && <ELabFTWResourceSelect fullWidth setResource={setResource} categoryId={category.id} />}
-      {resource && <ELabFTWFileSelect fullWidth setFileInfo={setFileInfo} itemId={resource.id} />}
+      <ELabFTWCategorySelect fullWidth setCategory={setCategory} className="elabftw-category-select" />
+      {category && <ELabFTWResourceSelect fullWidth setResource={setResource} categoryId={category.id} className="elabftw-resource-select" />}
+      {resource && <ELabFTWFileSelect fullWidth setFileInfo={setFileInfo} itemId={resource.id} className="elabftw-file-select" />}
+      {fileLoadError && <RetryAlert severity="error" onRetry={() => setRetry((prev) => prev + 1)}>{fileLoadError}</RetryAlert>}
     </>
   );
 }

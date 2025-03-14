@@ -53,8 +53,8 @@ export function setAutocompleteValue(label, value, parentSelector = '') {
 }
 
 export function clearAutocompleteValue(label, parentSelector = '') {
-  cy.get(parentSelector).contains(label).siblings('div')
-    .get('button.MuiAutocomplete-clearIndicator')
+  cy.get(parentSelector).contains(label).siblings('div').click();
+  cy.get(parentSelector).contains(label).siblings('div').find('button.MuiAutocomplete-clearIndicator')
     .first()
     .click();
 }
