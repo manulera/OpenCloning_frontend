@@ -3,7 +3,7 @@ import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
 import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
 import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
-import { mergeStates, graftState } from '../utils/thunks';
+import { mergeStates, graftState } from '../utils/network';
 import { cloningActions } from '../store/cloning';
 import useDatabase from './useDatabase';
 

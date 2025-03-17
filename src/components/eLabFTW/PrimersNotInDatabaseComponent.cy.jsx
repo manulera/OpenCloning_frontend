@@ -2,31 +2,24 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
-import { clickMultiSelectOption } from '../../../cypress/e2e/common_functions';
 import { eLabFTWHttpClient } from './common';
+import { mockEntities, mockSources, mockPrimers } from '../../../tests/mockNetworkData';
 
-// Mock initial state
-const createMockState = (primers = [], sources = []) => ({
-  cloning: {
-    subStates: {
-      'test-id': {
-        primers,
-        sources,
-      },
-    },
-  },
-});
+const defaultState = {
+  entities: mockEntities,
+  sources: mockSources,
+  primers: mockPrimers,
+};
 
-const createTestStore = (initialState) => configureStore({
+const createTestStore = (cloningState) => configureStore({
   reducer: {
-    cloning: (state = initialState.cloning) => state,
+    cloning: (state = cloningState) => state,
   },
-  preloadedState: initialState,
+  preloadedState: { cloning: cloningState },
 });
 
 describe('<PrimersNotInDatabaseComponent />', () => {
-  beforeEach(() => {
-    // Stub API calls for category selection
+  it('renders nothing when no primers need saving', () => {
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items_types')
       .resolves({
@@ -35,18 +28,11 @@ describe('<PrimersNotInDatabaseComponent />', () => {
           { id: 2, title: 'Other' },
         ],
       });
-  });
-
-  it('renders nothing when no primers need saving', () => {
-    const store = createTestStore(createMockState(
-      [{ id: 1, name: 'Primer1', database_id: 123 }],
-      [{ id: 'source1', primers: [1] }],
-    ));
-
+    const store = createTestStore(defaultState);
     cy.mount(
       <Provider store={store}>
         <PrimersNotInDatabaseComponent
-          id="test-id"
+          id={4}
           submissionData={{}}
           setSubmissionData={cy.spy().as('setSubmissionDataSpy')}
         />
@@ -57,102 +43,107 @@ describe('<PrimersNotInDatabaseComponent />', () => {
     cy.get('.MuiAlert-root').should('not.exist');
   });
 
-  it('shows primers that need saving and handles category selection', () => {
-    const primers = [
-      { id: 1, name: 'Primer1', database_id: null },
-      { id: 2, name: 'Primer2', database_id: null },
-      { id: 3, name: 'Primer3', database_id: 123 }, // Already in database
-    ];
-    const sources = [
-      { id: 'source1', primers: [1, 2, 3] },
-    ];
-
-    const store = createTestStore(createMockState(primers, sources));
-    const setSubmissionDataSpy = cy.spy().as('setSubmissionDataSpy');
+  it('shows primers that need saving', () => {
+    cy.stub(eLabFTWHttpClient, 'get')
+      .withArgs('/api/v2/items_types')
+      .resolves({
+        data: [
+          { id: 1, title: 'Primers' },
+          { id: 2, title: 'Other' },
+        ],
+      });
+    // In this case, it should show only 1, because substate goes only up to
+    // the entity with database_id, and one of the primers already has a database_id
+    const store = createTestStore(defaultState);
 
     cy.mount(
       <Provider store={store}>
         <PrimersNotInDatabaseComponent
-          id="test-id"
+          id={1}
           submissionData={{}}
-          setSubmissionData={setSubmissionDataSpy}
-        />
-      </Provider>,
-    );
-
-    // Should show primers that need saving
-    cy.get('.MuiAlert-message').within(() => {
-      cy.contains('Do you want used primers to be saved to the database?').should('exist');
-      cy.contains('Primer1').should('exist');
-      cy.contains('Primer2').should('exist');
-      cy.contains('Primer3').should('not.exist');
-    });
-
-    // Select a category
-    clickMultiSelectOption('Save primers as', 'Primers', 'div');
-
-    // Should update submission data
-    cy.get('@setSubmissionDataSpy').should((spy) => {
-      const updateFn = spy.lastCall.args[0];
-      const result = updateFn({});
-      expect(result).to.deep.equal({ primerCategoryId: 1 });
-    });
-  });
-
-  it('shows success state when category is selected', () => {
-    const primers = [
-      { id: 1, name: 'Primer1', database_id: null },
-    ];
-    const sources = [
-      { id: 'source1', primers: [1] },
-    ];
-
-    const store = createTestStore(createMockState(primers, sources));
-
-    cy.mount(
-      <Provider store={store}>
-        <PrimersNotInDatabaseComponent
-          id="test-id"
-          submissionData={{ primerCategoryId: 1 }}
           setSubmissionData={cy.spy().as('setSubmissionDataSpy')}
         />
       </Provider>,
     );
 
-    // Should show success state
-    cy.get('.MuiAlert-root').should('have.attr', 'severity', 'success');
-    cy.contains('Do you want used primers to be saved to the database?').should('not.exist');
-  });
+    // Component should not render anything
+    cy.get('.MuiAlert-root').contains('Do you want used primers to be saved to the database?').should('exist');
+    cy.get('.MuiAlert-root li').should('have.length', 1);
+    cy.get('.MuiAlert-root li').contains('Primer1').should('exist');
 
-  it('handles category deselection', () => {
-    const primers = [
-      { id: 1, name: 'Primer1', database_id: null },
-    ];
-    const sources = [
-      { id: 'source1', primers: [1] },
-    ];
-
-    const store = createTestStore(createMockState(primers, sources));
-    const setSubmissionDataSpy = cy.spy().as('setSubmissionDataSpy');
-
-    cy.mount(
-      <Provider store={store}>
-        <PrimersNotInDatabaseComponent
-          id="test-id"
-          submissionData={{ primerCategoryId: 1 }}
-          setSubmissionData={setSubmissionDataSpy}
-        />
-      </Provider>,
-    );
-
-    // Clear the category selection
-    cy.get('.MuiAutocomplete-clearIndicator').click();
+    // Shows the categories to choose from
+    cy.get('input').click();
+    cy.get('li').contains('Other').should('exist');
+    cy.get('li').contains('Primers').click();
 
     // Should update submission data
     cy.get('@setSubmissionDataSpy').should((spy) => {
       const updateFn = spy.lastCall.args[0];
-      const result = updateFn({ primerCategoryId: 1 });
-      expect(result).to.deep.equal({ primerCategoryId: null });
+      const result = updateFn({ hello: 'world' });
+      expect(result).to.deep.equal({ primerCategoryId: 1, hello: 'world' });
+    });
+
+    // Mount with new data (simulating a successful update)
+    cy.mount(
+      <Provider store={store}>
+        <PrimersNotInDatabaseComponent
+          id={1}
+          submissionData={{ primerCategoryId: 1 }}
+        />
+      </Provider>,
+    );
+
+    // Should show success state
+    cy.get('.MuiAlert-colorSuccess').should('exist');
+    cy.contains('Do you want used primers to be saved to the database?').should('not.exist');
+  });
+
+  it('shows error when update fails', () => {
+    let firstCall = true;
+    cy.stub(eLabFTWHttpClient, 'get')
+      .withArgs('/api/v2/items_types', { headers: { Authorization: 'test-read-key' } })
+      .callsFake((url, config) => {
+        if (url !== '/api/v2/items_types' || config.headers?.Authorization !== 'test-read-key') {
+          throw new Error('Unexpected call to get method with these parameters');
+        }
+        if (firstCall) {
+          firstCall = false;
+          const err = new Error('Failed to fetch items types');
+          err.response = {
+            status: 500,
+          };
+          return Promise.reject(err);
+        }
+        return Promise.resolve({
+          data: [
+            { id: 1, title: 'Primers' },
+            { id: 2, title: 'Other' },
+          ],
+        });
+      });
+    // Mount with new data (simulating a failed update)
+    const store = createTestStore(defaultState);
+    cy.mount(
+      <Provider store={store}>
+        <PrimersNotInDatabaseComponent
+          id={1}
+          submissionData={{}}
+          setSubmissionData={cy.spy().as('setSubmissionDataSpy')}
+        />
+      </Provider>,
+    );
+
+    // Should show error state
+    cy.get('.MuiAlert-colorError').should('exist');
+    cy.contains('Could not retrieve categories from eLab').should('exist');
+    cy.contains('Retry').click();
+    // Should be normal again
+    cy.get('input').click();
+    cy.get('li').contains('Other').click();
+    cy.get('@setSubmissionDataSpy').should((spy) => {
+      const updateFn = spy.lastCall.args[0];
+      const result = updateFn({ hello: 'world' });
+      expect(result).to.deep.equal({ primerCategoryId: 2, hello: 'world' });
     });
   });
 });

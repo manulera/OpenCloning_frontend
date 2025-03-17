@@ -7,7 +7,7 @@ import LabelWithTooltip from '../form/LabelWithTooltip';
 import { cloningActions } from '../../store/cloning';
 import { loadFilesToSessionStorage, loadHistoryFile } from '../../utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
-import { mergeStates, getGraftEntityId, graftState } from '../../utils/thunks';
+import { mergeStates, getGraftEntityId, graftState } from '../../utils/network';
 
 const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 
