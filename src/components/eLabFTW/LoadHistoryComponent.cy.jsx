@@ -1,14 +1,9 @@
 import React from 'react';
 import LoadHistoryComponent from './LoadHistoryComponent';
 import { eLabFTWHttpClient } from './common';
-import * as utils from './utils';
 
 let uniqueId = 1;
-const newUniqueId = () => {
-  const id = uniqueId;
-  uniqueId += 1;
-  return id;
-};
+const newUniqueId = () => uniqueId++;
 const DATABASE_ID = newUniqueId();
 const HISTORY_FILE_ID = newUniqueId();
 const OTHER_FILE_ID = newUniqueId();
@@ -22,16 +17,21 @@ describe('<LoadHistoryComponent />', () => {
     // Stub API calls
     cy.stub(eLabFTWHttpClient, 'get').callsFake(async (url) => {
       if (url === `/api/v2/items/${DATABASE_ID}`) {
-        return Promise.resolve({
-          data: {
-            uploads: [
-              {
-                id: HISTORY_FILE_ID,
-                real_name: 'history.json',
-                comment: 'OpenCloning history',
+        return new Promise((resolve) => {
+          // Timeout to catch the loading state
+          setTimeout(() => {
+            resolve({
+              data: {
+                uploads: [
+                  {
+                    id: HISTORY_FILE_ID,
+                    real_name: 'history.json',
+                    comment: 'OpenCloning history',
+                  },
+                ],
               },
-            ],
-          },
+            });
+          }, 500);
         });
       }
       if (url === `/api/v2/items/${DATABASE_ID}/uploads/${HISTORY_FILE_ID}?format=binary`) {
@@ -57,7 +57,7 @@ describe('<LoadHistoryComponent />', () => {
       expect(file).to.be.instanceOf(File);
       expect(file.name).to.equal('history.json');
       expect(id).to.equal(DATABASE_ID);
-      expect(isHistory).to.be.true;
+      expect(isHistory).to.equal(true);
 
       // Verify file content
       const reader = new FileReader();
@@ -150,12 +150,19 @@ describe('<LoadHistoryComponent />', () => {
     const handleCloseSpy = cy.spy().as('handleCloseSpy');
     const loadDatabaseFileSpy = cy.spy().as('loadDatabaseFileSpy');
 
-    let firstCall = true;
+    let callNumber = 0;
     cy.stub(eLabFTWHttpClient, 'get').callsFake(async (url) => {
       if (url === `/api/v2/items/${DATABASE_ID}`) {
-        if (firstCall) {
-          firstCall = false;
+        callNumber += 1;
+        // Network error
+        if (callNumber === 1) {
           throw new Error('Access denied');
+        }
+        // Forbidden / deleted
+        else if (callNumber === 2) {
+          const error = new Error('Forbidden');
+          error.response = { status: 403 };
+          return Promise.reject(error);
         }
         return Promise.resolve({
           data: {
@@ -181,8 +188,12 @@ describe('<LoadHistoryComponent />', () => {
     );
 
     // Should show error message
-    cy.get('.MuiAlert-message').should('contain', 'Ancestor sequence might have been deleted or you can no longer access it');
+    cy.get('.MuiAlert-message').should('contain', 'Failed to load history file.');
+    // Click retry
+    cy.get('button').contains('Retry').click();
 
+    // Should show error message
+    cy.get('.MuiAlert-message').should('contain', 'Ancestor sequence might have been deleted or you can no longer access it');
     // Click retry
     cy.get('button').contains('Retry').click();
 
@@ -192,7 +203,7 @@ describe('<LoadHistoryComponent />', () => {
       expect(file).to.be.instanceOf(File);
       expect(file.name).to.equal('history.json');
       expect(id).to.equal(DATABASE_ID);
-      expect(isHistory).to.be.true;
+      expect(isHistory).to.equal(true);
       return undefined; // Satisfy linter
     });
   });
@@ -219,5 +230,6 @@ describe('<LoadHistoryComponent />', () => {
 
     cy.get('button').contains('Close').click();
     cy.get('@handleCloseSpy').should('have.been.called');
+    cy.get('@loadDatabaseFileSpy').should('not.have.been.called');
   });
 });
