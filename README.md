@@ -73,6 +73,8 @@ For the `eslint` to work, you will need the [eslint module](https://marketplace.
 
 ## Tests
 
+### End to end tests
+
 To run the tests, first run the dev server with `yarn start`.
 
 To run most tests, you will need the backend to be running at http://localhost:8000/. You can see how to do run it in the [backend repo](https://github.com/manulera/OpenCloning_backend). For the github actions tests, a submodule is used (see below).
@@ -92,6 +94,22 @@ bash run_tests_in_parallel.sh
 
 ```
 
+### Component tests
+
+For these, you don't have to run the `yarn start` command, but you need the backend server as above. To run them:
+
+```bash
+yarn cypress open
+```
+
+### Unit tests
+
+These are run with `vitest`. To run them:
+
+```bash
+yarn vitest
+```
+
 ### Actions and submodule
 
 The tests run with cypress in github actions require the submodule OpenCloning_backend to be included. If you want to include it locally:
@@ -109,6 +127,10 @@ git pull origin the-branch
 cd ..
 # commit the frontend repo normally
 ```
+
+### Coverage
+
+To update which files are excluded from coverage, edit the `.nycrc.json` file.
 
 ## Misc
 
