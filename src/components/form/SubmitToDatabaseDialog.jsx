@@ -3,7 +3,7 @@ import React from 'react';
 import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import useDatabase from '../../hooks/useDatabase';
 import { cloningActions } from '../../store/cloning';
-import { getSubState } from '../../utils/thunks';
+import { getSubState } from '../../utils/network';
 import IntermediatesDisclaimer from './intermediates_disclaimer.svg';
 
 function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType }) {

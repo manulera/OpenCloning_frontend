@@ -1,16 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Alert } from '@mui/material';
-import { getSubState } from '../../utils/thunks';
-import { getUsedPrimerIds } from '../../store/cloning_utils';
+import { getSubState } from '../../utils/network';
 import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 
 function PrimersNotInDatabaseComponent({ id, submissionData, setSubmissionData }) {
   const primerCategoryId = submissionData?.primerCategoryId;
   const primers = useSelector((state) => {
     const subState = getSubState(state, id, true);
-    const primersInUse = getUsedPrimerIds(subState.sources);
-    return subState.primers.filter((p) => !p.database_id && primersInUse.includes(p.id));
+    return subState.primers.filter((p) => !p.database_id);
   });
 
   if (primers.length === 0) return null;

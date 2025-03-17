@@ -15,7 +15,7 @@ export default function GetRequestMultiSelect({ getOptionsFromResponse, url, lab
       setWaitingMessage(null);
       setOptions(getOptionsFromResponse(data));
       setError(false);
-    }).catch((e) => { setWaitingMessage(errorMessage); setError(true); });
+    }).catch((e) => { setWaitingMessage(errorMessage); setError(true); setOptions([]); });
   }, [connectAttempt]);
 
   if (error) {

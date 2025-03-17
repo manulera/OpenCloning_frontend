@@ -4,7 +4,7 @@ import useAlerts from '../hooks/useAlerts';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useValidateState from '../hooks/useValidateState';
 import { cloningActions } from '../store/cloning';
-import { mergeStates } from '../utils/thunks';
+import { mergeStates } from '../utils/network';
 import { loadFilesToSessionStorage, loadHistoryFile } from '../utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
