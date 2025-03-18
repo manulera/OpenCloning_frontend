@@ -1,6 +1,10 @@
-# Frontend application
+[![Python tests](https://github.com/manulera/OpenCloning_frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/manulera/OpenCloning_frontend/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/manulera/OpenCloning_frontend/graph/badge.svg?token=CFIB2H6WMO)](https://codecov.io/gh/manulera/OpenCloning_frontend)
 
-This frontend is part of a bigger application, before going further, please go to the [main project README](https://github.com/manulera/OpenCloning?tab=readme-ov-file#readme), where you can find an introduction.
+
+# OpenCloning frontend
+
+This frontend React application is part of a bigger application, before going further, please go to the [main project README](https://github.com/manulera/OpenCloning?tab=readme-ov-file#readme), where you can find an introduction.
 
 A hosted version of this application can be found at [https://opencloning.org/](https://opencloning.org/).
 
@@ -38,7 +42,7 @@ yarn build
 
 For the application to work, you must have a running backend. For that, see the [backend installation instructions](https://github.com/manulera/OpenCloning_backend#local-installation).
 
-By default, if you run the dev server with `uvicorn main:app --reload --reload-exclude='.venv'`, the backend will be running at `http://localhost:8000/`. That's where the dev server of the frontend (ran with `yarn start`) will send the requests to by default.
+By default, if you run the dev server with `uvicorn opencloning.main:app`, the backend will be running at `http://localhost:8000/`. That's where the dev server of the frontend (ran with `yarn start`) will send the requests to by default.
 
 The backend URL can be changed by setting a different value in the `config.json` (see next section).
 
@@ -49,6 +53,9 @@ See also [connecting to the frontend section](https://github.com/manulera/OpenCl
 The configuration of the frontend is done in the file that will be served from `/config.json`. In the dev server, this file is served from `public/config.json`. That file is not included in the repository, and is generated from `public/config.dev.json` when you run `yarn start`. For the production site, `config.prod.json` is used. The things you can configure are:
 
 * `backendUrl`: The URL of the backend. By default, it is `http://localhost:8000/`.
+* `showAppBar`: Whether to show the top app bar (blue with buttons for examples, etc.). By default, it is `true`.
+* `noExternalRequests`: Whether to block requests to external services. By default, it is `false`.
+* `database`: For integrations, provide the database name. This is not documented, but for an example see `src/components/eLabFTW`.
 
 For production: when building the site with `yarn build`, simply replace `build/config.json` with your settings. This is what is done in [this docker-compose file](https://github.com/manulera/OpenCloning).
 
@@ -157,7 +164,7 @@ CYPRESS_NO_COMMAND_LOG=1 yarn cypress run --spec cypress/e2e/source_genome_regio
 
 ### eLabFTW
 
-The API keys should be in the ignored file `.env.development.local`
+The API keys should be in the ignored file `.env.local`
 
 Example file:
 
