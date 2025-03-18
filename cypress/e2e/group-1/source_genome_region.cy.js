@@ -1,4 +1,4 @@
-import { clearInputValue, clickMultiSelectOption, setInputValue} from '../common_functions';
+import { clearInputValue, clickMultiSelectOption, setInputValue } from '../common_functions';
 
 describe('GenomeRegion Source', () => {
   beforeEach(() => {
@@ -77,6 +77,9 @@ describe('GenomeRegion Source', () => {
     // Shows the right message if the assembly has no annotations
     setInputValue('Assembly ID', 'GCA_006386175.1', 'li#source-1');
     cy.get('li#source-1').contains('The selected assembly has no gene annotations', { timeout: 20000 });
+    // Shows a warning when the id provided is not an exact match to any particular assembly
+    setInputValue('Assembly ID', 'GCA_000002945', 'li#source-1');
+    cy.get('li#source-1').contains('Using assembly ID', { timeout: 20000 });
     // Shows a warning if a newer assembly exists
     setInputValue('Assembly ID', 'GCF_000002945.1', 'li#source-1');
     cy.get('li#source-1').contains('Newer assembly exists', { timeout: 20000 });

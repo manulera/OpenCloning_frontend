@@ -153,14 +153,46 @@ function KnownAssemblyField({ assemblyId }) {
   );
 }
 
+function AssemblyIdSelector({ setAssemblyId, setHasAnnotation = () => {}, onAssemblyIdChange = () => {} }) {
+  const [exactMatch, setExactMatch] = React.useState(false);
+  const [newerAssembly, setNewerAssembly] = React.useState(false);
+  const [species, setSpecies] = React.useState(null);
+
+  const onChange = (userInput, resp) => {
+    setSpecies(resp === null ? null : resp.species);
+    if (resp === null || resp.exactMatch) {
+      setAssemblyId(userInput);
+      setExactMatch(true);
+    } else {
+      setAssemblyId(resp.newerAssembly);
+      setExactMatch(false);
+    }
+    setHasAnnotation(resp !== null && resp.hasAnnotation);
+    setNewerAssembly(resp !== null && resp.newerAssembly);
+    onAssemblyIdChange();
+  };
+
+  return (
+    <>
+      <TextFieldValidate onChange={onChange} getterFunction={getInfoFromAssemblyId} label="Assembly ID" defaultHelperText="Example ID: GCA_000002945.3" />
+      {newerAssembly && (
+      <Alert severity="warning">
+        {!exactMatch ? 'Using assembly ID' : 'Newer assembly exists:'}
+        {' '}
+        <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${newerAssembly}`} target="_blank" rel="noopener noreferrer">{newerAssembly}</a>
+      </Alert>
+      )}
+      {species && <KnownSpeciesField species={species} />}
+    </>
+  );
+}
+
 // Extra component to be used in SourceGenomeRegion
 function SourceGenomeRegionLocusOnOther({ source, requestStatus, sendPostRequest }) {
   const { id: sourceId } = source;
   const [gene, setGene] = React.useState(null);
-  const [species, setSpecies] = React.useState(null);
   const [assemblyId, setAssemblyId] = React.useState('');
-  const [noAnnotationError, setNoAnnotationError] = React.useState(false);
-  const [newerAssembly, setNewerAssembly] = React.useState(false);
+  const [hasAnnotation, setHasAnnotation] = React.useState(false);
   const upstreamBasesRef = React.useRef(null);
   const downstreamBasesRef = React.useRef(null);
 
@@ -171,32 +203,16 @@ function SourceGenomeRegionLocusOnOther({ source, requestStatus, sendPostRequest
     sendPostRequest({ endpoint: 'genome_coordinates', requestData, source });
   };
 
-  const onAssemblyIdChange = (userInput, resp) => {
-    setGene(null);
-    setSpecies(resp === null ? null : resp.species);
-    setAssemblyId(resp === null ? null : userInput);
-    setNoAnnotationError(resp !== null && !resp.hasAnnotation);
-    setNewerAssembly(resp !== null && resp.newerAssembly);
-  };
-
   return (
     <form onSubmit={onSubmit}>
-      <TextFieldValidate onChange={onAssemblyIdChange} getterFunction={getInfoFromAssemblyId} label="Assembly ID" defaultHelperText="Example ID: GCA_000002945.3" />
-      {assemblyId && !noAnnotationError && (
+      <AssemblyIdSelector {...{ setAssemblyId, setHasAnnotation, onAssemblyIdChange: () => setGene(null) }} />
+      {assemblyId && hasAnnotation && (
         <>
-          {newerAssembly && (
-          <Alert severity="warning">
-            Newer assembly exists:
-            {' '}
-            <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${newerAssembly}`} target="_blank" rel="noopener noreferrer">{newerAssembly}</a>
-          </Alert>
-          )}
-          <KnownSpeciesField species={species} />
           <SourceGenomeRegionSelectGene {...{ gene, upstreamBasesRef, downstreamBasesRef, setGene, assemblyId }} />
           {gene && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>}
         </>
       )}
-      {noAnnotationError && (<Alert severity="error">The selected assembly has no gene annotations</Alert>)}
+      {assemblyId && !hasAnnotation && (<Alert severity="error">The selected assembly has no gene annotations</Alert>)}
     </form>
   );
 }
@@ -269,18 +285,6 @@ function SourceGenomeRegionCustomCoordinates({ source, requestStatus, sendPostRe
     setSequenceAccession(resp.sequenceAccessionStandard);
   };
 
-  const onAssemblyAccessionChange = (userInput, resp) => {
-    setFormError({ ...noError });
-    if (resp === null) {
-      setSpecies(null);
-      setSequenceAccession('');
-      setAssemblyId('');
-      return;
-    }
-    setSpecies(resp.species);
-    setAssemblyId(userInput);
-  };
-
   return (
     <form onSubmit={onSubmit}>
       {(selectionMode === 'custom_sequence_accession') && (
@@ -298,10 +302,7 @@ function SourceGenomeRegionCustomCoordinates({ source, requestStatus, sendPostRe
         </>
       )}
       {(selectionMode === 'custom_other') && (
-        <>
-          <TextFieldValidate onChange={onAssemblyAccessionChange} getterFunction={getInfoFromAssemblyId} label="Assembly ID" defaultHelperText="Example ID: GCA_000002945.3" />
-          {species && <KnownSpeciesField species={species} />}
-        </>
+        <AssemblyIdSelector {...{ setAssemblyId, onAssemblyIdChange: () => { setFormError({ ...noError }); setSequenceAccession(''); } }} />
       )}
       {assemblyId && ['custom_reference', 'custom_other'].includes(selectionMode) && (
       <SequenceAccessionPicker {...{ assemblyAccesion: assemblyId, sequenceAccession, setSequenceAccession }} />
@@ -361,6 +362,7 @@ function SourceGenomeRegionSelectGene({ gene, upstreamBasesRef, downstreamBasesR
     getOptions: async (userInput) => {
       try {
         // We await the response to catch the error
+        setError('');
         return await geneSuggest(assemblyId, userInput);
       } catch (e) {
         // Connection error
