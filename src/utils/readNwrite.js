@@ -66,14 +66,20 @@ export async function readSubmittedTextFile(file) {
   });
 }
 
+export function formatStateForJsonExport(cloningState) {
+  const { sequences, sources, description, primers } = cloningState;
+  return { sequences, sources, description, primers };
+}
+
 export const prettyPrintJson = (json) => `${JSON.stringify(json, null, 2)}\n`;
 
 export const downloadStateAsJson = async (cloningState, fileName = 'cloning_strategy.json') => {
-  downloadTextFile(prettyPrintJson(cloningState), fileName, 'application/json');
+  const output = formatStateForJsonExport(cloningState);
+  downloadTextFile(prettyPrintJson(output), fileName, 'application/json');
 };
 
 export const downloadStateAsZip = async (cloningState, zipFileName = 'cloning_strategy.zip') => {
-  const output = { ...cloningState };
+  const output = formatStateForJsonExport(cloningState);
   output.files = cloningState.files;
   const fileNames = cloningState.files.map((file) => `verification-${file.sequence_id}-${file.file_name}`);
   const files2write = [
