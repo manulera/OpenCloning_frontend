@@ -1,4 +1,4 @@
-import { loadExample, addPrimer, changeTab } from '../common_functions';
+import { loadExample, addPrimer, changeTab, setInputValue } from '../common_functions';
 
 describe('Tests primer functionality', () => {
   beforeEach(() => {
@@ -301,5 +301,29 @@ describe('Tests primer functionality', () => {
     cy.get('.import-primers-modal-content button').contains('Import').click();
     cy.get('.primer-table-container tr').contains('oligo1').should('exist');
     cy.get('.primer-table-container tr').contains('oligo2').should('exist');
+  });
+  it('Can download primers', () => {
+    loadExample('Templateless PCR');
+    cy.get('button').contains('Download Primers').click();
+    setInputValue('File name', 'primers-test', '.MuiDialogContent-root');
+    cy.get('.MuiDialogActions-root button').contains('Save file').click();
+    cy.task('readFileMaybe', 'cypress/downloads/primers-test.csv').then((fileContent) => {
+      // Check the downloaded file contains the correct primer information
+      const lines = fileContent.split('\n');
+      expect(lines[0]).to.equal('id,name,sequence');
+      expect(lines[1]).to.equal('1,fwd_hyb,agaactcaaccattacgggtttgacgaatatagacgagattcgcaattacttgtctgatggattaccaagatgatgggct');
+      expect(lines[2]).to.equal('2,rvs_hyb,ttacgagatatttgagttaaacttcatgcataccctccaaaaactcaatcatttcaccaagcccatcatcttggtaatcc');
+    });
+    // Try the same with tsv
+    cy.get('button').contains('Download Primers').click();
+    setInputValue('File name', 'primers-test', '.MuiDialogContent-root');
+    cy.get('.MuiDialogContent-root span').contains('tsv').click();
+    cy.get('.MuiDialogActions-root button').contains('Save file').click();
+    cy.task('readFileMaybe', 'cypress/downloads/primers-test.tsv').then((fileContent) => {
+      const lines = fileContent.split('\n');
+      expect(lines[0]).to.equal('id\tname\tsequence');
+      expect(lines[1]).to.equal('1\tfwd_hyb\tagaactcaaccattacgggtttgacgaatatagacgagattcgcaattacttgtctgatggattaccaagatgatgggct');
+      expect(lines[2]).to.equal('2\trvs_hyb\tttacgagatatttgagttaaacttcatgcataccctccaaaaactcaatcatttcaccaagcccatcatcttggtaatcc');
+    });
   });
 });
