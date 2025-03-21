@@ -1,6 +1,6 @@
 {
     "backendUrl": "http://127.0.0.1:8000",
-    "database": null,
+    "database": "dummy",
     "showAppBar": true,
     "noExternalRequests": false
 }
