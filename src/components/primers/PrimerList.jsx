@@ -9,6 +9,7 @@ import ImportPrimersButton from './import_primers/ImportPrimersButton';
 import PrimerDatabaseImportForm from './import_primers/PrimerDatabaseImportForm';
 import { getUsedPrimerIds } from '../../store/cloning_utils';
 import useDatabase from '../../hooks/useDatabase';
+import DownloadPrimersButton from './DownloadPrimersButton';
 
 function PrimerList() {
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
@@ -89,6 +90,7 @@ function PrimerList() {
               Add Primer
             </Button>
             <ImportPrimersButton addPrimer={addPrimer} />
+            <DownloadPrimersButton primers={primers} />
             {database && (
               <Button
                 variant="contained"
