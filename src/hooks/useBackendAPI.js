@@ -7,7 +7,7 @@ import useHttpClient from './useHttpClient';
 export default function useBackendAPI() {
   const [requestStatus, setRequestStatus] = useState({ status: null, message: '' });
   const [sources, setSources] = useState([]);
-  const [entities, setEntities] = useState([]);
+  const [sequences, setSequences] = useState([]);
   const backendRoute = useBackendRoute();
   const httpClient = useHttpClient();
   const { addAlert } = useAlerts();
@@ -30,7 +30,7 @@ export default function useBackendAPI() {
       // TODO: Unit test here
       if (resp.data.sources.length === 0) {
         setSources([]);
-        setEntities([]);
+        setSequences([]);
         setRequestStatus({ status: 'error', message: 'No outputs returned' });
         return;
       }
@@ -41,13 +41,13 @@ export default function useBackendAPI() {
       if (output !== null) {
         receivedSources.forEach((s) => { s.output = output; });
       }
-      setSources(receivedSources); setEntities(resp.data.sequences);
+      setSources(receivedSources); setSequences(resp.data.sequences);
     } catch (error) {
       setRequestStatus({ status: 'error', message: error2String(error) });
       setSources([]);
-      setEntities([]);
+      setSequences([]);
     }
   }, []);
 
-  return { requestStatus, sources, entities, sendPostRequest };
+  return { requestStatus, sources, sequences, sendPostRequest };
 }

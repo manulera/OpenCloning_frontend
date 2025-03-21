@@ -66,22 +66,14 @@ export async function readSubmittedTextFile(file) {
   });
 }
 
-export function formatStateForJsonExport(cloningState) {
-  const { entities, sources, description, primers } = cloningState;
-  return {
-    sequences: entities, sources, description, primers,
-  };
-}
-
 export const prettyPrintJson = (json) => `${JSON.stringify(json, null, 2)}\n`;
 
 export const downloadStateAsJson = async (cloningState, fileName = 'cloning_strategy.json') => {
-  const output = formatStateForJsonExport(cloningState);
-  downloadTextFile(prettyPrintJson(output), fileName, 'application/json');
+  downloadTextFile(prettyPrintJson(cloningState), fileName, 'application/json');
 };
 
 export const downloadStateAsZip = async (cloningState, zipFileName = 'cloning_strategy.zip') => {
-  const output = formatStateForJsonExport(cloningState);
+  const output = { ...cloningState };
   output.files = cloningState.files;
   const fileNames = cloningState.files.map((file) => `verification-${file.sequence_id}-${file.file_name}`);
   const files2write = [
@@ -179,8 +171,7 @@ export async function loadHistoryFile(file) {
   } catch (error) {
     throw new Error('Invalid JSON file.');
   }
-  const newCloningStrategy = { ...cloningStrategy, entities: cloningStrategy.sequences };
-  delete newCloningStrategy.sequences;
+  const newCloningStrategy = { ...cloningStrategy };
 
   // Drop the files if loading only json
   if (isJsonFile) {
@@ -209,15 +200,15 @@ export async function loadHistoryFile(file) {
   }
 
   // Validate the cloning strategy
-  if (newCloningStrategy.primers === undefined || newCloningStrategy.entities === undefined || newCloningStrategy.sources === undefined) {
+  if (newCloningStrategy.primers === undefined || newCloningStrategy.sequences === undefined || newCloningStrategy.sources === undefined) {
     throw new Error('JSON file should contain at least keys: primers, sequences and sources');
   }
   // They should be arrays
   if (!Array.isArray(newCloningStrategy.primers)) {
     throw new Error('primers should be an array');
   }
-  if (!Array.isArray(newCloningStrategy.entities)) {
-    throw new Error('entities should be an array');
+  if (!Array.isArray(newCloningStrategy.sequences)) {
+    throw new Error('sequences should be an array');
   }
   if (!Array.isArray(newCloningStrategy.sources)) {
     throw new Error('sources should be an array');

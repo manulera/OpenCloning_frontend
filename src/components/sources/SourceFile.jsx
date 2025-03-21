@@ -7,7 +7,7 @@ import LabelWithTooltip from '../form/LabelWithTooltip';
 import { cloningActions } from '../../store/cloning';
 import { loadFilesToSessionStorage, loadHistoryFile } from '../../utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
-import { mergeStates, getGraftEntityId, graftState } from '../../utils/network';
+import { mergeStates, getGraftSequenceId, graftState } from '../../utils/network';
 
 const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 
@@ -50,7 +50,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
       }
 
       const hasOutput = Boolean(source.output);
-      const canGraft = getGraftEntityId(cloningStrategy) !== null;
+      const canGraft = getGraftSequenceId(cloningStrategy) !== null;
       const graft = hasOutput && canGraft;
       if (hasOutput && !canGraft) {
         setAlert({ message: 'Cannot graft cloning strategy as it does not converge on a single sequence, you can load it on a source without outputs', severity: 'error' });

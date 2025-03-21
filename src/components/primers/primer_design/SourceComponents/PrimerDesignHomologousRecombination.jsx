@@ -18,14 +18,14 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
       type: primerDesignType === 'homologous_recombination' ? 'HomologousRecombinationSource' : 'CRISPRSource',
       output: null,
     };
-    const newEntity = {
+    const newSequence = {
       type: 'TemplateSequence',
       primer_design: 'homologous_recombination',
       circular: false,
     };
 
     batch(() => {
-      dispatch(addTemplateChildAndSubsequentSource({ newSource, newEntity, sourceId: source.id }));
+      dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id }));
       dispatch(setMainSequenceId(source.input[0]));
       updateStoreEditor('mainEditor', source.input[0]);
       dispatch(setCurrentTab(3));
@@ -68,7 +68,7 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
           label="Target sequence"
           selectedId={target}
           onChange={(e) => setTarget(e.target.value)}
-          inputEntityIds={[]}
+          inputSequenceIds={[]}
         />
       </FormControl>
       {target && (

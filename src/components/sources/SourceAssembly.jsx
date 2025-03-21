@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { Checkbox, FormControlLabel, InputLabel, MenuItem, Select, TextField, FormControl, InputAdornment } from '@mui/material';
 import MultipleInputsSelector from './MultipleInputsSelector';
-import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
+import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
 import EnzymeMultiSelect from '../form/EnzymeMultiSelect';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import { classNameToEndPointMap } from '../../utils/sourceFunctions';
@@ -16,9 +16,9 @@ const helpSingleSite = 'Even if input sequences contain multiple att sites '
 // A component representing the ligation or gibson assembly of several fragments
 function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const assemblyType = source.type;
-  const { id: sourceId, input: inputEntityIds } = source;
-  const inputEntities = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), shallowEqual);
-  const inputContainsTemplates = inputEntities.some((entity) => entity.type === 'TemplateSequence');
+  const { id: sourceId, input: inputSequenceIds } = source;
+  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const inputContainsTemplates = inputSequences.some((sequence) => sequence.type === 'TemplateSequence');
   const [minimalHomology, setMinimalHomology] = React.useState(20);
   const [allowPartialOverlap, setAllowPartialOverlap] = React.useState(false);
   const [circularOnly, setCircularOnly] = React.useState(false);
@@ -65,8 +65,8 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const onSubmit = (event) => {
     event.preventDefault();
     const requestData = {
-      source: { id: sourceId, input: inputEntities.map((e) => e.id), output_name: source.output_name },
-      sequences: inputEntities,
+      source: { id: sourceId, input: inputSequences.map((e) => e.id), output_name: source.output_name },
+      sequences: inputSequences,
     };
     if (['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource'].includes(assemblyType)) {
       const config = { params: {
@@ -112,7 +112,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       <form onSubmit={onSubmit}>
         <FormControl fullWidth>
           <MultipleInputsSelector {...{
-            inputEntityIds, onChange: onChangeInput, label: 'Assembly inputs',
+            inputSequenceIds, onChange: onChangeInput, label: 'Assembly inputs',
           }}
           />
         </FormControl>

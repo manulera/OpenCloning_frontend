@@ -10,9 +10,7 @@ export default function useValidateState() {
 
   const validateState = React.useCallback(async (newState) => {
     try {
-      const newState2 = { ...newState, sequences: newState.entities };
-      delete newState2.entities;
-      await httpClient.post(backendRoute('validate'), newState2);
+      await httpClient.post(backendRoute('validate'), newState);
     } catch (e) {
       if (e.code === 'ERR_NETWORK') {
         addAlert({

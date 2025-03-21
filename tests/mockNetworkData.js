@@ -1,9 +1,9 @@
-export const mockEntities = [
-  { id: 1, name: 'Entity1' },
-  { id: 2, name: 'Entity2' },
-  { id: 3, name: 'Entity3' },
-  { id: 4, name: 'Entity4' },
-  { id: 5, name: 'Entity5' },
+export const mockSequences = [
+  { id: 1, name: 'Seq1' },
+  { id: 2, name: 'Seq2' },
+  { id: 3, name: 'Seq3' },
+  { id: 4, name: 'Seq4' },
+  { id: 5, name: 'Seq5' },
   { id: 6, name: 'unrelated' },
 ];
 
@@ -25,10 +25,10 @@ export const mockPrimers = [
 ];
 
 export const mockTeselaJsonCache = {
-  1: { name: 'Entity1' },
-  2: { name: 'Entity2' },
-  3: { name: 'Entity3' },
-  4: { name: 'Entity4' },
-  5: { name: 'Entity5' },
+  1: { name: 'Seq1' },
+  2: { name: 'Seq2' },
+  3: { name: 'Seq3' },
+  4: { name: 'Seq4' },
+  5: { name: 'Seq5' },
   6: { name: 'unrelated' },
 };

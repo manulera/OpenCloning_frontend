@@ -191,7 +191,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
         throw new Error('Invalid fragment orientation');
       }
     });
-    const { cloning: { entities } } = store.getState();
+    const { cloning: { sequences } } = store.getState();
     let requestData;
     let params;
     let endpoint;
@@ -202,7 +202,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       };
       requestData = {
         pcr_templates: sequenceIds.map((id, index) => ({
-          sequence: entities.find((e) => e.id === id),
+          sequence: sequences.find((e) => e.id === id),
           location: selectedRegion2SequenceLocation(rois[index]),
           forward_orientation: fragmentOrientations[index] === 'forward',
         })),
@@ -216,12 +216,12 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       };
       requestData = {
         pcr_template: {
-          sequence: entities.find((e) => e.id === pcrTemplateId),
+          sequence: sequences.find((e) => e.id === pcrTemplateId),
           location: selectedRegion2SequenceLocation(rois[0]),
           forward_orientation: fragmentOrientations[0] === 'forward',
         },
         homologous_recombination_target: {
-          sequence: entities.find((e) => e.id === homologousRecombinationTargetId),
+          sequence: sequences.find((e) => e.id === homologousRecombinationTargetId),
           location: selectedRegion2SequenceLocation(rois[1]),
         },
         spacers,
@@ -235,7 +235,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
 
       requestData = {
         pcr_template: {
-          sequence: entities.find((e) => e.id === pcrTemplateId),
+          sequence: sequences.find((e) => e.id === pcrTemplateId),
           location: selectedRegion2SequenceLocation(rois[0]),
           forward_orientation: fragmentOrientations[0] === 'forward',
         },
@@ -245,7 +245,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     } else if (designType === 'ebic') {
       endpoint = 'ebic';
       requestData = {
-        sequence: entities.find((e) => e.id === templateSequenceIds[0]),
+        sequence: sequences.find((e) => e.id === templateSequenceIds[0]),
         location: selectedRegion2SequenceLocation(rois[0]),
         // forward_orientation: fragmentOrientations[0] === 'forward',
       };

@@ -1,14 +1,14 @@
 import React from 'react';
 import { formatSequenceForOverhangDisplay } from '../utils/sequenceDisplay';
 
-function OverhangsDisplay({ entity, sequenceData }) {
-  if (entity === undefined
-    || (entity.overhang_crick_3prime === 0 && entity.overhang_watson_3prime === 0)
+function OverhangsDisplay({ sequence, sequenceData }) {
+  if (sequence === undefined
+    || (sequence.overhang_crick_3prime === 0 && sequence.overhang_watson_3prime === 0)
   ) { return null; }
   const { watson, crick, middle } = formatSequenceForOverhangDisplay(
     sequenceData.sequence,
-    entity.overhang_crick_3prime,
-    entity.overhang_watson_3prime,
+    sequence.overhang_crick_3prime,
+    sequence.overhang_watson_3prime,
   );
 
   return (

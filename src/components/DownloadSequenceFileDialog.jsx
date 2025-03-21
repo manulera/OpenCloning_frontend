@@ -6,7 +6,7 @@ import { downloadSequence } from '../utils/readNwrite';
 import { exportSubStateThunk } from '../utils/thunks';
 import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
 
-// You can override the downloadSequence function by passing a downloadCallback that takes the fileName and entity as arguments
+// You can override the downloadSequence function by passing a downloadCallback that takes the fileName and sequence as arguments
 function DownloadSequenceFileDialog({ id, dialogOpen, setDialogOpen, downloadCallback }) {
   const [fileName, setFileName] = React.useState('');
   const [extension, setExtension] = React.useState('.gb');

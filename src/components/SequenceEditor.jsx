@@ -17,23 +17,23 @@ const transformToRegion = (eventOutput) => {
   return { selectionLayer: { start: eventOutput.start, end: eventOutput.end }, caretPosition: -1 };
 };
 
-function AddSourceComponent({ entityId }) {
-  const isRootNode = useSelector((state) => !state.cloning.sources.some((source) => source.input.includes(entityId)));
+function AddSourceComponent({ sequenceId }) {
+  const isRootNode = useSelector((state) => !state.cloning.sources.some((source) => source.input.includes(sequenceId)));
   return isRootNode ? (
     <div className="hang-from-node">
       <div>
-        <NewSourceBox {...{ inputEntitiesIds: [entityId] }} />
+        <NewSourceBox {...{ inputSequencesIds: [sequenceId] }} />
       </div>
     </div>
   ) : null;
 }
 
-function SequenceEditor({ entityId }) {
-  const editorName = `editor_${entityId}`;
-  const entity = useSelector((state) => state.cloning.entities.find((e) => e.id === entityId), isEqual);
-  const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, entityId), isEqual);
-  const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, entityId), isEqual);
-  const unmutableSeq = useSelector((state) => state.cloning.teselaJsonCache[entityId], isEqual);
+function SequenceEditor({ sequenceId }) {
+  const editorName = `editor_${sequenceId}`;
+  const sequence = useSelector((state) => state.cloning.sequences.find((e) => e.id === sequenceId), isEqual);
+  const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, sequenceId), isEqual);
+  const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, sequenceId), isEqual);
+  const unmutableSeq = useSelector((state) => state.cloning.teselaJsonCache[sequenceId], isEqual);
   const seq = { ...unmutableSeq };
 
   // Make a copy
@@ -45,8 +45,8 @@ function SequenceEditor({ entityId }) {
     (p2) => p2.name === p.name && p2.start === p.start && p2.end === p.end,
   ));
   seqCopy.primers = [...seqCopy.primers, ...pcrPrimers2Include, ...linkedPrimers];
-  const parentSource = useSelector((state) => state.cloning.sources.find((source) => source.output === entityId), isEqual);
-  const stateSelectedRegion = useSelector((state) => state.cloning.selectedRegions.find((r) => r.id === entityId)?.selectedRegion, isEqual);
+  const parentSource = useSelector((state) => state.cloning.sources.find((source) => source.output === sequenceId), isEqual);
+  const stateSelectedRegion = useSelector((state) => state.cloning.selectedRegions.find((r) => r.id === sequenceId)?.selectedRegion, isEqual);
   const parentSequenceData = useSelector((state) => parentSource.input.map((id) => state.cloning.teselaJsonCache[id]), isEqual);
   const [rangeInParent, setRangeInParent] = React.useState(() => null);
   React.useEffect(() => {
@@ -77,11 +77,11 @@ function SequenceEditor({ entityId }) {
     } else {
       const newRegion = transformToRegion(eventOutput);
       const newTimeOutId = setTimeout(() => {
-        const parentEntityIds = parentSource.input;
-        // We add the current entity to the selectedRegions array
-        const selectedRegions = [{ id: entityId, selectedRegion: newRegion }];
-        // If possible, add the equivalent region in the parent entity
-        parentEntityIds.forEach((id) => {
+        const parentSequenceIds = parentSource.input;
+        // We add the current sequence to the selectedRegions array
+        const selectedRegions = [{ id: sequenceId, selectedRegion: newRegion }];
+        // If possible, add the equivalent region in the parent sequence
+        parentSequenceIds.forEach((id) => {
           const selectionLayerAssembly = rangeInParent(newRegion.selectionLayer, id);
           if (selectionLayerAssembly !== null) {
             selectedRegions.push({ id, selectedRegion: { selectionLayer: selectionLayerAssembly, caretPosition: -1 } });
@@ -112,8 +112,8 @@ function SequenceEditor({ entityId }) {
         caretPositionUpdate: (a) => updateSelectedRegion(a, true),
       }}
       />
-      <OverhangsDisplay {...{ sequenceData: seq, entity }} />
-      <AddSourceComponent {...{ entityId }} />
+      <OverhangsDisplay {...{ sequenceData: seq, sequence }} />
+      <AddSourceComponent {...{ sequenceId }} />
     </div>
   );
 }

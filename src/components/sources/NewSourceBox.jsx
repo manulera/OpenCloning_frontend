@@ -6,11 +6,11 @@ import { IconButton } from '@mui/material';
 import { cloningActions } from '../../store/cloning';
 
 // A component that is rendered on the side of the tree to add a new source
-function NewSourceBox({ inputEntitiesIds = [] }) {
+function NewSourceBox({ inputSequencesIds = [] }) {
   const dispatch = useDispatch();
   const { addEmptySource } = cloningActions;
   const onClick = () => {
-    dispatch(addEmptySource(inputEntitiesIds));
+    dispatch(addEmptySource(inputSequencesIds));
     setTimeout(() => {
       const tabPanelsContainer = document.querySelector('.tab-panels-container');
       if (tabPanelsContainer) {

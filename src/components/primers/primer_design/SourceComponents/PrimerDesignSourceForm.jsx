@@ -16,14 +16,14 @@ function PrimerDesignSourceForm({ source }) {
   React.useEffect(() => {
     // Here the user does not have to select anything else
     if (primerDesignType === 'restriction_ligation' || primerDesignType === 'simple_pair') {
-      const newEntity = {
+      const newSequence = {
         type: 'TemplateSequence',
         primer_design: primerDesignType,
         circular: false,
       };
 
       batch(() => {
-        dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newEntity, templateIds: [], sourceType: null }));
+        dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: [], sourceType: null }));
         dispatch(setMainSequenceId(source.input[0]));
         updateStoreEditor('mainEditor', source.input[0]);
         dispatch(setCurrentTab(3));

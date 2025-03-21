@@ -89,7 +89,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
               }
               batch(() => {
                 primerMappings.forEach((mapping) => dispatch(cloningActions.addDatabaseIdToPrimer(mapping)));
-                dispatch(cloningActions.addDatabaseIdToEntity({ databaseId, id }));
+                dispatch(cloningActions.addDatabaseIdToSequence({ databaseId, id }));
                 dispatch(cloningActions.addAlert({
                   message: 'Sequence created successfully',
                   severity: 'success',

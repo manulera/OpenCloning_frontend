@@ -29,14 +29,14 @@ function PrimerDesignGatewayBP({ source }) {
       greedy,
       output: null,
     };
-    const newEntity = {
+    const newSequence = {
       type: 'TemplateSequence',
       primer_design: 'gateway_bp',
       circular: false,
     };
 
     batch(() => {
-      dispatch(addTemplateChildAndSubsequentSource({ newSource, newEntity, sourceId: source.id }));
+      dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id }));
       dispatch(setMainSequenceId(source.input[0]));
       updateStoreEditor('mainEditor', source.input[0]);
       dispatch(setCurrentTab(3));
@@ -54,7 +54,7 @@ function PrimerDesignGatewayBP({ source }) {
           label="Donor vector"
           selectedId={target}
           onChange={(e) => setTarget(e.target.value)}
-          inputEntityIds={[]}
+          inputSequenceIds={[]}
           helperText={requestStatus.status === 'loading' ? 'Validating...' : ''}
         />
       </FormControl>

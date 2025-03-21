@@ -52,9 +52,9 @@ export default function useStoreEditor() {
       const { cloning } = store.getState();
       const { teselaJsonCache } = cloning;
       const sequenceData = { ...teselaJsonCache[id] };
-      const entity = cloning.entities.find((e) => e.id === id);
-      const entityWithoutSequencing = { ...entity };
-      delete entityWithoutSequencing.sequencing;
+      const sequence = cloning.sequences.find((e) => e.id === id);
+      const sequenceWithoutSequencingField = { ...sequence };
+      delete sequenceWithoutSequencingField.sequencing;
       const linkedPrimers = getPrimerLinks(cloning, id);
       const pcrPrimers = getPCRPrimers(cloning, id);
       const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sequencing file');

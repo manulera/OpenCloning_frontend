@@ -3,10 +3,10 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
 import { eLabFTWHttpClient } from './common';
-import { mockEntities, mockSources, mockPrimers } from '../../../tests/mockNetworkData';
+import { mockSequences, mockSources, mockPrimers } from '../../../tests/mockNetworkData';
 
 const defaultState = {
-  entities: mockEntities,
+  sequences: mockSequences,
   sources: mockSources,
   primers: mockPrimers,
 };
@@ -53,7 +53,7 @@ describe('<PrimersNotInDatabaseComponent />', () => {
         ],
       });
     // In this case, it should show only 1, because substate goes only up to
-    // the entity with database_id, and one of the primers already has a database_id
+    // the sequence with database_id, and one of the primers already has a database_id
     const store = createTestStore(defaultState);
 
     cy.mount(

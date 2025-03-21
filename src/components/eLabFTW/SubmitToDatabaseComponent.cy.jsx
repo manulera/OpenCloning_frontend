@@ -3,12 +3,12 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import { eLabFTWHttpClient } from './common';
-import { mockEntities, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../tests/mockNetworkData';
+import { mockSequences, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../tests/mockNetworkData';
 import { clearAutocompleteValue } from '../../../cypress/e2e/common_functions';
 
 // Mock initial state with both primers and sequences
 const defaultState = {
-  entities: mockEntities,
+  sequences: mockSequences,
   sources: mockSources,
   primers: mockPrimers,
   teselaJsonCache: mockTeselaJsonCache,

@@ -12,9 +12,7 @@ export function loadDataAndMount(jsonPath, store, mountCallback) {
   // Create a promise to handle the async dispatch
   const loadDataPromise = (data) => new Promise((resolve) => {
     store.dispatch(async (dispatch) => {
-      const data2 = { ...data, entities: data.sequences };
-      delete data2.sequences;
-      dispatch(setCloningState(data2));
+      dispatch(setCloningState(data));
       resolve();
     });
   });

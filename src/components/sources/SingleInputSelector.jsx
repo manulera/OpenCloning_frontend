@@ -4,9 +4,9 @@ import { FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { getIdsOfEntitiesWithoutChildSource } from '../../store/cloning_utils';
 
-function SingleInputSelector({ selectedId, onChange, label, inputEntityIds, allowUnset = false, helperText = '', disabled = false }) {
-  const idsWithoutChild = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.entities), shallowEqual);
-  const options = [...new Set([...idsWithoutChild, ...inputEntityIds])];
+function SingleInputSelector({ selectedId, onChange, label, inputSequenceIds, allowUnset = false, helperText = '', disabled = false }) {
+  const idsWithoutChild = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.sequences), shallowEqual);
+  const options = [...new Set([...idsWithoutChild, ...inputSequenceIds])];
   const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })), isEqual);
   const renderedOptions = options.sort().map((id) => (
     <MenuItem key={id} value={id}>

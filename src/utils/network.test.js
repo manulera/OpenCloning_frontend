@@ -1,24 +1,24 @@
-import { mockSources, mockEntities, mockPrimers } from '../../tests/mockNetworkData';
-import { collectParentEntitiesAndSources, getSubState } from './network';
+import { mockSources, mockSequences, mockPrimers } from '../../tests/mockNetworkData';
+import { collectParentSequencesAndSources, getSubState } from './network';
 
-describe('collectParentEntitiesAndSources', () => {
-  it('should collect all parent entities and sources recursively', () => {
-    const entitiesToExport = [];
+describe('collectParentSequencesAndSources', () => {
+  it('should collect all parent sequences and sources recursively', () => {
+    const sequencesToExport = [];
     const sourcesToExport = [];
 
-    collectParentEntitiesAndSources(
+    collectParentSequencesAndSources(
       mockSources.find((s) => s.output === 1),
       mockSources,
-      mockEntities,
-      entitiesToExport,
+      mockSequences,
+      sequencesToExport,
       sourcesToExport,
     );
 
-    expect(entitiesToExport).toEqual([
-      { id: 2, name: 'Entity2' },
-      { id: 3, name: 'Entity3' },
-      { id: 4, name: 'Entity4' },
-      { id: 5, name: 'Entity5' },
+    expect(sequencesToExport).toEqual([
+      { id: 2, name: 'Seq2' },
+      { id: 3, name: 'Seq3' },
+      { id: 4, name: 'Seq4' },
+      { id: 5, name: 'Seq5' },
     ]);
 
     expect(sourcesToExport).toEqual([
@@ -30,21 +30,21 @@ describe('collectParentEntitiesAndSources', () => {
   });
 
   it('should stop collecting when stopAtDatabaseId is true and a source with database_id is found', () => {
-    const entitiesToExport = [];
+    const sequencesToExport = [];
     const sourcesToExport = [];
 
-    collectParentEntitiesAndSources(
+    collectParentSequencesAndSources(
       mockSources.find((s) => s.output === 1),
       mockSources,
-      mockEntities,
-      entitiesToExport,
+      mockSequences,
+      sequencesToExport,
       sourcesToExport,
       true,
     );
 
-    expect(entitiesToExport).toEqual([
-      { id: 2, name: 'Entity2' },
-      { id: 3, name: 'Entity3' },
+    expect(sequencesToExport).toEqual([
+      { id: 2, name: 'Seq2' },
+      { id: 3, name: 'Seq3' },
     ]);
 
     expect(sourcesToExport).toEqual([
@@ -54,38 +54,38 @@ describe('collectParentEntitiesAndSources', () => {
   });
 
   it('should handle sources with no input', () => {
-    const entitiesToExport = [];
+    const sequencesToExport = [];
     const sourcesToExport = [];
 
-    collectParentEntitiesAndSources(
+    collectParentSequencesAndSources(
       mockSources.find((s) => s.output === 4),
       mockSources,
-      mockEntities,
-      entitiesToExport,
+      mockSequences,
+      sequencesToExport,
       sourcesToExport,
     );
 
-    expect(entitiesToExport).toEqual([]);
+    expect(sequencesToExport).toEqual([]);
     expect(sourcesToExport).toEqual([]);
   });
 });
 
 describe('getSubState', () => {
-  it('should throw an error if the entity is not found', () => {
+  it('should throw an error if the sequence is not found', () => {
     const state = {
       cloning: {
-        entities: [],
+        sequences: [],
         sources: [],
       },
     };
 
-    expect(() => getSubState(state, 1)).toThrow('Entity with id 1 not found');
+    expect(() => getSubState(state, 1)).toThrow('Sequence with id 1 not found');
   });
 
   it('should throw an error if the source is not found', () => {
     const state = {
       cloning: {
-        entities: [{ id: 1 }],
+        sequences: [{ id: 1 }],
         sources: [],
       },
     };
@@ -95,7 +95,7 @@ describe('getSubState', () => {
   it('should return the correct substate with used primers only', () => {
     const state = {
       cloning: {
-        entities: mockEntities,
+        sequences: mockSequences,
         sources: mockSources,
         primers: mockPrimers,
       },
@@ -103,13 +103,13 @@ describe('getSubState', () => {
 
     const substate = getSubState(state, 1);
 
-    // Unlike the entitiesToExport, the substate includes the entity with id and its source
-    expect(substate.entities).toEqual([
-      { id: 1, name: 'Entity1' },
-      { id: 2, name: 'Entity2' },
-      { id: 3, name: 'Entity3' },
-      { id: 4, name: 'Entity4' },
-      { id: 5, name: 'Entity5' },
+    // Unlike the sequencesToExport, the substate includes the sequence with id and its source
+    expect(substate.sequences).toEqual([
+      { id: 1, name: 'Seq1' },
+      { id: 2, name: 'Seq2' },
+      { id: 3, name: 'Seq3' },
+      { id: 4, name: 'Seq4' },
+      { id: 5, name: 'Seq5' },
     ]);
 
     expect(substate.sources).toEqual([
@@ -130,7 +130,7 @@ describe('getSubState', () => {
   it('should work with database_id', () => {
     const state = {
       cloning: {
-        entities: mockEntities,
+        sequences: mockSequences,
         sources: mockSources,
         primers: mockPrimers,
       },
@@ -138,10 +138,10 @@ describe('getSubState', () => {
 
     const substate = getSubState(state, 1, true);
 
-    expect(substate.entities).toEqual([
-      { id: 1, name: 'Entity1' },
-      { id: 2, name: 'Entity2' },
-      { id: 3, name: 'Entity3' },
+    expect(substate.sequences).toEqual([
+      { id: 1, name: 'Seq1' },
+      { id: 2, name: 'Seq2' },
+      { id: 3, name: 'Seq3' },
     ]);
 
     expect(substate.sources).toEqual([

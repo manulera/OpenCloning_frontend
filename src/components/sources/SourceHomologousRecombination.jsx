@@ -4,18 +4,18 @@ import { FormControl, InputAdornment, TextField } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import SingleInputSelector from './SingleInputSelector';
 import { cloningActions } from '../../store/cloning';
-import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
+import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import MultiplePrimerSelector from '../primers/MultiplePrimerSelector';
 
 // A component representing the ligation of several fragments
 function SourceHomologousRecombination({ source, requestStatus, sendPostRequest }) {
   const isCrispr = source.type === 'CRISPRSource';
-  const { id: sourceId, input: inputEntityIds } = source;
-  const inputEntities = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), isEqual);
-  const inputsAreNotTemplates = inputEntities.every((entity) => entity.type !== 'TemplateSequence');
-  const [template, setTemplate] = React.useState(inputEntityIds.length > 0 ? inputEntityIds[0] : null);
-  const [insert, setInsert] = React.useState(inputEntityIds.length > 1 ? inputEntityIds[1] : null);
+  const { id: sourceId, input: inputSequenceIds } = source;
+  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), isEqual);
+  const inputsAreNotTemplates = inputSequences.every((sequence) => sequence.type !== 'TemplateSequence');
+  const [template, setTemplate] = React.useState(inputSequenceIds.length > 0 ? inputSequenceIds[0] : null);
+  const [insert, setInsert] = React.useState(inputSequenceIds.length > 1 ? inputSequenceIds[1] : null);
   const [selectedPrimers, setSelectedPrimers] = React.useState([]);
   const { updateSource } = cloningActions;
   const dispatch = useDispatch();
@@ -25,8 +25,8 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
   const onSubmit = (event) => {
     event.preventDefault();
     const requestData = {
-      source: { id: sourceId, input: inputEntityIds, output_name: source.output_name },
-      sequences: inputEntities,
+      source: { id: sourceId, input: inputSequenceIds, output_name: source.output_name },
+      sequences: inputSequences,
     };
     const config = { params: { minimal_homology: minimalHomologyRef.current.value } };
     if (isCrispr) {
@@ -65,7 +65,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
             label="Template sequence"
             {...{ selectedId: template,
               onChange: onTemplateChange,
-              inputEntityIds: [...new Set(inputEntityIds)].filter(
+              inputSequenceIds: [...new Set(inputSequenceIds)].filter(
                 (id) => id !== insert,
               ) }}
           />
@@ -76,7 +76,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
             allowUnset
             {...{ selectedId: insert,
               onChange: onInsertChange,
-              inputEntityIds: [...new Set(inputEntityIds)].filter(
+              inputSequenceIds: [...new Set(inputSequenceIds)].filter(
                 (id) => id !== template,
               ) }}
           />
