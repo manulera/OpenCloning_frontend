@@ -7,8 +7,8 @@ describe('RepositoryId Source', () => {
     addSource('RepositoryIdSource', true);
   });
   it('works with addgene', () => {
-    clickMultiSelectOption('Select repository', 'AddGene', 'li#source-1');
-    setInputValue('AddGene ID', '39282', 'li#source-1');
+    clickMultiSelectOption('Select repository', 'Addgene', 'li#source-1');
+    setInputValue('Addgene ID', '39282', 'li#source-1');
     cy.get('button.MuiButtonBase-root').contains('Submit').click();
     cy.get('li#sequence-2 .corner-id', { timeout: 20000 }).first().should('have.text', '2');
     cy.get('li#sequence-2 li#source-1').should('exist');
@@ -105,8 +105,8 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 a[href="https://wekwikgene.wllsb.edu.cn/plasmids/0000304"]').should('exist');
   });
   it('handles empty value and wrong IDs', () => {
-    // AddGene =================================
-    clickMultiSelectOption('Select repository', 'AddGene', 'li#source-1');
+    // Addgene =================================
+    clickMultiSelectOption('Select repository', 'Addgene', 'li#source-1');
     // Cannot submit empty value
     cy.get('#repository-id-1').clear('');
     cy.get('li#source-1 button.MuiButtonBase-root').should('not.exist');
@@ -115,7 +115,7 @@ describe('RepositoryId Source', () => {
     cy.get('#repository-id-1').type('aaa');
     cy.get('li#source-1 button.MuiButtonBase-root').should('not.exist');
     // An id that does not exist returns an error
-    setInputValue('AddGene ID', '39282392823928239282392823928239282', 'li#source-1');
+    setInputValue('Addgene ID', '39282392823928239282392823928239282', 'li#source-1');
     cy.get('li#source-1 button.MuiButtonBase-root').click();
     cy.get('.MuiAlert-message', { timeout: 20000 }).should('be.visible');
 

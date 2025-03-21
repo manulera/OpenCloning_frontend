@@ -19,7 +19,7 @@ export function enzymesInRestrictionEnzymeDigestionSource(source) {
 export const classNameToEndPointMap = {
   UploadedFileSource: 'uploaded_file',
   RepositoryIdSource: 'repository_id',
-  AddGeneIdSource: 'repository_id',
+  AddgeneIdSource: 'repository_id',
   BenchlingUrlSource: 'repository_id',
   SnapGenePlasmidSource: 'repository_id',
   EuroscarfSource: 'repository_id',

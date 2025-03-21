@@ -15,7 +15,7 @@ function validateRepositoryId(repositoryId, repository) {
   switch (repository) {
     case 'addgene':
       if (!repositoryId.match(/^\d+/)) {
-        return 'AddGene IDs must be numbers (e.g. 39296)';
+        return 'Addgene IDs must be numbers (e.g. 39296)';
       }
       break;
     case 'benchling':
@@ -48,7 +48,7 @@ const exampleIds = {
 };
 
 const inputLabels = {
-  addgene: 'AddGene ID',
+  addgene: 'Addgene ID',
   genbank: 'GenBank ID',
   benchling: 'Benchling URL',
   euroscarf: 'Euroscarf ID',
@@ -270,7 +270,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           labelId={`select-repository-${sourceId}-label`}
           label="Select repository"
         >
-          <MenuItem value="addgene">AddGene</MenuItem>
+          <MenuItem value="addgene">Addgene</MenuItem>
           <MenuItem value="genbank">GenBank</MenuItem>
           <MenuItem value="benchling">Benchling</MenuItem>
           <MenuItem value="snapgene">SnapGene</MenuItem>

@@ -26,7 +26,7 @@ function CollectionSource({ source, requestStatus, sendPostRequest }) {
     };
     const endpoint = classNameToEndPointMap[selectedSource.type];
     let requestData;
-    if (selectedSource.type === 'AddGeneIdSource') {
+    if (selectedSource.type === 'AddgeneIdSource') {
       requestData = { id: sourceId, ...selectedSource };
     } else if (selectedSource.type === 'OligoHybridizationSource') {
       const { primers } = store.getState().cloning;
