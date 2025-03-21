@@ -4,7 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import { cloningActions } from '../../store/cloning';
 import useDatabase from '../../hooks/useDatabase';
 
@@ -26,7 +26,7 @@ function SourceTypeSelector({ source }) {
       output: source.output,
     }));
   };
-  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const sequencesExist = useSelector((state) => state.cloning.sequences.length > 0, shallowEqual);
   const options = [];
   if (inputSequences.length === 0) {

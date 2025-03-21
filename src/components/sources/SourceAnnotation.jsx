@@ -2,13 +2,13 @@ import React from 'react';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 
 function SourceAnnotation({ source, requestStatus, sendPostRequest }) {
   const [annotationTool, setAnnotationTool] = React.useState('plannotate');
 
-  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, source.id), isEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, source.id), isEqual);
   const onSubmit = (event) => {
     event.preventDefault();
 

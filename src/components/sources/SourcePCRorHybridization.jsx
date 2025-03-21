@@ -2,7 +2,7 @@ import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Button, Checkbox, FormControl, FormControlLabel, InputAdornment, TextField } from '@mui/material';
 
-import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import PCRUnitForm from './PCRUnitForm';
 import PrimerDesignSourceForm from '../primers/primer_design/SourceComponents/PrimerDesignSourceForm';
@@ -18,7 +18,7 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   const { setCurrentTab, setMainSequenceId } = cloningActions;
   const { id: sourceId } = source;
 
-  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const primers = useSelector((state) => state.cloning.primers);
   const isPcr = inputSequences.length !== 0;
   const outputIsPrimerDesign = useSelector((state) => isPcr && source.output && state.cloning.sequences.find((e) => e.id === source.output).primer_design !== undefined);

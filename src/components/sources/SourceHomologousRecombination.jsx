@@ -4,7 +4,7 @@ import { FormControl, InputAdornment, TextField } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import SingleInputSelector from './SingleInputSelector';
 import { cloningActions } from '../../store/cloning';
-import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import MultiplePrimerSelector from '../primers/MultiplePrimerSelector';
 
@@ -12,7 +12,7 @@ import MultiplePrimerSelector from '../primers/MultiplePrimerSelector';
 function SourceHomologousRecombination({ source, requestStatus, sendPostRequest }) {
   const isCrispr = source.type === 'CRISPRSource';
   const { id: sourceId, input: inputSequenceIds } = source;
-  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), isEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), isEqual);
   const inputsAreNotTemplates = inputSequences.every((sequence) => sequence.type !== 'TemplateSequence');
   const [template, setTemplate] = React.useState(inputSequenceIds.length > 0 ? inputSequenceIds[0] : null);
   const [insert, setInsert] = React.useState(inputSequenceIds.length > 1 ? inputSequenceIds[1] : null);

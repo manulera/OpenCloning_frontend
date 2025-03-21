@@ -2,10 +2,10 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Chip, InputLabel, MenuItem, Select } from '@mui/material';
 import { isEqual } from 'lodash-es';
-import { getIdsOfEntitiesWithoutChildSource } from '../../store/cloning_utils';
+import { getIdsOfSequencesWithoutChildSource } from '../../store/cloning_utils';
 
 function MultipleInputsSelector({ inputSequenceIds, onChange, label }) {
-  const sequenceNotChildSourceIds = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.sequences), isEqual);
+  const sequenceNotChildSourceIds = useSelector(({ cloning }) => getIdsOfSequencesWithoutChildSource(cloning.sources, cloning.sequences), isEqual);
 
   // The possible options should include the already selected ones + the one without children
   // we eliminate duplicates (can happen if the change of input does not update the source)

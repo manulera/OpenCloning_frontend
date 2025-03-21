@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { Checkbox, FormControlLabel, InputLabel, MenuItem, Select, TextField, FormControl, InputAdornment } from '@mui/material';
 import MultipleInputsSelector from './MultipleInputsSelector';
-import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import EnzymeMultiSelect from '../form/EnzymeMultiSelect';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import { classNameToEndPointMap } from '../../utils/sourceFunctions';
@@ -17,7 +17,7 @@ const helpSingleSite = 'Even if input sequences contain multiple att sites '
 function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const assemblyType = source.type;
   const { id: sourceId, input: inputSequenceIds } = source;
-  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const inputContainsTemplates = inputSequences.some((sequence) => sequence.type === 'TemplateSequence');
   const [minimalHomology, setMinimalHomology] = React.useState(20);
   const [allowPartialOverlap, setAllowPartialOverlap] = React.useState(false);

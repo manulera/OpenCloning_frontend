@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { getinputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import EnzymeMultiSelect from '../form/EnzymeMultiSelect';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 
@@ -10,7 +10,7 @@ import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 function SourceRestriction({ source, requestStatus, sendPostRequest }) {
   const { id: sourceId } = source;
   const [enzymes, setEnzymes] = React.useState([]);
-  const inputSequences = useSelector((state) => getinputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
 
   const onSubmit = (e) => {
     e.preventDefault();

@@ -1,25 +1,25 @@
 import { flipContainedRange } from '@teselagen/range-utils';
 
-export const isEntityInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
+export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
 
-export function getIdsOfEntitiesWithoutChildSource(sources, sequences) {
-  let idsEntitiesWithChildSource = [];
+export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
+  let idsSequencesWithChildSource = [];
   sources.forEach((source) => {
-    idsEntitiesWithChildSource = idsEntitiesWithChildSource.concat(source.input);
+    idsSequencesWithChildSource = idsSequencesWithChildSource.concat(source.input);
   });
   const sequencesNotChildSource = [];
 
   sequences.forEach((sequence) => {
-    if (!idsEntitiesWithChildSource.includes(sequence.id)) {
+    if (!idsSequencesWithChildSource.includes(sequence.id)) {
       sequencesNotChildSource.push(sequence);
     }
   });
   return sequencesNotChildSource.map((sequence) => sequence.id);
 }
 
-export function getinputSequencesFromSourceId(state, sourceId) {
+export function getInputSequencesFromSourceId(state, sourceId) {
   const thisSource = state.cloning.sources.find((s) => s.id === sourceId);
-  // Entities must be returned in the same order as in the source input
+  // Sequences must be returned in the same order as in the source input
   return thisSource.input.map((id) => state.cloning.sequences.find((e) => e.id === id));
 }
 

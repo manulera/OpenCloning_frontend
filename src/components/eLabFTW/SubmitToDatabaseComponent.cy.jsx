@@ -96,7 +96,7 @@ describe('<SubmitToDatabaseComponent />', () => {
     );
 
     // Should initialize with primer name
-    cy.get('input#resource_title').should('have.value', 'Entity1');
+    cy.get('input#resource_title').should('have.value', 'Seq1');
 
     // Change title
     cy.get('input#resource_title').clear();

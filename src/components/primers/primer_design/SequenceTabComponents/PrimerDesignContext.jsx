@@ -8,7 +8,7 @@ import error2String from '../../../../utils/error2String';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '../../../../store/cloning';
 import { stringIsNotDNA } from '../../../../store/cloning_utils';
-import { joinEntitiesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
+import { joinSequencesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
 import useHttpClient from '../../../../hooks/useHttpClient';
 
 function changeValueAtIndex(current, index, newValue) {
@@ -65,16 +65,16 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       if (designType === 'simple_pair' || designType === 'restriction_ligation') {
         const enzymeSpacers = designType === 'restriction_ligation' ? primerDesignSettings.enzymeSpacers : ['', ''];
         const extendedSpacers = [enzymeSpacers[0] + spacers[0], spacers[1] + enzymeSpacers[1]];
-        newSequenceProduct = joinEntitiesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
+        newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
         newSequenceProduct.name = 'PCR product';
       } else if (designType === 'gibson_assembly') {
-        newSequenceProduct = joinEntitiesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
+        newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
         newSequenceProduct.name = 'Gibson Assembly product';
       } else if (designType === 'homologous_recombination') {
         newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois, fragmentOrientations[0] === 'reverse', spacers);
         newSequenceProduct.name = 'Homologous recombination product';
       } else if (designType === 'gateway_bp') {
-        newSequenceProduct = joinEntitiesIntoSingleSequence([sequences[0]], [rois[0].selectionLayer], fragmentOrientations, spacers, false, 'primer tail');
+        newSequenceProduct = joinSequencesIntoSingleSequence([sequences[0]], [rois[0].selectionLayer], fragmentOrientations, spacers, false, 'primer tail');
         newSequenceProduct.name = 'PCR product';
         const { knownCombination } = primerDesignSettings;
         const leftFeature = {

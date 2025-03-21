@@ -2,7 +2,7 @@ import { batch, useDispatch, useStore } from 'react-redux';
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
 import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
-import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
+import { getIdsOfSequencesWithoutChildSource } from '../store/cloning_utils';
 import { mergeStates, graftState } from '../utils/network';
 import { cloningActions } from '../store/cloning';
 import useDatabase from './useDatabase';
@@ -21,7 +21,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
       try {
         ({ cloningStrategy } = await loadHistoryFile(file));
         // If the cloning strategy should end on a single sequence, set the databaseId for the right source
-        const terminalSequences = getIdsOfEntitiesWithoutChildSource(cloningStrategy.sources, cloningStrategy.sequences);
+        const terminalSequences = getIdsOfSequencesWithoutChildSource(cloningStrategy.sources, cloningStrategy.sequences);
         if (terminalSequences.length === 1) {
           const lastSource = cloningStrategy.sources.find((s) => s.output === terminalSequences[0]);
           lastSource.database_id = databaseId;
