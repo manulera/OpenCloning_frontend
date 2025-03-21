@@ -88,7 +88,7 @@ function SelectTemplateDialog({ onClose, open }) {
             primary="🔎 Can't find your favourite kit?"
             secondary={(
               <>
-                Create it from an AddGene kit.
+                Create it from an Addgene kit.
                 <br />
                 It&apos;s very easy!
               </>

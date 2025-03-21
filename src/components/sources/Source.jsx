@@ -52,7 +52,7 @@ function Source({ sourceId }) {
       specificSource = <SourceRestriction {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'RepositoryIdSource':
       specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;
-    case 'AddGeneIdSource':
+    case 'AddgeneIdSource':
       specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'SnapGenePlasmidSource':
       specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;

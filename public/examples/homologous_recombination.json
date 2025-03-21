@@ -38,7 +38,7 @@
       "id": 1,
       "input": [],
       "output": 2,
-      "type": "AddGeneIdSource",
+      "type": "AddgeneIdSource",
       "output_name": null,
       "repository_id": "19342",
       "repository_name": "addgene",

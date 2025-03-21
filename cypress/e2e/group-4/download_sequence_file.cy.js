@@ -50,7 +50,7 @@ describe('Test download sequence file', () => {
       expect(fileContent).to.include('"primers":');
       expect(fileContent).to.include('"description":');
       // Sources
-      expect(fileContent).to.include('"type": "AddGeneIdSource"');
+      expect(fileContent).to.include('"type": "AddgeneIdSource"');
       expect(fileContent).to.include('"type": "PCRSource"');
       expect(fileContent).to.not.include('"type": "GenomeCoordinatesSource"');
       expect(fileContent).to.not.include('"type": "HomologousRecombinationSource"');

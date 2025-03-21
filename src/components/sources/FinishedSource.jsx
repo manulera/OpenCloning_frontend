@@ -244,7 +244,7 @@ function FinishedSource({ sourceId }) {
       break;
     case 'RepositoryIdSource': message = <RepositoryIdMessage source={source} />;
       break;
-    case 'AddGeneIdSource': message = <RepositoryIdMessage source={source} />;
+    case 'AddgeneIdSource': message = <RepositoryIdMessage source={source} />;
       break;
     case 'BenchlingUrlSource': message = <BenchlingMessage source={source} />;
       break;

@@ -7,8 +7,8 @@ describe('Makes all examples', () => {
   it('Homologous recombination', () => {
     // Load addgene plasmid
     addSource('RepositoryIdSource', true);
-    clickMultiSelectOption('Select repository', 'AddGene', 'li#source-1');
-    setInputValue('AddGene ID', '19342', 'li#source-1');
+    clickMultiSelectOption('Select repository', 'Addgene', 'li#source-1');
+    setInputValue('Addgene ID', '19342', 'li#source-1');
     cy.get('button.MuiButtonBase-root').contains('Submit').click();
     cy.get('li#sequence-2', { timeout: 20000 }).should('exist');
     // Do a pcr on it
@@ -68,8 +68,8 @@ describe('Makes all examples', () => {
     // Load addgene plasmid
     addLane();
     addSource('RepositoryIdSource', true);
-    clickMultiSelectOption('Select repository', 'AddGene', 'li#source-5');
-    setInputValue('AddGene ID', '39296', 'li#source-5');
+    clickMultiSelectOption('Select repository', 'Addgene', 'li#source-5');
+    setInputValue('Addgene ID', '39296', 'li#source-5');
     cy.get('button.MuiButtonBase-root').contains('Submit').click();
     cy.get('li#sequence-6', { timeout: 20000 }).should('exist');
 
