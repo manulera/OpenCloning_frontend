@@ -68,11 +68,9 @@ function MainAppBar() {
       if (isTemplate) {
         data = formatTemplate(data, url);
       }
-      const newState = { ...data, entities: data.sequences };
-      delete newState.sequences;
-      dispatch(setCloningState(newState));
-      if (!newState.entities.some((e) => e.type === 'TemplateSequence')) {
-        validateState(newState);
+      dispatch(setCloningState(data));
+      if (!data.sequences.some((e) => e.type === 'TemplateSequence')) {
+        validateState(data);
       }
     }
   };

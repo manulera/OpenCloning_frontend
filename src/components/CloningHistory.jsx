@@ -9,10 +9,10 @@ import DragAndDropCloningHistoryWrapper from './DragAndDropCloningHistoryWrapper
 function CloningHistory() {
   const startingSourceIds = useSelector(
     (state) => {
-      const entityIds = state.cloning.entities.map((entity) => entity.id);
-      const entityIdsOfInputs = state.cloning.sources.flatMap((source) => source.input);
-      const terminalEntities = entityIds.filter((entityId) => !entityIdsOfInputs.includes(entityId));
-      const terminalSources = state.cloning.sources.filter((source) => terminalEntities.includes(source.output) || source.output === null);
+      const sequenceIds = state.cloning.sequences.map((sequence) => sequence.id);
+      const sequenceIdsOfInputs = state.cloning.sources.flatMap((source) => source.input);
+      const terminalSequences = sequenceIds.filter((sequenceId) => !sequenceIdsOfInputs.includes(sequenceId));
+      const terminalSources = state.cloning.sources.filter((source) => terminalSequences.includes(source.output) || source.output === null);
       return getSortedSourceIds(terminalSources, state.cloning.sources);
     },
     isEqual,

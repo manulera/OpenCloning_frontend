@@ -22,7 +22,7 @@ export default function useGatewaySites({ target, greedy }) {
       setRequestStatus({ status: 'loading', message: 'loading' });
       const url = backendRoute('annotation/get_gateway_sites');
       const state = store.getState();
-      const sequence = state.cloning.entities.find((entity) => entity.id === target);
+      const sequence = state.cloning.sequences.find((seq) => seq.id === target);
       try {
         const { data: donorSites } = await httpClient.post(url, sequence, { params: { greedy } });
         setRequestStatus({ status: 'success', message: '' });

@@ -18,32 +18,32 @@ import { getSortedSourceIds } from '../utils/network';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
-const SequenceContent = React.memo(({ entityId, entityIsTemplate }) => {
-  const hasDatabaseId = useSelector((state) => Boolean(getSourceDatabaseId(state.cloning.sources, entityId)));
+const SequenceContent = React.memo(({ sequenceId, sequenceIsTemplate }) => {
+  const hasDatabaseId = useSelector((state) => Boolean(getSourceDatabaseId(state.cloning.sources, sequenceId)));
   return (
     <span className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
       <span className="node-text">
-        {entityIsTemplate ? (
-          <TemplateSequence entityId={entityId} />
+        {sequenceIsTemplate ? (
+          <TemplateSequence sequenceId={sequenceId} />
         ) : (
           <>
-            <SequenceEditor {...{ entityId }} />
-            <MainSequenceCheckBox {...{ id: entityId }} />
+            <SequenceEditor {...{ sequenceId }} />
+            <MainSequenceCheckBox {...{ id: sequenceId }} />
           </>
         )}
-        <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>{entityId}</div>
+        <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>{sequenceId}</div>
       </span>
     </span>
   );
 });
 
-function SequenceWrapper({ children, entityId, entityIsTemplate }) {
-  if (entityId === null) {
+function SequenceWrapper({ children, sequenceId, sequenceIsTemplate }) {
+  if (sequenceId === null) {
     return children;
   }
   return (
-    <li key={entityId} id={`sequence-${entityId}`} className="sequence-node">
-      <SequenceContent {...{ entityId, entityIsTemplate }} />
+    <li key={sequenceId} id={`sequence-${sequenceId}`} className="sequence-node">
+      <SequenceContent {...{ sequenceId, sequenceIsTemplate }} />
       <ul>
         {children}
       </ul>
@@ -55,16 +55,16 @@ function SequenceWrapper({ children, entityId, entityIsTemplate }) {
 function NetWorkNode({ sourceId }) {
   const info = useSelector((state) => {
     const s = state.cloning.sources.find((source) => source.id === sourceId);
-    const entityId = s.output;
+    const sequenceId = s.output;
     return {
-      entityId,
+      sequenceId,
       sourceInput: s.input,
       hasDatabaseId: Boolean(getSourceDatabaseId(state.cloning.sources, s.output)),
-      entityIsTemplate: entityId && state.cloning.entities.find((entity) => entity.id === entityId).type === 'TemplateSequence',
+      sequenceIsTemplate: sequenceId && state.cloning.sequences.find((sequence) => sequence.id === sequenceId).type === 'TemplateSequence',
       sourceIsTemplate: isSourceATemplate(state.cloning, sourceId),
     };
   }, isEqual);
-  const { entityId, sourceInput, hasDatabaseId, entityIsTemplate, sourceIsTemplate } = info;
+  const { sequenceId, sourceInput, hasDatabaseId, sequenceIsTemplate, sourceIsTemplate } = info;
 
   const ancestorsHidden = useSelector((state) => state.cloning.sourcesWithHiddenAncestors.includes(sourceId));
   const parentSourceIds = useSelector((state) => {
@@ -80,8 +80,8 @@ function NetWorkNode({ sourceId }) {
       // Give it a bit of time to render the ancestors
       setTimeout(() => {
         // If it has children sequence align to the children
-        if (entityId) {
-          document.getElementById(`sequence-${entityId}`)?.scrollIntoView({ alignToTop: false, block: 'end' });
+        if (sequenceId) {
+          document.getElementById(`sequence-${sequenceId}`)?.scrollIntoView({ alignToTop: false, block: 'end' });
         } else {
           document.getElementById(`source-${sourceId}`)?.scrollIntoView({ alignToTop: false, block: 'end' });
         }
@@ -89,18 +89,18 @@ function NetWorkNode({ sourceId }) {
     } else {
       dispatch(addToSourcesWithHiddenAncestors(sourceId));
     }
-  }, [ancestorsHidden, sourceId, entityId]);
+  }, [ancestorsHidden, sourceId, sequenceId]);
 
   const Icon = ancestorsHidden ? VisibilityIcon : VisibilityOffIcon;
   const visibilityIconToolTip = ancestorsHidden ? 'Show ancestors' : 'Hide ancestors';
 
   return (
-    <SequenceWrapper {...{ entityId, entityIsTemplate }}>
+    <SequenceWrapper {...{ sequenceId, sequenceIsTemplate }}>
       <li id={`source-${sourceId}`} className={`source-node ${ancestorsHidden ? 'hidden-ancestors' : ''}`}>
         <Box component="span" className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
           <span className="node-text">
             <SourceBox {...{ sourceId }}>
-              {(entityId !== null && !sourceIsTemplate) ? (
+              {(sequenceId !== null && !sourceIsTemplate) ? (
                 <FinishedSource {...{ sourceId }} />
               ) : (
                 <Source {...{ sourceId }} />
@@ -109,7 +109,7 @@ function NetWorkNode({ sourceId }) {
             <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>
               {sourceId}
             </div>
-            { (!sourceIsTemplate && sourceInput.length > 0 && entityId) && (
+            { (!sourceIsTemplate && sourceInput.length > 0 && sequenceId) && (
             <div className="before-node before-node-visibility">
               <Tooltip arrow title={visibilityIconToolTip} placement="left">
                 <div>

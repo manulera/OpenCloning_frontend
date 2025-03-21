@@ -18,7 +18,7 @@ import KnownSourceErrors from './KnownSourceErrors';
 import useBackendAPI from '../../hooks/useBackendAPI';
 import MultipleOutputsSelector from './MultipleOutputsSelector';
 import { cloningActions } from '../../store/cloning';
-import SourceCopyEntity from './SourceCopyEntity';
+import SourceCopySequence from './SourceCopySequence';
 import SourceReverseComplement from './SourceReverseComplement';
 
 // There are several types of source, this components holds the common part,
@@ -29,20 +29,20 @@ function Source({ sourceId }) {
   let specificSource = null;
   const templateOnlySources = ['CollectionSource'];
   const knownErrors = useSelector((state) => state.cloning.knownErrors, isEqual);
-  const { requestStatus, sendPostRequest, sources, entities } = useBackendAPI();
-  const { addEntityAndUpdateItsSource, updateEntityAndItsSource } = cloningActions;
+  const { requestStatus, sendPostRequest, sources, sequences } = useBackendAPI();
+  const { addSequenceAndUpdateItsSource, updateSequenceAndItsSource } = cloningActions;
   const [chosenFragment, setChosenFragment] = React.useState(null);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     // If there is only a single product, commit the result, else allow choosing via MultipleOutputsSelector
-    const dispatchedAction = source.output === null ? addEntityAndUpdateItsSource : updateEntityAndItsSource;
+    const dispatchedAction = source.output === null ? addSequenceAndUpdateItsSource : updateSequenceAndItsSource;
     if (sources.length === 1) {
-      dispatch(dispatchedAction({ newSource: { ...sources[0], id: sourceId }, newEntity: entities[0] }));
+      dispatch(dispatchedAction({ newSource: { ...sources[0], id: sourceId }, newSequence: sequences[0] }));
     } else if (chosenFragment !== null) {
-      dispatch(dispatchedAction({ newSource: { ...sources[chosenFragment], id: sourceId }, newEntity: entities[chosenFragment] }));
+      dispatch(dispatchedAction({ newSource: { ...sources[chosenFragment], id: sourceId }, newSequence: sequences[chosenFragment] }));
     }
-  }, [sources, entities, chosenFragment]);
+  }, [sources, sequences, chosenFragment]);
 
   switch (sourceType) {
     /* eslint-disable */
@@ -90,8 +90,8 @@ function Source({ sourceId }) {
       specificSource = <SourceDatabase {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CollectionSource':
       specificSource = <CollectionSource {...{ source, requestStatus, sendPostRequest }} />; break;
-    case 'CopyEntity':
-      specificSource = <SourceCopyEntity {...{ source }} />; break;
+    case 'CopySequence':
+      specificSource = <SourceCopySequence {...{ source }} />; break;
     case 'AnnotationSource':
       specificSource = <SourceAnnotation {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'ReverseComplementSource':
@@ -106,7 +106,7 @@ function Source({ sourceId }) {
       {!templateOnlySources.includes(sourceType) && (<SourceTypeSelector {...{ source }} />)}
       {sourceType && knownErrors[sourceType] && <KnownSourceErrors errors={knownErrors[sourceType]} />}
       {specificSource}
-      {sources.length > 1 && (<MultipleOutputsSelector {...{ sources, entities, sourceId, onFragmentChosen: setChosenFragment }} />)}
+      {sources.length > 1 && (<MultipleOutputsSelector {...{ sources, sequences, sourceId, onFragmentChosen: setChosenFragment }} />)}
     </>
   );
 }

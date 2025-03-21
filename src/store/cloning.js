@@ -24,14 +24,14 @@ const initialState = {
       type: null,
     },
   ],
-  entities: [],
+  sequences: [],
   network: null,
   currentTab: 0,
   description: '',
   selectedRegions: [],
   knownErrors: {},
   primers: [],
-  primer2entityLinks: [],
+  primer2sequenceLinks: [],
   config: {
     loaded: false,
     backendUrl: null,
@@ -59,12 +59,12 @@ const reducer = {
   },
 
   addEmptySource(state, action) {
-    const inputEntitiesIds = action.payload;
+    const inputSequencesIds = action.payload;
     const { sources } = state;
     const nextUniqueId = getNextUniqueId(state);
     sources.push({
       id: nextUniqueId,
-      input: inputEntitiesIds,
+      input: inputSequencesIds,
       output: null,
       type: null,
     });
@@ -83,28 +83,28 @@ const reducer = {
     // an output, and then a source that will take that template
     // sequence as input. The source can also have existing sequences
     // as input.
-    const { sourceId, newEntity, newSource } = action.payload;
-    const { sources, entities } = state;
+    const { sourceId, newSequence, newSource } = action.payload;
+    const { sources, sequences } = state;
     const source2update = sources.find((s) => s.id === sourceId);
     if (source2update === undefined) {
       throw new Error('Source not found');
     }
-    const newEntityId = getNextUniqueId(state);
+    const newSequenceId = getNextUniqueId(state);
 
     // Update the source that will output the template sequence
-    source2update.output = newEntityId;
+    source2update.output = newSequenceId;
 
     // Add the template sequence
-    entities.push({
-      id: newEntityId,
-      ...newEntity,
+    sequences.push({
+      id: newSequenceId,
+      ...newSequence,
     });
 
     // Add the source that will take the template sequence as input
     sources.push({
-      id: newEntityId + 1,
+      id: newSequenceId + 1,
       ...newSource,
-      input: [...newSource.input || [], newEntityId],
+      input: [...newSource.input || [], newSequenceId],
     });
   },
 
@@ -113,8 +113,8 @@ const reducer = {
     // sourceId (PCR from which the primer design was started),
     // and a list of templateIds to be amplified by PCR. Their outputs
     // will be used as input for a subsequent assembly reaction.
-    const { sourceId, templateIds, sourceType, newEntity } = action.payload;
-    const { sources, entities } = state;
+    const { sourceId, templateIds, sourceType, newSequence } = action.payload;
+    const { sources, sequences } = state;
 
     if (sources.find((s) => s.id === sourceId) === undefined) {
       throw new Error('Source not found');
@@ -133,74 +133,74 @@ const reducer = {
       sources2update.push(newSource.id);
     });
 
-    // Add the output entities
-    const newEntityIds = [];
+    // Add the output sequences
+    const newSequenceIds = [];
     sources2update.forEach((id) => {
-      const newEntityId = getNextUniqueId(state);
-      entities.push({
-        ...newEntity,
-        id: newEntityId,
+      const newSequenceId = getNextUniqueId(state);
+      sequences.push({
+        ...newSequence,
+        id: newSequenceId,
       });
-      newEntityIds.push(newEntityId);
+      newSequenceIds.push(newSequenceId);
       const newSource = sources.find((s) => s.id === id);
-      newSource.output = newEntityId;
+      newSource.output = newSequenceId;
     });
 
     if (sourceType !== null) {
       // Add the Assembly that takes the PCR outputs as input
       sources.push({
         id: getNextUniqueId(state),
-        input: newEntityIds,
+        input: newSequenceIds,
         output: null,
         type: sourceType,
       });
     }
   },
 
-  addSourceAndItsOutputEntity(state, action) {
-    const { source, entity } = action.payload;
-    const { sources, entities } = state;
+  addSourceAndItsOutputSequence(state, action) {
+    const { source, sequence } = action.payload;
+    const { sources, sequences } = state;
 
     const sourceId = getNextUniqueId(state);
-    const entityId = sourceId + 1;
-    const newEntity = {
-      ...entity,
-      id: entityId,
+    const sequenceId = sourceId + 1;
+    const newSequence = {
+      ...sequence,
+      id: sequenceId,
     };
     const newSource = {
       ...source,
       id: sourceId,
-      output: entityId,
+      output: sequenceId,
     };
-    entities.push(newEntity);
+    sequences.push(newSequence);
     sources.push(newSource);
-    state.teselaJsonCache[entityId] = convertToTeselaJson(newEntity);
+    state.teselaJsonCache[sequenceId] = convertToTeselaJson(newSequence);
   },
 
   addSequenceInBetween(state, action) {
     const existingSourceId = action.payload;
     const existingSource = state.sources.find((s) => s.id === existingSourceId);
     const newSourceId = getNextUniqueId(state);
-    const newEntity = {
+    const newSequence = {
       id: newSourceId + 1,
       type: 'TemplateSequence',
     };
     const newSource = {
       id: newSourceId,
       input: existingSource.input,
-      output: newEntity.id,
+      output: newSequence.id,
       type: null,
     };
-    existingSource.input = [newEntity.id];
+    existingSource.input = [newSequence.id];
     state.sources.push(newSource);
-    state.entities.push(newEntity);
+    state.sequences.push(newSequence);
   },
 
-  addEntityAndUpdateItsSource(state, action) {
-    const { newEntity, newSource } = action.payload;
-    const { entities, sources } = state;
+  addSequenceAndUpdateItsSource(state, action) {
+    const { newSequence, newSource } = action.payload;
+    const { sequences, sources } = state;
     const nextUniqueId = getNextUniqueId(state);
-    newEntity.id = nextUniqueId;
+    newSequence.id = nextUniqueId;
     newSource.output = nextUniqueId;
 
     const sourceIndex = sources.findIndex((s) => s.id === newSource.id);
@@ -208,13 +208,13 @@ const reducer = {
       throw new Error('Source not found');
     }
     sources.splice(sourceIndex, 1, newSource);
-    entities.push(newEntity);
-    state.teselaJsonCache[newEntity.id] = convertToTeselaJson(newEntity);
+    sequences.push(newSequence);
+    state.teselaJsonCache[newSequence.id] = convertToTeselaJson(newSequence);
   },
 
-  updateEntityAndItsSource(state, action) {
-    const { newEntity, newSource } = action.payload;
-    const { entities, sources } = state;
+  updateSequenceAndItsSource(state, action) {
+    const { newSequence, newSource } = action.payload;
+    const { sequences, sources } = state;
 
     const sourceIndex = sources.findIndex((s) => s.id === newSource.id);
     if (sourceIndex === -1) {
@@ -222,13 +222,13 @@ const reducer = {
     }
     sources.splice(sourceIndex, 1, newSource);
 
-    newEntity.id = newSource.output;
-    const entityIndex = entities.findIndex((e) => e.id === newEntity.id);
-    if (entityIndex === -1) {
-      throw new Error('Entity not found');
+    newSequence.id = newSource.output;
+    const sequenceIndex = sequences.findIndex((e) => e.id === newSequence.id);
+    if (sequenceIndex === -1) {
+      throw new Error('Sequence not found');
     }
-    entities.splice(entityIndex, 1, newEntity);
-    state.teselaJsonCache[newEntity.id] = convertToTeselaJson(newEntity);
+    sequences.splice(sequenceIndex, 1, newSequence);
+    state.teselaJsonCache[newSequence.id] = convertToTeselaJson(newSequence);
   },
 
   updateSource(state, action) {
@@ -250,48 +250,48 @@ const reducer = {
 
   deleteSourceAndItsChildren(state, action) {
     const sourceId = action.payload;
-    const { sources, entities } = state;
+    const { sources, sequences } = state;
     const sources2delete = [];
-    const entities2delete = [];
+    const sequences2delete = [];
     const currentSources = [sources.find((s) => s.id === sourceId)];
     while (currentSources.length > 0) {
       const currentSource = currentSources.pop();
       sources2delete.push(currentSource.id);
       if (currentSource.output !== null) {
-        entities2delete.push(currentSource.output);
+        sequences2delete.push(currentSource.output);
         currentSources.push(...sources.filter((ss) => ss.input.includes(currentSource.output)));
       }
     }
     state.sources = sources.filter((s) => !sources2delete.includes(s.id));
-    state.entities = entities.filter((e) => !entities2delete.includes(e.id));
-    state.files = state.files.filter((f) => !entities2delete.includes(f.sequence_id));
-    entities2delete.forEach((e) => {
+    state.sequences = sequences.filter((e) => !sequences2delete.includes(e.id));
+    state.files = state.files.filter((f) => !sequences2delete.includes(f.sequence_id));
+    sequences2delete.forEach((e) => {
       delete state.teselaJsonCache[e];
       deleteFilesFromSessionStorage(e);
     });
   },
 
   setState(state, action) {
-    const { sources, entities, primers, description, files } = action.payload;
-    if (!Array.isArray(sources) || !Array.isArray(entities)) {
-      throw new Error('Cloning strategy not valid: fields `sources` and `entities` should exist and be arrays');
+    const { sources, sequences, primers, description, files } = action.payload;
+    if (!Array.isArray(sources) || !Array.isArray(sequences)) {
+      throw new Error('Cloning strategy not valid: fields `sources` and `sequences` should exist and be arrays');
     }
-    const ids = [...sources.map((s) => s.id), ...entities.map((e) => e.id)];
+    const ids = [...sources.map((s) => s.id), ...sequences.map((e) => e.id)];
     // They should all be positive integers
     if (ids.some((id) => id < 1 || !Number.isInteger(id))) {
       throw new Error('Some ids are not positive integers');
     }
     // None should be repeated
     if (new Set(ids).size !== ids.length) {
-      throw new Error('Repeated ids in the sources and entities');
+      throw new Error('Repeated ids in the sources and sequences');
     }
     state.sources = sources;
-    state.entities = entities;
+    state.sequences = sequences;
     state.teselaJsonCache = {};
     state.primers = primers || [];
     state.description = description || '';
     state.files = files || [];
-    entities.forEach((e) => {
+    sequences.forEach((e) => {
       if (e.type === 'TextFileSequence') {
         state.teselaJsonCache[e.id] = convertToTeselaJson(e);
       }
@@ -322,12 +322,12 @@ const reducer = {
     primers.push({ ...primer, id: nextPrimerId });
   },
 
-  addPrimerAndLinkToEntity(state, action) {
-    const { primer, entityId, position } = action.payload;
-    const { primers, primer2entityLinks } = state;
+  addPrimerAndLinkToSequence(state, action) {
+    const { primer, sequenceId, position } = action.payload;
+    const { primers, primer2sequenceLinks } = state;
     const nextPrimerId = getNextPrimerId(primers);
     primers.push({ ...primer, id: nextPrimerId });
-    primer2entityLinks.push({ primerId: nextPrimerId, entityId, position });
+    primer2sequenceLinks.push({ primerId: nextPrimerId, sequenceId, position });
   },
 
   setPrimers(state, action) {
@@ -348,7 +348,7 @@ const reducer = {
     const primerId = action.payload;
     state.primers = state.primers.filter((p) => p.id !== primerId);
     // Delete all links to this primer
-    state.primer2entityLinks = state.primer2entityLinks.filter((link) => link.primerId !== primerId);
+    state.primer2sequenceLinks = state.primer2sequenceLinks.filter((link) => link.primerId !== primerId);
   },
 
   editPrimer(state, action) {
@@ -418,11 +418,11 @@ const reducer = {
     deleteFilesFromSessionStorage(sequenceId);
   },
 
-  addDatabaseIdToEntity(state, action) {
+  addDatabaseIdToSequence(state, action) {
     const { databaseId, id } = action.payload;
-    const entity = state.entities.find((e) => e.id === id);
-    if (!entity) {
-      throw new Error('Entity not found');
+    const sequence = state.sequences.find((e) => e.id === id);
+    if (!sequence) {
+      throw new Error('Sequence not found');
     }
     const source = state.sources.find((s) => s.output === id);
     if (!source) {

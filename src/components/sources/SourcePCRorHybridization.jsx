@@ -2,7 +2,7 @@ import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Button, Checkbox, FormControl, FormControlLabel, InputAdornment, TextField } from '@mui/material';
 
-import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import PCRUnitForm from './PCRUnitForm';
 import PrimerDesignSourceForm from '../primers/primer_design/SourceComponents/PrimerDesignSourceForm';
@@ -18,10 +18,10 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   const { setCurrentTab, setMainSequenceId } = cloningActions;
   const { id: sourceId } = source;
 
-  const inputEntities = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const primers = useSelector((state) => state.cloning.primers);
-  const isPcr = inputEntities.length !== 0;
-  const outputIsPrimerDesign = useSelector((state) => isPcr && source.output && state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
+  const isPcr = inputSequences.length !== 0;
+  const outputIsPrimerDesign = useSelector((state) => isPcr && source.output && state.cloning.sequences.find((e) => e.id === source.output).primer_design !== undefined);
 
   const [forwardPrimerId, setForwardPrimerId] = React.useState('');
   const [reversePrimerId, setReversePrimerId] = React.useState('');
@@ -43,9 +43,9 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
     event.preventDefault();
 
     const requestData = {
-      sequences: inputEntities,
+      sequences: inputSequences,
       primers: [forwardPrimerId, reversePrimerId].map((id) => primers.find((p) => p.id === id)),
-      source: { id: sourceId, input: inputEntities.map((e) => e.id), output_name: source.output_name },
+      source: { id: sourceId, input: inputSequences.map((e) => e.id), output_name: source.output_name },
     };
 
     if (!isPcr) {

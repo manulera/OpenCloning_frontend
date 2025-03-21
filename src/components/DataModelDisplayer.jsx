@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 function DataModelDisplayer() {
-  const { sources, entities: sequences, primers, primer2entityLinks } = useSelector((state) => state.cloning, isEqual);
+  const { sources,  sequences, primers, primer2sequenceLinks } = useSelector((state) => state.cloning, isEqual);
   const trimmedSequences = sequences.map((s) => {
     const seqOut = { ...s };
     seqOut.file_content = '[...]';
@@ -20,7 +20,7 @@ function DataModelDisplayer() {
       </p>
 
       <code>
-        {JSON.stringify({ sources, sequences: trimmedSequences, primers, primer2entityLinks }, null, 4)}
+        {JSON.stringify({ sources, sequences: trimmedSequences, primers, primer2sequenceLinks }, null, 4)}
       </code>
     </div>
   );

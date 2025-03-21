@@ -3,12 +3,12 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import { eLabFTWHttpClient } from './common';
-import { mockEntities, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../tests/mockNetworkData';
+import { mockSequences, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../tests/mockNetworkData';
 import { clearAutocompleteValue } from '../../../cypress/e2e/common_functions';
 
 // Mock initial state with both primers and sequences
 const defaultState = {
-  entities: mockEntities,
+  sequences: mockSequences,
   sources: mockSources,
   primers: mockPrimers,
   teselaJsonCache: mockTeselaJsonCache,
@@ -96,7 +96,7 @@ describe('<SubmitToDatabaseComponent />', () => {
     );
 
     // Should initialize with primer name
-    cy.get('input#resource_title').should('have.value', 'Entity1');
+    cy.get('input#resource_title').should('have.value', 'Seq1');
 
     // Change title
     cy.get('input#resource_title').clear();

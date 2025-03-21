@@ -18,7 +18,7 @@ function getSpacerSequence(spacer, spacerFeatureName = 'spacer') {
   return spacerSequence;
 }
 
-export function joinEntitiesIntoSingleSequence(sequences, locations, orientations, spacers, circularAssembly, spacerFeatureName = 'spacer') {
+export function joinSequencesIntoSingleSequence(sequences, locations, orientations, spacers, circularAssembly, spacerFeatureName = 'spacer') {
   // Turn the spacers into sequences by parsing them as FASTA with fastaToJson
   const spacerSequences = spacers.map((spacer) => getSpacerSequence(spacer, spacerFeatureName));
   // Intercalate the spacers into the sequences

@@ -3,7 +3,7 @@ import { SimpleCircularOrLinearView } from '@teselagen/ove';
 import { shallowEqual, useSelector } from 'react-redux';
 import { reversePositionInRange } from '@teselagen/range-utils';
 import { isEqual } from 'lodash-es';
-import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 
 function getCutParameters(seq, cut, isLeft) {
   if (cut === null) {
@@ -20,8 +20,8 @@ function SubSequenceDisplayer({
   if (!['PCRSource', 'RestrictionEnzymeDigestionSource'].includes(source.type)) {
     return null;
   }
-  const inputEntities = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), shallowEqual);
-  const seq = useSelector((state) => state.cloning.teselaJsonCache[inputEntities[0].id], isEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const seq = useSelector((state) => state.cloning.teselaJsonCache[inputSequences[0].id], isEqual);
 
   const editorName = `subsequence_editor_${sourceId}`;
   let selectionLayer = null;

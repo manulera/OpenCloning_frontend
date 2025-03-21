@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 
 function SourceReverseComplement({ source, requestStatus, sendPostRequest }) {
   const { id: sourceId } = source;
-  const inputSequences = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const onSubmit = (event) => {
     event.preventDefault();
 

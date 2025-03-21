@@ -146,12 +146,8 @@ async function getScenario(method, url, data, config) {
     const requestFileText = await getFileText(requestFile);
     const filesAreJson = scenarioFileText.startsWith('{') && requestFileText.startsWith('{');
     if (filesAreJson) {
-      // The history file has a different format for the entities field
-      // so we need to normalize it before comparing
       const scenarioHistory = JSON.parse(scenarioFileText);
       const requestHistory = JSON.parse(requestFileText);
-      requestHistory.entities = requestHistory.sequences;
-      delete requestHistory.sequences;
       expect(isEqual(scenarioHistory, requestHistory)).toBe(true);
     } else if (scenarioFileText !== requestFileText) {
       expect(scenarioFileText).toBe(requestFileText);
@@ -568,7 +564,7 @@ describe('test error2String', () => {
 
 const substate = {
   primers: [],
-  entities: [
+  sequences: [
     {
       id: HISTORY_FILE_INTERNAL_SEQUENCE_ID,
       file_content: MAIN_RESOURCE_SEQUENCE_FILE_CONTENT,
@@ -592,8 +588,8 @@ const substateWithPrimers = {
 
 const substateWithAncestors = {
   ...substate,
-  entities: [
-    ...substate.entities,
+  sequences: [
+    ...substate.sequences,
     {
       id: HISTORY_FILE_ANCESTOR_INTERNAL_SEQUENCE_ID,
     },

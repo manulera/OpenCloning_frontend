@@ -9,11 +9,11 @@ import { loadFilesToSessionStorage, loadHistoryFile } from '../utils/readNwrite'
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
 
-const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputEntity } = cloningActions;
+const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;
 
 async function processSequenceFiles(files, backendRoute, httpClient) {
   const allSources = [];
-  const allEntities = [];
+  const allSequences = [];
   const allWarnings = [];
 
   const processFile = async (file) => {
@@ -48,11 +48,11 @@ async function processSequenceFiles(files, backendRoute, httpClient) {
 
   results.forEach(({ sources, sequences, warnings }) => {
     allSources.push(...sources);
-    allEntities.push(...sequences);
+    allSequences.push(...sequences);
     allWarnings.push(...warnings);
   });
 
-  return { sources: allSources, entities: allEntities, warnings: allWarnings };
+  return { sources: allSources, sequences: allSequences, warnings: allWarnings };
 }
 
 function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
@@ -112,7 +112,7 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
           }
         };
           // If there are no sequences in the cloning state, load the history file
-        if (cloningState.entities.length === 0) {
+        if (cloningState.sequences.length === 0) {
           errorWrapper(replaceState)();
         } else {
           setFileLoaderFunctions({ addState: errorWrapper(addState), replaceState: errorWrapper(replaceState), clear: () => setFileLoaderFunctions(null) });
@@ -128,14 +128,14 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         // Process a bunch of sequence files
       } else {
         try {
-          const { sources, entities, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
+          const { sources, sequences, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
           batch(() => {
             // If there is only one source and it is empty, delete it
             if (cloningState.sources.length === 1 && cloningState.sources[0].type === null) {
               dispatch(deleteSourceAndItsChildren(cloningState.sources[0].id));
             }
             for (let i = 0; i < sources.length; i += 1) {
-              dispatch(addSourceAndItsOutputEntity({ source: sources[i], entity: entities[i] }));
+              dispatch(addSourceAndItsOutputSequence({ source: sources[i], sequence: sequences[i] }));
             }
             warnings.forEach((warning) => addAlert({ message: warning, severity: 'warning' }));
           });

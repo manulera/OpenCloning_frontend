@@ -2,8 +2,8 @@ import { Tooltip } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-function TemplateSequence({ entityId }) {
-  const circular = useSelector((state) => state.cloning.entities.find((e) => e.id === entityId).circular);
+function TemplateSequence({ sequenceId }) {
+  const circular = useSelector((state) => state.cloning.sequences.find((e) => e.id === sequenceId).circular);
   let svgContent = null;
   let tooltipText = null;
 

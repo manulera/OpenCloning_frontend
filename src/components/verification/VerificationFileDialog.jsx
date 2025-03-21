@@ -35,7 +35,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
   const hasSequencingFile = fileTypes.includes('Sequencing file');
   const databaseId = useSelector((state) => state.cloning.sources.find((s) => s.output === id)?.database_id, isEqual);
 
-  const entity = useSelector((state) => state.cloning.entities.find((e) => e.id === id), shallowEqual);
+  const sequence = useSelector((state) => state.cloning.sequences.find((e) => e.id === id), shallowEqual);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
   const dispatch = useDispatch();
@@ -92,7 +92,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
     const allSequencingFiles = [...existingSequencingFilesInState, ...parsedSequencingFiles];
     const alignments = [];
     const traces = allSequencingFiles.map((f) => f.trace);
-    const resp = await httpClient.post(backendRoute('align_sanger'), { sequence: entity, traces });
+    const resp = await httpClient.post(backendRoute('align_sanger'), { sequence, traces });
 
     for (let i = 0; i < allSequencingFiles.length; i++) {
       alignments.push({ ...allSequencingFiles[i], alignment: [resp.data[0], resp.data[i + 1]] });

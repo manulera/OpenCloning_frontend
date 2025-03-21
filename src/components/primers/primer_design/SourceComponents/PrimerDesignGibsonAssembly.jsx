@@ -22,7 +22,7 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
   const dispatch = useDispatch();
   const onSubmit = (event) => {
     event.preventDefault();
-    const newEntity = {
+    const newSequence = {
       type: 'TemplateSequence',
       primer_design: 'gibson_assembly',
       circular: false,
@@ -31,7 +31,7 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
     batch(() => {
     // Slice from the second on
       const newPCRTemplates = targets.slice(1);
-      dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newEntity, templateIds: newPCRTemplates, sourceType: assemblyType }));
+      dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: newPCRTemplates, sourceType: assemblyType }));
       dispatch(setMainSequenceId(source.input[0]));
       updateStoreEditor('mainEditor', source.input[0]);
       dispatch(setCurrentTab(3));
@@ -46,7 +46,7 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
     <form onSubmit={onSubmit}>
       <FormControl fullWidth>
         <MultipleInputsSelector
-          inputEntityIds={targets}
+          inputSequenceIds={targets}
           label="Input sequences (in order)"
           onChange={onInputChange}
         />

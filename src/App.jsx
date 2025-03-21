@@ -50,9 +50,7 @@ function App() {
         } else if (urlParams.source === 'example' && urlParams.example) {
           try {
             const { data } = await httpClient.get(`${import.meta.env.BASE_URL}examples/${urlParams.example}`);
-            const newState = { ...data, entities: data.sequences };
-            delete newState.sequences;
-            dispatch(setCloningState(newState));
+            dispatch(setCloningState(data));
           } catch (error) {
             addAlert({
               message: 'Error loading example',
@@ -65,9 +63,7 @@ function App() {
             const baseUrl = 'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master';
             const url = `${baseUrl}/processed/${urlParams.key}/templates/${urlParams.template}`;
             const { data } = await httpClient.get(url);
-            const newState = formatTemplate({ ...data, entities: data.sequences }, url);
-            delete newState.sequences;
-            dispatch(setCloningState(newState));
+            dispatch(setCloningState(data));
           } catch (error) {
             addAlert({
               message: 'Error loading template',

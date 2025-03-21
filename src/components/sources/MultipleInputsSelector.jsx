@@ -2,14 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Chip, InputLabel, MenuItem, Select } from '@mui/material';
 import { isEqual } from 'lodash-es';
-import { getIdsOfEntitiesWithoutChildSource } from '../../store/cloning_utils';
+import { getIdsOfSequencesWithoutChildSource } from '../../store/cloning_utils';
 
-function MultipleInputsSelector({ inputEntityIds, onChange, label }) {
-  const entityNotChildSourceIds = useSelector(({ cloning }) => getIdsOfEntitiesWithoutChildSource(cloning.sources, cloning.entities), isEqual);
+function MultipleInputsSelector({ inputSequenceIds, onChange, label }) {
+  const sequenceNotChildSourceIds = useSelector(({ cloning }) => getIdsOfSequencesWithoutChildSource(cloning.sources, cloning.sequences), isEqual);
 
   // The possible options should include the already selected ones + the one without children
   // we eliminate duplicates (can happen if the change of input does not update the source)
-  const options = [...new Set(inputEntityIds.concat(entityNotChildSourceIds))];
+  const options = [...new Set(inputSequenceIds.concat(sequenceNotChildSourceIds))];
   const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })), isEqual);
 
   const onInputChange = (event) => {
@@ -28,7 +28,7 @@ function MultipleInputsSelector({ inputEntityIds, onChange, label }) {
         labelId="demo-multiple-chip-label"
         id="demo-multiple-chip"
         multiple
-        value={inputEntityIds}
+        value={inputSequenceIds}
         onChange={onInputChange}
         label={label}
         // input={<OutlinedInput id="select-multiple-chip" label="Select input sequences" />}

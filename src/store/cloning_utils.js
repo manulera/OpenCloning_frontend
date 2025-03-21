@@ -1,38 +1,38 @@
 import { flipContainedRange } from '@teselagen/range-utils';
 
-export const isEntityInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
+export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
 
-export function getIdsOfEntitiesWithoutChildSource(sources, entities) {
-  let idsEntitiesWithChildSource = [];
+export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
+  let idsSequencesWithChildSource = [];
   sources.forEach((source) => {
-    idsEntitiesWithChildSource = idsEntitiesWithChildSource.concat(source.input);
+    idsSequencesWithChildSource = idsSequencesWithChildSource.concat(source.input);
   });
-  const entitiesNotChildSource = [];
+  const sequencesNotChildSource = [];
 
-  entities.forEach((entity) => {
-    if (!idsEntitiesWithChildSource.includes(entity.id)) {
-      entitiesNotChildSource.push(entity);
+  sequences.forEach((sequence) => {
+    if (!idsSequencesWithChildSource.includes(sequence.id)) {
+      sequencesNotChildSource.push(sequence);
     }
   });
-  return entitiesNotChildSource.map((entity) => entity.id);
+  return sequencesNotChildSource.map((sequence) => sequence.id);
 }
 
-export function getInputEntitiesFromSourceId(state, sourceId) {
+export function getInputSequencesFromSourceId(state, sourceId) {
   const thisSource = state.cloning.sources.find((s) => s.id === sourceId);
-  // Entities must be returned in the same order as in the source input
-  return thisSource.input.map((id) => state.cloning.entities.find((e) => e.id === id));
+  // Sequences must be returned in the same order as in the source input
+  return thisSource.input.map((id) => state.cloning.sequences.find((e) => e.id === id));
 }
 
-export function isSourceATemplate({ sources, entities }, sourceId) {
+export function isSourceATemplate({ sources, sequences }, sourceId) {
   // Get the output sequence
   const source = sources.find((s) => s.id === sourceId);
-  const sequences = [...entities.filter((e) => e.id === source.output), ...entities.filter((e) => source.input.includes(e.id))];
-  return sequences.some((s) => s.type === 'TemplateSequence');
+  const sequences2 = [...sequences.filter((e) => e.id === source.output), ...sequences.filter((e) => source.input.includes(e.id))];
+  return sequences2.some((s) => s.type === 'TemplateSequence');
 }
 
-export function getPrimerDesignObject({ sources, entities }) {
+export function getPrimerDesignObject({ sources, sequences }) {
   // Find sequences that are templates and have primer_design set
-  const outputSequences = entities.filter((e) => e.type === 'TemplateSequence' && e.primer_design !== undefined);
+  const outputSequences = sequences.filter((e) => e.type === 'TemplateSequence' && e.primer_design !== undefined);
   if (outputSequences.length === 0) {
     // return 'No primer design sequence templates found';
     return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
@@ -43,7 +43,7 @@ export function getPrimerDesignObject({ sources, entities }) {
   const pcrSources = sources.filter((s) => mockSequenceIds.includes(s.output));
 
   // Find the template sequences form those PCRs
-  const templateSequences = entities.filter((e) => pcrSources.some((ps) => ps.input.includes(e.id)));
+  const templateSequences = sequences.filter((e) => pcrSources.some((ps) => ps.input.includes(e.id)));
 
   // They should not be mock sequences
   if (templateSequences.some((ts) => ts.type === 'TemplateSequence')) {
@@ -67,7 +67,7 @@ export function getPrimerDesignObject({ sources, entities }) {
 
   // Inputs to the finalSource that are not mock sequences with primer_design
   const otherInputIds = finalSource.input.filter((i) => !mockSequenceIds.includes(i));
-  const otherInputs = entities.filter((e) => otherInputIds.includes(e.id));
+  const otherInputs = sequences.filter((e) => otherInputIds.includes(e.id));
   // There should be no TemplateSequence as an input that does not have primer_design set
   if (otherInputs.some((i) => i.type === 'TemplateSequence' && i.primer_design === undefined)) {
     // return 'TemplateSequence input to final source does not have primer_design set';
@@ -90,8 +90,8 @@ const formatPrimer = (primer, position) => {
   };
 };
 
-export function getPrimerLinks({ primers, primer2entityLinks }, entityId) {
-  const relatedLinks = primer2entityLinks.filter((link) => link.entityId === entityId);
+export function getPrimerLinks({ primers, primer2sequenceLinks }, sequenceId) {
+  const relatedLinks = primer2sequenceLinks.filter((link) => link.sequenceId === sequenceId);
   const out = relatedLinks.map(({ position, primerId }) => {
     const primer = primers.find((p) => p.id === primerId);
     if (primer === undefined) {
@@ -134,12 +134,12 @@ export function pcrPrimerPositionsInOutput(primers, sequenceData) {
   ];
 }
 
-export function getPCRPrimers({ primers, sources, teselaJsonCache }, entityId) {
+export function getPCRPrimers({ primers, sources, teselaJsonCache }, sequenceId) {
   let out = [];
 
-  // Get PCRs that have this entity as input
-  const sourcesInput = sources.filter((s) => s.input.includes(entityId));
-  const sequenceData = teselaJsonCache[entityId];
+  // Get PCRs that have this sequence as input
+  const sourcesInput = sources.filter((s) => s.input.includes(sequenceId));
+  const sequenceData = teselaJsonCache[sequenceId];
 
   sourcesInput.forEach((sourceInput) => {
     if (sourceInput?.type === 'PCRSource' && sourceInput.assembly?.length === 3) {
@@ -149,8 +149,8 @@ export function getPCRPrimers({ primers, sources, teselaJsonCache }, entityId) {
     }
   });
 
-  // Get the PCR that have this entity as output (if any)
-  const sourceOutput = sources.find((s) => s.output === entityId);
+  // Get the PCR that have this sequence as output (if any)
+  const sourceOutput = sources.find((s) => s.output === sequenceId);
   if (sourceOutput?.type === 'PCRSource') {
     const pcrPrimers = [sourceOutput.assembly[0].sequence, sourceOutput.assembly[2].sequence].map((id) => primers.find((p) => p.id === id));
     const primerPositions = pcrPrimerPositionsInOutput(pcrPrimers, sequenceData);
@@ -159,8 +159,8 @@ export function getPCRPrimers({ primers, sources, teselaJsonCache }, entityId) {
   return out;
 }
 
-export function getNextUniqueId({ sources, entities }) {
-  const allIds = [...sources.map((s) => s.id), ...entities.map((e) => e.id)];
+export function getNextUniqueId({ sources, sequences }) {
+  const allIds = [...sources.map((s) => s.id), ...sequences.map((e) => e.id)];
   if (allIds.length === 0) {
     return 1;
   }
@@ -238,15 +238,15 @@ export function mergePrimersInSource(source, keepId, removeId) {
 }
 
 export function shiftStateIds(newState, oldState, skipPrimers = false) {
-  const { sources: newSources, entities: newEntities, primers: newPrimers, files: newFiles } = newState;
-  const { sources: oldSources, entities: oldEntities, primers: oldPrimers } = oldState;
-  let networkShift = getNextUniqueId({ sources: oldSources, entities: oldEntities });
+  const { sources: newSources, sequences: newSequences, primers: newPrimers, files: newFiles } = newState;
+  const { sources: oldSources, sequences: oldSequences, primers: oldPrimers } = oldState;
+  let networkShift = getNextUniqueId({ sources: oldSources, sequences: oldSequences });
   // Substract the smallest id to minimize the starting id
-  networkShift -= Math.min(...[...newSources.map((s) => s.id), ...newEntities.map((e) => e.id)]);
+  networkShift -= Math.min(...[...newSources.map((s) => s.id), ...newSequences.map((e) => e.id)]);
   const primerShift = skipPrimers ? 0 : getNextPrimerId(oldPrimers);
   return {
     shiftedState: {
-      entities: newEntities.map((e) => ({ ...e, id: e.id + networkShift })),
+      sequences: newSequences.map((e) => ({ ...e, id: e.id + networkShift })),
       primers: newPrimers.map((p) => ({ ...p, id: p.id + primerShift })),
       sources: newSources.map((s) => shiftSource(s, networkShift, primerShift)),
       files: newFiles ? newFiles.map((f) => ({ ...f, sequence_id: f.sequence_id + networkShift })) : [],
@@ -268,8 +268,8 @@ export function formatGatewaySites(sites) {
   return foundSites;
 }
 
-export function getSourceDatabaseId(sources, entityId) {
-  const source = sources.find((s) => s.output === entityId);
+export function getSourceDatabaseId(sources, sequenceId) {
+  const source = sources.find((s) => s.output === sequenceId);
   return source?.database_id;
 }
 

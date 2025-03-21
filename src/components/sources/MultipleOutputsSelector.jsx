@@ -7,7 +7,7 @@ import OverhangsDisplay from '../OverhangsDisplay';
 import SubSequenceDisplayer from './SubSequenceDisplayer';
 import AssemblyPlanDisplayer from './AssemblyPlanDisplayer';
 
-function MultipleOutputsSelector({ sources, entities, sourceId, onFragmentChosen }) {
+function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChosen }) {
   // If the output is already set or the list of outputs is empty, do not show this element
   if (sources.length === 0) { return null; }
 
@@ -28,7 +28,7 @@ function MultipleOutputsSelector({ sources, entities, sourceId, onFragmentChosen
 
   const editorName = `source_editor_${sourceId}`;
 
-  const seq = convertToTeselaJson(entities[selectedOutput]);
+  const seq = convertToTeselaJson(sequences[selectedOutput]);
 
   return (
     <div className="multiple-output-selector">
@@ -50,7 +50,7 @@ function MultipleOutputsSelector({ sources, entities, sourceId, onFragmentChosen
         <SubSequenceDisplayer {...{ source: sources[selectedOutput], sourceId }} />
         <AssemblyPlanDisplayer {...{ source: sources[selectedOutput] }} />
         <SimpleCircularOrLinearView {...{ sequenceData: seq, editorName, height: 'auto' }} />
-        <OverhangsDisplay {...{ sequenceData: seq, entity: entities[selectedOutput] }} />
+        <OverhangsDisplay {...{ sequenceData: seq, sequence: sequences[selectedOutput] }} />
       </div>
       <form onSubmit={chooseFragment}>
         <Button fullWidth type="submit" variant="contained">Choose product</Button>

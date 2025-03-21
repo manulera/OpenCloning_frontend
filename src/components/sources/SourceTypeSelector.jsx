@@ -4,7 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { getInputEntitiesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import { cloningActions } from '../../store/cloning';
 import useDatabase from '../../hooks/useDatabase';
 
@@ -14,7 +14,7 @@ function SourceTypeSelector({ source }) {
   const { id: sourceId, type: sourceType } = source;
   const dispatch = useDispatch();
   const database = useDatabase();
-  const sourceIsPrimerDesign = useSelector((state) => source.output && state.cloning.entities.find((e) => e.id === source.output).primer_design !== undefined);
+  const sourceIsPrimerDesign = useSelector((state) => source.output && state.cloning.sequences.find((e) => e.id === source.output).primer_design !== undefined);
   const noExternalRequests = useSelector((state) => state.cloning.config.noExternalRequests);
 
   const onChange = (event) => {
@@ -26,10 +26,10 @@ function SourceTypeSelector({ source }) {
       output: source.output,
     }));
   };
-  const inputEntities = useSelector((state) => getInputEntitiesFromSourceId(state, sourceId), shallowEqual);
-  const entitiesExist = useSelector((state) => state.cloning.entities.length > 0, shallowEqual);
+  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
+  const sequencesExist = useSelector((state) => state.cloning.sequences.length > 0, shallowEqual);
   const options = [];
-  if (inputEntities.length === 0) {
+  if (inputSequences.length === 0) {
     options.push(<MenuItem key="UploadedFileSource" value="UploadedFileSource">Submit file</MenuItem>);
     if (!noExternalRequests) {
       options.push(<MenuItem key="RepositoryIdSource" value="RepositoryIdSource">Repository ID</MenuItem>);
@@ -40,12 +40,12 @@ function SourceTypeSelector({ source }) {
     if (database) {
       options.push(<MenuItem key="DatabaseSource" value="DatabaseSource">{`Import from ${database.name}`}</MenuItem>);
     }
-    if (entitiesExist) {
-      options.push(<MenuItem key="CopyEntity" value="CopyEntity">Use an existing sequence</MenuItem>);
+    if (sequencesExist) {
+      options.push(<MenuItem key="CopySequence" value="CopySequence">Use an existing sequence</MenuItem>);
     }
   } else {
     // See https://github.com/manulera/OpenCloning_frontend/issues/101
-    if (inputEntities.length < 2) {
+    if (inputSequences.length < 2) {
       options.push(<MenuItem key="RestrictionEnzymeDigestionSource" value="RestrictionEnzymeDigestionSource">Restriction</MenuItem>);
       options.push(<MenuItem key="PCRSource" value="PCRSource">PCR</MenuItem>);
       options.push(<MenuItem key="PolymeraseExtensionSource" value="PolymeraseExtensionSource">Polymerase extension</MenuItem>);
@@ -67,7 +67,7 @@ function SourceTypeSelector({ source }) {
 
   return (
     <>
-      {!sourceType && (<h2 className="empty-source-title">{inputEntities.length === 0 ? 'Import a sequence' : 'Use this sequence'}</h2>)}
+      {!sourceType && (<h2 className="empty-source-title">{inputSequences.length === 0 ? 'Import a sequence' : 'Use this sequence'}</h2>)}
       <FormControl fullWidth>
         <InputLabel id={`select-source-${sourceId}-label`}>Source type</InputLabel>
         <Select

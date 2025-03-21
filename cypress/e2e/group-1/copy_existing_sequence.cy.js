@@ -7,7 +7,7 @@ describe('Test copy existing sequence functionality', () => {
   it('Copies the correct sequence', () => {
     manuallyTypeSequence('ACGT');
     addLane();
-    addSource('CopyEntity', true);
+    addSource('CopySequence', true);
     clickMultiSelectOption('Sequence to copy', '2', 'li#source-3');
     cy.get('button').contains('Copy sequence').click();
     cy.get('li#source-1').should('exist');
@@ -24,7 +24,7 @@ describe('Test copy existing sequence functionality', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
     cy.get('div.cloning-tab-pannel').contains('final_product.gb');
     addLane();
-    addSource('CopyEntity', true);
+    addSource('CopySequence', true);
     clickMultiSelectOption('Sequence to copy', '2', 'li#source-3');
     cy.get('button').contains('Copy sequence').click();
     cy.get('li#sequence-2').should('exist');

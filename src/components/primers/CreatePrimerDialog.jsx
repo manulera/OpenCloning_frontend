@@ -14,12 +14,12 @@ function CreatePrimerDialog({ primerSequence, setPrimerSequence, position, setPo
   const store = useStore();
   const existingPrimerNames = useSelector((state) => state.cloning.primers.map((p) => p.name), shallowEqual);
   const sequenceData = useSelector((state) => state.cloning.teselaJsonCache[state.cloning.mainSequenceId]);
-  const { addPrimerAndLinkToEntity } = cloningActions;
+  const { addPrimerAndLinkToSequence } = cloningActions;
   const { updateStoreEditor } = useStoreEditor();
   const dispatch = useDispatch();
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch(addPrimerAndLinkToEntity({ primer: { name, sequence: primerSequence }, entityId: sequenceData.id, position }));
+    dispatch(addPrimerAndLinkToSequence({ primer: { name, sequence: primerSequence }, sequenceId: sequenceData.id, position }));
     setPrimerSequence('');
     setPosition(null);
     setName('');

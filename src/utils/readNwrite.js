@@ -67,10 +67,8 @@ export async function readSubmittedTextFile(file) {
 }
 
 export function formatStateForJsonExport(cloningState) {
-  const { entities, sources, description, primers } = cloningState;
-  return {
-    sequences: entities, sources, description, primers,
-  };
+  const { sequences, sources, description, primers } = cloningState;
+  return { sequences, sources, description, primers };
 }
 
 export const prettyPrintJson = (json) => `${JSON.stringify(json, null, 2)}\n`;
@@ -179,8 +177,7 @@ export async function loadHistoryFile(file) {
   } catch (error) {
     throw new Error('Invalid JSON file.');
   }
-  const newCloningStrategy = { ...cloningStrategy, entities: cloningStrategy.sequences };
-  delete newCloningStrategy.sequences;
+  const newCloningStrategy = { ...cloningStrategy };
 
   // Drop the files if loading only json
   if (isJsonFile) {
@@ -209,15 +206,15 @@ export async function loadHistoryFile(file) {
   }
 
   // Validate the cloning strategy
-  if (newCloningStrategy.primers === undefined || newCloningStrategy.entities === undefined || newCloningStrategy.sources === undefined) {
+  if (newCloningStrategy.primers === undefined || newCloningStrategy.sequences === undefined || newCloningStrategy.sources === undefined) {
     throw new Error('JSON file should contain at least keys: primers, sequences and sources');
   }
   // They should be arrays
   if (!Array.isArray(newCloningStrategy.primers)) {
     throw new Error('primers should be an array');
   }
-  if (!Array.isArray(newCloningStrategy.entities)) {
-    throw new Error('entities should be an array');
+  if (!Array.isArray(newCloningStrategy.sequences)) {
+    throw new Error('sequences should be an array');
   }
   if (!Array.isArray(newCloningStrategy.sources)) {
     throw new Error('sources should be an array');

@@ -2,7 +2,7 @@ import { batch, useDispatch, useStore } from 'react-redux';
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
 import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
-import { getIdsOfEntitiesWithoutChildSource } from '../store/cloning_utils';
+import { getIdsOfSequencesWithoutChildSource } from '../store/cloning_utils';
 import { mergeStates, graftState } from '../utils/network';
 import { cloningActions } from '../store/cloning';
 import useDatabase from './useDatabase';
@@ -21,15 +21,15 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
       try {
         ({ cloningStrategy } = await loadHistoryFile(file));
         // If the cloning strategy should end on a single sequence, set the databaseId for the right source
-        const terminalEntities = getIdsOfEntitiesWithoutChildSource(cloningStrategy.sources, cloningStrategy.entities);
-        if (terminalEntities.length === 1) {
-          const lastSource = cloningStrategy.sources.find((s) => s.output === terminalEntities[0]);
+        const terminalSequences = getIdsOfSequencesWithoutChildSource(cloningStrategy.sources, cloningStrategy.sequences);
+        if (terminalSequences.length === 1) {
+          const lastSource = cloningStrategy.sources.find((s) => s.output === terminalSequences[0]);
           lastSource.database_id = databaseId;
         }
         // When importing sources that had inputs that we don't want to load, we need to add some templatesequences
-        const allEntityIds = cloningStrategy.entities.map((e) => e.id);
+        const allSequenceIds = cloningStrategy.sequences.map((e) => e.id);
         cloningStrategy.sources = cloningStrategy.sources.map((s) => {
-          if (s.input.some((id) => !allEntityIds.includes(id))) {
+          if (s.input.some((id) => !allSequenceIds.includes(id))) {
             return { id: s.id, type: 'DatabaseSource', input: [], output: s.output, database_id: s.database_id };
           }
           return s;
@@ -50,13 +50,13 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
         // Get the sequence name from the database and update the cloning strategy with it if it is different
         await Promise.all(cloningStrategy.sources.filter((s) => s.database_id).map(async (cloningSource) => {
           const seqDatabaseId = cloningSource.database_id;
-          const entity = cloningStrategy.entities.find((e) => e.id === cloningSource.output);
-          const seq = convertToTeselaJson(entity);
+          const sequence = cloningStrategy.sequences.find((e) => e.id === cloningSource.output);
+          const seq = convertToTeselaJson(sequence);
           const databaseName = await database.getSequenceName(seqDatabaseId);
           if (seq.name !== databaseName) {
             seq.name = databaseName;
             const genbank = jsonToGenbank(seq);
-            entity.file_content = genbank;
+            sequence.file_content = genbank;
             // Maybe this is unnecessary
             cloningSource.output_name = databaseName;
           }
