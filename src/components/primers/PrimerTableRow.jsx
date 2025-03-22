@@ -6,9 +6,12 @@ import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
+import { usePrimerDetails } from './usePrimerDetails';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
+  const primerDetails = usePrimerDetails(primer.sequence);
+
   const database = useDatabase();
 
   React.useEffect(() => {
@@ -63,6 +66,8 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
         )}
       </td>
       <td className="name">{primer.name}</td>
+      <td className="melting-temperature">{primerDetails?.melting_temperature}</td>
+      <td className="gc-content">{primerDetails?.gc_content}</td>
       <td className="sequence">{primer.sequence}</td>
     </tr>
   );

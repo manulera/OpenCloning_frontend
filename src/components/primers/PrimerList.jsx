@@ -42,6 +42,8 @@ function PrimerList() {
             <tr>
               <th> </th>
               <th>Name</th>
+              <th>Tm</th>
+              <th>%GC</th>
               <th>Sequence</th>
             </tr>
           </thead>
