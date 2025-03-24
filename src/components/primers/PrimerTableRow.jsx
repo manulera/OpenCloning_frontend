@@ -1,28 +1,16 @@
-import { IconButton, Skeleton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import React, { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
-import ErrorIcon from '@mui/icons-material/Error';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
-import { usePrimerDetails } from './usePrimerDetails';
+import PrimerDetailsTds from './PrimerDetailsTds';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
-  const [primerDetails, retryGetPrimerDetails] = usePrimerDetails(primer.sequence);
   const database = useDatabase();
-
-  const loadingOrErrorComponent = primerDetails.status === 'loading' ? (
-    <Skeleton variant="text" height={20} />
-  ) : (
-    <Tooltip title="Retry request to get primer details" placement="top" arrow>
-      <IconButton onClick={retryGetPrimerDetails}>
-        <ErrorIcon fontSize="small" color="error" sx={{ verticalAlign: 'middle', padding: 0 }} />
-      </IconButton>
-    </Tooltip>
-  );
 
   React.useEffect(() => {
     if (!primer.database_id) {
@@ -78,8 +66,7 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
         )}
       </td>
       <td className="name">{primer.name}</td>
-      <td className="melting-temperature">{primerDetails.status === 'success' ? primerDetails.melting_temperature : loadingOrErrorComponent}</td>
-      <td className="gc-content">{primerDetails.status === 'success' ? primerDetails.gc_content : loadingOrErrorComponent}</td>
+      <PrimerDetailsTds primer={primer} />
       <td className="sequence">{primer.sequence}</td>
     </tr>
   );
