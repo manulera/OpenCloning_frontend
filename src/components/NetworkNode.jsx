@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Tooltip } from '@mui/material';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -53,6 +53,7 @@ function SequenceWrapper({ children, sequenceId, sequenceIsTemplate }) {
 
 // A component that renders the ancestry tree
 function NetWorkNode({ sourceId }) {
+  const tooltipRef = useRef(null);
   const info = useSelector((state) => {
     const s = state.cloning.sources.find((source) => source.id === sourceId);
     const sequenceId = s.output;
@@ -89,6 +90,10 @@ function NetWorkNode({ sourceId }) {
     } else {
       dispatch(addToSourcesWithHiddenAncestors(sourceId));
     }
+
+    if (tooltipRef.current) {
+      tooltipRef.current.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+    }
   }, [ancestorsHidden, sourceId, sequenceId]);
 
   const Icon = ancestorsHidden ? VisibilityIcon : VisibilityOffIcon;
@@ -111,8 +116,12 @@ function NetWorkNode({ sourceId }) {
             </div>
             { (!sourceIsTemplate && sourceInput.length > 0 && sequenceId) && (
             <div className="before-node before-node-visibility">
-              <Tooltip arrow title={visibilityIconToolTip} placement="left">
-                <div>
+              <Tooltip
+                arrow
+                title={visibilityIconToolTip}
+                placement="left"
+              >
+                <div ref={tooltipRef}>
                   <Icon onClick={onVisibilityClick} style={{ color: 'grey' }} />
                 </div>
               </Tooltip>
