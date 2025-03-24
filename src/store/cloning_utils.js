@@ -273,16 +273,46 @@ export function getSourceDatabaseId(sources, sequenceId) {
   return source?.database_id;
 }
 
-export function getUsedPrimerIds(sources) {
-  const forPcr = sources
-    .filter((s) => s.type === 'PCRSource' && s.assembly?.length > 0)
-    .map((s) => [s.assembly[0].sequence, s.assembly[2].sequence]).flat();
-  const forHybridization = sources
-    .filter((s) => s.type === 'OligoHybridizationSource')
-    .flatMap((s) => [s.forward_oligo, s.reverse_oligo]);
-  const forCRISPR = sources
-    .filter((s) => s.type === 'CRISPRSource')
-    .flatMap((s) => s.guides);
+export function primersInSource(source) {
+  if (source.type === 'PCRSource' && source.assembly?.length > 0) {
+    return [source.assembly[0].sequence, source.assembly[2].sequence];
+  }
+  if (source.type === 'OligoHybridizationSource') {
+    return [source.forward_oligo, source.reverse_oligo];
+  }
+  if (source.type === 'CRISPRSource') {
+    return source.guides;
+  }
+  return [];
+}
 
-  return forPcr.concat(forHybridization).concat(forCRISPR);
+export function getUsedPrimerIds(sources) {
+  return sources.flatMap((s) => primersInSource(s));
+}
+
+export function getSourcesWherePrimerIsUsed(sources, primerId) {
+  return sources.filter((s) => primersInSource(s).includes(primerId));
+}
+
+export function getPrimerBindingLength(primers, source, primerId, sequenceLength) {
+  let length = 0;
+  if (source.type === 'PCRSource' && source.assembly?.length > 0) {
+    if (source.assembly[0].sequence === primerId) {
+      length = source.assembly[0].right_location.end - source.assembly[0].right_location.start;
+    } else if (source.assembly[2].sequence === primerId) {
+      length = source.assembly[2].left_location.end - source.assembly[2].left_location.start;
+    }
+    if (length < 0) {
+      length = sequenceLength + length;
+    }
+  } if (source.type === 'OligoHybridizationSource' && source.overhang_crick_3prime !== undefined) {
+    const fwdOligo = primers.find((p) => p.id === source.forward_oligo);
+    const rvsOligo = primers.find((p) => p.id === source.reverse_oligo);
+    if (source.overhang_crick_3prime < 0) {
+      length = fwdOligo.sequence.length + source.overhang_crick_3prime;
+    } else {
+      length = rvsOligo.sequence.length - source.overhang_crick_3prime;
+    }
+  }
+  return length;
 }

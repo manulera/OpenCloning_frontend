@@ -39,9 +39,10 @@ function PrimerList() {
       <div className="primer-table-container">
         <table>
           <thead>
-            <tr>
+            <tr style={{ whiteSpace: 'nowrap' }}>
               <th> </th>
               <th>Name</th>
+              <th>Length</th>
               <th>Tm</th>
               <th>GC%</th>
               <th>Sequence</th>

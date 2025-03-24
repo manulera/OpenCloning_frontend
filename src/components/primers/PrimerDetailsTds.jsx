@@ -1,18 +1,35 @@
 import { Skeleton, Tooltip, IconButton } from '@mui/material';
 import React from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
+import { useSelector } from 'react-redux';
 import { usePrimerDetails } from './usePrimerDetails';
+import { getPrimerBindingLength, getSourcesWherePrimerIsUsed } from '../../store/cloning_utils';
 
-function PrimerDetailsTds({ primer }) {
+function PrimerDetailsTds({ primer, primerDetails, setPrimerDetails }) {
   const { getPrimerDetails } = usePrimerDetails();
-  const [primerDetails, setPrimerDetails] = React.useState({ status: 'loading' });
   const [connectionAttempt, setConnectionAttempt] = React.useState(0);
+  const primerBindingLenght = useSelector((state) => {
+    const sources = getSourcesWherePrimerIsUsed(state.cloning.sources, primer.id);
+    const { primers } = state.cloning;
+    const bindingLengths = sources.map((source) => getPrimerBindingLength(primers, source, primer.id, state.cloning.teselaJsonCache[source.input[0]]));
+    if (bindingLengths.length === 0) {
+      return 0;
+    }
+    return Math.max(...bindingLengths);
+  });
+
   const retryGetPrimerDetails = () => setConnectionAttempt((prev) => prev + 1);
 
   React.useEffect(() => {
     const fetchPrimerDetails = async () => {
       try {
         const details = await getPrimerDetails(primer.sequence);
+        if (primerBindingLenght) {
+          const bindingDetails = await getPrimerDetails(primer.sequence.slice(-primerBindingLenght));
+          details.binding_melting_temperature = bindingDetails.melting_temperature;
+          details.binding_gc_content = bindingDetails.gc_content;
+          details.binding_length = primerBindingLenght;
+        }
         setPrimerDetails({ status: 'success', ...details });
       } catch (error) {
         console.error(error);
@@ -20,7 +37,8 @@ function PrimerDetailsTds({ primer }) {
       }
     };
     fetchPrimerDetails();
-  }, [primer.sequence, connectionAttempt]);
+  }, [primer.sequence, connectionAttempt, primerBindingLenght]);
+
   const loadingOrErrorComponent = primerDetails.status === 'loading' ? (
     <Skeleton variant="text" height={20} />
   ) : (
@@ -30,10 +48,23 @@ function PrimerDetailsTds({ primer }) {
       </IconButton>
     </Tooltip>
   );
+  let meltingTemperature = primerDetails?.melting_temperature;
+  if (primerBindingLenght) {
+    meltingTemperature = `${primerDetails.binding_melting_temperature} (${primerDetails.melting_temperature})`;
+  }
+  let gcContent = primerDetails?.gc_content;
+  if (primerBindingLenght) {
+    gcContent = `${primerDetails.binding_gc_content} (${primerDetails.gc_content})`;
+  }
+  let length = primerDetails?.length;
+  if (primerBindingLenght) {
+    length = `${primerDetails.binding_length} (${primerDetails.length})`;
+  }
   return (
     <>
-      <td className="melting-temperature">{primerDetails.status === 'success' ? primerDetails.melting_temperature : loadingOrErrorComponent}</td>
-      <td className="gc-content">{primerDetails.status === 'success' ? primerDetails.gc_content : loadingOrErrorComponent}</td>
+      <td style={{ whiteSpace: 'nowrap' }} className="length">{primerDetails.status === 'success' ? length : loadingOrErrorComponent}</td>
+      <td style={{ whiteSpace: 'nowrap' }} className="melting-temperature">{primerDetails.status === 'success' ? meltingTemperature : loadingOrErrorComponent}</td>
+      <td style={{ whiteSpace: 'nowrap' }} className="gc-content">{primerDetails.status === 'success' ? gcContent : loadingOrErrorComponent}</td>
     </>
   );
 }

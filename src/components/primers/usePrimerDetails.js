@@ -14,7 +14,10 @@ export function usePrimerDetails() {
       const { data } = await httpClient.get(url, { params: { sequence } });
       const formattedData = {
         melting_temperature: Number(data.melting_temperature.toFixed(1)),
-        gc_content: Number(data.gc_content.toFixed(2)),
+        gc_content: Number(data.gc_content.toFixed(2)) * 100,
+        length: sequence.length,
+        homodimer_melting_temperature: Number(data.homodimer_melting_temperature.toFixed(1)),
+        homodimer_dg: Number(data.homodimer_dg.toFixed(0)),
       };
       primerDetailsCache.set(sequence, formattedData);
     }

@@ -7,9 +7,11 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
 import PrimerDetailsTds from './PrimerDetailsTds';
+import PrimerInfoIcon from './PrimerInfoIcon';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
+  const [primerDetails, setPrimerDetails] = useState({ status: 'loading' });
   const database = useDatabase();
 
   React.useEffect(() => {
@@ -47,6 +49,7 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
             </IconButton>
           )}
         </Tooltip>
+        <PrimerInfoIcon primer={primer} primerDetails={primerDetails} />
         {database && !primer.database_id && (
           <>
             <Tooltip arrow title={`Save to ${database.name}`} placement="top">
@@ -66,7 +69,7 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
         )}
       </td>
       <td className="name">{primer.name}</td>
-      <PrimerDetailsTds primer={primer} />
+      <PrimerDetailsTds primer={primer} primerDetails={primerDetails} setPrimerDetails={setPrimerDetails} />
       <td className="sequence">{primer.sequence}</td>
     </tr>
   );
