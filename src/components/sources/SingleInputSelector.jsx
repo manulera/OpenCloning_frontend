@@ -8,7 +8,7 @@ function SingleInputSelector({ selectedId, onChange, label, inputSequenceIds, al
   const idsWithoutChild = useSelector(({ cloning }) => getIdsOfSequencesWithoutChildSource(cloning.sources, cloning.sequences), shallowEqual);
   const options = [...new Set([...idsWithoutChild, ...inputSequenceIds])];
   const sequenceNames = useSelector(({ cloning }) => options.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })), isEqual);
-  const renderedOptions = options.sort().map((id) => (
+  const renderedOptions = options.sort((a, b) => (a - b)).map((id) => (
     <MenuItem key={id} value={id}>
       {`${id} - ${sequenceNames.find(({ id: id2 }) => id2 === id).name}`}
     </MenuItem>
