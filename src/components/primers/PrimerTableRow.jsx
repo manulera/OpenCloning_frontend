@@ -6,8 +6,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
-import PrimerDetailsTds from './PrimerDetailsTds';
-import PrimerInfoIcon from './PrimerInfoIcon';
+import PrimerDetailsTds from './primer_details/PrimerDetailsTds';
+import PrimerInfoIcon from './primer_details/PrimerInfoIcon';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);

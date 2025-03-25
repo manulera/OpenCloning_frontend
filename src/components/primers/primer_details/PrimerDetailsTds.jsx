@@ -3,7 +3,8 @@ import React from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { useSelector } from 'react-redux';
 import { usePrimerDetails } from './usePrimerDetails';
-import { getPrimerBindingLength, getSourcesWherePrimerIsUsed } from '../../store/cloning_utils';
+import { getPrimerBindingLength, getSourcesWherePrimerIsUsed } from '../../../store/cloning_utils';
+import { formatGcContent, formatMeltingTemperature } from './primerDetailsFormatting';
 
 function PrimerDetailsTds({ primer, primerDetails, setPrimerDetails }) {
   const { getPrimerDetails } = usePrimerDetails();
@@ -48,13 +49,13 @@ function PrimerDetailsTds({ primer, primerDetails, setPrimerDetails }) {
       </IconButton>
     </Tooltip>
   );
-  let meltingTemperature = primerDetails?.melting_temperature;
+  let meltingTemperature = formatMeltingTemperature(primerDetails?.melting_temperature);
   if (primerBindingLenght) {
-    meltingTemperature = `${primerDetails.binding_melting_temperature} (${primerDetails.melting_temperature})`;
+    meltingTemperature = `${formatMeltingTemperature(primerDetails.binding_melting_temperature)} (${formatMeltingTemperature(primerDetails.melting_temperature)})`;
   }
-  let gcContent = primerDetails?.gc_content;
+  let gcContent = formatGcContent(primerDetails?.gc_content);
   if (primerBindingLenght) {
-    gcContent = `${primerDetails.binding_gc_content} (${primerDetails.gc_content})`;
+    gcContent = `${formatGcContent(primerDetails.binding_gc_content)} (${formatGcContent(primerDetails.gc_content)})`;
   }
   let length = primerDetails?.length;
   if (primerBindingLenght) {

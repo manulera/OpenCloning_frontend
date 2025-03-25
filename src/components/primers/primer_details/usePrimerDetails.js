@@ -1,5 +1,5 @@
-import useBackendRoute from '../../hooks/useBackendRoute';
-import useHttpClient from '../../hooks/useHttpClient';
+import useBackendRoute from '../../../hooks/useBackendRoute';
+import useHttpClient from '../../../hooks/useHttpClient';
 
 const primerDetailsCache = new Map();
 
@@ -11,6 +11,7 @@ export function usePrimerDetails() {
 
   const getPrimerDetails = async (sequence) => {
     if (!primerDetailsCache.has(sequence)) {
+      console.log('fetching primer details for', sequence);
       const { data } = await httpClient.get(url, { params: { sequence } });
       data.length = sequence.length;
       primerDetailsCache.set(sequence, data);
