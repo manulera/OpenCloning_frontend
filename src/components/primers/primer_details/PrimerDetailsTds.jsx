@@ -1,65 +1,44 @@
 import { Skeleton, Tooltip, IconButton } from '@mui/material';
 import React from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
-import { useSelector } from 'react-redux';
-import { usePrimerDetails } from './usePrimerDetails';
-import { getPrimerBindingLength, getSourcesWherePrimerIsUsed } from '../../../store/cloning_utils';
 import { formatGcContent, formatMeltingTemperature } from './primerDetailsFormatting';
 
-function PrimerDetailsTds({ primer, primerDetails, setPrimerDetails }) {
-  const { getPrimerDetails } = usePrimerDetails();
-  const [connectionAttempt, setConnectionAttempt] = React.useState(0);
-  const primerBindingLenght = useSelector((state) => {
-    const sources = getSourcesWherePrimerIsUsed(state.cloning.sources, primer.id);
-    const { primers } = state.cloning;
-    const bindingLengths = sources.map((source) => getPrimerBindingLength(primers, source, primer.id, state.cloning.teselaJsonCache[source.input[0]]));
-    if (bindingLengths.length === 0) {
-      return 0;
-    }
-    return Math.max(...bindingLengths);
-  });
+function PrimerDetailsTds({ primerId, primerDetails, retryGetPrimerDetails, pcrDetails, retryGetPCRDetails }) {
+  // A primer could be involved in multiple PCR reactions, so we pick the one in which it has the longest
+  // annealing length for display in the table.
+  const longestPcrDetails = pcrDetails.reduce((longest, current) => {
+    const currentLength = current.fwdPrimer.id === primerId ? current.fwdPrimer.length : current.rvsPrimer.length;
+    const longestLength = longest.fwdPrimer.id === primerId ? longest.fwdPrimer.length : longest.rvsPrimer.length;
+    return currentLength > longestLength ? current : longest;
+  }, pcrDetails[0]);
 
-  const retryGetPrimerDetails = () => setConnectionAttempt((prev) => prev + 1);
-
-  React.useEffect(() => {
-    const fetchPrimerDetails = async () => {
-      try {
-        const details = await getPrimerDetails(primer.sequence);
-        if (primerBindingLenght) {
-          const bindingDetails = await getPrimerDetails(primer.sequence.slice(-primerBindingLenght));
-          details.binding_melting_temperature = bindingDetails.melting_temperature;
-          details.binding_gc_content = bindingDetails.gc_content;
-          details.binding_length = primerBindingLenght;
-        }
-        setPrimerDetails({ status: 'success', ...details });
-      } catch (error) {
-        console.error(error);
-        setPrimerDetails({ status: 'error', error });
-      }
-    };
-    fetchPrimerDetails();
-  }, [primer.sequence, connectionAttempt, primerBindingLenght]);
+  let thisPrimerPCRInfo = null;
+  if (longestPcrDetails) {
+    thisPrimerPCRInfo = longestPcrDetails.fwdPrimer.id === primerId ? longestPcrDetails.fwdPrimer : longestPcrDetails.rvsPrimer;
+  }
 
   const loadingOrErrorComponent = primerDetails.status === 'loading' ? (
     <Skeleton variant="text" height={20} />
   ) : (
     <Tooltip title="Retry request to get primer details" placement="top" arrow>
-      <IconButton onClick={retryGetPrimerDetails}>
+      <IconButton onClick={() => {
+        retryGetPrimerDetails();
+        retryGetPCRDetails();
+      }}
+      >
         <ErrorIcon fontSize="small" color="error" sx={{ verticalAlign: 'middle', padding: 0 }} />
       </IconButton>
     </Tooltip>
   );
+
   let meltingTemperature = formatMeltingTemperature(primerDetails?.melting_temperature);
-  if (primerBindingLenght) {
-    meltingTemperature = `${formatMeltingTemperature(primerDetails.binding_melting_temperature)} (${formatMeltingTemperature(primerDetails.melting_temperature)})`;
-  }
   let gcContent = formatGcContent(primerDetails?.gc_content);
-  if (primerBindingLenght) {
-    gcContent = `${formatGcContent(primerDetails.binding_gc_content)} (${formatGcContent(primerDetails.gc_content)})`;
-  }
   let length = primerDetails?.length;
-  if (primerBindingLenght) {
-    length = `${primerDetails.binding_length} (${primerDetails.length})`;
+  if (thisPrimerPCRInfo) {
+    // We pick the pair with the highest binding length for display here
+    meltingTemperature = `${formatMeltingTemperature(thisPrimerPCRInfo.melting_temperature)} (${meltingTemperature})`;
+    gcContent = `${formatGcContent(thisPrimerPCRInfo.gc_content)} (${gcContent})`;
+    length = `${thisPrimerPCRInfo.length} (${length})`;
   }
   return (
     <>

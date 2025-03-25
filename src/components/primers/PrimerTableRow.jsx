@@ -4,14 +4,23 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
+import { useSelector } from 'react-redux';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
 import PrimerDetailsTds from './primer_details/PrimerDetailsTds';
 import PrimerInfoIcon from './primer_details/PrimerInfoIcon';
+import { useSinglePrimerDetails } from './primer_details/useSinglePrimerDetails';
+import { getSourcesWherePrimerIsUsed } from '../../store/cloning_utils';
+import { usePCRDetails } from './primer_details/usePCRDetails';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
-  const [primerDetails, setPrimerDetails] = useState({ status: 'loading' });
+  const { primerDetails, retryGetPrimerDetails } = useSinglePrimerDetails(primer.sequence);
+  const pcrSourceIds = useSelector((state) => {
+    const pcrs = getSourcesWherePrimerIsUsed(state.cloning.sources, primer.id).filter((s) => s.type === 'PCRSource');
+    return pcrs.map((s) => s.id);
+  });
+  const { pcrDetails, retryGetPCRDetails } = usePCRDetails(pcrSourceIds);
   const database = useDatabase();
 
   React.useEffect(() => {
@@ -49,7 +58,7 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
             </IconButton>
           )}
         </Tooltip>
-        <PrimerInfoIcon primer={primer} primerDetails={primerDetails} />
+        <PrimerInfoIcon primer={primer} primerDetails={primerDetails} pcrDetails={pcrDetails} />
         {database && !primer.database_id && (
           <>
             <Tooltip arrow title={`Save to ${database.name}`} placement="top">
@@ -69,7 +78,13 @@ function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
         )}
       </td>
       <td className="name">{primer.name}</td>
-      <PrimerDetailsTds primer={primer} primerDetails={primerDetails} setPrimerDetails={setPrimerDetails} />
+      <PrimerDetailsTds
+        primerId={primer.id}
+        primerDetails={primerDetails}
+        retryGetPrimerDetails={retryGetPrimerDetails}
+        pcrDetails={pcrDetails}
+        retryGetPCRDetails={retryGetPCRDetails}
+      />
       <td className="sequence">{primer.sequence}</td>
     </tr>
   );

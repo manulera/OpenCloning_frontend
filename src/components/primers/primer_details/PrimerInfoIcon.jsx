@@ -1,17 +1,19 @@
-import { Dialog, DialogContent, DialogTitle, IconButton, Tooltip, Typography, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { Dialog, DialogContent, IconButton, Tooltip, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import React from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
+import { useSelector } from 'react-redux';
 import { formatGcContent, formatMeltingTemperature, formatDeltaG } from './primerDetailsFormatting';
 
 function TableSection({ title, values }) {
   return (
     <>
-      <TableRow><TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem' }} colSpan={2}>{title}</TableCell></TableRow>
+      {title && <TableRow><TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem' }} colSpan={3}>{title}</TableCell></TableRow>}
       {values.map((value) => (
         <TableRow key={value[0]}>
           <TableCell width="50%" sx={{ fontWeight: 'bold', textAlign: 'right' }}>{value[0]}</TableCell>
-          <TableCell>{value[1]}</TableCell>
+          <TableCell colSpan={value[2] ? 1 : 2} sx={{ width: '1px', whiteSpace: 'nowrap' }}>{value[1]}</TableCell>
+          {value[2] && <TableCell>{value[2]}</TableCell>}
         </TableRow>
       ))}
     </>
@@ -19,10 +21,12 @@ function TableSection({ title, values }) {
 }
 
 function Primer3Figure({ figure }) {
-  const rows = figure.split('\n').length;
+  // Remove all trailing spaces
+  const trimmedRows = figure.split('\n').map((row) => row.trim());
+  const longestRow = Math.max(...trimmedRows.map((row) => row.length));
   return (
     <TableRow>
-      <TableCell colSpan={2} sx={{ padding: 0, margin: 0 }}>
+      <TableCell colSpan={3} sx={{ padding: 0, margin: 0 }}>
         <code style={{ width: '100%',
           whiteSpace: 'pre',
           fontFamily: 'monospace',
@@ -30,43 +34,65 @@ function Primer3Figure({ figure }) {
           maxWidth: '100%',
           overflow: 'auto',
           margin: 0,
-          fontSize: `calc(100% * 70 / ${figure.length / rows})` }}
+          fontSize: `calc(100% * 80 / ${longestRow})` }}
         >
-          {figure}
+          {trimmedRows.join('\n')}
         </code>
       </TableCell>
     </TableRow>
   );
 }
 
-function PrimerInfoDialog({ primer, primerDetails, open, onClose }) {
-  console.log(primerDetails);
+function PCRTable({ pcrDetail }) {
+  const { sourceId, fwdPrimer, rvsPrimer, heterodimer } = pcrDetail;
+  const sourceType = useSelector((state) => state.cloning.sources.find((source) => source.id === sourceId)?.type);
+  const name = (sourceType === 'PCRSource') ? 'PCR' : 'Oligonucleotide hybridization';
+
+  return (
+    <Table size="small">
+      <TableBody />
+
+      <TableSection
+        title={`${name} ${sourceId}`}
+        values={[
+          ['Primers names', fwdPrimer.name, rvsPrimer.name],
+          ['Binding length', fwdPrimer.length, rvsPrimer.length],
+          ['Tm (binding)', `${formatMeltingTemperature(fwdPrimer.melting_temperature)} °C`, `${formatMeltingTemperature(rvsPrimer.melting_temperature)} °C`],
+          ['GC% (binding)', `${formatGcContent(fwdPrimer.gc_content)}%`, `${formatGcContent(rvsPrimer.gc_content)}%`],
+          ['Tm difference', `${formatMeltingTemperature(fwdPrimer.melting_temperature - rvsPrimer.melting_temperature)} °C`],
+        ]}
+      />
+      {heterodimer && (
+        <>
+          <TableSection
+            values={[['Tm (heterodimer)', `${formatMeltingTemperature(heterodimer.melting_temperature)} °C`], ['ΔG (heterodimer)', `${formatDeltaG(heterodimer.deltaG)} kcal/mol`]]}
+          />
+          <Primer3Figure figure={heterodimer.figure} />
+        </>
+      )}
+    </Table>
+  );
+}
+
+function PrimerInfoDialog({ primer, primerDetails, open, onClose, pcrDetails }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogContent>
         {primerDetails.status === 'success' ? (
-          <Table size="small">
-            <TableBody>
-              <TableSection
-                title="Full sequence"
-                values={[
-                  ['Name', primer.name],
-                  ['Length', primerDetails.length],
-                  ['Tm (full sequence)', `${formatMeltingTemperature(primerDetails.melting_temperature)} °C`],
-                  ['GC% (full sequence)', `${formatGcContent(primerDetails.gc_content)}%`],
-                ]}
-              />
-              {primerDetails.binding_length && (
+          <>
+            <Table size="small">
+              <TableBody>
                 <TableSection
-                  title="Binding sequence"
+                  title="Full sequence"
                   values={[
-                    ['Binding length', primerDetails.binding_length],
-                    ['Tm (binding sequence)', `${formatMeltingTemperature(primerDetails.binding_melting_temperature)} °C`],
-                    ['GC% (binding sequence)', `${formatGcContent(primerDetails.binding_gc_content)}%`],
+                    ['Name', primer.name],
+                    ['Length', primerDetails.length],
+                    ['Tm (full sequence)', `${formatMeltingTemperature(primerDetails.melting_temperature)} °C`],
+                    ['GC% (full sequence)', `${formatGcContent(primerDetails.gc_content)}%`],
                   ]}
                 />
-              )}
-              {primerDetails.homodimer && (
+                {/* TODO: Warning if length > 60 */}
+                {primerDetails.homodimer && (
                 <>
                   <TableSection
                     title="Homodimer"
@@ -77,8 +103,8 @@ function PrimerInfoDialog({ primer, primerDetails, open, onClose }) {
                   />
                   <Primer3Figure figure={primerDetails.homodimer.figure} />
                 </>
-              )}
-              {primerDetails.hairpin && (
+                )}
+                {primerDetails.hairpin && (
                 <>
                   <TableSection
                     title="Hairpin"
@@ -89,9 +115,16 @@ function PrimerInfoDialog({ primer, primerDetails, open, onClose }) {
                   />
                   <Primer3Figure figure={primerDetails.hairpin.figure} />
                 </>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+            {pcrDetails.map((pcrDetail) => (
+              <PCRTable
+                key={pcrDetail.sourceId}
+                pcrDetail={pcrDetail}
+              />
+            ))}
+          </>
         ) : (
           <p>Error loading primer details</p>
         )}
@@ -127,7 +160,7 @@ const primerWarning = (problematicValues) => {
   return field ? problematicValues[field] : '';
 };
 
-function PrimerInfoIcon({ primerDetails, primer }) {
+function PrimerInfoIcon({ primerDetails, primer, pcrDetails }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -140,7 +173,7 @@ function PrimerInfoIcon({ primerDetails, primer }) {
           {warning === '' ? <InfoIcon /> : <WarningIcon color="warning" />}
         </IconButton>
       </Tooltip>
-      {open && <PrimerInfoDialog primer={primer} primerDetails={primerDetails} open={open} onClose={handleClose} />}
+      {open && <PrimerInfoDialog primer={primer} primerDetails={primerDetails} open={open} onClose={handleClose} pcrDetails={pcrDetails} />}
     </>
   );
 }
