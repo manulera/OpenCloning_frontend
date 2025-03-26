@@ -1,4 +1,4 @@
-import { addSource, manuallyTypeSequence, clickMultiSelectOption, deleteSourceById, setInputValue, addPrimer, changeTab } from '../common_functions';
+import { addSource, manuallyTypeSequence, clickMultiSelectOption, deleteSourceById, setInputValue, addPrimer } from '../common_functions';
 
 const homology1 = 'ATGCAAACAGTAATGATGGATGACATTCAAAGCACTGATT';
 const homology2 = 'GTTTGCATCATTACTACCTACTGTAAGTTTCGTGACTAAA';
@@ -20,11 +20,6 @@ describe('Tests homologous recombination and CRISPR functionality', () => {
       clickMultiSelectOption('Insert sequence', '4', 'li#source-5');
       if (sourceType === 'CRISPRSource') {
         clickMultiSelectOption('Select gRNAs', 'gRNA-1', 'li#source-5');
-        // Check that it cannot be deleted
-        changeTab('Primers');
-        cy.get('.primer-table-container svg[data-testid="DeleteIcon"]').first().trigger('mouseover');
-        cy.get('.MuiTooltip-tooltip').contains('Cannot delete').should('exist');
-        changeTab('Cloning');
       }
       cy.get('li#source-5 button.submit-backend-api').click();
       cy.get('li#sequence-6 li#source-5').should('exist');
