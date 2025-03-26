@@ -1,6 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react';
 import PrimerInfoIcon, { PrimerInfoDialog } from './PrimerInfoIcon';
+import { mockPCRDetails } from '../../../../tests/mockPrimerDetailsData';
 
 const mockPrimer = {
   id: 1,
@@ -26,54 +27,6 @@ const mockPrimerDetails = {
 };
 
 const emptyPCRDetails = [];
-
-const mockPCRDetails = [
-  {
-    sourceId: 3,
-    sourceType: 'PCRSource',
-    fwdPrimer: {
-      melting_temperature: 56.7425140341704,
-      gc_content: 0.47619047619047616,
-      homodimer: {
-        melting_temperature: 21.849123266654033,
-        deltaG: -8134.146144614118,
-        figure: 'SEQ\t ACGGATC      TTAATTAA\nSEQ\t        CCCGGG\nSTR\t        GGGCCC\nSTR\tAATTAATT      CTAGGCA-',
-      },
-      hairpin: {
-        melting_temperature: 58.96121263750837,
-        deltaG: -1864.755457846266,
-        figure: 'SEQ\t-///----\\\\\\----------\nSTR\tACGGATCCCCGGGTTAATTAA',
-      },
-      length: 21,
-      id: 1,
-      name: 'fwd',
-      sequence: 'AGTTTTCATATCTTCCTTTATATTCTATTAATTGAATTTCAAACATCGTTTTATTGAGCTCATTTACATCAACCGGTTCACGGATCCCCGGGTTAATTAA',
-    },
-    rvsPrimer: {
-      melting_temperature: 50.92217978039041,
-      gc_content: 0.4,
-      homodimer: {
-        melting_temperature: 33.33183994389532,
-        deltaG: -10262.988602457277,
-        figure: 'SEQ\t  GAATT        TTTAAAC\nSEQ\t       CGAGCTCG\nSTR\t       GCTCGAGC\nSTR\tCAAATTT        TTAAG--',
-      },
-      hairpin: {
-        melting_temperature: 40.798505202616354,
-        deltaG: -290.37922892468487,
-        figure: 'SEQ\t-----//----\\\\-------\nSTR\tGAATTCGAGCTCGTTTAAAC',
-      },
-      length: 20,
-      id: 2,
-      name: 'rvs',
-      sequence: 'CTTTTATGAATTATCTATATGCTGTATTCATATGCAAAAATATGTATATTTAAATTTGATCGATTAGGTAAATAAGAAGCGAATTCGAGCTCGTTTAAAC',
-    },
-    heterodimer: {
-      melting_temperature: 20.513993258320113,
-      deltaG: -5276.181975992979,
-      figure: 'SEQ\tAAACATCGTTTTATT      --   TACATCAAC  G   ACGGATCCCCGGGTTAATTAA--------------\nSEQ\t               GAGCTC  ATT         CG TTC\nSTR\t               CTCGAG  TAA         GC AAG\nSTR\t       CAAATTTG      CT   ---------  G   AATAAATGGATTAGCTAGTTTAAATTTATATGTAT',
-    },
-  },
-];
 
 describe('PrimerInfoIcon Component', () => {
   it('renders the info icon when no warnings', () => {
@@ -177,9 +130,10 @@ describe('PrimerInfoDialog Component', () => {
       .should('contain', 'ΔG (hairpin)');
     cy.get('tr').eq(11).find('td').eq(1)
       .should('contain', '-100 kcal/mol');
+    cy.get('.pcr-table').should('not.exist');
   });
 
-  it('renders PCR details correctly', () => {
+  it('with PCR details', () => {
     mount(
       <PrimerInfoDialog
         primer={mockPrimer}
@@ -189,47 +143,24 @@ describe('PrimerInfoDialog Component', () => {
         onClose={() => {}}
       />,
     );
-
-    // PCR 3 Section Header
-    cy.get('.pcr-table tr').eq(0).should('contain', 'PCR 3');
-
-    // Primer Names Row
-    cy.contains('.pcr-table tr', 'Primer names').within(() => {
-      cy.get('td').eq(1).should('contain', 'fwd');
-      cy.get('td').eq(2).should('contain', 'rvs');
-    });
-
-    // Binding Information
-    cy.contains('.pcr-table tr', 'Binding length').within(() => {
-      cy.get('td').eq(1).should('contain', '21');
-      cy.get('td').eq(2).should('contain', '20');
-    });
-
-    cy.contains('.pcr-table tr', 'Tm (binding)').within(() => {
-      cy.get('td').eq(1).should('contain', '56.7 °C');
-      cy.get('td').eq(2).should('contain', '50.9 °C');
-    });
-
-    cy.contains('.pcr-table tr', 'GC% (binding)').within(() => {
-      cy.get('td').eq(1).should('contain', '48%');
-      cy.get('td').eq(2).should('contain', '40%');
-    });
-
-    // Temperature Difference
-    cy.contains('.pcr-table tr', 'Tm difference').within(() => {
-      cy.get('td').should('contain', '5.8 °C');
-    });
-
-    // Heterodimer Information
-    cy.contains('.pcr-table tr', 'Tm (heterodimer)').within(() => {
-      cy.get('td').should('contain', '20.5 °C');
-    });
-
-    cy.contains('.pcr-table tr', 'ΔG (heterodimer)').within(() => {
-      cy.get('td').should('contain', '-5276 kcal/mol');
-    });
-
-    // Verify heterodimer figure exists
-    cy.contains('SEQ').should('exist');
+    cy.get('.pcr-table').should('exist');
+  });
+  it('with multiple PCR details', () => {
+    const mockPCRDetailsWithMultipleSources = [
+      { ...mockPCRDetails[0], sourceId: 1 },
+      { ...mockPCRDetails[0], sourceId: 2 },
+    ];
+    mount(
+      <PrimerInfoDialog
+        primer={mockPrimer}
+        primerDetails={mockPrimerDetails}
+        pcrDetails={mockPCRDetailsWithMultipleSources}
+        open
+        onClose={() => {}}
+      />,
+    );
+    cy.get('.pcr-table').should('have.length', 2);
+    cy.get('.pcr-table').eq(0).should('contain', 'PCR 1');
+    cy.get('.pcr-table').eq(1).should('contain', 'PCR 2');
   });
 });
