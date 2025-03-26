@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePrimerDetailsEndpoints } from './usePrimerDetailsEndpoints';
 
-export function useSinglePrimerDetails(sequence) {
+export function useSinglePrimerSequenceDetails(sequence) {
   const [primerDetails, setPrimerDetails] = React.useState({ status: 'loading' });
   const { getPrimerDetails } = usePrimerDetailsEndpoints();
   const [connectionAttempt, setConnectionAttempt] = React.useState(0);

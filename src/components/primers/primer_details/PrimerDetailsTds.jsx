@@ -6,15 +6,11 @@ import { formatGcContent, formatMeltingTemperature } from './primerDetailsFormat
 function PrimerDetailsTds({ primerId, primerDetails, retryGetPrimerDetails, pcrDetails, retryGetPCRDetails }) {
   // A primer could be involved in multiple PCR reactions, so we pick the one in which it has the longest
   // annealing length for display in the table.
-  const longestPcrDetails = pcrDetails.reduce((longest, current) => {
-    const currentLength = current.fwdPrimer.id === primerId ? current.fwdPrimer.length : current.rvsPrimer.length;
-    const longestLength = longest.fwdPrimer.id === primerId ? longest.fwdPrimer.length : longest.rvsPrimer.length;
-    return currentLength > longestLength ? current : longest;
-  }, pcrDetails[0]);
+  const firstPCRDetails = pcrDetails[0];
 
   let thisPrimerPCRInfo = null;
-  if (longestPcrDetails) {
-    thisPrimerPCRInfo = longestPcrDetails.fwdPrimer.id === primerId ? longestPcrDetails.fwdPrimer : longestPcrDetails.rvsPrimer;
+  if (firstPCRDetails) {
+    thisPrimerPCRInfo = firstPCRDetails.fwdPrimer.id === primerId ? firstPCRDetails.fwdPrimer : firstPCRDetails.rvsPrimer;
   }
 
   const loadingOrErrorComponent = primerDetails.status === 'loading' ? (

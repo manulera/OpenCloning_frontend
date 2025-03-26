@@ -9,13 +9,13 @@ import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
 import PrimerDetailsTds from './primer_details/PrimerDetailsTds';
 import PrimerInfoIcon from './primer_details/PrimerInfoIcon';
-import { useSinglePrimerDetails } from './primer_details/useSinglePrimerDetails';
+import { useSinglePrimerSequenceDetails } from './primer_details/useSinglePrimerSequenceDetails';
 import { getSourcesWherePrimerIsUsed } from '../../store/cloning_utils';
 import { usePCRDetails } from './primer_details/usePCRDetails';
 
 function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
-  const { primerDetails, retryGetPrimerDetails } = useSinglePrimerDetails(primer.sequence);
+  const { primerDetails, retryGetPrimerDetails } = useSinglePrimerSequenceDetails(primer.sequence);
   const pcrSourceIds = useSelector((state) => {
     const pcrs = getSourcesWherePrimerIsUsed(state.cloning.sources, primer.id).filter((s) => s.type === 'PCRSource');
     return pcrs.map((s) => s.id);
