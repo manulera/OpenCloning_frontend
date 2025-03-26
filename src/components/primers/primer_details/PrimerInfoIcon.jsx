@@ -2,77 +2,10 @@ import { Dialog, DialogContent, IconButton, Tooltip, Table, TableBody, TableCell
 import React from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
-import { useSelector } from 'react-redux';
 import { formatGcContent, formatMeltingTemperature, formatDeltaG } from './primerDetailsFormatting';
-
-function TableSection({ title, values }) {
-  return (
-    <>
-      {title && <TableRow><TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '1.2rem' }} colSpan={3}>{title}</TableCell></TableRow>}
-      {values.map((value) => (
-        <TableRow key={value[0]}>
-          <TableCell width="50%" sx={{ fontWeight: 'bold', textAlign: 'right' }}>{value[0]}</TableCell>
-          <TableCell colSpan={value[2] ? 1 : 2} sx={{ width: '1px', whiteSpace: 'nowrap' }}>{value[1]}</TableCell>
-          {value[2] && <TableCell>{value[2]}</TableCell>}
-        </TableRow>
-      ))}
-    </>
-  );
-}
-
-function Primer3Figure({ figure }) {
-  // Remove all trailing spaces
-  const trimmedRows = figure.split('\n').map((row) => row.trim());
-  const longestRow = Math.max(...trimmedRows.map((row) => row.length));
-  return (
-    <TableRow>
-      <TableCell colSpan={3} sx={{ padding: 0, margin: 0 }}>
-        <code style={{ width: '100%',
-          whiteSpace: 'pre',
-          fontFamily: 'monospace',
-          display: 'block',
-          maxWidth: '100%',
-          overflow: 'auto',
-          margin: 0,
-          fontSize: `calc(100% * 80 / ${longestRow})` }}
-        >
-          {trimmedRows.join('\n')}
-        </code>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-function PCRTable({ pcrDetail }) {
-  const { sourceId, fwdPrimer, rvsPrimer, heterodimer } = pcrDetail;
-  const sourceType = useSelector((state) => state.cloning.sources.find((source) => source.id === sourceId)?.type);
-  const name = (sourceType === 'PCRSource') ? 'PCR' : 'Oligonucleotide hybridization';
-
-  return (
-    <Table size="small">
-      <TableBody />
-
-      <TableSection
-        title={`${name} ${sourceId}`}
-        values={[
-          ['Primers names', fwdPrimer.name, rvsPrimer.name],
-          ['Binding length', fwdPrimer.length, rvsPrimer.length],
-          ['Tm (binding)', `${formatMeltingTemperature(fwdPrimer.melting_temperature)} °C`, `${formatMeltingTemperature(rvsPrimer.melting_temperature)} °C`],
-          ['GC% (binding)', `${formatGcContent(fwdPrimer.gc_content)}%`, `${formatGcContent(rvsPrimer.gc_content)}%`],
-          ['Tm difference', `${formatMeltingTemperature(fwdPrimer.melting_temperature - rvsPrimer.melting_temperature)} °C`],
-        ]}
-      />
-      {heterodimer && (
-        <>
-          <TableSection
-            values={[['Tm (heterodimer)', `${formatMeltingTemperature(heterodimer.melting_temperature)} °C`], ['ΔG (heterodimer)', `${formatDeltaG(heterodimer.deltaG)} kcal/mol`]]}
-          />
-          <Primer3Figure figure={heterodimer.figure} />
-        </>
-      )}
-    </Table>
-  );
-}
+import Primer3Figure from './Primer3Figure';
+import TableSection from './TableSection';
+import PCRTable from './PCRTable';
 
 function PrimerInfoDialog({ primer, primerDetails, open, onClose, pcrDetails }) {
   return (
