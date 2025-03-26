@@ -8,6 +8,7 @@ import useDatabase from '../../hooks/useDatabase';
 import useLoadDatabaseFile from '../../hooks/useLoadDatabaseFile';
 import { usePCRDetails } from '../primers/primer_details/usePCRDetails';
 import PCRTable from '../primers/primer_details/PCRTable';
+import RequestStatusWrapper from '../form/RequestStatusWrapper';
 
 function DatabaseMessage({ source }) {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
@@ -209,14 +210,16 @@ function SEVAPlasmidMessage({ source }) {
 function PCRMessage({ source }) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const primers = useSelector((state) => state.cloning.primers, isEqual);
-  const { pcrDetails, retryGetPCRDetails } = usePCRDetails([source.id]);
+  const { pcrDetails, retryGetPCRDetails, requestStatus } = usePCRDetails([source.id]);
   const [fwdPrimer, rvsPrimer] = [source.assembly[0].sequence, source.assembly[2].sequence];
   return (
     <div>
       <div>{`PCR with primers ${primers.find((p) => fwdPrimer === p.id).name} and ${primers.find((p) => rvsPrimer === p.id).name}`}</div>
-      <Button onClick={() => setDialogOpen(true)}>
-        See PCR details
-      </Button>
+      <RequestStatusWrapper requestStatus={requestStatus} retry={retryGetPCRDetails}>
+        <Button onClick={() => setDialogOpen(true)}>
+          See PCR details
+        </Button>
+      </RequestStatusWrapper>
       {pcrDetails.length > 0 && dialogOpen && (
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
         <DialogContent>

@@ -316,5 +316,5 @@ export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) 
     fwdLength = fwdPrimer.sequence.length + source.overhang_crick_3prime;
     rvsLength = rvsPrimer.sequence.length - source.overhang_crick_3prime;
   }
-  return { sourceId: source.id, fwdPrimer, rvsPrimer, fwdLength, rvsLength };
+  return { sourceId: source.id, sourceType: source.type, fwdPrimer, rvsPrimer, fwdLength, rvsLength };
 }

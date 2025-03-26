@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, IconButton, Tooltip, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { Dialog, DialogContent, IconButton, Tooltip, Table, TableBody } from '@mui/material';
 import React from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -7,7 +7,7 @@ import Primer3Figure from './Primer3Figure';
 import TableSection from './TableSection';
 import PCRTable from './PCRTable';
 
-function PrimerInfoDialog({ primer, primerDetails, open, onClose, pcrDetails }) {
+export function PrimerInfoDialog({ primer, primerDetails, open, onClose, pcrDetails }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogContent>
@@ -98,13 +98,21 @@ function PrimerInfoIcon({ primerDetails, primer, pcrDetails }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const warning = primerWarning(primerProblematicValues(primerDetails));
-  const tooltipTitle = warning === '' ? 'Primer details' : warning;
+  let tooltipTitle = 'Primer details';
+  if (primerDetails.status !== 'success') {
+    tooltipTitle = 'Primer details not available';
+  } else if (warning !== '') {
+    tooltipTitle = warning;
+  }
   return (
     <>
       <Tooltip title={tooltipTitle} placement="top" arrow>
-        <IconButton disabled={primerDetails.status !== 'success'} onClick={handleOpen}>
-          {warning === '' ? <InfoIcon /> : <WarningIcon color="warning" />}
-        </IconButton>
+        {/* This span is necessary to work when the button is disabled */}
+        <span>
+          <IconButton disabled={primerDetails.status !== 'success'} onClick={handleOpen}>
+            {warning === '' ? <InfoIcon /> : <WarningIcon color="warning" />}
+          </IconButton>
+        </span>
       </Tooltip>
       {open && <PrimerInfoDialog primer={primer} primerDetails={primerDetails} open={open} onClose={handleClose} pcrDetails={pcrDetails} />}
     </>

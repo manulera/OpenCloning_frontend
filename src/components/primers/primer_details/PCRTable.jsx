@@ -1,17 +1,15 @@
 import React from 'react';
 import { Table, TableBody } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { formatGcContent, formatMeltingTemperature, formatDeltaG } from './primerDetailsFormatting';
 import Primer3Figure from './Primer3Figure';
 import TableSection from './TableSection';
 
 export default function PCRTable({ pcrDetail }) {
-  const { sourceId, fwdPrimer, rvsPrimer, heterodimer } = pcrDetail;
-  const sourceType = useSelector((state) => state.cloning.sources.find((source) => source.id === sourceId)?.type);
+  const { sourceId, sourceType, fwdPrimer, rvsPrimer, heterodimer } = pcrDetail;
   const name = (sourceType === 'PCRSource') ? 'PCR' : 'Oligonucleotide hybridization';
 
   return (
-    <Table size="small">
+    <Table size="small" className="pcr-table">
       <TableBody />
 
       <TableSection
