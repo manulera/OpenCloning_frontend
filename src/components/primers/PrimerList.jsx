@@ -10,6 +10,7 @@ import PrimerDatabaseImportForm from './import_primers/PrimerDatabaseImportForm'
 import { getUsedPrimerIds } from '../../store/cloning_utils';
 import useDatabase from '../../hooks/useDatabase';
 import DownloadPrimersButton from './DownloadPrimersButton';
+import useMultiplePrimerDetails from './primer_details/useMultiplePrimerDetails';
 
 function PrimerList() {
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
@@ -33,6 +34,7 @@ function PrimerList() {
     (state) => getUsedPrimerIds(state.cloning.sources),
     shallowEqual,
   );
+  const { primerDetails, retryGetPrimerDetails, requestStatus: primerDetailsRequestStatus } = useMultiplePrimerDetails(primers);
 
   return (
     <>
@@ -49,10 +51,10 @@ function PrimerList() {
             </tr>
           </thead>
           <tbody>
-            {primers.filter((primer) => primer.id !== editingPrimerId).map((primer) => (
+            {primerDetails.filter((primer) => primer.id !== editingPrimerId).map((primer) => (
               <PrimerTableRow
                 key={primer.id}
-                primer={primer}
+                primerDetails={primer}
                 deletePrimer={deletePrimer}
                 canBeDeleted={!primerIdsInUse.includes(primer.id)}
                 onEditClick={onEditClick}
