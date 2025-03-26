@@ -32,8 +32,8 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
     };
     const config = { params: { minimal_homology: minimalHomologyRef.current.value } };
     if (isCrispr) {
-      requestData.guides = selectedPrimers;
-      requestData.source.guides = selectedPrimers.map((p) => p.id);
+      requestData.guides = selectedPrimers.map((primerId) => primers.find((p) => p.id === primerId));
+      requestData.source.guides = selectedPrimers;
       sendPostRequest({ endpoint: 'crispr', requestData, config, source });
     } else {
       sendPostRequest({ endpoint: 'homologous_recombination', requestData, config, source });
