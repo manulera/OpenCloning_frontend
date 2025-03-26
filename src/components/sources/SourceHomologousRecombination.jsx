@@ -20,6 +20,13 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
   const { updateSource } = cloningActions;
   const dispatch = useDispatch();
 
+  const handlePrimersChange = (primers) => {
+    setSelectedPrimers(primers);
+    if (isCrispr) {
+      dispatch(updateSource({ id: sourceId, guides: primers.map((p) => p.id) }));
+    }
+  };
+
   const allowSubmit = (template !== null && insert !== null) && (isCrispr ? selectedPrimers.length > 0 : true) && inputsAreNotTemplates;
   const minimalHomologyRef = React.useRef(null);
   const onSubmit = (event) => {
@@ -93,7 +100,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
             }}
           />
         </FormControl>
-        {isCrispr && (<MultiplePrimerSelector {...{ onChange: setSelectedPrimers, label: 'Select gRNAs (from primers)' }} />)}
+        {isCrispr && (<MultiplePrimerSelector {...{ onChange: handlePrimersChange, label: 'Select gRNAs (from primers)' }} />)}
         { allowSubmit && (
         <SubmitButtonBackendAPI requestStatus={requestStatus} color="primary">
           {isCrispr ? 'Perform CRISPR' : 'Recombine'}

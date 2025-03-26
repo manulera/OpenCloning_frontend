@@ -280,7 +280,7 @@ export function primersInSource(source) {
   if (source.type === 'OligoHybridizationSource') {
     return [source.forward_oligo, source.reverse_oligo];
   }
-  if (source.type === 'CRISPRSource') {
+  if (source.type === 'CRISPRSource' && source.guides?.length > 0) {
     return source.guides;
   }
   return [];
