@@ -4,21 +4,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useSelector } from 'react-redux';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
 import PrimerDetailsTds from './primer_details/PrimerDetailsTds';
 import PrimerInfoIcon from './primer_details/PrimerInfoIcon';
-import { getSourcesWherePrimerIsUsed } from '../../store/cloning_utils';
-import { usePCRDetails } from './primer_details/usePCRDetails';
 
-function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick }) {
+function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick, pcrDetails }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
-  const pcrSourceIds = useSelector((state) => {
-    const pcrs = getSourcesWherePrimerIsUsed(state.cloning.sources, primerDetails.id).filter((s) => s.type === 'PCRSource');
-    return pcrs.map((s) => s.id);
-  });
-  const { pcrDetails, retryGetPCRDetails } = usePCRDetails(pcrSourceIds);
+
   const database = useDatabase();
 
   React.useEffect(() => {
@@ -80,7 +73,6 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
         primerId={primerDetails.id}
         primerDetails={primerDetails}
         pcrDetails={pcrDetails}
-        retryGetPCRDetails={retryGetPCRDetails}
       />
       <td className="sequence">{primerDetails.sequence}</td>
     </tr>

@@ -1,30 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react';
 import PrimerInfoIcon, { PrimerInfoDialog } from './PrimerInfoIcon';
-import { mockPCRDetails } from '../../../../tests/mockPrimerDetailsData';
-
-const mockPrimer = {
-  id: 1,
-  name: 'Test Primer',
-  sequence: 'ACGTACGT',
-};
-
-const mockPrimerDetails = {
-  status: 'success',
-  length: 8,
-  melting_temperature: 60,
-  gc_content: 0.5,
-  homodimer: {
-    melting_temperature: 60,
-    deltaG: -100,
-    figure: 'dummy_figure',
-  },
-  hairpin: {
-    melting_temperature: 60,
-    deltaG: -100,
-    figure: 'dummy_figure',
-  },
-};
+import { mockPCRDetails, mockPrimerDetails } from '../../../../tests/mockPrimerDetailsData';
 
 const emptyPCRDetails = [];
 
@@ -32,7 +9,6 @@ describe('PrimerInfoIcon Component', () => {
   it('renders the info icon when no warnings', () => {
     mount(
       <PrimerInfoIcon
-        primer={mockPrimer}
         primerDetails={mockPrimerDetails}
         pcrDetails={emptyPCRDetails}
       />,
@@ -49,7 +25,6 @@ describe('PrimerInfoIcon Component', () => {
   it('renders the warning icon when warnings', () => {
     mount(
       <PrimerInfoIcon
-        primer={mockPrimer}
         primerDetails={{ ...mockPrimerDetails, gc_content: 0.0 }}
         pcrDetails={emptyPCRDetails}
       />,
@@ -66,8 +41,7 @@ describe('PrimerInfoIcon Component', () => {
   it('handles connection errors', () => {
     mount(
       <PrimerInfoIcon
-        primer={mockPrimer}
-        primerDetails={{ ...mockPrimerDetails, status: 'error' }}
+        primerDetails={{ ...mockPrimer }}
         pcrDetails={emptyPCRDetails}
       />,
     );
@@ -81,7 +55,6 @@ describe('PrimerInfoDialog Component', () => {
   it('Without PCR details', () => {
     mount(
       <PrimerInfoDialog
-        primer={mockPrimer}
         primerDetails={mockPrimerDetails}
         pcrDetails={emptyPCRDetails}
         open
@@ -93,7 +66,7 @@ describe('PrimerInfoDialog Component', () => {
     cy.get('tr').eq(1).find('td').eq(0)
       .should('contain', 'Name');
     cy.get('tr').eq(1).find('td').eq(1)
-      .should('contain', mockPrimer.name);
+      .should('contain', 'Test Primer');
 
     // Full sequence section
     cy.get('tr').eq(2).find('td').eq(0)
@@ -136,7 +109,6 @@ describe('PrimerInfoDialog Component', () => {
   it('with PCR details', () => {
     mount(
       <PrimerInfoDialog
-        primer={mockPrimer}
         primerDetails={mockPrimerDetails}
         pcrDetails={mockPCRDetails}
         open
@@ -152,7 +124,6 @@ describe('PrimerInfoDialog Component', () => {
     ];
     mount(
       <PrimerInfoDialog
-        primer={mockPrimer}
         primerDetails={mockPrimerDetails}
         pcrDetails={mockPCRDetailsWithMultipleSources}
         open

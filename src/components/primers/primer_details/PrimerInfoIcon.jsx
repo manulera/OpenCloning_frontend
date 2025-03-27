@@ -8,6 +8,7 @@ import TableSection from './TableSection';
 import PCRTable from './PCRTable';
 
 export function PrimerInfoDialog({ primerDetails, open, onClose, pcrDetails }) {
+  const relatedPcrDetails = pcrDetails.filter(({ fwdPrimer, rvsPrimer }) => fwdPrimer.id === primerDetails.id || rvsPrimer.id === primerDetails.id);
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogContent>
@@ -50,7 +51,7 @@ export function PrimerInfoDialog({ primerDetails, open, onClose, pcrDetails }) {
             )}
           </TableBody>
         </Table>
-        {pcrDetails.map((pcrDetail) => (
+        {relatedPcrDetails.map((pcrDetail) => (
           <PCRTable
             key={pcrDetail.sourceId}
             pcrDetail={pcrDetail}
@@ -69,18 +70,20 @@ const primerProblematicValues = (primerDetails) => {
     gcContent: '',
     meltingTemperature: '',
   };
+  if (primerDetails.gc_content < 0.30 || primerDetails.gc_content > 0.70) {
+    problematicValues.gcContent = 'GC content is outside the optimal range';
+  }
+  if (primerDetails.melting_temperature < 50 || primerDetails.melting_temperature > 70) {
+    problematicValues.meltingTemperature = 'Melting temperature is outside the optimal range';
+  }
+  return problematicValues;
   if (primerDetails.homodimer && primerDetails.homodimer.deltaG < -8000) {
     problematicValues.homodimer = 'May form homodimers';
   }
   if (primerDetails.hairpin && primerDetails.hairpin.deltaG < -8000) {
     problematicValues.hairpin = 'May form hairpins';
   }
-  if (primerDetails.gc_content < 0.35 || primerDetails.gc_content > 0.65) {
-    problematicValues.gcContent = 'GC content is outside the optimal range';
-  }
-  if (primerDetails.melting_temperature < 50 || primerDetails.melting_temperature > 70) {
-    problematicValues.meltingTemperature = 'Melting temperature is outside the optimal range';
-  }
+
   return problematicValues;
 };
 
@@ -95,7 +98,8 @@ function PrimerInfoIcon({ primerDetails, pcrDetails }) {
   const handleClose = () => setOpen(false);
   const warning = primerWarning(primerProblematicValues(primerDetails));
   let tooltipTitle = 'Primer details';
-  if (!primerDetails) {
+  const disabled = primerDetails.melting_temperature === undefined;
+  if (disabled) {
     tooltipTitle = 'Primer details not available';
   } else if (warning !== '') {
     tooltipTitle = warning;
@@ -105,7 +109,7 @@ function PrimerInfoIcon({ primerDetails, pcrDetails }) {
       <Tooltip title={tooltipTitle} placement="top" arrow>
         {/* This span is necessary to work when the button is disabled */}
         <span>
-          <IconButton disabled={!primerDetails} onClick={handleOpen}>
+          <IconButton disabled={disabled} onClick={handleOpen}>
             {warning === '' ? <InfoIcon /> : <WarningIcon color="warning" />}
           </IconButton>
         </span>

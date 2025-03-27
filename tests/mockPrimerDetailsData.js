@@ -45,3 +45,27 @@ export const mockPCRDetails = [
     },
   },
 ];
+
+export const mockPrimer = {
+  id: 1,
+  name: 'Test Primer',
+  sequence: 'ACGTACGT',
+  length: 8,
+};
+
+export const mockPrimerDetails = {
+  ...mockPrimer,
+  length: 8,
+  melting_temperature: 60,
+  gc_content: 0.5,
+  homodimer: {
+    melting_temperature: 60,
+    deltaG: -100,
+    figure: 'dummy_figure',
+  },
+  hairpin: {
+    melting_temperature: 60,
+    deltaG: -100,
+    figure: 'dummy_figure',
+  },
+};

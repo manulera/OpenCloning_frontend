@@ -36,11 +36,12 @@ export function usePCRDetails(sourceIds) {
         setPcrDetails(details);
         setRequestStatus({ status: 'success', message: '' });
       } catch (error) {
-        setRequestStatus({ status: 'error', message: error.message });
+        setRequestStatus({ status: 'error', message: `Error fetching PCR details: ${error.message}` });
       }
     };
     getAllDetails();
   }, [bindingInfos, connectionAttempt]);
 
+  console.log('pcrDetails', pcrDetails);
   return { pcrDetails, retryGetPCRDetails, requestStatus };
 }

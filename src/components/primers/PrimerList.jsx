@@ -11,6 +11,8 @@ import { getUsedPrimerIds } from '../../store/cloning_utils';
 import useDatabase from '../../hooks/useDatabase';
 import DownloadPrimersButton from './DownloadPrimersButton';
 import useMultiplePrimerDetails from './primer_details/useMultiplePrimerDetails';
+import { usePCRDetails } from './primer_details/usePCRDetails';
+import RequestStatusWrapper from '../form/RequestStatusWrapper';
 
 function PrimerList() {
   const primers = useSelector((state) => state.cloning.primers, shallowEqual);
@@ -34,11 +36,19 @@ function PrimerList() {
     (state) => getUsedPrimerIds(state.cloning.sources),
     shallowEqual,
   );
+  const pcrSourceIds = useSelector((state) => state.cloning.sources
+    .filter((source) => source.type === 'PCRSource')
+    .map((source) => source.id));
   const { primerDetails, retryGetPrimerDetails, requestStatus: primerDetailsRequestStatus } = useMultiplePrimerDetails(primers);
+  const { pcrDetails, retryGetPCRDetails, requestStatus: pcrDetailsRequestStatus } = usePCRDetails(pcrSourceIds);
 
+  const details = primerDetails.length > 0 ? primerDetails : primers.map((p) => ({ ...p, length: p.sequence.length }));
   return (
     <>
       <div className="primer-table-container">
+        <RequestStatusWrapper requestStatus={primerDetailsRequestStatus} retry={() => { retryGetPrimerDetails(); retryGetPCRDetails(); }}>
+          <RequestStatusWrapper requestStatus={pcrDetailsRequestStatus} retry={retryGetPCRDetails} />
+        </RequestStatusWrapper>
         <table>
           <thead>
             <tr style={{ whiteSpace: 'nowrap' }}>
@@ -51,10 +61,11 @@ function PrimerList() {
             </tr>
           </thead>
           <tbody>
-            {primerDetails.filter((primer) => primer.id !== editingPrimerId).map((primer) => (
+            {details.filter((primer) => primer.id !== editingPrimerId).map((primer) => (
               <PrimerTableRow
                 key={primer.id}
                 primerDetails={primer}
+                pcrDetails={pcrDetails}
                 deletePrimer={deletePrimer}
                 canBeDeleted={!primerIdsInUse.includes(primer.id)}
                 onEditClick={onEditClick}

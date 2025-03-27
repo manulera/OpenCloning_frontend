@@ -19,7 +19,7 @@ export default function useMultiplePrimerDetails(primers) {
         setRequestStatus({ status: 'success' });
       } catch (error) {
         console.error(error);
-        setRequestStatus({ status: 'error', message: error.message });
+        setRequestStatus({ status: 'error', message: `Error fetching primer details: ${error.message}` });
       }
     };
     fetchPrimerDetails();
