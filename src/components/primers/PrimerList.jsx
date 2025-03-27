@@ -42,6 +42,7 @@ function PrimerList() {
   const { primerDetails, retryGetPrimerDetails, requestStatus: primerDetailsRequestStatus } = useMultiplePrimerDetails(primers);
   const { pcrDetails, retryGetPCRDetails, requestStatus: pcrDetailsRequestStatus } = usePCRDetails(pcrSourceIds);
 
+  console.log('primerDetails', primerDetails);
   const details = primerDetails.length > 0 ? primerDetails : primers.map((p) => ({ ...p, length: p.sequence.length }));
   return (
     <>

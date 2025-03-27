@@ -21,7 +21,7 @@ function PrimerDetailsTds({ primerDetails, pcrDetails }) {
   return (
     <>
       <td style={{ whiteSpace: 'nowrap' }} className="length">{length}</td>
-      {primerDetails.gc_content ? (
+      {primerDetails.gc_content !== undefined ? (
         <>
           <td style={{ whiteSpace: 'nowrap' }} className="melting-temperature">{meltingTemperature}</td>
           <td style={{ whiteSpace: 'nowrap' }} className="gc-content">{gcContent}</td>

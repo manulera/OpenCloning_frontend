@@ -42,6 +42,5 @@ export function usePCRDetails(sourceIds) {
     getAllDetails();
   }, [bindingInfos, connectionAttempt]);
 
-  console.log('pcrDetails', pcrDetails);
   return { pcrDetails, retryGetPCRDetails, requestStatus };
 }
