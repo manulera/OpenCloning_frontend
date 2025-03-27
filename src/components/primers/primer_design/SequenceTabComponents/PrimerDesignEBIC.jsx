@@ -9,7 +9,7 @@ function PrimerDesignEBIC({ pcrSources }) {
   const primerDesignSettings = useEBICPrimerDesignSettings();
 
   const steps = React.useMemo(() => [
-    { label: 'Region of interest' },
+    { label: 'Region of interest', description: 'Select in the editor the region to be replaced' },
   ], []);
 
   return (
