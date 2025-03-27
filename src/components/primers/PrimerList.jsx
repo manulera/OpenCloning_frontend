@@ -37,12 +37,11 @@ function PrimerList() {
     shallowEqual,
   );
   const pcrSourceIds = useSelector((state) => state.cloning.sources
-    .filter((source) => source.type === 'PCRSource')
+    .filter((source) => source.type === 'PCRSource' && source.assembly?.length > 0)
     .map((source) => source.id));
   const { primerDetails, retryGetPrimerDetails, requestStatus: primerDetailsRequestStatus } = useMultiplePrimerDetails(primers);
   const { pcrDetails, retryGetPCRDetails, requestStatus: pcrDetailsRequestStatus } = usePCRDetails(pcrSourceIds);
 
-  console.log('primerDetails', primerDetails);
   const details = primerDetails.length > 0 ? primerDetails : primers.map((p) => ({ ...p, length: p.sequence.length }));
   return (
     <>

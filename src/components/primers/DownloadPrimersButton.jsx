@@ -11,7 +11,7 @@ import useMultiplePrimerDetails from './primer_details/useMultiplePrimerDetails'
 
 function DownloadPrimersDialog({ primers, open, onClose }) {
   const pcrSourceIds = useSelector((state) => state.cloning.sources
-    .filter((source) => source.type === 'PCRSource')
+    .filter((source) => source.type === 'PCRSource' && source.assembly?.length > 0)
     .map((source) => source.id));
   const [fileName, setFileName] = React.useState('primers');
   const [extension, setExtension] = React.useState('.csv');
