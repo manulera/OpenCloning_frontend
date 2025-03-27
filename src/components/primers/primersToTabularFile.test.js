@@ -101,4 +101,8 @@ describe('primersToTabularFile', () => {
 
     expect(result).toBe(expectedOutput);
   });
+  it('returns empty string if no primers', () => {
+    const result = primersToTabularFile([], mockPCRDetails, ',');
+    expect(result).toBe('');
+  });
 });

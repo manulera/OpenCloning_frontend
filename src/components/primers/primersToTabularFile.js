@@ -1,6 +1,9 @@
 import { formatDeltaG, formatGcContent, formatMeltingTemperature } from './primer_details/primerDetailsFormatting';
 
 export default function primersToTabularFile(primerDetails, pcrDetails, separator) {
+  if (primerDetails.length === 0) {
+    return '';
+  }
   const rowsAsObjects = primerDetails.map((primer) => {
     const pcrDetail = pcrDetails.find(({ fwdPrimer, rvsPrimer }) => fwdPrimer.id === primer.id || rvsPrimer.id === primer.id);
     const pcrPart = {
