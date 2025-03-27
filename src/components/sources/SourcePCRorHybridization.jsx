@@ -104,8 +104,8 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
           primers={primers}
           forwardPrimerId={forwardPrimerId}
           reversePrimerId={reversePrimerId}
-          onChangeForward={(e) => setForwardPrimerId(e.target.value)}
-          onChangeReverse={(e) => setReversePrimerId(e.target.value)}
+          onChangeForward={setForwardPrimerId}
+          onChangeReverse={setReversePrimerId}
         />
         <FormControl fullWidth>
           <TextField

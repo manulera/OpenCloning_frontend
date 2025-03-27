@@ -273,16 +273,48 @@ export function getSourceDatabaseId(sources, sequenceId) {
   return source?.database_id;
 }
 
-export function getUsedPrimerIds(sources) {
-  const forPcr = sources
-    .filter((s) => s.type === 'PCRSource' && s.assembly?.length > 0)
-    .map((s) => [s.assembly[0].sequence, s.assembly[2].sequence]).flat();
-  const forHybridization = sources
-    .filter((s) => s.type === 'OligoHybridizationSource')
-    .flatMap((s) => [s.forward_oligo, s.reverse_oligo]);
-  const forCRISPR = sources
-    .filter((s) => s.type === 'CRISPRSource')
-    .flatMap((s) => s.guides);
+export function primersInSource(source) {
+  if (source.type === 'PCRSource' && source.assembly?.length > 0) {
+    return [source.assembly[0].sequence, source.assembly[2].sequence];
+  }
+  if (source.type === 'OligoHybridizationSource') {
+    return [source.forward_oligo, source.reverse_oligo];
+  }
+  if (source.type === 'CRISPRSource' && source.guides?.length > 0) {
+    return source.guides;
+  }
+  return [];
+}
 
-  return forPcr.concat(forHybridization).concat(forCRISPR);
+export function getUsedPrimerIds(sources) {
+  return sources.flatMap((s) => primersInSource(s));
+}
+
+export function getSourcesWherePrimerIsUsed(sources, primerId) {
+  return sources.filter((s) => primersInSource(s).includes(primerId));
+}
+
+export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) {
+  let fwdPrimer = null;
+  let rvsPrimer = null;
+  let fwdLength = 0;
+  let rvsLength = 0;
+  if (source.type === 'PCRSource' && source.assembly?.length > 0) {
+    fwdPrimer = primers.find((p) => p.id === source.assembly[0].sequence);
+    rvsPrimer = primers.find((p) => p.id === source.assembly[2].sequence);
+    fwdLength = source.assembly[0].right_location.end - source.assembly[0].right_location.start;
+    rvsLength = source.assembly[2].left_location.end - source.assembly[2].left_location.start;
+    if (fwdLength < 0) {
+      fwdLength += sequenceLength;
+    }
+    if (rvsLength < 0) {
+      rvsLength += sequenceLength;
+    }
+  } else if (source.type === 'OligoHybridizationSource' && source.overhang_crick_3prime !== undefined) {
+    fwdPrimer = primers.find((p) => p.id === source.forward_oligo);
+    rvsPrimer = primers.find((p) => p.id === source.reverse_oligo);
+    fwdLength = fwdPrimer.sequence.length + source.overhang_crick_3prime;
+    rvsLength = rvsPrimer.sequence.length - source.overhang_crick_3prime;
+  }
+  return { sourceId: source.id, sourceType: source.type, fwdPrimer, rvsPrimer, fwdLength, rvsLength };
 }

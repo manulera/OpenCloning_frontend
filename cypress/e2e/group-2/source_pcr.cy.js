@@ -1,5 +1,5 @@
 import { getReverseComplementSequenceString } from '@teselagen/sequence-utils';
-import { addPrimer, addSource, manuallyTypeSequence, clickMultiSelectOption, setInputValue, addLane, skipNcbiCheck, deleteSourceById, deleteSourceByContent } from '../common_functions';
+import { addPrimer, addSource, manuallyTypeSequence, clickMultiSelectOption, setInputValue, addLane, deleteSourceById, deleteSourceByContent } from '../common_functions';
 
 describe('Tests PCR functionality', () => {
   beforeEach(() => {
@@ -20,6 +20,13 @@ describe('Tests PCR functionality', () => {
     // The result is shown
     cy.get('li#sequence-4 li#source-3', { timeout: 20000 }).should('exist');
     cy.get('li#sequence-4').contains('22 bps');
+    cy.get('li#source-3').contains('PCR with primers fwd_test and rvs_test').should('exist');
+    cy.get('li#source-3').contains('See PCR details').click();
+    cy.get('div[role="dialog"]').should('exist');
+    cy.get('div[role="dialog"]').within(() => {
+      cy.contains('PCR 3');
+      cy.get('table').should('exist');
+    });
   });
   it('can use the same primer twice', () => {
     addPrimer('fwd_test', 'ACGTACGT');

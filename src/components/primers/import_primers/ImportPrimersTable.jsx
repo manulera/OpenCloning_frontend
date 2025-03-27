@@ -5,7 +5,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-function PrimerTableRow({ primer }) {
+function CustomTableRow({ primer }) {
   const { name, sequence, error } = primer;
 
   let msg = 'Valid primer';
@@ -41,7 +41,7 @@ function PrimersImportTable({ importedPrimers }) {
       </TableHead>
       <TableBody>
         {importedPrimers.map((primer, index) => (
-          <PrimerTableRow key={index} primer={primer} />
+          <CustomTableRow key={index} primer={primer} />
         ))}
       </TableBody>
     </Table>

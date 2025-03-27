@@ -6,64 +6,75 @@ import SaveIcon from '@mui/icons-material/Save';
 import ClearIcon from '@mui/icons-material/Clear';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
+import PrimerDetailsTds from './primer_details/PrimerDetailsTds';
+import PrimerInfoIcon from './primer_details/PrimerInfoIcon';
 
-function PrimerTableRow({ primer, deletePrimer, canBeDeleted, onEditClick }) {
+function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick, pcrDetails }) {
   const [saveToDatabaseDialogOpen, setSaveToDatabaseDialogOpen] = useState(false);
+
   const database = useDatabase();
 
   React.useEffect(() => {
-    if (!primer.database_id) {
+    if (!primerDetails.database_id) {
       setSaveToDatabaseDialogOpen(false);
     }
-  }, [primer.database_id]);
+  }, [primerDetails.database_id]);
 
   let deleteMessage;
   if (!canBeDeleted) {
-    deleteMessage = primer.database_id ? 'Cannot remove primer in use from session' : 'Cannot delete primer in use';
+    deleteMessage = primerDetails.database_id ? 'Cannot remove primer in use from session' : 'Cannot delete primer in use';
   } else {
-    deleteMessage = primer.database_id ? 'Remove from session' : 'Delete';
+    deleteMessage = primerDetails.database_id ? 'Remove from session' : 'Delete';
   }
 
   return (
     <tr>
       <td className="icons">
         <Tooltip arrow title={deleteMessage} placement="top">
-          <IconButton onClick={() => (canBeDeleted && deletePrimer(primer.id))}>
-            {primer.database_id ? <ClearIcon /> : <DeleteIcon />}
+          <IconButton onClick={() => (canBeDeleted && deletePrimer(primerDetails.id))}>
+            {primerDetails.database_id ? <ClearIcon /> : <DeleteIcon />}
           </IconButton>
         </Tooltip>
-        <Tooltip arrow title={primer.database_id ? `Stored in ${database.name}` : 'Edit'} placement="top">
-          {primer.database_id ? (
+        <Tooltip arrow title={primerDetails.database_id ? `Stored in ${database.name}` : 'Edit'} placement="top">
+          {primerDetails.database_id ? (
             <IconButton
-              onClick={() => window.open(database.getPrimerLink(primer.database_id), '_blank')}
+              onClick={() => window.open(database.getPrimerLink(primerDetails.database_id), '_blank')}
               sx={{ cursor: 'pointer' }}
             >
               <SaveIcon color="success" />
             </IconButton>
           ) : (
-            <IconButton onClick={() => (onEditClick(primer.id))}>
+            <IconButton onClick={() => (onEditClick(primerDetails.id))}>
               <EditIcon />
             </IconButton>
           )}
         </Tooltip>
-        {database && !primer.database_id && (
+        <PrimerInfoIcon primerDetails={primerDetails} pcrDetails={pcrDetails} />
+        {database && !primerDetails.database_id && (
           <>
             <Tooltip arrow title={`Save to ${database.name}`} placement="top">
               <IconButton onClick={() => setSaveToDatabaseDialogOpen(true)}>
                 <SaveIcon />
               </IconButton>
             </Tooltip>
-            <SubmitToDatabaseDialog
-              id={primer.id}
-              dialogOpen={saveToDatabaseDialogOpen}
-              setDialogOpen={setSaveToDatabaseDialogOpen}
-              resourceType="primer"
-            />
+            {saveToDatabaseDialogOpen && (
+              <SubmitToDatabaseDialog
+                id={primerDetails.id}
+                dialogOpen={saveToDatabaseDialogOpen}
+                setDialogOpen={setSaveToDatabaseDialogOpen}
+                resourceType="primer"
+              />
+            )}
           </>
         )}
       </td>
-      <td className="name">{primer.name}</td>
-      <td className="sequence">{primer.sequence}</td>
+      <td className="name">{primerDetails.name}</td>
+      <PrimerDetailsTds
+        primerId={primerDetails.id}
+        primerDetails={primerDetails}
+        pcrDetails={pcrDetails}
+      />
+      <td className="sequence">{primerDetails.sequence}</td>
     </tr>
   );
 }

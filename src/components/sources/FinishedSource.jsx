@@ -1,11 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Alert, Button } from '@mui/material';
+import { Alert, Button, Dialog, DialogContent } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
 import useDatabase from '../../hooks/useDatabase';
 import useLoadDatabaseFile from '../../hooks/useLoadDatabaseFile';
+import { usePCRDetails } from '../primers/primer_details/usePCRDetails';
+import PCRTable from '../primers/primer_details/PCRTable';
+import RequestStatusWrapper from '../form/RequestStatusWrapper';
 
 function DatabaseMessage({ source }) {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
@@ -204,6 +207,30 @@ function SEVAPlasmidMessage({ source }) {
   );
 }
 
+function PCRMessage({ source }) {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const primers = useSelector((state) => state.cloning.primers, isEqual);
+  const { pcrDetails, retryGetPCRDetails, requestStatus } = usePCRDetails([source.id]);
+  const [fwdPrimer, rvsPrimer] = [source.assembly[0].sequence, source.assembly[2].sequence];
+  return (
+    <div>
+      <div>{`PCR with primers ${primers.find((p) => fwdPrimer === p.id).name} and ${primers.find((p) => rvsPrimer === p.id).name}`}</div>
+      <RequestStatusWrapper requestStatus={requestStatus} retry={retryGetPCRDetails}>
+        <Button onClick={() => setDialogOpen(true)}>
+          See PCR details
+        </Button>
+      </RequestStatusWrapper>
+      {pcrDetails.length > 0 && dialogOpen && (
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogContent>
+          <PCRTable pcrDetail={pcrDetails[0]} />
+        </DialogContent>
+      </Dialog>
+      )}
+    </div>
+  );
+}
+
 function FinishedSource({ sourceId }) {
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
   const primers = useSelector((state) => state.cloning.primers, isEqual);
@@ -226,13 +253,7 @@ function FinishedSource({ sourceId }) {
       message = `Restriction with ${uniqueEnzymes.join(' and ')}, then ligation`;
     }
       break;
-    case 'PCRSource':
-      {
-        const [fwdPrimer, rvsPrimer] = [source.assembly[0].sequence, source.assembly[2].sequence];
-        message = `PCR with primers ${primers.find((p) => fwdPrimer === p.id).name} and ${primers.find((p) => rvsPrimer === p.id).name}`;
-      }
-
-      break;
+    case 'PCRSource': message = <PCRMessage source={source} />; break;
     case 'OligoHybridizationSource':
       message = `Hybridization of primers ${primers.find((p) => source.forward_oligo === p.id).name} and ${primers.find((p) => source.reverse_oligo === p.id).name}`;
       break;

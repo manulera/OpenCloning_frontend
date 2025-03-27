@@ -748,6 +748,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cypress/react@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@cypress/react@npm:9.0.1"
+  peerDependencies:
+    "@types/react": ^18 || ^19
+    "@types/react-dom": ^18 || ^19
+    cypress: "*"
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: d9dede2f8c1d25dc506725b1e5d66260d3f6123ecca5dbc5b929c79dbe0ec4a881c27c88f07edb08973ba2bc579b4f2c6ace8e5a5e6bc5945d3fb1c46e8033e0
+  languageName: node
+  linkType: hard
+
 "@cypress/request@npm:^3.0.0":
   version: 3.0.1
   resolution: "@cypress/request@npm:3.0.1"
@@ -8315,6 +8331,7 @@ __metadata:
   resolution: "open_cloning_frontend@workspace:."
   dependencies:
     "@cypress/code-coverage": ^3.13.4
+    "@cypress/react": ^9.0.1
     "@emotion/react": ^11.11.4
     "@emotion/styled": ^11.11.5
     "@mui/icons-material": ^5.15.17

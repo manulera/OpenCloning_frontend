@@ -6,17 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { cloningActions } from '../../store/cloning';
 import SingleInputSelector from './SingleInputSelector';
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
+import SelectPrimerForm from '../primers/SelectPrimerForm';
 
 function PCRUnitWrapper({ index, children, onDelete }) {
   if (index === null) {
@@ -91,40 +81,20 @@ function PCRUnitForm({ primers, forwardPrimerId, reversePrimerId, onChangeForwar
         </FormControl>
       ) : null}
 
-      <FormControl fullWidth>
-        <InputLabel id="select-forward-primer-label">Forward primer</InputLabel>
-        <Select
-          labelId="select-forward-primer-label"
-          id="select-forward-primer"
-          value={forwardPrimerId}
-          onChange={onChangeForward}
-          label="Forward primer"
-          MenuProps={MenuProps}
-        >
-          <MenuItem onClick={goToPrimerTab} value="">
-            <AddCircleIcon color="success" />
-            <em style={{ marginLeft: 8 }}>Create primer</em>
-          </MenuItem>
-          {primers.map(({ name, id }) => (<MenuItem key={id} value={id}>{name}</MenuItem>))}
-        </Select>
-      </FormControl>
-      <FormControl fullWidth>
-        <InputLabel id="select-reverse-primer-label">Reverse primer</InputLabel>
-        <Select
-          labelId="select-reverse-primer-label"
-          id="select-reverse-primer"
-          value={reversePrimerId}
-          onChange={onChangeReverse}
-          label="Reverse primer"
-          MenuProps={MenuProps}
-        >
-          <MenuItem onClick={goToPrimerTab} value="">
-            <AddCircleIcon color="success" />
-            <em style={{ marginLeft: 8 }}>Create primer</em>
-          </MenuItem>
-          {primers.map(({ name, id }) => (<MenuItem key={id} value={id}>{name}</MenuItem>))}
-        </Select>
-      </FormControl>
+      <SelectPrimerForm
+        primers={primers}
+        selected={forwardPrimerId}
+        onChange={onChangeForward}
+        goToPrimerTab={goToPrimerTab}
+        label="Forward primer"
+      />
+      <SelectPrimerForm
+        primers={primers}
+        selected={reversePrimerId}
+        onChange={onChangeReverse}
+        goToPrimerTab={goToPrimerTab}
+        label="Reverse primer"
+      />
     </PCRUnitWrapper>
   );
 }

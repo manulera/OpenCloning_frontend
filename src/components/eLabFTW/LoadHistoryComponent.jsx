@@ -27,7 +27,6 @@ function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
         }
         setLoading(false);
       } catch (e) {
-        console.log('error', e);
         console.error(e);
         if (e.response?.status === 403) {
           setError('Ancestor sequence might have been deleted or you can no longer access it');
