@@ -242,6 +242,7 @@ function FinishedSource({ sourceId }) {
     case 'GibsonAssemblySource': message = 'Gibson assembly of fragments'; break;
     case 'OverlapExtensionPCRLigationSource': message = 'Overlap extension PCR ligation'; break;
     case 'InFusionSource': message = 'In-Fusion assembly of fragments'; break;
+    case 'InVivoAssemblySource': message = 'In vivo assembly of fragments'; break;
     case 'RestrictionEnzymeDigestionSource': {
       const uniqueEnzymes = enzymesInRestrictionEnzymeDigestionSource(source);
       message = `Restriction with ${uniqueEnzymes.join(' and ')}`;

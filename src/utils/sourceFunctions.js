@@ -36,6 +36,7 @@ export const classNameToEndPointMap = {
   GibsonAssemblySource: 'gibson_assembly',
   OverlapExtensionPCRLigationSource: 'gibson_assembly',
   InFusionSource: 'gibson_assembly',
+  InVivoAssemblySource: 'gibson_assembly',
   HomologousRecombinationSource: 'homologous_recombination',
   CRISPRSource: 'crispr',
   RestrictionAndLigationSource: 'restriction_and_ligation',

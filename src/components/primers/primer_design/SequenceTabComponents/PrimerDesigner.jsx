@@ -42,7 +42,7 @@ function PrimerDesigner() {
   if (finalSource === null && pcrSources.length === 1 && outputSequences[0].primer_design === 'simple_pair') {
     component = <PrimerDesignSimplePair pcrSource={pcrSources[0]} />;
   }
-  if (finalSource?.type === 'GibsonAssemblySource' || finalSource?.type === 'InFusionSource') {
+  if (finalSource?.type === 'GibsonAssemblySource' || finalSource?.type === 'InFusionSource' || finalSource?.type === 'InVivoAssemblySource' || finalSource?.type === 'CreLoxRecombinationSource') {
     component = <PrimerDesignGibsonAssembly pcrSources={pcrSources} />;
   }
   if (finalSource?.type === 'HomologousRecombinationSource' && otherInputIds.length === 1 && pcrSources.length === 1) {
