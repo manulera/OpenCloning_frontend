@@ -89,6 +89,8 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       requestData.source.reaction_type = gatewaySettings.reactionType;
       const config = { params: { circular_only: circularOnly, only_multi_site: gatewaySettings.onlyMultiSite } };
       sendPostRequest({ endpoint: 'gateway', requestData, config, source });
+    } else if (assemblyType === 'CreLoxRecombinationSource') {
+      sendPostRequest({ endpoint: 'cre_lox_recombination', requestData, source });
     } else {
       const config = { params: {
         allow_partial_overlap: allowPartialOverlap,

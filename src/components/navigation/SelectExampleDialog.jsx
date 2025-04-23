@@ -38,6 +38,10 @@ const examples = [
     title: 'Annotate features with pLannotate',
     link: 'plannotate.json',
   },
+  {
+    title: 'Cre/Lox recombination',
+    link: 'cre_lox_recombination.json',
+  },
 ];
 
 function SelectExampleDialog({ onClose, open }) {

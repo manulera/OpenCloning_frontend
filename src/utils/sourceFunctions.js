@@ -43,4 +43,5 @@ export const classNameToEndPointMap = {
   GatewaySource: 'gateway',
   AnnotationSource: 'annotate',
   ReverseComplementSource: 'reverse_complement',
+  CreLoxRecombinationSource: 'cre_lox_recombination',
 };
