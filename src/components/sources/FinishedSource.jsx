@@ -231,12 +231,30 @@ function PCRMessage({ source }) {
   );
 }
 
+function FileMessage({ source }) {
+  const common = `Read from file ${source.file_name}`;
+  if (source.coordinates) {
+    const coordinates = `then extracted subsequence ${source.coordinates.start}:${source.coordinates.end}`;
+    return (
+      <>
+        <div>
+          {`${common},`}
+        </div>
+        <div style={{ marginTop: '5px' }}>
+          {coordinates}
+        </div>
+      </>
+    );
+  }
+  return common;
+}
+
 function FinishedSource({ sourceId }) {
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
   const primers = useSelector((state) => state.cloning.primers, isEqual);
   let message = '';
   switch (source.type) {
-    case 'UploadedFileSource': message = `Read from file ${source.file_name}`; break;
+    case 'UploadedFileSource': message = <FileMessage source={source} />; break;
     case 'ManuallyTypedSource': message = 'Manually typed sequence'; break;
     case 'LigationSource': message = (source.input.length === 1) ? 'Circularization of fragment' : 'Ligation of fragments'; break;
     case 'GibsonAssemblySource': message = 'Gibson assembly of fragments'; break;
