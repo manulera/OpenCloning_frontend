@@ -72,7 +72,7 @@ export function checkInputValue(label, value, parentSelector = '') {
 }
 
 export function clickSequenceOutputArrow(parentSelector, isRight = true) {
-  cy.get(`${parentSelector} .multiple-output-selector [data-testid="${isRight ? 'ArrowForwardIcon' : 'ArrowReverseIcon'}"]`).click();
+  cy.get(`${parentSelector} .multiple-output-selector [data-testid="${isRight ? 'ArrowForwardIcon' : 'ArrowBackIcon'}"]`).click();
 }
 
 export function loadHistory(filePath) {
