@@ -1,4 +1,4 @@
-import { addLane, addSource, clickMultiSelectOption, loadHistory } from '../common_functions';
+import { addLane, addSource, clickMultiSelectOption, deleteSourceByContent, loadHistory, setInputValue } from '../common_functions';
 
 describe('File Source', () => {
   beforeEach(() => {
@@ -7,49 +7,51 @@ describe('File Source', () => {
   });
   it('works on normal case', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
     cy.get('li#sequence-2', { timeout: 20000 }).contains('CU329670');
+    // Shows warning
+    cy.get('#global-error-message-wrapper').contains('LOCUS line is wrongly formatted');
     cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb');
   });
   it('gives the right error when file has a wrong extension', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/wrong_extension.txt', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/wrong_extension.txt', { force: true });
     cy.get('li#source-1 .MuiAlert-message').contains('We could not guess the format');
   });
   it('gives the right error when file has a wrong content', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/wrong_content.gb', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/wrong_content.gb', { force: true });
     cy.get('li#source-1 .MuiAlert-message').contains('Biopython cannot process');
   });
   it('allows to circularize non-fasta files', () => {
     cy.get('li#source-1').contains('Circularize').click();
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
     cy.get('li#sequence-2 svg.circularViewSvg', { timeout: 20000 }).should('exist');
   });
   it('works when circularize is checked and file is multi-fasta', () => {
     cy.get('li#source-1').contains('Circularize').click();
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('public/examples/dummy_multi_fasta.fasta', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/dummy_multi_fasta.fasta', { force: true });
     cy.get('li#source-1 svg.circularViewSvg', { timeout: 20000 }).should('exist');
   });
   it('allows to specify input format', () => {
     clickMultiSelectOption('File format', 'FASTA', 'li#source-1');
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('public/examples/fasta_file_with_gb_extension.gb', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/fasta_file_with_gb_extension.gb', { force: true });
     cy.get('li#source-1', { timeout: 20000 }).contains('Choose product');
   });
   it('works when loading a JSON history file', () => {
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('public/examples/golden_gate.json', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/golden_gate.json', { force: true });
     cy.get('li', { timeout: 20000 }).contains('Restriction with BsaI');
     // You can load another history file on top
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('public/examples/gibson_assembly.json', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('public/examples/gibson_assembly.json', { force: true });
     cy.get('li', { timeout: 20000 }).contains('Restriction with BsaI');
     cy.get('li').contains('Gibson');
 
     // Can add a JSON file with files, and they are dropped
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/cloning_strategy_with_sequencing.json', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/cloning_strategy_with_sequencing.json', { force: true });
     cy.get('li#source-37').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 0);
     });
@@ -61,22 +63,22 @@ describe('File Source', () => {
     // Cannot submit one with primers with the same names
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/primer_same_name_different_sequence.json', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/primer_same_name_different_sequence.json', { force: true });
     cy.get('.open-cloning li .MuiAlert-message').contains('Primer name fwd exists');
 
     // Loading a history file with invalid JSON gives an error
     clickMultiSelectOption('File format', 'JSON (history file)', '.open-cloning li');
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
     cy.get('li .MuiAlert-message').contains('Invalid JSON');
 
     // Loading a valid json file with wrong history gives an error
     clickMultiSelectOption('File format', 'JSON (history file)', '.open-cloning li');
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('package.json', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('package.json', { force: true });
     cy.get('li .MuiAlert-message').contains('JSON file should contain');
   });
   it('works when loading a zip file', () => {
     // Load normal zip file
-    cy.get('li#source-1 form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/zip_with_same_primer.zip', { force: true });
     cy.get('li#source-1').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 3);
     });
@@ -87,7 +89,7 @@ describe('File Source', () => {
     // Load another one on top
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
     cy.get('li#source-1').contains('final_product.gb');
     cy.get('li#source-3').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 6);
@@ -99,19 +101,19 @@ describe('File Source', () => {
     // Error handling
     addLane();
     addSource('UploadedFileSource', true);
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_with_conflicting_primer.zip', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/zip_with_conflicting_primer.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('Primer name dummy exists');
 
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/wrong_json_in_zip.zip', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/wrong_json_in_zip.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('should contain');
 
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_missing_files.zip', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/zip_missing_files.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('File verification-2-BZO904_13409044_13409044.ab1 not found in zip.');
 
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_extra_files.zip', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/zip_extra_files.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('File verification-2-BZO902_13409020_13409020.ab1 found in zip but not in cloning strategy.');
 
-    cy.get('form.submit-sequence-file input').eq(2).selectFile('cypress/test_files/zip_no_json.zip', { force: true });
+    cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/zip_no_json.zip', { force: true });
     cy.get('.open-cloning .MuiAlert-message').contains('Zip file must contain');
   });
   it('grafts on sources from templates', () => {
@@ -122,5 +124,52 @@ describe('File Source', () => {
     cy.get('li#sequence-2').contains('139 bps', { timeout: 20000 });
     cy.get('li#source-1').contains('Polymerase extension');
     cy.get('.open-cloning li').contains('Hybridization of primers fwd_hyb and rvs_hyb');
+  });
+  it.only('works when extracting a subsequence', () => {
+    cy.get('.extract-subsequence').should('not.exist');
+    cy.get('li#source-1').contains('Extract subsequence').click();
+    cy.get('.extract-subsequence').should('exist');
+    setInputValue('Start', '0', 'li');
+    setInputValue('End', '20', 'li');
+    cy.get('li#source-1').contains('Extract subsequence').click();
+
+    // This unsets the coordinates
+    cy.get('.extract-subsequence').should('not.exist');
+    cy.get('li#source-1').contains('Extract subsequence').click();
+    cy.get('.extract-subsequence input').eq(0).should('have.value', '');
+    cy.get('.extract-subsequence input').eq(1).should('have.value', '');
+    setInputValue('Start', '0', 'li');
+    setInputValue('End', '20', 'li');
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb,');
+    cy.get('li#sequence-2 li#source-1').contains('then extracted subsequence 0:20');
+    cy.get('li#sequence-2').contains('20 bps');
+
+    // Shows warning when not all sequences in the file are compatible with the coordinates
+    deleteSourceByContent('Read from file');
+    addLane();
+    addSource('UploadedFileSource', true);
+    cy.get('li#source-1').contains('Extract subsequence').click();
+    cy.get('.extract-subsequence').should('exist');
+    setInputValue('Start', '0', 'li');
+    setInputValue('End', '12', 'li');
+    cy.get('form.submit-sequence-file input').last().selectFile('public/examples/dummy_multi_fasta.fasta', { force: true });
+    cy.get('#global-error-message-wrapper').contains('Some sequences were not extracted', { timeout: 20000 });
+    cy.get('li#sequence-2').contains('12 bps');
+
+    // Shows errors when the coordinates are not valid
+    deleteSourceByContent('Read from file');
+    addLane();
+    addSource('UploadedFileSource', true);
+    cy.get('li#source-1').contains('Extract subsequence').click();
+    cy.get('.extract-subsequence').should('exist');
+    setInputValue('Start', '0', 'li');
+    setInputValue('End', '120000', 'li');
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('li#source-1 .MuiAlert-message').contains('Provided coordinates are incompatible');
+    setInputValue('Start', '-10', 'li');
+    setInputValue('End', '12', 'li');
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('li#source-1 .MuiAlert-message').contains('Input should be greater than or equal');
   });
 });
