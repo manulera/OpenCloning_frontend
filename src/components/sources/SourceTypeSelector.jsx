@@ -59,7 +59,9 @@ function SourceTypeSelector({ source }) {
     options.push(<MenuItem key="RestrictionAndLigationSource" value="RestrictionAndLigationSource">Restriction + ligation / Golden Gate</MenuItem>);
     options.push(<MenuItem key="OverlapExtensionPCRLigationSource" value="OverlapExtensionPCRLigationSource">Join overlap extension PCR fragments</MenuItem>);
     options.push(<MenuItem key="InFusionSource" value="InFusionSource">In-Fusion</MenuItem>);
+    options.push(<MenuItem key="InVivoAssemblySource" value="InVivoAssemblySource">In vivo assembly</MenuItem>);
     options.push(<MenuItem key="GatewaySource" value="GatewaySource">Gateway</MenuItem>);
+    options.push(<MenuItem key="CreLoxRecombinationSource" value="CreLoxRecombinationSource">Cre/Lox recombination</MenuItem>);
   }
 
   // Sort options by text content

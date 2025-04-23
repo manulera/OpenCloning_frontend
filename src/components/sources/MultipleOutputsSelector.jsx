@@ -1,6 +1,7 @@
 import { SimpleCircularOrLinearView } from '@teselagen/ove';
 import React from 'react';
-import ForwardIcon from '@mui/icons-material/Forward';
+import ArrowForward from '@mui/icons-material/ArrowForward';
+import ArrowBack from '@mui/icons-material/ArrowBack';
 import { Button, IconButton } from '@mui/material';
 import { convertToTeselaJson } from '../../utils/readNwrite';
 import OverhangsDisplay from '../OverhangsDisplay';
@@ -34,7 +35,7 @@ function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChose
     <div className="multiple-output-selector">
       <div className="multiple-output-selector-navigate">
         <IconButton onClick={decreaseSelectedOutput} type="button" sx={{ height: 'fit-content' }}>
-          <ForwardIcon sx={{ rotate: '180deg' }} />
+          <ArrowBack />
         </IconButton>
         {selectedOutput + 1}
         {' '}
@@ -42,7 +43,7 @@ function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChose
         {' '}
         {sources.length}
         <IconButton onClick={incrementSelectedOutput} type="button" sx={{ height: 'fit-content' }}>
-          <ForwardIcon />
+          <ArrowForward />
         </IconButton>
       </div>
 

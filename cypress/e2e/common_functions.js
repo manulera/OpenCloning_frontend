@@ -1,6 +1,6 @@
-export function addSource(sourceType, isFirst = false) {
+export function addSource(sourceType, isFirst = false, index = 0) {
   if (!isFirst) {
-    cy.get('svg[data-testid="AddCircleIcon"]').first().click();
+    cy.get('svg[data-testid="AddCircleIcon"]').eq(index).click();
   }
   cy.get('#tab-panel-0 .select-source h2.empty-source-title').siblings('div').children('.MuiInputBase-root')
     .click();
@@ -72,7 +72,7 @@ export function checkInputValue(label, value, parentSelector = '') {
 }
 
 export function clickSequenceOutputArrow(parentSelector, isRight = true) {
-  cy.get(`${parentSelector} .multiple-output-selector [data-testid="ForwardIcon"]`).eq(1).click();
+  cy.get(`${parentSelector} .multiple-output-selector [data-testid="${isRight ? 'ArrowForwardIcon' : 'ArrowBackIcon'}"]`).click();
 }
 
 export function loadHistory(filePath) {

@@ -1,4 +1,4 @@
-import { manuallyTypeSequence, addSource, clickMultiSelectOption, waitForEnzymes} from '../common_functions';
+import { manuallyTypeSequence, addSource, clickMultiSelectOption, waitForEnzymes } from '../common_functions';
 
 describe('Test restriction component', () => {
   beforeEach(() => {
@@ -20,11 +20,11 @@ describe('Test restriction component', () => {
     cy.get('li#source-3 .multiple-output-selector .veSelectionLayer').should('exist');
     cy.get('li#source-3 .multiple-output-selector [title="Selecting 8 bps from 1 to 8"]');
     // Clicking on the buttons should change the selection (we move back)
-    cy.get('li#source-3 .multiple-output-selector [data-testid="ForwardIcon"]').first().click();
+    cy.get('li#source-3 .multiple-output-selector [data-testid="ArrowBackIcon"]').click();
     cy.get('li#source-3 .overhang-representation').contains('ttcttaa').should('not.exist');
     cy.get('li#source-3 .overhang-representation').contains('aattcaa');
     // We select the central fragment
-    cy.get('li#source-3 .multiple-output-selector [data-testid="ForwardIcon"]').first().click();
+    cy.get('li#source-3 .multiple-output-selector [data-testid="ArrowBackIcon"]').click();
     cy.get('li#source-3 .overhang-representation').contains('aattcaaaag');
     cy.get('li#source-3 .overhang-representation').contains('gttttcttaa');
     cy.get('button').contains('Choose product').click();
@@ -43,11 +43,11 @@ describe('Test restriction component', () => {
     cy.get('button').contains('Perform restriction').click();
     // The result is shown and there are 3 possible fragments (both enzymes were sent)
     cy.get('li#source-3 .overhang-representation').contains('ttcttaa');
-    cy.get('li#source-3 .multiple-output-selector [data-testid="ForwardIcon"]').eq(1).click();
+    cy.get('li#source-3 .multiple-output-selector [data-testid="ArrowForwardIcon"]').click();
     cy.get('li#source-3 .overhang-representation').contains('gttttcagct');
-    cy.get('li#source-3 .multiple-output-selector [data-testid="ForwardIcon"]').eq(1).click();
+    cy.get('li#source-3 .multiple-output-selector [data-testid="ArrowForwardIcon"]').click();
     cy.get('li#source-3 .overhang-representation').contains('tcgacaa');
-    cy.get('li#source-3 .multiple-output-selector [data-testid="ForwardIcon"]').eq(1).click();
+    cy.get('li#source-3 .multiple-output-selector [data-testid="ArrowForwardIcon"]').click();
     cy.get('li#source-3 .overhang-representation').contains('ttcttaa');
 
     // We select the first fragment (only EcoRI)

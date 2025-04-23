@@ -68,7 +68,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       source: { id: sourceId, input: inputSequences.map((e) => e.id), output_name: source.output_name },
       sequences: inputSequences,
     };
-    if (['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource'].includes(assemblyType)) {
+    if (['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource', 'InVivoAssemblySource'].includes(assemblyType)) {
       const config = { params: {
         minimal_homology: minimalHomology,
         circular_only: circularOnly,
@@ -89,6 +89,8 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       requestData.source.reaction_type = gatewaySettings.reactionType;
       const config = { params: { circular_only: circularOnly, only_multi_site: gatewaySettings.onlyMultiSite } };
       sendPostRequest({ endpoint: 'gateway', requestData, config, source });
+    } else if (assemblyType === 'CreLoxRecombinationSource') {
+      sendPostRequest({ endpoint: 'cre_lox_recombination', requestData, source });
     } else {
       const config = { params: {
         allow_partial_overlap: allowPartialOverlap,
@@ -116,7 +118,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
           }}
           />
         </FormControl>
-        { ['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource'].includes(assemblyType) && (
+        { ['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource', 'InVivoAssemblySource'].includes(assemblyType) && (
         // I don't really understand why fullWidth is required here
         <FormControl fullWidth>
           <TextField
@@ -168,7 +170,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
             </FormControl>
           </>
         )}
-        { ['RestrictionAndLigationSource', 'GibsonAssemblySource', 'LigationSource', 'OverlapExtensionPCRLigationSource', 'GatewaySource', 'InFusionSource'].includes(assemblyType) && (
+        { ['RestrictionAndLigationSource', 'GibsonAssemblySource', 'LigationSource', 'OverlapExtensionPCRLigationSource', 'GatewaySource', 'InFusionSource', 'InVivoAssemblySource'].includes(assemblyType) && (
           <FormControl fullWidth style={{ textAlign: 'left' }}>
             <FormControlLabel control={<Checkbox checked={circularOnly} onChange={() => setCircularOnly(!circularOnly)} />} label="Circular assemblies only" />
           </FormControl>
