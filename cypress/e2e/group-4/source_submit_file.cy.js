@@ -125,7 +125,7 @@ describe('File Source', () => {
     cy.get('li#source-1').contains('Polymerase extension');
     cy.get('.open-cloning li').contains('Hybridization of primers fwd_hyb and rvs_hyb');
   });
-  it.only('works when extracting a subsequence', () => {
+  it('works when extracting a subsequence', () => {
     cy.get('.extract-subsequence').should('not.exist');
     cy.get('li#source-1').contains('Extract subsequence').click();
     cy.get('.extract-subsequence').should('exist');
