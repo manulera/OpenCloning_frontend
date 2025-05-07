@@ -22,12 +22,6 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
-      - name: Copy _redirects file to build
-        run: |
-          cp -v _redirects build/
-          echo "Verifying _redirects file in build directory:"
-          cat build/_redirects
-
       - name: Publish to Netlify
         run: |
           npm install -g netlify-cli
