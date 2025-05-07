@@ -69,9 +69,18 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
+      - name: Debug build directory
+        run: |
+          ls -la build/
+          echo "Current directory contents:"
+          ls -la
+
       - name: Copy _redirects file to build
         run: |
-          cp _redirects build/
+          cp -v _redirects build/
+          echo "Verifying _redirects file in build directory:"
+          ls -la build/_redirects
+          cat build/_redirects
 
       - name: Publish
         uses: South-Paw/action-netlify-cli@v2
