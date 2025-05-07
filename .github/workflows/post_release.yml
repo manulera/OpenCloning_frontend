@@ -69,6 +69,10 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
+      - name: Copy _redirects file to build
+        run: |
+          cp _redirects build/
+
       - name: Publish
         uses: South-Paw/action-netlify-cli@v2
         id: netlify
