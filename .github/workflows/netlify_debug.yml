@@ -26,26 +26,12 @@ jobs:
         run: |
           cp -v _redirects build/
           echo "Verifying _redirects file in build directory:"
-          ls -la build/_redirects
           cat build/_redirects
 
-      - name: Publish
-        uses: South-Paw/action-netlify-cli@v2
-        id: netlify
-        with:
-          # be sure to escape any double quotes with a backslash
-          args: 'deploy --json --prod --dir ./build --message \"production [${{ github.sha }}]\"'
+      - name: Publish to Netlify
+        run: |
+          npm install -g netlify-cli
+          netlify deploy --json --prod --dir ./build --message "production [${{ github.sha }}]"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
-      - name: Parse NETLIFY_OUTPUT JSON
-        run: |
-          echo "The URL where the logs from the deploy can be found"
-          echo "${{ fromJson(steps.netlify.outputs.NETLIFY_OUTPUT).logs }}"
-          echo ""
-          echo "the URL of the draft site that Netlify provides"
-          echo "${{ fromJson(steps.netlify.outputs.NETLIFY_OUTPUT).deploy_url }}"
-          echo ""
-          echo "the URL of the "real" site, set only if `--prod` was passed"
-          echo "${{ fromJson(steps.netlify.outputs.NETLIFY_OUTPUT).url }}"
