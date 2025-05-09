@@ -69,8 +69,10 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
-      - name: print content of index.html
-        run: cat build/index.html
+      - name: print content of index.html and version.json
+        run: |
+          cat build/index.html
+          cat build/version.json
 
       - name: Publish to Netlify
         run: |
@@ -78,6 +80,11 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          VERSION: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
       - name: print content of index.html 2
-        run: cat build/index.html
+        run: |
+          cat build/index.html
+          cat build/version.json
