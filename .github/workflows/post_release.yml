@@ -74,8 +74,10 @@ jobs:
 
       - name: Publish to Netlify
         run: |
-          npm install -g netlify-cli
-          netlify deploy --json --prod --dir ./build --message "production [${{ github.sha }}]"
+          npx netlify-cli deploy --json --prod --dir ./build --message "production [${{ github.sha }}]"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: print content of index.html 2
+        run: cat build/index.html
