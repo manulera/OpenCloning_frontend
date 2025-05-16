@@ -11,15 +11,18 @@ function NewSourceBox({ inputSequencesIds = [] }) {
   const { addEmptySource } = cloningActions;
   const onClick = () => {
     dispatch(addEmptySource(inputSequencesIds));
-    setTimeout(() => {
-      const tabPanelsContainer = document.querySelector('.tab-panels-container');
-      if (tabPanelsContainer) {
-        tabPanelsContainer.scrollTo({
-          left: tabPanelsContainer.scrollWidth,
-          behavior: 'instant',
-        });
-      }
-    }, 100);
+    // Scroll to the right to see new source
+    if (inputSequencesIds.length === 0) {
+      setTimeout(() => {
+        const tabPanelsContainer = document.querySelector('.tab-panels-container');
+        if (tabPanelsContainer) {
+          tabPanelsContainer.scrollTo({
+            left: tabPanelsContainer.scrollWidth,
+            behavior: 'instant',
+          });
+        }
+      }, 100);
+    }
   };
   const tooltipText = <div className="tooltip-text">Add source</div>;
   return (
