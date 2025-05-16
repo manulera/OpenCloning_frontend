@@ -112,7 +112,7 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
             label="Minimal annealing length"
             inputRef={minimalAnnealingRef}
             type="number"
-            defaultValue={14}
+            defaultValue={12}
             InputProps={{
               endAdornment: <InputAdornment position="end">bp</InputAdornment>,
               sx: { '& input': { textAlign: 'center' } },
