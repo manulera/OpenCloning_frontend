@@ -13,6 +13,8 @@ export default ({ mode }) => {
   let configFileName;
   if (mode === 'production') {
     configFileName = 'config.prod.json';
+  } else if (mode === 'development' && env.VITE_USE_OPENCLONING_DB) {
+    configFileName = 'config.opencloningdb.json';
   } else if (mode === 'development' && env.VITE_ELABFTW_API_READ_KEY) {
     configFileName = 'config.elabftw.json';
   } else {

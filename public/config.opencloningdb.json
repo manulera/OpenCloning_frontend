@@ -1,0 +1,6 @@
+{
+    "backendUrl": "http://127.0.0.1:8000",
+    "database": "opencloningdb",
+    "showAppBar": true,
+    "noExternalRequests": false
+}
