@@ -3200,14 +3200,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.8":
-  version: 1.6.8
-  resolution: "axios@npm:1.6.8"
+"axios@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "axios@npm:1.9.0"
   dependencies:
     follow-redirects: "npm:^1.15.6"
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10/3f9a79eaf1d159544fca9576261ff867cbbff64ed30017848e4210e49f3b01e97cf416390150e6fdf6633f336cd43dc1151f890bbd09c3c01ad60bb0891eee63
+  checksum: 10/a2f90bba56820883879f32a237e2b9ff25c250365dcafd41cec41b3406a3df334a148f90010182dfdadb4b41dc59f6f0b3e8898ff41b666d1157b5f3f4523497
   languageName: node
   linkType: hard
 
@@ -8347,7 +8347,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.0.3"
     "@vitest/coverage-v8": "npm:^3.0.7"
     "@zip.js/zip.js": "npm:^2.7.54"
-    axios: "npm:^1.6.8"
+    axios: "npm:^1.9.0"
     cypress: "npm:^13.6.6"
     dom-to-svg: "npm:^0.12.2"
     eslint: "npm:^7.32.0"
