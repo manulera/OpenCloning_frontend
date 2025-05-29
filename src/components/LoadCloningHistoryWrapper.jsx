@@ -89,9 +89,9 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         }
 
         const updateState = async (newState, networkShift) => {
-          dispatch(setCloningState(newState));
+          const validatedState = await validateState(newState);
+          dispatch(setCloningState(validatedState));
           await loadFilesToSessionStorage(verificationFiles, networkShift);
-          validateState(newState);
         };
 
         const replaceState = async () => {

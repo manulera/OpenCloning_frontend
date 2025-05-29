@@ -58,6 +58,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         setAlert({ message: 'Cannot graft cloning strategy as it does not converge on a single sequence, you can load it on a source without outputs', severity: 'error' });
         return;
       }
+      cloningStrategy = await validateState(cloningStrategy);
 
       batch(async () => {
         if (!graft) {
@@ -75,7 +76,6 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
           }
           dispatch(setCloningState(mergedState));
           await loadFilesToSessionStorage(verificationFiles, networkShift);
-          validateState(cloningStrategy);
         } catch (e) {
           setAlert({ message: e.message, severity: 'error' });
           dispatch(restoreSource({ ...source, type: 'UploadedFileSource' }));
