@@ -100,7 +100,7 @@ jobs:
 
       - name: Install frontend dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: corepack enable && yarn set version 4.9.1 && yarn install
+        run: corepack enable && yarn install
 
   cypress-tests:
     name: Run Cypress tests
