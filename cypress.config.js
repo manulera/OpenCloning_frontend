@@ -1,6 +1,16 @@
 const { defineConfig } = require('cypress');
 const fs = require('fs');
 const istanbul = require('vite-plugin-istanbul');
+const { execSync } = require('child_process');
+
+// Function to get git tag information
+function getGitTag() {
+  try {
+    return execSync('git describe --tags').toString().trim();
+  } catch (error) {
+    return 'unknown';
+  }
+}
 
 module.exports = defineConfig({
   e2e: {
@@ -48,6 +58,9 @@ module.exports = defineConfig({
             requireEnv: true,
           }),
         ],
+        define: {
+          'process.env.GIT_TAG': JSON.stringify(getGitTag()),
+        },
       },
     },
     setupNodeEvents(on, config) {

@@ -1,5 +1,3 @@
-import { skipGoogleSheetErrors} from '../common_functions';
-
 describe('Test tab navigation functionality', () => {
   beforeEach(() => {
     cy.visit('/');

@@ -32,9 +32,6 @@ jobs:
             manulera/opencloningfrontend:prod
             manulera/opencloningfrontend:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            COMMIT_SHA=${{ github.sha }}
-            VERSION=${{ github.ref_name }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.9.0
@@ -48,8 +45,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_URL=/opencloning/
-            COMMIT_SHA=${{ github.sha }}
-            VERSION=${{ github.ref_name }}
 
   deploy_to_netlify:
     runs-on: ubuntu-latest
@@ -65,14 +60,7 @@ jobs:
       - name: build
         run: yarn build
         env:
-          VERSION: ${{ github.ref_name }}
-          COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
-
-      - name: print content of index.html and version.json
-        run: |
-          cat build/index.html
-          cat build/version.json
 
       - name: Publish to Netlify
         run: |
@@ -80,11 +68,5 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          VERSION: ${{ github.ref_name }}
-          COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
-      - name: print content of index.html 2
-        run: |
-          cat build/index.html
-          cat build/version.json
