@@ -40,6 +40,7 @@
       "output": 2,
       "type": "GenomeCoordinatesSource",
       "output_name": null,
+      "database_id": null,
       "assembly_accession": "GCA_000002945.3",
       "sequence_accession": "CU329670.1",
       "locus_tag": "SPOM_SPAPB1A10.09",
@@ -56,43 +57,29 @@
       "output": 4,
       "type": "PCRSource",
       "output_name": null,
+      "database_id": null,
       "circular": false,
       "assembly": [
         {
           "sequence": 1,
           "left_location": null,
-          "right_location": {
-            "start": 12,
-            "end": 34,
-            "strand": null
-          },
+          "right_location": "13..34",
           "reverse_complemented": false
         },
         {
           "sequence": 2,
-          "left_location": {
-            "start": 1173,
-            "end": 1195,
-            "strand": null
-          },
-          "right_location": {
-            "start": 3393,
-            "end": 3417,
-            "strand": null
-          },
+          "left_location": "1174..1195",
+          "right_location": "3394..3417",
           "reverse_complemented": false
         },
         {
           "sequence": 2,
-          "left_location": {
-            "start": 0,
-            "end": 24,
-            "strand": null
-          },
+          "left_location": "1..24",
           "right_location": null,
           "reverse_complemented": true
         }
-      ]
+      ],
+      "add_primer_features": false
     },
     {
       "id": 5,
@@ -100,6 +87,7 @@
       "output": 6,
       "type": "AddgeneIdSource",
       "output_name": null,
+      "database_id": null,
       "repository_id": "39296",
       "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v2.0.0/sequences/364511/7619eb5c-60b7-4e77-8e64-5fb9c2fae131/addgene-plasmid-39296-sequence-364511.gbk",
@@ -114,34 +102,19 @@
       "output": 8,
       "type": "RestrictionAndLigationSource",
       "output_name": null,
+      "database_id": null,
       "circular": true,
       "assembly": [
         {
           "sequence": 4,
-          "left_location": {
-            "start": 7,
-            "end": 11,
-            "strand": null
-          },
-          "right_location": {
-            "start": 2257,
-            "end": 2261,
-            "strand": null
-          },
+          "left_location": "8..11",
+          "right_location": "2258..2261",
           "reverse_complemented": false
         },
         {
           "sequence": 6,
-          "left_location": {
-            "start": 2355,
-            "end": 2359,
-            "strand": null
-          },
-          "right_location": {
-            "start": 2329,
-            "end": 2333,
-            "strand": null
-          },
+          "left_location": "2356..2359",
+          "right_location": "2330..2333",
           "reverse_complemented": false
         }
       ],
@@ -151,17 +124,25 @@
       ]
     }
   ],
-  "description": "",
   "primers": [
     {
       "id": 1,
+      "type": "Primer",
       "name": "fwd",
+      "database_id": null,
       "sequence": "TAAGCAGTCGACatgcaaacagtaatgatggatg"
     },
     {
       "id": 2,
+      "type": "Primer",
       "name": "rvs",
+      "database_id": null,
       "sequence": "TAAGCAGGCGCGCCttaaaagccttcttctccccatt"
     }
-  ]
+  ],
+  "description": "",
+  "files": null,
+  "schema_version": "0.2.9",
+  "backend_version": null,
+  "frontend_version": null
 }

@@ -95,8 +95,10 @@
       "input": [],
       "output": 2,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65109",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110162/c1c98803-c8ba-44a6-95b8-d6a94097e36f/addgene-plasmid-65109-sequence-110162.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -105,8 +107,10 @@
       "input": [],
       "output": 4,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65116",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110169/9ee8c8ed-5a57-43f9-99dd-79e66631ad89/addgene-plasmid-65116-sequence-110169.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -115,8 +119,10 @@
       "input": [],
       "output": 6,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65145",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110198/117464a2-bab4-4fd2-8157-4ac89cf7ab6d/addgene-plasmid-65145-sequence-110198.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -125,8 +131,10 @@
       "input": [],
       "output": 12,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65158",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110211/a0b9a8c0-9498-4100-8260-5346cffa1979/addgene-plasmid-65158-sequence-110211.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -135,8 +143,10 @@
       "input": [],
       "output": 14,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65174",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/193065/ddf46d89-9718-435c-b5bb-3002a17065ab/addgene-plasmid-65174-sequence-193065.gbk",
       "addgene_sequence_type": "addgene-full"
     },
@@ -145,8 +155,10 @@
       "input": [],
       "output": 16,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65181",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110234/113eb058-6e21-40b5-be0b-2e9c986e72bb/addgene-plasmid-65181-sequence-110234.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -155,8 +167,10 @@
       "input": [],
       "output": 18,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65188",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110241/a6c1b84f-64cb-4675-9318-7aa00279074f/addgene-plasmid-65188-sequence-110241.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -165,8 +179,10 @@
       "input": [],
       "output": 20,
       "type": "AddgeneIdSource",
-      "repository_name": "addgene",
+      "output_name": null,
+      "database_id": null,
       "repository_id": "65190",
+      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110243/32100717-608c-4d8d-8cc1-800ede3d637b/addgene-plasmid-65190-sequence-110243.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -175,6 +191,8 @@
       "input": [],
       "output": 8,
       "type": "GenomeCoordinatesSource",
+      "output_name": null,
+      "database_id": null,
       "assembly_accession": "GCA_000002945.3",
       "sequence_accession": "CU329670.1",
       "locus_tag": "SPOM_SPAC3A11.14C",
@@ -191,43 +209,29 @@
       "output": 22,
       "type": "PCRSource",
       "output_name": "pcr_product",
+      "database_id": null,
       "circular": false,
       "assembly": [
         {
           "sequence": 1,
           "left_location": null,
-          "right_location": {
-            "start": 13,
-            "end": 34,
-            "strand": null
-          },
+          "right_location": "14..34",
           "reverse_complemented": false
         },
         {
           "sequence": 8,
-          "left_location": {
-            "start": 1043,
-            "end": 1064,
-            "strand": null
-          },
-          "right_location": {
-            "start": 3740,
-            "end": 3762,
-            "strand": null
-          },
+          "left_location": "1044..1064",
+          "right_location": "3741..3762",
           "reverse_complemented": false
         },
         {
           "sequence": 2,
-          "left_location": {
-            "start": 0,
-            "end": 22,
-            "strand": null
-          },
+          "left_location": "1..22",
           "right_location": null,
           "reverse_complemented": true
         }
-      ]
+      ],
+      "add_primer_features": false
     },
     {
       "id": 23,
@@ -245,132 +249,61 @@
       "output": 24,
       "type": "RestrictionAndLigationSource",
       "output_name": "final_product",
+      "database_id": null,
       "circular": true,
       "assembly": [
         {
           "sequence": 2,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 203,
-            "end": 207,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "204..207",
           "reverse_complemented": false
         },
         {
           "sequence": 4,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 698,
-            "end": 702,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "699..702",
           "reverse_complemented": false
         },
         {
           "sequence": 6,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 726,
-            "end": 730,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "727..730",
           "reverse_complemented": false
         },
         {
           "sequence": 22,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 2732,
-            "end": 2736,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "2733..2736",
           "reverse_complemented": false
         },
         {
           "sequence": 12,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 247,
-            "end": 251,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "248..251",
           "reverse_complemented": false
         },
         {
           "sequence": 14,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 182,
-            "end": 186,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "183..186",
           "reverse_complemented": false
         },
         {
           "sequence": 16,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 1072,
-            "end": 1076,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "1073..1076",
           "reverse_complemented": false
         },
         {
           "sequence": 18,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 521,
-            "end": 525,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "522..525",
           "reverse_complemented": false
         },
         {
           "sequence": 20,
-          "left_location": {
-            "start": 9,
-            "end": 13,
-            "strand": null
-          },
-          "right_location": {
-            "start": 1879,
-            "end": 1883,
-            "strand": null
-          },
+          "left_location": "10..13",
+          "right_location": "1880..1883",
           "reverse_complemented": false
         }
       ],
@@ -379,17 +312,25 @@
       ]
     }
   ],
-  "description": "Cloning of CDS of S. pombe gene pkl1 with an N-term Venus tag using MoClo kit from John Dueber, see:\n\nhttps://www.addgene.org/kits/moclo-ytk/#kit-contents\n\nThe plasmids used are:\n\npYTK002 - ConLS\npYTK009 - pTDH3\npYTK038 - Venus 65145\npayload - CDS of pkl1 from S. pombe\npYTK051 - tENO1 65158\npYTK067 - ConR1 65174\npYTK074 - URA3 65181\npYTK081 - CEN6/ARS4 65188\npYTK083 - AmpR-ColE1 65190\n\n\n\n\n",
   "primers": [
     {
       "id": 1,
+      "type": "Primer",
       "name": "fwd",
+      "database_id": null,
       "sequence": "aaGGTCTCATTCTatggtaattgaggtaagaggt"
     },
     {
       "id": 2,
+      "type": "Primer",
       "name": "rvs",
+      "database_id": null,
       "sequence": "aaGGTCTCAGGATttaacgtttataatgtttaata"
     }
-  ]
+  ],
+  "description": "Cloning of CDS of S. pombe gene pkl1 with an N-term Venus tag using MoClo kit from John Dueber, see:\n\nhttps://www.addgene.org/kits/moclo-ytk/#kit-contents\n\nThe plasmids used are:\n\npYTK002 - ConLS\npYTK009 - pTDH3\npYTK038 - Venus 65145\npayload - CDS of pkl1 from S. pombe\npYTK051 - tENO1 65158\npYTK067 - ConR1 65174\npYTK074 - URA3 65181\npYTK081 - CEN6/ARS4 65188\npYTK083 - AmpR-ColE1 65190\n\n\n\n\n",
+  "files": null,
+  "schema_version": "0.2.9",
+  "backend_version": null,
+  "frontend_version": null
 }

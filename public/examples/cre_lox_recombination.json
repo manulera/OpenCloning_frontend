@@ -52,7 +52,8 @@
       "sequence_file_format": "snapgene",
       "file_name": "dummy_cre_lox.dna",
       "index_in_file": 0,
-      "circularize": false
+      "circularize": false,
+      "coordinates": null
     },
     {
       "id": 3,
@@ -67,16 +68,8 @@
       "assembly": [
         {
           "sequence": 2,
-          "left_location": {
-            "start": 2,
-            "end": 36,
-            "strand": null
-          },
-          "right_location": {
-            "start": 115,
-            "end": 149,
-            "strand": null
-          },
+          "left_location": "3..36",
+          "right_location": "116..149",
           "reverse_complemented": false
         }
       ]
@@ -91,7 +84,8 @@
       "sequence_file_format": "snapgene",
       "file_name": "dummy_cre_lox.dna",
       "index_in_file": 0,
-      "circularize": false
+      "circularize": false,
+      "coordinates": null
     },
     {
       "id": 7,
@@ -107,20 +101,12 @@
         {
           "sequence": 6,
           "left_location": null,
-          "right_location": {
-            "start": 2,
-            "end": 36,
-            "strand": null
-          },
+          "right_location": "3..36",
           "reverse_complemented": false
         },
         {
           "sequence": 6,
-          "left_location": {
-            "start": 115,
-            "end": 149,
-            "strand": null
-          },
+          "left_location": "116..149",
           "right_location": null,
           "reverse_complemented": false
         }
@@ -141,61 +127,57 @@
         {
           "sequence": 8,
           "left_location": null,
-          "right_location": {
-            "start": 2,
-            "end": 36,
-            "strand": null
-          },
+          "right_location": "3..36",
           "reverse_complemented": false
         },
         {
           "sequence": 4,
-          "left_location": {
-            "start": 0,
-            "end": 34,
-            "strand": null
-          },
-          "right_location": {
-            "start": 0,
-            "end": 34,
-            "strand": null
-          },
+          "left_location": "1..34",
+          "right_location": "1..34",
           "reverse_complemented": false
         },
         {
           "sequence": 8,
-          "left_location": {
-            "start": 2,
-            "end": 36,
-            "strand": null
-          },
+          "left_location": "3..36",
           "right_location": null,
           "reverse_complemented": false
         }
       ]
     }
   ],
-  "description": "",
   "primers": [
     {
       "id": 1,
+      "type": "Primer",
       "name": "vector_fwd",
+      "database_id": null,
       "sequence": "GGAGAAGAAGGCTTTTAATATGCTCGAGAGATCTGT"
     },
     {
       "id": 2,
+      "type": "Primer",
       "name": "vector_rvs",
+      "database_id": null,
       "sequence": "CATCATTACTGTTTGCATTGATTTAACAAAGCGACTATAAG"
     },
     {
       "id": 3,
+      "type": "Primer",
       "name": "ase1_fwd",
+      "database_id": null,
       "sequence": "AGTCGCTTTGTTAAATCAATGCAAACAGTAATGATGGA"
     },
     {
       "id": 4,
+      "type": "Primer",
       "name": "ase1_rvs",
+      "database_id": null,
       "sequence": "ACAGATCTCTCGAGCATATTAAAAGCCTTCTTCTCCC"
     }
-  ]
+  ],
+  "description": "",
+  "files": null,
+  "schema_version": "0.2.9",
+  "backend_version": null,
+  "frontend_version": null
 }
