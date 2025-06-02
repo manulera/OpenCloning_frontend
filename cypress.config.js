@@ -42,6 +42,9 @@ module.exports = defineConfig({
     baseUrl: 'http://localhost:3000',
     experimentalStudio: true,
     numTestsKeptInMemory: 2,
+    env: {
+      GIT_TAG: getGitTag(),
+    },
   },
 
   component: {

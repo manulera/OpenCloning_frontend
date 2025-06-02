@@ -152,7 +152,7 @@
   "primers": [],
   "description": "EBIC cloning strategy",
   "files": null,
-  "schema_version": "0.2.9",
+  "schema_version": "0.2.12a0",
   "backend_version": null,
   "frontend_version": null
 }

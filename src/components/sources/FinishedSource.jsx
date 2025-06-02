@@ -234,7 +234,7 @@ function PCRMessage({ source }) {
 function FileMessage({ source }) {
   const common = `Read from file ${source.file_name}`;
   if (source.coordinates) {
-    const coordinates = `then extracted subsequence ${source.coordinates.start}:${source.coordinates.end}`;
+    const coordinates = `then extracted subsequence ${source.coordinates}`;
     return (
       <>
         <div>

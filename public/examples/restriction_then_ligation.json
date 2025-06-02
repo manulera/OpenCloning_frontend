@@ -194,7 +194,7 @@
   ],
   "description": "Cloning of CDS of S. pombe gene pkl1 with an N-term Venus tag using MoClo kit from John Dueber, see:\n\nhttps://www.addgene.org/kits/moclo-ytk/#kit-contents\n\nThe plasmids used are:\n\npYTK002 - ConLS\npYTK009 - pTDH3\npYTK038 - Venus 65145\npayload - CDS of pkl1 from S. pombe\npYTK051 - tENO1 65158\npYTK067 - ConR1 65174\npYTK074 - URA3 65181\npYTK081 - CEN6/ARS4 65188\npYTK083 - AmpR-ColE1 65190\n\n\n\n\n",
   "files": null,
-  "schema_version": "0.2.9",
+  "schema_version": "0.2.12a0",
   "backend_version": null,
   "frontend_version": null
 }
