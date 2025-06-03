@@ -13,9 +13,7 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout submodules
-        run: |
-          git describe --tags
-          git submodule update --init --recursive
+        run: git submodule update --init --recursive
 
       - name: Get backend sha
         id: get-sha
@@ -87,6 +85,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Cache yarn dependencies
         uses: actions/cache@v3
@@ -123,6 +123,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print git tag
+        run: |
+          git describe --tags
 
       - name: install mafft
         run: |
