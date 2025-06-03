@@ -8,11 +8,12 @@ import istanbul from 'vite-plugin-istanbul';
 import { execSync } from 'child_process';
 
 // Function to get git tag information
-function getGitTag() {
+function getGitTag(backup) {
   try {
+    // This works locally and in CI, but not in docker
     return execSync('git describe --tags').toString().trim();
   } catch (error) {
-    return 'unknown';
+    return backup || 'unknown';
   }
 }
 
@@ -82,7 +83,7 @@ export default ({ mode }) => {
     // the word window in the scripts, creating other problems.
     // global: {},
     // Create an env variable with the git tag
-      'process.env.GIT_TAG': JSON.stringify(getGitTag()),
+      __APP_VERSION__: JSON.stringify(getGitTag(env.VITE_GIT_TAG)),
     },
     test: {
       globals: true,

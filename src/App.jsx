@@ -10,7 +10,6 @@ import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
-import { formatTemplate } from './utils/readNwrite';
 
 const { setConfig, setKnownErrors, setState: setCloningState } = cloningActions;
 

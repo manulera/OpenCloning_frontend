@@ -286,6 +286,8 @@ jobs:
           push: true
           tags: manulera/opencloningfrontend:latest
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_GIT_TAG=${{ github.ref_name }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.9.0
@@ -296,3 +298,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_URL=/opencloning/
+            VITE_GIT_TAG=${{ github.ref_name }}

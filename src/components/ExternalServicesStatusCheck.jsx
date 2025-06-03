@@ -16,6 +16,7 @@ function ExternalServicesStatusCheck() {
   const backendRoute = useBackendRoute();
   const httpClient = useHttpClient();
   React.useEffect(() => {
+    dispatch(updateAppInfo({ frontendVersion: __APP_VERSION__ }));
     setLoading(true);
     const checkServices = async () => {
       const services = [
@@ -25,7 +26,7 @@ function ExternalServicesStatusCheck() {
           check: (resp) => {
             if (resp.status === 200) {
               const { backend_version: backendVersion, schema_version: schemaVersion } = resp.data;
-              dispatch(updateAppInfo({ backendVersion, schemaVersion, frontendVersion: process?.env?.GIT_TAG }));
+              dispatch(updateAppInfo({ backendVersion, schemaVersion }));
               return true;
             }
             return false;
