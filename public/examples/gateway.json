@@ -206,6 +206,6 @@
     }
   ],
   "backend_version": "0.2.8.3.post7.dev0+e39da02",
-  "schema_version": "0.2.12a0",
+  "schema_version": "0.3.0a0",
   "frontend_version": "v0.2.12.8-4-g30b2f82"
 }
