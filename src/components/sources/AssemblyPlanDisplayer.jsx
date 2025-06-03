@@ -9,8 +9,8 @@ function AssemblyPlanDisplayer({
 
   const fragments = source.assembly.map((fragment) => {
     const { sequence, left_location, right_location, reverse_complemented } = fragment;
-    const leftPart = left_location ? `${left_location.start}:${left_location.end}` : '';
-    const rightPart = right_location ? `${right_location.start}:${right_location.end}` : '';
+    const leftPart = left_location || '';
+    const rightPart = right_location || '';
     return `${sequence}${reverse_complemented ? '_rc' : ''}[${leftPart},${rightPart}]`;
   });
 

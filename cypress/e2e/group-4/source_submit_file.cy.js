@@ -118,6 +118,9 @@ describe('File Source', () => {
   });
   it('grafts on sources from templates', () => {
     loadHistory('cypress/test_files/template_example.json');
+    cy.contains('Manually typed sequence', { timeout: 20000 }).should('exist');
+    // Go to top of the page
+    cy.get('div.tab-panels-container').scrollIntoView();
     clickMultiSelectOption('Source type', 'Submit file', 'li#source-1');
     cy.get('li#source-1 .submit-sequence-file input[type="file"]').first().selectFile('public/examples/templateless_pcr.json', { force: true });
     // Replaces the template sequence by the actual input
@@ -142,7 +145,7 @@ describe('File Source', () => {
     setInputValue('End', '20', 'li');
     cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
     cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb,');
-    cy.get('li#sequence-2 li#source-1').contains('then extracted subsequence 0:20');
+    cy.get('li#sequence-2 li#source-1').contains('then extracted subsequence 1..20');
     cy.get('li#sequence-2').contains('20 bps');
 
     // Shows warning when not all sequences in the file are compatible with the coordinates
