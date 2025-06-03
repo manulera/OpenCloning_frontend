@@ -33,9 +33,6 @@ export default function getTransformCoords({ assembly, type: sourceType }, paren
       rangeLength = productLength;
     }
     f.rangeInAssembly = translateRange({ start: 0, end: rangeLength - 1 }, count, productLength);
-    if (f.sequence === 2) {
-      console.log(f.sequence, 'rangeLength', rangeLength, leftLocation, rightLocation, f.rangeInAssembly);
-    }
     f.size = size;
     count += getRangeLength({ start: leftStart, end: rightStart - 1 }, size);
   });

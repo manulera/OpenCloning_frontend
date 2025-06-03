@@ -56,6 +56,7 @@ const reducer = {
   },
 
   setMainSequenceSelection(state, action) {
+    console.log('setMainSequenceSelection', action.payload);
     state.mainSequenceSelection = action.payload;
   },
 
