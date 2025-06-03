@@ -11,9 +11,9 @@ RUN corepack enable
 RUN yarn install
 # Add build argument for base URL with a default value
 ARG BASE_URL="/"
-# Build arguments to set version and commit SHA
-ARG VERSION
-ARG COMMIT_SHA
+# Build argument for git tag (will be shown as app version in the version dialog)
+ARG VITE_GIT_TAG="unknown"
+
 COPY . /app
 RUN yarn build --base "$BASE_URL"
 

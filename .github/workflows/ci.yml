@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Checkout submodules
         run: git submodule update --init --recursive
@@ -68,6 +70,7 @@ jobs:
         if: needs.check-cache.outputs.cache-hit != 'true'
         run: |
           source .venv/bin/activate
+          python -m pip install --upgrade pip
           pip install git+https://github.com/manulera/OpenCloning_backend.git@${{ needs.get-backend-sha.outputs.backend_sha }}
 
       - name: Save venv to cache
@@ -82,6 +85,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Cache yarn dependencies
         uses: actions/cache@v3
@@ -118,6 +123,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print git tag
+        run: |
+          git describe --tags
 
       - name: install mafft
         run: |
@@ -276,7 +287,7 @@ jobs:
           tags: manulera/opencloningfrontend:latest
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            COMMIT_SHA=${{ github.sha }}
+            VITE_GIT_TAG=${{ github.ref_name }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.9.0
@@ -287,4 +298,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_URL=/opencloning/
-            COMMIT_SHA=${{ github.sha }}
+            VITE_GIT_TAG=${{ github.ref_name }}

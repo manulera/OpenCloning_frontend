@@ -1,4 +1,4 @@
-import { setInputValue} from '../common_functions';
+import { setInputValue } from '../common_functions';
 
 describe('Test download sequence file', () => {
   beforeEach(() => {
@@ -49,6 +49,9 @@ describe('Test download sequence file', () => {
       expect(fileContent).to.include('"sources":');
       expect(fileContent).to.include('"primers":');
       expect(fileContent).to.include('"description":');
+      expect(fileContent).to.include('"backend_version":');
+      expect(fileContent).to.include('"schema_version":');
+      expect(fileContent).to.include('"frontend_version":');
       // Sources
       expect(fileContent).to.include('"type": "AddgeneIdSource"');
       expect(fileContent).to.include('"type": "PCRSource"');

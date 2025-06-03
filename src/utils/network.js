@@ -76,7 +76,7 @@ export const collectParentSequencesAndSources = (source, sources, sequences, seq
 };
 
 export const getSubState = (state, id, stopAtDatabaseId = false) => {
-  const { sequences, sources, primers } = state.cloning;
+  const { sequences, sources, primers, appInfo } = state.cloning;
   const sequencesToExport = sequences.filter((e) => e.id === id);
   const sourcesToExport = sources.filter((s) => s.output === id);
   if (sequencesToExport.length === 0) {
@@ -88,7 +88,7 @@ export const getSubState = (state, id, stopAtDatabaseId = false) => {
   collectParentSequencesAndSources(sourcesToExport[0], sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId);
   const primerIdsToExport = getUsedPrimerIds(sourcesToExport);
   const primersToExport = primers.filter((p) => primerIdsToExport.includes(p.id));
-  return { sequences: sequencesToExport, sources: sourcesToExport, primers: primersToExport };
+  return { sequences: sequencesToExport, sources: sourcesToExport, primers: primersToExport, appInfo };
 };
 
 export const shiftState = (newState, oldState, skipPrimers = false) => {

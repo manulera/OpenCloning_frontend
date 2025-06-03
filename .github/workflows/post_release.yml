@@ -8,7 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print git tag
+        run: |
+          git describe --tags
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
@@ -33,8 +39,7 @@ jobs:
             manulera/opencloningfrontend:${{ github.ref_name }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            COMMIT_SHA=${{ github.sha }}
-            VERSION=${{ github.ref_name }}
+            VITE_GIT_TAG=${{ github.ref_name }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.9.0
@@ -48,14 +53,19 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BASE_URL=/opencloning/
-            COMMIT_SHA=${{ github.sha }}
-            VERSION=${{ github.ref_name }}
+            VITE_GIT_TAG=${{ github.ref_name }}
 
   deploy_to_netlify:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print git tag
+        run: |
+          git describe --tags
 
       - name: install dependencies
         run: |
@@ -65,14 +75,7 @@ jobs:
       - name: build
         run: yarn build
         env:
-          VERSION: ${{ github.ref_name }}
-          COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
-
-      - name: print content of index.html and version.json
-        run: |
-          cat build/index.html
-          cat build/version.json
 
       - name: Publish to Netlify
         run: |
@@ -80,11 +83,5 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          VERSION: ${{ github.ref_name }}
-          COMMIT_SHA: ${{ github.sha }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
-      - name: print content of index.html 2
-        run: |
-          cat build/index.html
-          cat build/version.json

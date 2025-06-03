@@ -191,7 +191,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
         throw new Error('Invalid fragment orientation');
       }
     });
-    const { cloning: { sequences } } = store.getState();
+    const { cloning: { sequences, teselaJsonCache } } = store.getState();
     let requestData;
     let params;
     let endpoint;
@@ -203,7 +203,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       requestData = {
         pcr_templates: sequenceIds.map((id, index) => ({
           sequence: sequences.find((e) => e.id === id),
-          location: selectedRegion2SequenceLocation(rois[index]),
+          location: selectedRegion2SequenceLocation(rois[index], teselaJsonCache[id].size),
           forward_orientation: fragmentOrientations[index] === 'forward',
         })),
         spacers,
@@ -217,12 +217,12 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       requestData = {
         pcr_template: {
           sequence: sequences.find((e) => e.id === pcrTemplateId),
-          location: selectedRegion2SequenceLocation(rois[0]),
+          location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[pcrTemplateId].size),
           forward_orientation: fragmentOrientations[0] === 'forward',
         },
         homologous_recombination_target: {
           sequence: sequences.find((e) => e.id === homologousRecombinationTargetId),
-          location: selectedRegion2SequenceLocation(rois[1]),
+          location: selectedRegion2SequenceLocation(rois[1], teselaJsonCache[homologousRecombinationTargetId].size),
         },
         spacers,
       };
@@ -236,7 +236,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       requestData = {
         pcr_template: {
           sequence: sequences.find((e) => e.id === pcrTemplateId),
-          location: selectedRegion2SequenceLocation(rois[0]),
+          location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[pcrTemplateId].size),
           forward_orientation: fragmentOrientations[0] === 'forward',
         },
         spacers,
@@ -246,7 +246,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       endpoint = 'ebic';
       requestData = {
         sequence: sequences.find((e) => e.id === templateSequenceIds[0]),
-        location: selectedRegion2SequenceLocation(rois[0]),
+        location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[templateSequenceIds[0]].size),
         // forward_orientation: fragmentOrientations[0] === 'forward',
       };
       params = {

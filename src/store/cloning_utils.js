@@ -1,3 +1,4 @@
+import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange } from '@teselagen/range-utils';
 
 export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
@@ -106,12 +107,11 @@ export function pcrPrimerPositionsInInput(source, sequenceData) {
   if (source.type !== 'PCRSource') {
     throw new Error('Source is not a PCRSource');
   }
-  const fwd = { ...source.assembly[1].left_location };
-  const rvs = { ...source.assembly[1].right_location };
   const { size } = sequenceData;
 
-  fwd.end -= 1;
-  rvs.end -= 1;
+  const fwd = parseFeatureLocation(source.assembly[1].left_location, 0, 0, 0, 1, size)[0];
+  const rvs = parseFeatureLocation(source.assembly[1].right_location, 0, 0, 0, 1, size)[0];
+
   if (!source.assembly[1].reverse_complemented) {
     fwd.strand = 1;
     rvs.strand = -1;

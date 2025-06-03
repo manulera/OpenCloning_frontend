@@ -1,4 +1,6 @@
+import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange, getRangeLength, isRangeWithinRange, translateRange } from '@teselagen/range-utils';
+import { isEqual } from 'lodash-es';
 
 export default function getTransformCoords({ assembly, type: sourceType }, parentSequenceData, productLength) {
   if (!assembly) {
@@ -9,24 +11,27 @@ export default function getTransformCoords({ assembly, type: sourceType }, paren
 
   let count = 0;
   if (sourceType === 'PCRSource') {
-    count = assembly[0].right_location.start;
+    // Primer is linear sequence, so no need to pass location
+    const fwdPrimerAnnealingPart = parseFeatureLocation(assembly[0].right_location, 0, 0, 0, 1, null)[0];
+    count = fwdPrimerAnnealingPart.start;
   }
-  // Special case for insertion assemblies
-  // else if (fragments[0].sequence === fragments[fragments.length - 1].sequence && !circular) {
-  //   const concernedFragments = fragments.filter((f) => f.id === fragments[0].left.sequence);
-  //   concernedFragments[1].left_location = concernedFragments[0].left_location;
-  //   concernedFragments[0].left_location = null;
-  //   concernedFragments[1].reverse_complemented = concernedFragments[0].reverse_complemented;
-  // }
+
   fragments.forEach((f) => {
     const sequence = parentSequenceData.find((e) => e.id === f.sequence);
     const { size } = sequence;
     const { left_location: left, right_location: right } = f;
-    const leftStart = left?.start || 0;
-    const rightStart = right?.start || 0;
-    const rightEnd = right?.end || size;
-    // Ranges are 0-based, but [0:0] is not empty, it's the equivalent to python's [0:1]
-    const rangeLength = getRangeLength({ start: leftStart, end: rightEnd - 1 }, size);
+    const leftLocation = left ? parseFeatureLocation(left, 0, 0, 0, 1, size)[0] : null;
+    const rightLocation = right ? parseFeatureLocation(right, 0, 0, 0, 1, size)[0] : null;
+    const leftStart = leftLocation?.start || 0;
+    const rightStart = rightLocation?.start || 0;
+    const rightEnd = rightLocation?.end || size;
+
+    // Handle special case for circular sequences with left_location and right_location being identical (insertion)
+    let rangeLength = isEqual(leftLocation, rightLocation) ? size : getRangeLength({ start: leftStart, end: rightEnd }, size);
+    // Handle special case for circular sequences are excised
+    if (rangeLength > productLength) {
+      rangeLength = productLength;
+    }
     f.rangeInAssembly = translateRange({ start: 0, end: rangeLength - 1 }, count, productLength);
     f.size = size;
     count += getRangeLength({ start: leftStart, end: rightStart - 1 }, size);
@@ -40,7 +45,8 @@ export default function getTransformCoords({ assembly, type: sourceType }, paren
     // so we filter instead of find
     const possibleOut = fragments.filter((f) => f.sequence === id).map((fragment) => {
       const { rangeInAssembly, left_location: left, reverse_complemented, size } = fragment;
-      const startInParent = left?.start || 0;
+      const leftLocation = left ? parseFeatureLocation(left, 0, 0, 0, 1, size)[0] : null;
+      const startInParent = leftLocation?.start || 0;
       if (isRangeWithinRange(selection, rangeInAssembly, productLength)) {
         const selectionShifted = selection.start <= selection.end ? selection : { start: selection.start, end: selection.end + productLength };
         const outRange = translateRange(selectionShifted, -rangeInAssembly.start + startInParent, size);

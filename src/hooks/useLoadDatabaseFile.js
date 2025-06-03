@@ -68,6 +68,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
       }
       // This one won't have the source.id deleted
       const prevState = store.getState().cloning;
+      cloningStrategy = await validateState(cloningStrategy);
 
       batch(() => {
         // Replace the source with the new one if called from a source
@@ -83,7 +84,6 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
             ({ mergedState } = mergeStates(cloningStrategy, cloningState));
           }
           dispatch(setCloningState(mergedState));
-          validateState(cloningStrategy);
         } catch (e) {
           setHistoryFileError(e.message);
           console.error(e);

@@ -8,6 +8,9 @@
         "airbnb",
         "plugin:cypress/recommended"
     ],
+    "globals": {
+        "__APP_VERSION__": "readonly"
+    },
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -20,12 +23,23 @@
         "cypress"
     ],
     "rules": {
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "max-len": ["error", { "code": 300 }],
+        "react/jsx-filename-extension": [
+            1,
+            {
+                "extensions": [
+                    ".js",
+                    ".jsx"
+                ]
+            }
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 300
+            }
+        ],
         "react/prop-types": 0,
         "object-curly-newline": 0,
         "import/prefer-default-export": 0
     }
-
-
 }

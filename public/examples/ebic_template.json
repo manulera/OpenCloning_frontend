@@ -70,7 +70,8 @@
       "id": 7,
       "input": [],
       "output": 8,
-      "type": "UploadedFileSource"
+      "type": "UploadedFileSource",
+      "sequence_file_format": "genbank"
     },
     {
       "id": 9,
@@ -93,7 +94,10 @@
       ],
       "output": 12,
       "type": "RestrictionAndLigationSource",
-      "output_name": "golgen_gate"
+      "output_name": "golgen_gate",
+      "restriction_enzymes": [
+        "BsaI"
+      ]
     },
     {
       "id": 13,

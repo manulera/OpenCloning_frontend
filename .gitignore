@@ -39,6 +39,3 @@ cypress/screenshots
 
 # config
 public/config.json
-
-# version
-public/version.json

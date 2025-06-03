@@ -40,6 +40,7 @@ const initialState = {
   teselaJsonCache: {},
   alerts: [],
   files: [],
+  appInfo: {},
 };
 
 /* eslint-disable no-param-reassign */
@@ -55,6 +56,7 @@ const reducer = {
   },
 
   setMainSequenceSelection(state, action) {
+    console.log('setMainSequenceSelection', action.payload);
     state.mainSequenceSelection = action.payload;
   },
 
@@ -437,6 +439,10 @@ const reducer = {
       throw new Error('Primer not found');
     }
     primer.database_id = databaseId;
+  },
+
+  updateAppInfo(state, action) {
+    state.appInfo = { ...state.appInfo, ...action.payload };
   },
 };
 

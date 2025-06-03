@@ -1,8 +1,9 @@
 import React from 'react';
 import { SimpleCircularOrLinearView } from '@teselagen/ove';
-import { shallowEqual, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { reversePositionInRange } from '@teselagen/range-utils';
 import { isEqual } from 'lodash-es';
+import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 
 function getCutParameters(seq, cut, isLeft) {
@@ -20,22 +21,30 @@ function SubSequenceDisplayer({
   if (!['PCRSource', 'RestrictionEnzymeDigestionSource'].includes(source.type)) {
     return null;
   }
-  const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
-  const seq = useSelector((state) => state.cloning.teselaJsonCache[inputSequences[0].id], isEqual);
+  const inputSequenceIds = useSelector((state) => getInputSequencesFromSourceId(state, sourceId).map(({ id }) => id), isEqual);
+  const seq = useSelector((state) => state.cloning.teselaJsonCache[inputSequenceIds[0]], isEqual);
 
   const editorName = `subsequence_editor_${sourceId}`;
   let selectionLayer = null;
 
   if (['PCRSource'].includes(source.type)) {
-    if (!source.assembly[1].reverse_complemented) {
+    const leftLocation = parseFeatureLocation(source.assembly[1].left_location, 0, 0, 1, seq.length)[0];
+    const rightLocation = parseFeatureLocation(source.assembly[1].right_location, 0, 0, 1, seq.length)[0];
+    // Special case for the whole sequence amplification
+    if (isEqual(leftLocation, rightLocation)) {
       selectionLayer = {
-        start: source.assembly[1].left_location.start,
-        end: source.assembly[1].right_location.end,
+        start: 0,
+        end: seq.size - 1,
+      };
+    } else if (!source.assembly[1].reverse_complemented) {
+      selectionLayer = {
+        start: leftLocation.start,
+        end: rightLocation.end,
       };
     } else {
       selectionLayer = {
-        end: reversePositionInRange(source.assembly[1].left_location.start, seq.size),
-        start: reversePositionInRange(source.assembly[1].right_location.end, seq.size),
+        end: reversePositionInRange(leftLocation.start, seq.size),
+        start: reversePositionInRange(rightLocation.end, seq.size),
       };
     }
   }

@@ -48,6 +48,7 @@
       "output": 2,
       "type": "AddgeneIdSource",
       "output_name": null,
+      "database_id": null,
       "repository_id": "52691",
       "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v2.0.0/sequences/210876/0ad0ffaa-d9b9-48c4-af54-19e87587070e/addgene-plasmid-52691-sequence-210876.gbk",
@@ -59,6 +60,7 @@
       "output": 4,
       "type": "GenomeCoordinatesSource",
       "output_name": null,
+      "database_id": null,
       "assembly_accession": "GCF_000002945.2",
       "sequence_accession": "NC_003424.3",
       "locus_tag": "SPOM_SPAPB1A10.09",
@@ -75,43 +77,29 @@
       "output": 8,
       "type": "PCRSource",
       "output_name": "ase1_CDS",
+      "database_id": null,
       "circular": false,
       "assembly": [
         {
           "sequence": 3,
           "left_location": null,
-          "right_location": {
-            "start": 15,
-            "end": 38,
-            "strand": null
-          },
+          "right_location": "16..38",
           "reverse_complemented": false
         },
         {
           "sequence": 4,
-          "left_location": {
-            "start": 1170,
-            "end": 1193,
-            "strand": null
-          },
-          "right_location": {
-            "start": 3397,
-            "end": 3416,
-            "strand": null
-          },
+          "left_location": "1171..1193",
+          "right_location": "3398..3416",
           "reverse_complemented": false
         },
         {
           "sequence": 4,
-          "left_location": {
-            "start": 0,
-            "end": 19,
-            "strand": null
-          },
+          "left_location": "1..19",
           "right_location": null,
           "reverse_complemented": true
         }
-      ]
+      ],
+      "add_primer_features": false
     },
     {
       "id": 9,
@@ -121,43 +109,29 @@
       "output": 10,
       "type": "PCRSource",
       "output_name": "digested_vector",
+      "database_id": null,
       "circular": false,
       "assembly": [
         {
           "sequence": 1,
           "left_location": null,
-          "right_location": {
-            "start": 17,
-            "end": 36,
-            "strand": null
-          },
+          "right_location": "18..36",
           "reverse_complemented": false
         },
         {
           "sequence": 2,
-          "left_location": {
-            "start": 1684,
-            "end": 1703,
-            "strand": null
-          },
-          "right_location": {
-            "start": 1662,
-            "end": 1685,
-            "strand": null
-          },
+          "left_location": "1685..1703",
+          "right_location": "1663..1685",
           "reverse_complemented": false
         },
         {
           "sequence": 2,
-          "left_location": {
-            "start": 0,
-            "end": 23,
-            "strand": null
-          },
+          "left_location": "1..23",
           "right_location": null,
           "reverse_complemented": true
         }
-      ]
+      ],
+      "add_primer_features": false
     },
     {
       "id": 11,
@@ -168,60 +142,57 @@
       "output": 12,
       "type": "GibsonAssemblySource",
       "output_name": "pREP42-ase1",
+      "database_id": null,
       "circular": true,
       "assembly": [
         {
           "sequence": 10,
-          "left_location": {
-            "start": 0,
-            "end": 36,
-            "strand": null
-          },
-          "right_location": {
-            "start": 8315,
-            "end": 8351,
-            "strand": null
-          },
+          "left_location": "1..36",
+          "right_location": "8316..8351",
           "reverse_complemented": false
         },
         {
           "sequence": 8,
-          "left_location": {
-            "start": 0,
-            "end": 36,
-            "strand": null
-          },
-          "right_location": {
-            "start": 2243,
-            "end": 2279,
-            "strand": null
-          },
+          "left_location": "1..36",
+          "right_location": "2244..2279",
           "reverse_complemented": false
         }
       ]
     }
   ],
-  "description": "Cloning the ase1 gene from S. pombe's genome into pREP42-MCS+ expression vector using Gibson assembly.",
   "primers": [
     {
       "id": 1,
+      "type": "Primer",
       "name": "vector_fwd",
+      "database_id": null,
       "sequence": "GGAGAAGAAGGCTTTTAATATGCTCGAGAGATCTGT"
     },
     {
       "id": 2,
+      "type": "Primer",
       "name": "vector_rvs",
+      "database_id": null,
       "sequence": "CATCATTACTGTTTGCATTGATTTAACAAAGCGACTATAAG"
     },
     {
       "id": 3,
+      "type": "Primer",
       "name": "ase1_fwd",
+      "database_id": null,
       "sequence": "AGTCGCTTTGTTAAATCAATGCAAACAGTAATGATGGA"
     },
     {
       "id": 4,
+      "type": "Primer",
       "name": "ase1_rvs",
+      "database_id": null,
       "sequence": "ACAGATCTCTCGAGCATATTAAAAGCCTTCTTCTCCC"
     }
-  ]
+  ],
+  "description": "Cloning the ase1 gene from S. pombe's genome into pREP42-MCS+ expression vector using Gibson assembly.",
+  "files": null,
+  "schema_version": "0.3.0a0",
+  "backend_version": null,
+  "frontend_version": null
 }
