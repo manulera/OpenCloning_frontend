@@ -9,14 +9,6 @@
       "file_content": "LOCUS       initial_locus            151 bp    DNA     linear   UNK 23-APR-2025\nDEFINITION  Annotated with pLannotate v1.2.2.\nACCESSION   2\nVERSION     2\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    116..149\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     CDS             39..113\n                     /codon_start=1\n                     /transl_table=1\n                     /translation=\"MQTVMMDDIQSTDSIAEKDNHSNN*\"\n                     /label=\"payload\"\nORIGIN\n        1 aaataacttc gtatagcata cattatacga agttatacat gcaaacagta atgatggatg\n       61 acattcaaag cactgattct attgctgaaa aagataatca ctctaataat tgagtataac\n      121 ttcgtatagc atacattata cgaagttatt t\n//"
     },
     {
-      "id": 4,
-      "type": "TextFileSequence",
-      "sequence_file_format": "genbank",
-      "overhang_crick_3prime": 0,
-      "overhang_watson_3prime": 0,
-      "file_content": "LOCUS       excised_plasmid          113 bp    DNA     circular UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   4\nVERSION     4\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     protein_bind    1..34\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    1..34\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     CDS             37..111\n                     /codon_start=1\n                     /transl_table=1\n                     /translation=\"MQTVMMDDIQSTDSIAEKDNHSNN*\"\n                     /label=\"payload\"\nORIGIN\n        1 ataacttcgt atagcataca ttatacgaag ttatacatgc aaacagtaat gatggatgac\n       61 attcaaagca ctgattctat tgctgaaaaa gataatcact ctaataattg agt\n//"
-    },
-    {
       "id": 6,
       "type": "TextFileSequence",
       "sequence_file_format": "genbank",
@@ -30,7 +22,7 @@
       "sequence_file_format": "genbank",
       "overhang_crick_3prime": 0,
       "overhang_watson_3prime": 0,
-      "file_content": "LOCUS       excised_locus             38 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   8\nVERSION     8\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\nORIGIN\n        1 aaataacttc gtatagcata cattatacga agttattt\n//"
+      "file_content": "LOCUS       excised_plasmid          113 bp    DNA     circular UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   8\nVERSION     8\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     CDS             24..98\n                     /codon_start=1\n                     /transl_table=1\n                     /translation=\"MQTVMMDDIQSTDSIAEKDNHSNN*\"\n                     /label=\"payload\"\n     protein_bind    join(101..113,1..21)\n                     /label=\"loxP\"\nORIGIN\n        1 gcatacatta tacgaagtta tacatgcaaa cagtaatgat ggatgacatt caaagcactg\n       61 attctattgc tgaaaaagat aatcactcta ataattgagt ataacttcgt ata\n//"
     },
     {
       "id": 10,
@@ -38,7 +30,15 @@
       "sequence_file_format": "genbank",
       "overhang_crick_3prime": 0,
       "overhang_watson_3prime": 0,
-      "file_content": "LOCUS       reconstituted_locus      151 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   10\nVERSION     10\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    3..36\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     CDS             39..113\n                     /codon_start=1\n                     /transl_table=1\n                     /translation=\"MQTVMMDDIQSTDSIAEKDNHSNN*\"\n                     /label=\"payload\"\n     protein_bind    116..149\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    116..149\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    116..149\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\n     protein_bind    116..149\n                     /label=\"loxP\"\n                     /note=\"pLannotate\"\n                     /note=\"/database=snapgene\"\n                     /note=\"/fragment=False\"\n                     /note=\"/identity=100.0\"\n                     /note=\"/match_length=100.0\"\n                     /note=\"/other=protein_bind\"\nORIGIN\n        1 aaataacttc gtatagcata cattatacga agttatacat gcaaacagta atgatggatg\n       61 acattcaaag cactgattct attgctgaaa aagataatca ctctaataat tgagtataac\n      121 ttcgtatagc atacattata cgaagttatt t\n//"
+      "file_content": "LOCUS       excised_locus             38 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   10\nVERSION     10\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     protein_bind    3..36\n                     /label=\"loxP\"\nORIGIN\n        1 aaataacttc gtatagcata cattatacga agttattt\n//"
+    },
+    {
+      "id": 12,
+      "type": "TextFileSequence",
+      "sequence_file_format": "genbank",
+      "overhang_crick_3prime": 0,
+      "overhang_watson_3prime": 0,
+      "file_content": "LOCUS       reconstituted_locus      151 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   12\nVERSION     12\nKEYWORDS    .\nSOURCE      \n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     CDS             39..113\n                     /codon_start=1\n                     /transl_table=1\n                     /translation=\"MQTVMMDDIQSTDSIAEKDNHSNN*\"\n                     /label=\"payload\"\n     protein_bind    3..36\n                     /label=\"loxP\"\n     protein_bind    116..149\n                     /label=\"loxP\"\nORIGIN\n        1 aaataacttc gtatagcata cattatacga agttatacat gcaaacagta atgatggatg\n       61 acattcaaag cactgattct attgctgaaa aagataatca ctctaataat tgagtataac\n      121 ttcgtatagc atacattata cgaagttatt t\n//"
     }
   ],
   "sources": [
@@ -56,25 +56,6 @@
       "coordinates": null
     },
     {
-      "id": 3,
-      "input": [
-        2
-      ],
-      "output": 4,
-      "type": "CreLoxRecombinationSource",
-      "output_name": "excised_plasmid",
-      "database_id": null,
-      "circular": true,
-      "assembly": [
-        {
-          "sequence": 2,
-          "left_location": "3..36",
-          "right_location": "116..149",
-          "reverse_complemented": false
-        }
-      ]
-    },
-    {
       "id": 5,
       "input": [],
       "output": 6,
@@ -90,9 +71,28 @@
     {
       "id": 7,
       "input": [
-        6
+        2
       ],
       "output": 8,
+      "type": "CreLoxRecombinationSource",
+      "output_name": "excised_plasmid",
+      "database_id": null,
+      "circular": true,
+      "assembly": [
+        {
+          "sequence": 2,
+          "left_location": "16..23",
+          "right_location": "129..136",
+          "reverse_complemented": false
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "input": [
+        6
+      ],
+      "output": 10,
       "type": "CreLoxRecombinationSource",
       "output_name": "excised_locus",
       "database_id": null,
@@ -101,50 +101,51 @@
         {
           "sequence": 6,
           "left_location": null,
-          "right_location": "3..36",
+          "right_location": "16..23",
           "reverse_complemented": false
         },
         {
           "sequence": 6,
-          "left_location": "116..149",
+          "left_location": "129..136",
           "right_location": null,
           "reverse_complemented": false
         }
       ]
     },
     {
-      "id": 9,
+      "id": 11,
       "input": [
-        4,
-        8
+        8,
+        10
       ],
-      "output": 10,
+      "output": 12,
       "type": "CreLoxRecombinationSource",
       "output_name": "reconstituted_locus",
       "database_id": null,
       "circular": false,
       "assembly": [
         {
-          "sequence": 8,
+          "sequence": 10,
           "left_location": null,
-          "right_location": "3..36",
-          "reverse_complemented": false
-        },
-        {
-          "sequence": 4,
-          "left_location": "1..34",
-          "right_location": "1..34",
+          "right_location": "16..23",
           "reverse_complemented": false
         },
         {
           "sequence": 8,
-          "left_location": "3..36",
+          "left_location": "1..8",
+          "right_location": "1..8",
+          "reverse_complemented": false
+        },
+        {
+          "sequence": 10,
+          "left_location": "16..23",
           "right_location": null,
           "reverse_complemented": false
         }
       ]
     }
   ],
+  "description": "",
   "primers": [
     {
       "id": 1,
@@ -175,9 +176,7 @@
       "sequence": "ACAGATCTCTCGAGCATATTAAAAGCCTTCTTCTCCC"
     }
   ],
-  "description": "",
-  "files": null,
+  "backend_version": "0.2.8.3.post5.dev0+f5942fe",
   "schema_version": "0.2.12a0",
-  "backend_version": null,
-  "frontend_version": null
+  "frontend_version": "v0.2.12.8-7-g9cec8e2"
 }

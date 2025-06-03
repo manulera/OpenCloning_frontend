@@ -83,6 +83,7 @@ function SequenceEditor({ sequenceId }) {
         // If possible, add the equivalent region in the parent sequence
         parentSequenceIds.forEach((id) => {
           const selectionLayerAssembly = rangeInParent(newRegion.selectionLayer, id);
+          console.log(newRegion.selectionLayer, id, selectionLayerAssembly);
           if (selectionLayerAssembly !== null) {
             selectedRegions.push({ id, selectedRegion: { selectionLayer: selectionLayerAssembly, caretPosition: -1 } });
           }
