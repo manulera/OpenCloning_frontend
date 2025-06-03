@@ -12,9 +12,14 @@ export function selectedRegion2String(selectedRegion) {
   return `insertion at ${caretPosition}`;
 }
 
-export function selectedRegion2SequenceLocation({ selectionLayer, caretPosition }) {
+export function selectedRegion2SequenceLocation({ selectionLayer, caretPosition }, size) {
   if (caretPosition === -1) {
-    return { start: selectionLayer.start, end: selectionLayer.end + 1 };
+    const { start } = selectionLayer;
+    const end = selectionLayer.end + 1;
+    if (end > start) {
+      return `${start + 1}..${end}`;
+    }
+    return `join(${start + 1}..${size},1..${end})`;
   }
-  return { start: caretPosition, end: caretPosition };
+  return `${caretPosition}^${caretPosition + 1}`;
 }

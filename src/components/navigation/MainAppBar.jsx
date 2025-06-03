@@ -67,11 +67,10 @@ function MainAppBar() {
       let { data } = await httpClient.get(url);
       if (isTemplate) {
         data = formatTemplate(data, url);
+      } else {
+        data = await validateState(data);
       }
       dispatch(setCloningState(data));
-      if (!data.sequences.some((e) => e.type === 'TemplateSequence')) {
-        validateState(data);
-      }
     }
   };
 

@@ -9,8 +9,20 @@ export default function useValidateState() {
   const httpClient = useHttpClient();
 
   const validateState = React.useCallback(async (newState) => {
+    // Returns null if the state is valid, otherwise the new updated state
+    // It also adds alerts
     try {
-      await httpClient.post(backendRoute('validate'), newState);
+      const response = await httpClient.post(backendRoute('validate'), newState);
+      if (response.data !== null) {
+        response.headers['x-warning'].split(';').forEach((warning) => {
+          addAlert({
+            message: warning,
+            severity: 'warning',
+          });
+        });
+      }
+      // Either return the updated state or the original state if it was valid
+      return response.data || newState;
     } catch (e) {
       if (e.code === 'ERR_NETWORK') {
         addAlert({
@@ -23,6 +35,7 @@ export default function useValidateState() {
           severity: 'warning',
         });
       }
+      return newState;
     }
   }, [addAlert, backendRoute]);
 

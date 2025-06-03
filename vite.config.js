@@ -5,6 +5,16 @@ import { loadEnv } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 import istanbul from 'vite-plugin-istanbul';
+import { execSync } from 'child_process';
+
+// Function to get git tag information
+function getGitTag() {
+  try {
+    return execSync('git describe --tags').toString().trim();
+  } catch (error) {
+    return 'unknown';
+  }
+}
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd());
@@ -47,8 +57,6 @@ export default ({ mode }) => {
           const configPath = resolve(__dirname, 'public', configFileName);
           const destPath = resolve(__dirname, 'build', 'config.json');
           fs.copyFileSync(configPath, destPath);
-          // Write a version.env.json file with the $VERSION and $COMMIT_SHA variables
-          fs.writeFileSync(resolve(__dirname, 'build', 'version.json'), `{ "version": "${process.env.VERSION || ''}", "commit_sha": "${process.env.COMMIT_SHA || ''}" }`);
         },
       },
     ],
@@ -73,6 +81,8 @@ export default ({ mode }) => {
     // Some people in stackoverflow said to use global: 'window', but that replaced
     // the word window in the scripts, creating other problems.
     // global: {},
+    // Create an env variable with the git tag
+      'process.env.GIT_TAG': JSON.stringify(getGitTag()),
     },
     test: {
       globals: true,

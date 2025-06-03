@@ -67,8 +67,9 @@ export async function readSubmittedTextFile(file) {
 }
 
 export function formatStateForJsonExport(cloningState) {
-  const { sequences, sources, description, primers } = cloningState;
-  return { sequences, sources, description, primers };
+  const { sequences, sources, description, primers, appInfo } = cloningState;
+  const { backendVersion, schemaVersion, frontendVersion } = appInfo;
+  return { sequences, sources, description, primers, backend_version: backendVersion, schema_version: schemaVersion, frontend_version: frontendVersion };
 }
 
 export const prettyPrintJson = (json) => `${JSON.stringify(json, null, 2)}\n`;

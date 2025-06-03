@@ -1,5 +1,3 @@
-import { skipGoogleSheetErrors } from '../common_functions';
-
 describe('Test load template functionality', () => {
   beforeEach(() => {
     cy.visit('/');

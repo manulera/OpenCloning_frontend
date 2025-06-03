@@ -17,6 +17,9 @@ describe('Test download history file', () => {
       expect(fileContent).to.have.property('sources');
       expect(fileContent).to.have.property('primers');
       expect(fileContent).to.have.property('description');
+      expect(fileContent).to.have.property('backend_version');
+      expect(fileContent).to.have.property('schema_version');
+      expect(fileContent).to.have.property('frontend_version');
       expect(fileContent).to.not.have.property('files');
     });
 
@@ -44,6 +47,9 @@ describe('Test download history file', () => {
       expect(fileContent).to.include('"sources":');
       expect(fileContent).to.include('"primers":');
       expect(fileContent).to.include('"description":');
+      expect(fileContent).to.include('"backend_version":');
+      expect(fileContent).to.include('"schema_version":');
+      expect(fileContent).to.include('"frontend_version":');
       expect(fileContent).to.not.include('"files":');
     });
     // Change the name of the file and download as zip

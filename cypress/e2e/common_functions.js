@@ -76,7 +76,9 @@ export function clickSequenceOutputArrow(parentSelector, isRight = true) {
 }
 
 export function loadHistory(filePath) {
+  cy.intercept('POST', '**/validate').as('validateHistory');
   cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile(filePath, { force: true });
+  cy.wait('@validateHistory');
 }
 
 export function deleteSourceById(id) {
@@ -129,10 +131,10 @@ export function waitForEnzymes(parentSelector = '') {
 }
 
 export function loadExample(name) {
+  cy.intercept('POST', '**/validate').as('validateHistory');
   cy.get('.MuiToolbar-root button.MuiButtonBase-root').contains('Examples').click();
   cy.get('.load-example-dialog .load-example-item').contains(name).click();
-  // This is not always the case, but it will work for several cases
-  cy.get('.open-cloning li').contains('Import a sequence').should('not.exist');
+  cy.wait('@validateHistory');
 }
 
 export function changeTab(tabName) {
