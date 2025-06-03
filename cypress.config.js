@@ -62,7 +62,7 @@ module.exports = defineConfig({
           }),
         ],
         define: {
-          'process.env.GIT_TAG': JSON.stringify(getGitTag()),
+          __APP_VERSION__: JSON.stringify(getGitTag()),
         },
       },
     },
