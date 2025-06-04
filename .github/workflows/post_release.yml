@@ -55,6 +55,16 @@ jobs:
             BASE_URL=/opencloning/
             VITE_GIT_TAG=${{ github.ref_name }}
 
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: manulera/opencloningfrontend:prod
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
   deploy_to_netlify:
     runs-on: ubuntu-latest
     steps:
