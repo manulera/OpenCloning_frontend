@@ -24,6 +24,8 @@ COPY --from=builder /app/build .
 
 # Install envsubst (to create config.json from config.env.json)
 RUN apk add --no-cache envsubst
+# Update npm to latest version and remove cache
+RUN npm update -g npm && npm cache clean --force
 COPY ./docker_entrypoint.sh /build/docker_entrypoint.sh
 ENV BACKEND_URL=http://127.0.0.1:8000
 ENV DATABASE=""
