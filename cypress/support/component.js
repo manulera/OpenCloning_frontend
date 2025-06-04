@@ -19,7 +19,7 @@ import './commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 import React from 'react';
-import { mount } from 'cypress/react18';
+import { mount } from '@cypress/react';
 import { Provider } from 'react-redux';
 import store from '../../src/store';
 import '@cypress/code-coverage/support';

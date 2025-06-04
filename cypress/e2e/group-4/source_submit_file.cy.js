@@ -122,7 +122,7 @@ describe('File Source', () => {
     // Go to top of the page
     cy.get('div.tab-panels-container').scrollIntoView();
     clickMultiSelectOption('Source type', 'Submit file', 'li#source-1');
-    cy.get('li#source-1 .submit-sequence-file input[type="file"]').first().selectFile('public/examples/templateless_pcr.json', { force: true });
+    cy.get('li#source-1 .submit-sequence-file input[type="file"]').first().selectFile('public/examples/templateless_PCR.json', { force: true });
     // Replaces the template sequence by the actual input
     cy.get('li#sequence-2').contains('139 bps', { timeout: 20000 });
     cy.get('li#source-1').contains('Polymerase extension');
