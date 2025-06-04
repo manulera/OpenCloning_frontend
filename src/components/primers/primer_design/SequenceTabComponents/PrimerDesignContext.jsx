@@ -195,9 +195,13 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     let requestData;
     let params;
     let endpoint;
+    const paramsForRequest = Object.fromEntries(
+      Object.entries(primerDesignSettings)
+        .filter(([_, value]) => typeof value !== 'function'),
+    );
     if (designType === 'gibson_assembly') {
       params = {
-        ...primerDesignSettings,
+        ...paramsForRequest,
         circular: circularAssembly,
       };
       requestData = {
@@ -212,7 +216,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     } else if (designType === 'homologous_recombination') {
       const [pcrTemplateId, homologousRecombinationTargetId] = sequenceIds;
       params = {
-        ...primerDesignSettings,
+        ...paramsForRequest,
       };
       requestData = {
         pcr_template: {
@@ -230,7 +234,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     } else if (designType === 'simple_pair' || designType === 'gateway_bp' || designType === 'restriction_ligation') {
       const pcrTemplateId = sequenceIds[0];
       params = {
-        ...primerDesignSettings,
+        ...paramsForRequest,
       };
 
       requestData = {
@@ -250,11 +254,11 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
         // forward_orientation: fragmentOrientations[0] === 'forward',
       };
       params = {
-        ...primerDesignSettings,
+        ...paramsForRequest,
       };
     }
 
-    const url = backendRoute(`/primer_design/${endpoint}`);
+    const url = backendRoute(`primer_design/${endpoint}`);
 
     try {
       const resp = await httpClient.post(url, requestData, { params });
