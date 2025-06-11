@@ -533,9 +533,9 @@ describe('test loadSequenceFromUrlParams', () => {
 
 describe('test isSubmissionDataValid', () => {
   it('isSubmissionDataValid', () => {
-    expect(isSubmissionDataValid({ title: MAIN_RESOURCE_TITLE, sequenceCategoryId: MAIN_RESOURCE_CATEGORY_ID })).toBe(true);
+    expect(isSubmissionDataValid({ title: MAIN_RESOURCE_TITLE, categoryId: MAIN_RESOURCE_CATEGORY_ID })).toBe(true);
     expect(isSubmissionDataValid({ title: MAIN_RESOURCE_TITLE })).toBe(false);
-    expect(isSubmissionDataValid({ sequenceCategoryId: MAIN_RESOURCE_CATEGORY_ID })).toBe(false);
+    expect(isSubmissionDataValid({ categoryId: MAIN_RESOURCE_CATEGORY_ID })).toBe(false);
   });
 });
 
@@ -665,7 +665,7 @@ const mockUploadHistoryFileWithAncestors = {
 };
 
 const submissionPayload = {
-  submissionData: { title: MAIN_RESOURCE_TITLE, sequenceCategoryId: MAIN_RESOURCE_CATEGORY_ID },
+  submissionData: { title: MAIN_RESOURCE_TITLE, categoryId: MAIN_RESOURCE_CATEGORY_ID },
   substate,
   id: HISTORY_FILE_INTERNAL_SEQUENCE_ID,
 };

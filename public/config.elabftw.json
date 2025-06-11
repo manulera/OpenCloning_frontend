@@ -1,5 +1,5 @@
 {
-    "backendUrl": "http://127.0.0.1:8000",
+    "backendUrl": "https://127.0.0.1:8000",
     "database": "elabftw",
     "showAppBar": true,
     "noExternalRequests": false
