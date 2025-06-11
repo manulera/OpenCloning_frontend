@@ -19,8 +19,8 @@ function SubmitToDatabaseComponent({ id, setSubmissionData, resourceType }) {
 
   React.useEffect(() => {
     if (category && title) {
-      // We do this not overwrite primerCategoryId
-      setSubmissionData((prev) => ({ ...prev, sequenceCategoryId: category.id, title }));
+      // We do this not overwrite primerCategoryId, set from a different component
+      setSubmissionData((prev) => ({ ...prev, categoryId: category.id, title }));
     } else {
       setSubmissionData(null);
     }

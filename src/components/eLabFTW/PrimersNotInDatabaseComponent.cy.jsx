@@ -5,6 +5,8 @@ import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
 import { eLabFTWHttpClient } from './common';
 import { mockSequences, mockSources, mockPrimers } from '../../../tests/mockNetworkData';
 
+const PRIMER_CATEGORY_ID = 3;
+
 const defaultState = {
   sequences: mockSequences,
   sources: mockSources,
@@ -24,7 +26,7 @@ describe('<PrimersNotInDatabaseComponent />', () => {
       .withArgs('/api/v2/items_types')
       .resolves({
         data: [
-          { id: 1, title: 'Primers' },
+          { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Other' },
         ],
       });
@@ -48,7 +50,7 @@ describe('<PrimersNotInDatabaseComponent />', () => {
       .withArgs('/api/v2/items_types')
       .resolves({
         data: [
-          { id: 1, title: 'Primers' },
+          { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Other' },
         ],
       });
@@ -80,7 +82,7 @@ describe('<PrimersNotInDatabaseComponent />', () => {
     cy.get('@setSubmissionDataSpy').should((spy) => {
       const updateFn = spy.lastCall.args[0];
       const result = updateFn({ hello: 'world' });
-      expect(result).to.deep.equal({ primerCategoryId: 1, hello: 'world' });
+      expect(result).to.deep.equal({ primerCategoryId: PRIMER_CATEGORY_ID, hello: 'world' });
     });
 
     // Mount with new data (simulating a successful update)
@@ -88,7 +90,7 @@ describe('<PrimersNotInDatabaseComponent />', () => {
       <Provider store={store}>
         <PrimersNotInDatabaseComponent
           id={1}
-          submissionData={{ primerCategoryId: 1 }}
+          submissionData={{ primerCategoryId: PRIMER_CATEGORY_ID }}
         />
       </Provider>,
     );
@@ -116,7 +118,7 @@ describe('<PrimersNotInDatabaseComponent />', () => {
         }
         return Promise.resolve({
           data: [
-            { id: 1, title: 'Primers' },
+            { id: PRIMER_CATEGORY_ID, title: 'Primers' },
             { id: 2, title: 'Other' },
           ],
         });

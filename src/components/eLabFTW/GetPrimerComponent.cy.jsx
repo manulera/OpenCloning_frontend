@@ -2,6 +2,8 @@ import React from 'react';
 import GetPrimerComponent from './GetPrimerComponent';
 import { eLabFTWHttpClient } from './common';
 
+const PRIMER_CATEGORY_ID = 3;
+
 describe('<GetPrimerComponent />', () => {
   it('shows category select and then resource select after category is chosen', () => {
     const setPrimerSpy = cy.spy().as('setPrimerSpy');
@@ -12,7 +14,7 @@ describe('<GetPrimerComponent />', () => {
       if (url === '/api/v2/items_types') {
         return Promise.resolve({
           data: [
-            { id: 1, title: 'Primers' },
+            { id: PRIMER_CATEGORY_ID, title: 'Primers' },
             { id: 2, title: 'Other Category' },
           ],
         });
@@ -42,10 +44,10 @@ describe('<GetPrimerComponent />', () => {
     cy.stub(eLabFTWHttpClient, 'get').callsFake((url, config) => {
       if (url === '/api/v2/items_types') {
         return Promise.resolve({
-          data: [{ id: 1, title: 'Primers' }],
+          data: [{ id: PRIMER_CATEGORY_ID, title: 'Primers' }],
         });
       }
-      if (url === '/api/v2/items' && config?.params?.cat === 1) {
+      if (url === '/api/v2/items' && config?.params?.cat === PRIMER_CATEGORY_ID) {
         return Promise.resolve({
           data: [{
             id: 1,
@@ -89,10 +91,10 @@ describe('<GetPrimerComponent />', () => {
     cy.stub(eLabFTWHttpClient, 'get').callsFake((url, config) => {
       if (url === '/api/v2/items_types') {
         return Promise.resolve({
-          data: [{ id: 1, title: 'Primers' }],
+          data: [{ id: PRIMER_CATEGORY_ID, title: 'Primers' }],
         });
       }
-      if (url === '/api/v2/items' && config?.params?.cat === 1) {
+      if (url === '/api/v2/items' && config?.params?.cat === PRIMER_CATEGORY_ID) {
         return Promise.resolve({
           data: [{
             id: 1,
@@ -130,10 +132,10 @@ describe('<GetPrimerComponent />', () => {
     cy.stub(eLabFTWHttpClient, 'get').callsFake((url) => {
       if (url === '/api/v2/items_types') {
         return Promise.resolve({
-          data: [{ id: 1, title: 'Primers' }],
+          data: [{ id: PRIMER_CATEGORY_ID, title: 'Primers' }],
         });
       }
-    });
+    }); 
 
     cy.mount(<GetPrimerComponent setPrimer={setPrimerSpy} setError={setErrorSpy} />);
 
@@ -158,10 +160,10 @@ describe('<GetPrimerComponent />', () => {
     cy.stub(eLabFTWHttpClient, 'get').callsFake((url, config) => {
       if (url === '/api/v2/items_types') {
         return Promise.resolve({
-          data: [{ id: 1, title: 'Primers' }],
+          data: [{ id: PRIMER_CATEGORY_ID, title: 'Primers' }],
         });
       }
-      if (url === '/api/v2/items' && config?.params?.cat === 1) {
+      if (url === '/api/v2/items' && config?.params?.cat === PRIMER_CATEGORY_ID) {
         return Promise.resolve({
           data: [{
             id: 1,
@@ -201,10 +203,10 @@ describe('<GetPrimerComponent />', () => {
           return Promise.reject(new Error('Network error'));
         }
         return Promise.resolve({
-          data: [{ id: 1, title: 'Primers' }],
+          data: [{ id: PRIMER_CATEGORY_ID, title: 'Primers' }],
         });
       }
-      if (url === '/api/v2/items' && config?.params?.cat === 1) {
+      if (url === '/api/v2/items' && config?.params?.cat === PRIMER_CATEGORY_ID) {
         if (firstCallPrimer) {
           firstCallPrimer = false;
           return Promise.reject(new Error('Network error'));

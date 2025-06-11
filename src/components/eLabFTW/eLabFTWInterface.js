@@ -80,13 +80,13 @@ async function uploadTextFileToResource(resourceId, fileName, textContent, comme
   return Number(response.headers.location.split('/').pop());
 }
 
-async function submitSequenceToDatabase({ submissionData: { title, sequenceCategoryId, primerCategoryId }, substate, id }) {
+async function submitSequenceToDatabase({ submissionData: { title, categoryId, primerCategoryId }, substate, id }) {
   /**
    * Submit a sequence to eLabFTW database
    * @param {Object} params - The parameters object
    * @param {Object} params.submissionData - Data needed for submission
    * @param {string} params.submissionData.title - Title of the sequence
-   * @param {number} params.submissionData.sequenceCategoryId - Category ID in eLabFTW
+   * @param {number} params.submissionData.categoryId - Category ID in eLabFTW
    * @param {Object} params.substate - The substate containing sequence data
    * @param {Array} params.substate.sources - Array of source objects
    * @param {Array} params.substate.primers - Array of primer objects
@@ -118,7 +118,7 @@ async function submitSequenceToDatabase({ submissionData: { title, sequenceCateg
   // Create and name the resource
   let resourceId;
   try {
-    resourceId = await createResource(sequenceCategoryId);
+    resourceId = await createResource(categoryId);
   } catch (e) {
     console.error(e);
     throw new Error(`Error creating resource: ${error2String(e)}`);
@@ -185,7 +185,7 @@ async function submitSequenceToDatabase({ submissionData: { title, sequenceCateg
 
 function isSubmissionDataValid(submissionData) {
   // This function is necessary because you might be setting submissionData from multiple components
-  return Boolean(submissionData.title && submissionData.sequenceCategoryId);
+  return Boolean(submissionData.title && submissionData.categoryId);
 }
 
 async function loadSequenceFromUrlParams(urlParams) {

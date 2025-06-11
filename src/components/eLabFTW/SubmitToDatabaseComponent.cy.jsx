@@ -6,6 +6,8 @@ import { eLabFTWHttpClient } from './common';
 import { mockSequences, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../tests/mockNetworkData';
 import { clearAutocompleteValue } from '../../../cypress/e2e/common_functions';
 
+const PRIMER_CATEGORY_ID = 3;
+
 // Mock initial state with both primers and sequences
 const defaultState = {
   sequences: mockSequences,
@@ -27,7 +29,7 @@ describe('<SubmitToDatabaseComponent />', () => {
       .withArgs('/api/v2/items_types', { headers: { Authorization: 'test-read-key' } })
       .resolves({
         data: [
-          { id: 1, title: 'Primers' },
+          { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Sequences' },
         ],
       });
@@ -61,7 +63,7 @@ describe('<SubmitToDatabaseComponent />', () => {
       const result = updateFn({ existingKey: 'value' });
       expect(result).to.deep.equal({
         existingKey: 'value',
-        sequenceCategoryId: 1,
+        categoryId: PRIMER_CATEGORY_ID,
         title: 'Modified Primer',
       });
     });
@@ -78,7 +80,7 @@ describe('<SubmitToDatabaseComponent />', () => {
       .withArgs('/api/v2/items_types', { headers: { Authorization: 'test-read-key' } })
       .resolves({
         data: [
-          { id: 1, title: 'Primers' },
+          { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Sequences' },
         ],
       });
@@ -112,7 +114,7 @@ describe('<SubmitToDatabaseComponent />', () => {
       const result = updateFn({ existingKey: 'value' });
       expect(result).to.deep.equal({
         existingKey: 'value',
-        sequenceCategoryId: 2,
+        categoryId: 2,
         title: 'Modified Sequence',
       });
     });
@@ -140,7 +142,7 @@ describe('<SubmitToDatabaseComponent />', () => {
         }
         return Promise.resolve({
           data: [
-            { id: 1, title: 'Primers' },
+            { id: PRIMER_CATEGORY_ID, title: 'Primers' },
             { id: 2, title: 'Sequences' },
           ],
         });
