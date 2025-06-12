@@ -20,7 +20,7 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
     }
   }, [primerDetails.database_id]);
 
-  const isSavedToDatabase = database && primerDetails.database_id !== null;
+  const isSavedToDatabase = database && Boolean(primerDetails.database_id);
 
   let deleteMessage;
   if (!canBeDeleted) {
@@ -43,7 +43,7 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
               onClick={() => window.open(database.getPrimerLink(primerDetails.database_id), '_blank')}
               sx={{ cursor: 'pointer' }}
             >
-              <SaveIcon color="success" />
+              <database.DatabaseIcon color="success" />
             </IconButton>
           ) : (
             <IconButton onClick={() => (onEditClick(primerDetails.id))}>
@@ -56,7 +56,7 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
           <>
             <Tooltip arrow title={`Save to ${database.name}`} placement="top">
               <IconButton onClick={() => setSaveToDatabaseDialogOpen(true)}>
-                <SaveIcon />
+                <database.SubmitIcon />
               </IconButton>
             </Tooltip>
             {saveToDatabaseDialogOpen && (
