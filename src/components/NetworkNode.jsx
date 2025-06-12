@@ -15,13 +15,15 @@ import { getSourceDatabaseId, isSourceATemplate } from '../store/cloning_utils';
 import { cloningActions } from '../store/cloning';
 import SourceBox from './sources/SourceBox';
 import { getSortedSourceIds } from '../utils/network';
+import useDatabase from '../hooks/useDatabase';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
 const SequenceContent = React.memo(({ sequenceId, sequenceIsTemplate }) => {
-  const hasDatabaseId = useSelector((state) => Boolean(getSourceDatabaseId(state.cloning.sources, sequenceId)));
+  const database = useDatabase();
+  const isSavedToDatabase = database && useSelector((state) => Boolean(getSourceDatabaseId(state.cloning.sources, sequenceId)));
   return (
-    <span className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
+    <span className="tf-nc" style={{ borderColor: isSavedToDatabase ? 'green' : 'default' }}>
       <span className="node-text">
         {sequenceIsTemplate ? (
           <TemplateSequence sequenceId={sequenceId} />
@@ -31,7 +33,7 @@ const SequenceContent = React.memo(({ sequenceId, sequenceIsTemplate }) => {
             <MainSequenceCheckBox {...{ id: sequenceId }} />
           </>
         )}
-        <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>{sequenceId}</div>
+        <div className="corner-id" style={{ color: isSavedToDatabase ? 'green' : 'default' }}>{sequenceId}</div>
       </span>
     </span>
   );
@@ -74,6 +76,7 @@ function NetWorkNode({ sourceId }) {
   }, isEqual);
 
   const dispatch = useDispatch();
+  const database = useDatabase();
 
   const onVisibilityClick = React.useCallback(() => {
     if (ancestorsHidden) {
@@ -98,11 +101,12 @@ function NetWorkNode({ sourceId }) {
 
   const Icon = ancestorsHidden ? VisibilityIcon : VisibilityOffIcon;
   const visibilityIconToolTip = ancestorsHidden ? 'Show ancestors' : 'Hide ancestors';
+  const isSavedToDatabase = database && hasDatabaseId;
 
   return (
     <SequenceWrapper {...{ sequenceId, sequenceIsTemplate }}>
       <li id={`source-${sourceId}`} className={`source-node ${ancestorsHidden ? 'hidden-ancestors' : ''}`}>
-        <Box component="span" className="tf-nc" style={{ borderColor: hasDatabaseId ? 'green' : 'default' }}>
+        <Box component="span" className="tf-nc" style={{ borderColor: isSavedToDatabase ? 'green' : 'default' }}>
           <span className="node-text">
             <SourceBox {...{ sourceId }}>
               {(sequenceId !== null && !sourceIsTemplate) ? (
@@ -111,7 +115,7 @@ function NetWorkNode({ sourceId }) {
                 <Source {...{ sourceId }} />
               )}
             </SourceBox>
-            <div className="corner-id" style={{ color: hasDatabaseId ? 'green' : 'default' }}>
+            <div className="corner-id" style={{ color: isSavedToDatabase ? 'green' : 'default' }}>
               {sourceId}
             </div>
             { (!sourceIsTemplate && sourceInput.length > 0 && sequenceId) && (

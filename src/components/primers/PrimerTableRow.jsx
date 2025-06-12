@@ -20,11 +20,13 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
     }
   }, [primerDetails.database_id]);
 
+  const isSavedToDatabase = database && Boolean(primerDetails.database_id);
+
   let deleteMessage;
   if (!canBeDeleted) {
-    deleteMessage = primerDetails.database_id ? 'Cannot remove primer in use from session' : 'Cannot delete primer in use';
+    deleteMessage = isSavedToDatabase ? 'Cannot remove primer in use from session' : 'Cannot delete primer in use';
   } else {
-    deleteMessage = primerDetails.database_id ? 'Remove from session' : 'Delete';
+    deleteMessage = isSavedToDatabase ? 'Remove from session' : 'Delete';
   }
 
   return (
@@ -32,16 +34,16 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
       <td className="icons">
         <Tooltip arrow title={deleteMessage} placement="top">
           <IconButton onClick={() => (canBeDeleted && deletePrimer(primerDetails.id))}>
-            {primerDetails.database_id ? <ClearIcon /> : <DeleteIcon />}
+            {isSavedToDatabase ? <ClearIcon /> : <DeleteIcon />}
           </IconButton>
         </Tooltip>
-        <Tooltip arrow title={primerDetails.database_id ? `Stored in ${database.name}` : 'Edit'} placement="top">
-          {primerDetails.database_id ? (
+        <Tooltip arrow title={isSavedToDatabase ? `Stored in ${database.name}` : 'Edit'} placement="top">
+          {isSavedToDatabase ? (
             <IconButton
               onClick={() => window.open(database.getPrimerLink(primerDetails.database_id), '_blank')}
               sx={{ cursor: 'pointer' }}
             >
-              <SaveIcon color="success" />
+              <database.DatabaseIcon color="success" />
             </IconButton>
           ) : (
             <IconButton onClick={() => (onEditClick(primerDetails.id))}>
@@ -54,7 +56,7 @@ function PrimerTableRow({ primerDetails, deletePrimer, canBeDeleted, onEditClick
           <>
             <Tooltip arrow title={`Save to ${database.name}`} placement="top">
               <IconButton onClick={() => setSaveToDatabaseDialogOpen(true)}>
-                <SaveIcon />
+                <database.SubmitIcon />
               </IconButton>
             </Tooltip>
             {saveToDatabaseDialogOpen && (
