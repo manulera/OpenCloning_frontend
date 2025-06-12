@@ -11,7 +11,7 @@ import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
 
-const { setConfig, setKnownErrors, setState: setCloningState } = cloningActions;
+const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
 function App() {
   const dispatch = useDispatch();
@@ -70,6 +70,26 @@ function App() {
             });
             console.error(error);
           }
+        } else if (urlParams.source === 'genome_coordinates') {
+          const { sequence_accession, start, end, strand, assembly_accession } = urlParams;
+          if (!sequence_accession || !start || !end || !strand) {
+            addAlert({
+              message: 'Error loading genome sequence from URL parameters',
+              severity: 'error',
+            });
+            return;
+          }
+
+          const source = {
+            id: 1,
+            type: 'KnownGenomeCoordinatesSource',
+            assembly_accession,
+            sequence_accession,
+            start,
+            end,
+            strand,
+          }
+          dispatch(updateSource(source));
         }
       }
     }

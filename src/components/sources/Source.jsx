@@ -20,6 +20,7 @@ import MultipleOutputsSelector from './MultipleOutputsSelector';
 import { cloningActions } from '../../store/cloning';
 import SourceCopySequence from './SourceCopySequence';
 import SourceReverseComplement from './SourceReverseComplement';
+import SourceKnownGenomeRegion from './SourceKnownGenomeRegion';
 
 // There are several types of source, this components holds the common part,
 // which for now is a select element to pick which kind of source is created
@@ -27,7 +28,7 @@ function Source({ sourceId }) {
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
   const { type: sourceType } = source;
   let specificSource = null;
-  const templateOnlySources = ['CollectionSource'];
+  const templateOnlySources = ['CollectionSource', 'KnownGenomeCoordinatesSource'];
   const knownErrors = useSelector((state) => state.cloning.knownErrors, isEqual);
   const { requestStatus, sendPostRequest, sources, sequences } = useBackendAPI();
   const { addSequenceAndUpdateItsSource, updateSequenceAndItsSource } = cloningActions;
@@ -82,6 +83,8 @@ function Source({ sourceId }) {
       specificSource = <SourceAssembly {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'GenomeCoordinatesSource':
       specificSource = <SourceGenomeRegion {...{ source, requestStatus, sendPostRequest }} />; break;
+    case 'KnownGenomeCoordinatesSource':
+      specificSource = <SourceKnownGenomeRegion {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'ManuallyTypedSource':
       specificSource = <SourceManuallyTyped {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CRISPRSource':
