@@ -1,11 +1,11 @@
 import React from 'react';
-import { Box, FormControl, FormLabel, InputAdornment, TextField } from '@mui/material';
+import { Alert, Box, FormControl, FormLabel, InputAdornment, TextField } from '@mui/material';
 import TabPanel from '../../../navigation/TabPanel';
 import { usePrimerDesign } from './PrimerDesignContext';
 import StepNavigation from './StepNavigation';
 
 function TabPanelEBICSettings() {
-  const { selectedTab, sequenceIds, primers, submissionPreventedMessage, designPrimers, primerDesignSettings } = usePrimerDesign();
+  const { error, selectedTab, sequenceIds, primers, submissionPreventedMessage, designPrimers, primerDesignSettings } = usePrimerDesign();
   const { max_inside, max_outside, updateSettings } = primerDesignSettings;
 
   return (
@@ -47,6 +47,7 @@ function TabPanelEBICSettings() {
           </Box>
         </Box>
       </Box>
+      {error && <Alert severity="error" sx={{ width: 'fit-content', margin: 'auto', mt: 2 }}>{error}</Alert>}
       <StepNavigation
         onStepCompletion={designPrimers}
         stepCompletionText="Design primers"

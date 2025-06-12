@@ -15,7 +15,6 @@ import { downloadCloningStrategyAsSvg, formatTemplate } from '../../utils/readNw
 import SelectExampleDialog from './SelectExampleDialog';
 import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
-import QuickGenomeDialog from './QuickGenomeDialog';
 import { cloningActions } from '../../store/cloning';
 import VersionDialog from './VersionDialog';
 import useAlerts from '../../hooks/useAlerts';
@@ -31,7 +30,6 @@ function MainAppBar() {
   const [openExampleDialog, setOpenExampleDialog] = React.useState(false);
   const [openTemplateDialog, setOpenTemplateDialog] = React.useState(false);
   const [openFeedbackDialog, setOpenFeedbackDialog] = React.useState(false);
-  const [openQuickGenomeDialog, setOpenQuickGenomeDialog] = React.useState(false);
   const [openCloningStrategyDialog, setOpenCloningStrategyDialog] = React.useState(false);
   const [fileList, setFileList] = React.useState([]);
   const [openVersionDialog, setOpenVersionDialog] = React.useState(false);
@@ -56,9 +54,6 @@ function MainAppBar() {
       } },
   ];
 
-  const miscMenu = [
-    { display: 'Quick genome region download', onClick: () => setOpenQuickGenomeDialog(true) },
-  ];
 
   const handleCloseDialog = async (url, isTemplate) => {
     setOpenExampleDialog(false);
@@ -166,11 +161,6 @@ function MainAppBar() {
               <MenuItem onClick={() => { setOpenExampleDialog(true); handleMenuClose(); }}>Examples</MenuItem>
               <MenuItem onClick={() => { setOpenTemplateDialog(true); handleMenuClose(); }}>Templates</MenuItem>
               <MenuItem onClick={() => { setOpenFeedbackDialog(true); handleMenuClose(); }}>Feedback</MenuItem>
-              {miscMenu.map((item) => (
-                <MenuItem key={item.display} onClick={() => { item.onClick(); handleMenuClose(); }}>
-                  {item.display}
-                </MenuItem>
-              ))}
             </Menu>
           </Box>
 
@@ -183,7 +173,6 @@ function MainAppBar() {
             <Button onClick={() => setOpenExampleDialog(true)}>Examples</Button>
             <Button onClick={() => setOpenTemplateDialog(true)}>Templates</Button>
             <Button onClick={() => setOpenFeedbackDialog(true)}>Feedback</Button>
-            <ButtonWithMenu menuItems={miscMenu}>Misc</ButtonWithMenu>
           </Box>
 
         </Toolbar>
@@ -192,8 +181,6 @@ function MainAppBar() {
       {/* Conditional, since we only want to make request to github if templates want to be used */}
       {openTemplateDialog && <SelectTemplateDialog onClose={handleCloseDialog} open={openTemplateDialog} />}
       <FeedbackDialog open={openFeedbackDialog} setOpen={setOpenFeedbackDialog} />
-      {/* This one conditionally rendered since it uses hooks etc. */}
-      {openQuickGenomeDialog && <QuickGenomeDialog open={openQuickGenomeDialog} setOpen={setOpenQuickGenomeDialog} />}
       {openCloningStrategyDialog && <DownloadCloningStrategyDialog open={openCloningStrategyDialog} setOpen={setOpenCloningStrategyDialog} />}
       <VersionDialog open={openVersionDialog} setOpen={setOpenVersionDialog} />
     </AppBar>
