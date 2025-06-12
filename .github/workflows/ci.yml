@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}-${{ github.run_id }}
+          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
 
   install-python-dependencies:
     needs: [check-cache, get-backend-sha]
@@ -158,7 +158,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}-${{ github.run_id }}
+          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
 
       - name: run python dev server in background
         env:
