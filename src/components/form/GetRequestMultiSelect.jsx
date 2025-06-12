@@ -1,9 +1,22 @@
 import * as React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { Alert, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Alert, Button, CircularProgress, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 
-export default function GetRequestMultiSelect({ getOptionsFromResponse, url, label, messages, onChange, httpClient, multiple = true, autoComplete = true, getOptionLabel, requestHeaders = {}, ...rest }) {
+export default function GetRequestMultiSelect({ 
+  getOptionsFromResponse,
+  url,
+  label,
+  messages,
+  onChange,
+  httpClient,
+  multiple = true,
+  autoComplete = true,
+  getOptionLabel,
+  requestHeaders = {},
+  noOptionsMessage = 'No options found',
+  ...rest
+}) {
   const { loadingMessage, errorMessage } = messages;
   const [options, setOptions] = React.useState([]);
   const [connectAttempt, setConnectAttemp] = React.useState(0);
@@ -13,7 +26,11 @@ export default function GetRequestMultiSelect({ getOptionsFromResponse, url, lab
   React.useEffect(() => {
     httpClient.get(url, { headers: requestHeaders }).then(({ data }) => {
       setWaitingMessage(null);
-      setOptions(getOptionsFromResponse(data));
+      const respOptions = getOptionsFromResponse(data);
+      if (!Array.isArray(respOptions)) {
+        throw new Error('Expected array of options from getOptionsFromResponse');
+      }
+      setOptions(respOptions);
       setError(false);
     }).catch((e) => { setWaitingMessage(errorMessage); setError(true); setOptions([]); });
   }, [connectAttempt]);
@@ -60,8 +77,8 @@ export default function GetRequestMultiSelect({ getOptionsFromResponse, url, lab
             <TextField
               {...params}
               label={label}
-              helperText={waitingMessage}
               error={error}
+              helperText={options.length === 0 ? noOptionsMessage : ''}
             />
           )}
         />
@@ -73,6 +90,7 @@ export default function GetRequestMultiSelect({ getOptionsFromResponse, url, lab
             onChange={(event) => { onChange(event.target.value, options); }}
             label={label}
             defaultValue={multiple ? [] : ''}
+            error={options.length === 0}
           >
             {options.map((option) => (
               <MenuItem key={getOptionLabel(option)} value={getOptionLabel(option)}>
@@ -80,6 +98,7 @@ export default function GetRequestMultiSelect({ getOptionsFromResponse, url, lab
               </MenuItem>
             ))}
           </Select>
+          <FormHelperText>{options.length === 0 ? noOptionsMessage : ''}</FormHelperText>
         </>
       )}
     </FormControl>

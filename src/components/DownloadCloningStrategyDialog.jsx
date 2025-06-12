@@ -4,7 +4,7 @@ import { useSelector, useStore } from 'react-redux';
 import { downloadStateAsJson, downloadStateAsZip } from '../utils/readNwrite';
 import useAlerts from '../hooks/useAlerts';
 
-// You can override the downloadSequence function by passing a downloadCallback that takes the fileName and sequence as arguments
+
 function DownloadCloningStrategyDialog({ open, setOpen }) {
   const [fileName, setFileName] = React.useState('cloning_strategy');
   const [extension, setExtension] = React.useState('.json');
