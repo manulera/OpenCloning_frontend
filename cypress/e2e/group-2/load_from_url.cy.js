@@ -15,4 +15,8 @@ describe('Test load from URL', () => {
     cy.visit('/?source=template&key=kits-moclo-ytk&template=assembly_template_001.json');
     cy.contains('You can use the ATG', { timeout: 10000 }).should('exist');
   });
+  it('can load genome coordinates', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1168936&end=1173209&strand=1&assembly_accession=GCA_000002945.3');
+    cy.contains('Genome region', { timeout: 10000 }).should('exist');
+  });
 });

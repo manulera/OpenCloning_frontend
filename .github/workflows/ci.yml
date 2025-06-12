@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
+          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}-${{ github.run_id }}
 
   install-python-dependencies:
     needs: [check-cache, get-backend-sha]
@@ -130,7 +130,15 @@ jobs:
         run: |
           git describe --tags
 
-      - name: install mafft
+      - name: Cache mafft
+        id: cache-mafft
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/mafft
+          key: ${{ runner.os }}-mafft
+
+      - name: Install mafft
+        if: steps.cache-mafft.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y mafft
@@ -150,7 +158,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
+          key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}-${{ github.run_id }}
 
       - name: run python dev server in background
         env:
