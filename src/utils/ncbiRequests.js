@@ -87,15 +87,18 @@ export async function getInfoFromAssemblyId(assemblyId) {
   const exactAssemblyMatch = reports.find((report) => report.accession === assemblyId);
   let exactMatch = null;
   let newerAssembly = null;
+  let pairedAccession = null;
   if (!exactAssemblyMatch) {
     // The assembly ID is valid, but it's not an exact match to a particular version.
     // For example, passing GCA_000007565 will return entries, but the actual assembly versions
     // are GCA_000007565.1, GCA_000007565.2
     exactMatch = false;
     newerAssembly = reports[0].current_accession;
+    pairedAccession = reports[0].paired_accession;
   } else {
     exactMatch = true;
-    newerAssembly = reports[0].assembly_info.assembly_status !== 'current' ? reports[0].current_accession : null;
+    newerAssembly = exactAssemblyMatch.assembly_info.assembly_status !== 'current' ? exactAssemblyMatch.current_accession : null;
+    pairedAccession = exactAssemblyMatch.paired_accession;
   }
 
   // const url2 = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyId}/annotation_report/download_summary`;
@@ -106,7 +109,7 @@ export async function getInfoFromAssemblyId(assemblyId) {
   // } catch (error) {
   //   return { species, hasAnnotation: false, newerAssembly };
   // }
-  return { species, hasAnnotation: reports[0].annotation_info !== undefined, newerAssembly, exactMatch };
+  return { species, hasAnnotation: reports[0].annotation_info !== undefined, newerAssembly, exactMatch, pairedAccession };
 
   // I used to check like this, but no longer works (see https://github.com/ncbi/datasets/issues/380)
   // const annotationInfo = reports[0].annotation_info || null;
