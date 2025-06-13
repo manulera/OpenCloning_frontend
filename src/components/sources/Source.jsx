@@ -8,7 +8,7 @@ import SourceAssembly from './SourceAssembly';
 import SourceTypeSelector from './SourceTypeSelector';
 import SourcePCRorHybridization from './SourcePCRorHybridization';
 import SourceHomologousRecombination from './SourceHomologousRecombination';
-import SourceGenomeRegion from './SourceGenomeRegion';
+import { SourceGenomeRegion } from './SourceGenomeRegion';
 import SourceManuallyTyped from './SourceManuallyTyped';
 import SourceAnnotation from './SourceAnnotation';
 import SourceDatabase from './SourceDatabase';

@@ -157,8 +157,10 @@ function AssemblyIdSelector({ setAssemblyId, setHasAnnotation = () => {}, onAsse
   const [exactMatch, setExactMatch] = React.useState(false);
   const [newerAssembly, setNewerAssembly] = React.useState(false);
   const [species, setSpecies] = React.useState(null);
+  const [pairedAccessionWithAnnotation, setPairedAccessionWithAnnotation] = React.useState('');
 
-  const onChange = (userInput, resp) => {
+  const onChange = async (userInput, resp) => {
+    setPairedAccessionWithAnnotation('');
     setSpecies(resp === null ? null : resp.species);
     if (resp === null || resp.exactMatch) {
       setAssemblyId(userInput);
@@ -167,9 +169,16 @@ function AssemblyIdSelector({ setAssemblyId, setHasAnnotation = () => {}, onAsse
       setAssemblyId(resp.newerAssembly);
       setExactMatch(false);
     }
+
     setHasAnnotation(resp !== null && resp.hasAnnotation);
     setNewerAssembly(resp !== null && resp.newerAssembly);
     onAssemblyIdChange();
+    if (resp !== null && !resp.hasAnnotation && resp.pairedAccession) {
+      const pairedAccessionInfo = await getInfoFromAssemblyId(resp.pairedAccession);
+      if (pairedAccessionInfo !== null && pairedAccessionInfo.hasAnnotation) {
+        setPairedAccessionWithAnnotation(resp.pairedAccession);
+      }
+    }
   };
 
   return (
@@ -181,6 +190,11 @@ function AssemblyIdSelector({ setAssemblyId, setHasAnnotation = () => {}, onAsse
         {' '}
         <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${newerAssembly}`} target="_blank" rel="noopener noreferrer">{newerAssembly}</a>
       </Alert>
+      )}
+      {pairedAccessionWithAnnotation && (
+        <Alert severity="warning">
+          Equivalent assembly <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${pairedAccessionWithAnnotation}`} target="_blank" rel="noopener noreferrer">{pairedAccessionWithAnnotation}</a> has annotation.
+        </Alert>
       )}
       {species && <KnownSpeciesField species={species} />}
     </>
@@ -460,4 +474,4 @@ function SourceGenomeRegion({ source, requestStatus, sendPostRequest }) {
   );
 }
 
-export default SourceGenomeRegion;
+export { SourceGenomeRegion, AssemblyIdSelector };

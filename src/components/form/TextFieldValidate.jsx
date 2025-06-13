@@ -25,6 +25,7 @@ export default function TextFieldValidate({ getterFunction, onChange, label, def
           }
           onChange(userInput, resp);
         } catch (e) {
+          console.error(e);
           setConnectionError(true);
         }
       }, 500);
