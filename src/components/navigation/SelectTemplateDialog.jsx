@@ -8,7 +8,7 @@ function SelectTemplateDialog({ onClose, open }) {
   const [templates, setTemplates] = React.useState(null);
   const [connectAttempt, setConnectAttemp] = React.useState(0);
   const [error, setError] = React.useState(null);
-  const baseUrl = 'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master';
+  const baseUrl = 'https://assets.opencloning.org/OpenCloning-submission';
   const httpClient = useHttpClient();
 
   // const baseUrl = '';

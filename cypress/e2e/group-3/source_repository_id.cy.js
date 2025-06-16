@@ -190,7 +190,7 @@ describe('RepositoryId Source', () => {
 
     // Displays the right links
     cy.get('li#source-1').contains('Plasmid BBa_B0012 containing part BBa_J428091 in backbone pSB1C5SD from 2024 iGEM Distribution').should('be.visible');
-    cy.get('li#source-1 a[href="https://raw.githubusercontent.com/manulera/annotated-igem-distribution/master/results/plasmids/1.gb"]').should('exist');
+    cy.get('li#source-1 a[href="https://assets.opencloning.org/annotated-igem-distribution/results/plasmids/1.gb"]').should('exist');
     cy.get('li#source-1 a[href="https://parts.igem.org/Part:BBa_J428091"]').should('exist');
     cy.get('li#source-1 a[href="https://airtable.com/appgWgf6EPX5gpnNU/shrb0c8oYTgpZDRgH/tblNqHsHbNNQP2HCX"]').should('exist');
 
@@ -201,7 +201,7 @@ describe('RepositoryId Source', () => {
     cy.get('li#sequence-2').contains('2432 bps');
 
     // Links to https://www.snapgene.com/plasmids/insect_cell_vectors/pFastBac1
-    cy.get('li#source-1 a[href="https://raw.githubusercontent.com/manulera/annotated-igem-distribution/master/results/plasmids/1.gb"]').should('exist');
+    cy.get('li#source-1 a[href="https://assets.opencloning.org/annotated-igem-distribution/results/plasmids/1.gb"]').should('exist');
     cy.get('li#source-1 a[href="https://parts.igem.org/Part:BBa_J428091"]').should('exist');
     cy.get('li#source-1 a[href="https://airtable.com/appgWgf6EPX5gpnNU/shrb0c8oYTgpZDRgH/tblNqHsHbNNQP2HCX"]').should('exist');
     cy.get('li#source-1 a[href="https://github.com/manulera/annotated-igem-distribution/blob/master/results/reports/1.csv"]').should('exist');
