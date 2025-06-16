@@ -77,7 +77,7 @@ function SnapgeneSuccessComponent({ option }) {
 
 const iGEMGetOptions = (plasmids, inputValue) => plasmids.map((p) => ({
   name: `${p['Short Desc / Name']} / ${p['Part Name']} / ${p['Plasmid Backbone']}`,
-  url: `https://raw.githubusercontent.com/manulera/annotated-igem-distribution/master/results/plasmids/${p['Index ID']}.gb`,
+  url: `https://assets.opencloning.org/annotated-igem-distribution/results/plasmids/${p['Index ID']}.gb`,
   table_name: p['Short Desc / Name'],
   part_name: p['Part Name'],
   part_url: p['Part URL'],
@@ -308,7 +308,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           {selectedRepository === 'snapgene'
           && (
           <IndexJsonSelector
-            url="https://raw.githubusercontent.com/manulera/SnapGene_crawler/master/index.json"
+            url="https://assets.opencloning.org/SnapGene_crawler/index.json"
             setInputValue={setInputValue}
             getOptions={snapgeneGetOptions}
             noOptionsText="Type at least 3 characters to search, see SnapGene plasmids for options"
@@ -319,7 +319,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           )}
           {selectedRepository === 'igem' && (
           <IndexJsonSelector
-            url="https://raw.githubusercontent.com/manulera/annotated-igem-distribution/master/results/index.json"
+            url="https://assets.opencloning.org/annotated-igem-distribution/results/index.json"
             setInputValue={setInputValue}
             getOptions={iGEMGetOptions}
             noOptionsText=""
@@ -330,7 +330,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           )}
           {selectedRepository === 'seva' && (
             <IndexJsonSelector
-              url="https://raw.githubusercontent.com/manulera/seva_plasmids_index/master/index.json"
+              url="https://assets.opencloning.org/seva_plasmids_index/index.json"
               setInputValue={setInputValue}
               getOptions={sevaGetOptions}
               noOptionsText="Type at least 3 characters to search"

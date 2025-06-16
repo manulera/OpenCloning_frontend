@@ -1,12 +1,12 @@
 export default [
   // GitHub repository for OpenCloning templates
-  'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master',
+  'https://assets.opencloning.org/OpenCloning-submission',
   // GitHub repository for annotated iGEM distribution
-  'https://raw.githubusercontent.com/manulera/annotated-igem-distribution/master',
+  'https://assets.opencloning.org/annotated-igem-distribution',
   // GitHub repository for SEVA plasmids index
-  'https://raw.githubusercontent.com/manulera/seva_plasmids_index/master',
+  'https://assets.opencloning.org/seva_plasmids_index',
   // GitHub repository for SnapGene index
-  'https://raw.githubusercontent.com/manulera/SnapGene_crawler/master',
+  'https://assets.opencloning.org/SnapGene_crawler',
   // NCBI entrez API
   'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi',
   'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',

@@ -59,7 +59,7 @@ function App() {
           }
         } else if (urlParams.source === 'template' && urlParams.template && urlParams.key) {
           try {
-            const baseUrl = 'https://raw.githubusercontent.com/OpenCloning/OpenCloning-submission/master';
+            const baseUrl = 'https://assets.opencloning.org/OpenCloning-submission';
             const url = `${baseUrl}/processed/${urlParams.key}/templates/${urlParams.template}`;
             const { data } = await httpClient.get(url);
             dispatch(setCloningState(data));
