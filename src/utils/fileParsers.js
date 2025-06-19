@@ -3,7 +3,7 @@ import { readSubmittedTextFile } from './readNwrite';
 
 export const primersFromTextFile = async (fileUploaded, existingNames) => {
   const fileContent = await readSubmittedTextFile(fileUploaded);
-  const lines = fileContent.split(/\r\n|\r|\n/);
+  const allLines = fileContent.split(/\r\n|\r|\n/);
 
   let delimiter = null;
   if (fileUploaded.name.endsWith('.csv')) {
@@ -12,6 +12,12 @@ export const primersFromTextFile = async (fileUploaded, existingNames) => {
     delimiter = '\t';
   } else {
     throw new Error('File must be a .csv or .tsv file');
+  }
+  // Remove empty lines
+  const lines = allLines.filter(line => line.trim() !== '');
+
+  if (lines.length === 0) {
+    throw new Error('File is empty');
   }
 
   const headers = lines[0].split(delimiter);

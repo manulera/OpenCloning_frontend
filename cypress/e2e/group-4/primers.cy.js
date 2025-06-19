@@ -232,6 +232,7 @@ describe('Tests primer functionality', () => {
   });
   it('Can import primers from tsv or csv file', () => {
     cy.get('.primer-form-container').contains('Import from file').click();
+    // This one has a trailing empty line
     cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/valid.tsv', { force: true });
     // There should be a table with the primers displayed
     cy.get('.import-primers-modal-content').should('exist');
@@ -263,6 +264,13 @@ describe('Tests primer functionality', () => {
     cy.get('.primer-form-container').contains('Import from file').click();
     cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/wrong_format.tsv', { force: true });
     cy.get('#global-error-message-wrapper').contains('All lines should have').should('exist');
+    cy.get('#global-error-message-wrapper button').click();
+
+    // Error if file is empty
+    cy.get('.primer-form-container').contains('Import from file').click();
+    cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/empty.tsv', { force: true });
+    cy.get('#global-error-message-wrapper').contains('File is empty').should('exist');
+    cy.get('#global-error-message-wrapper button').click();
 
     // Can import from file with inverted headers
     cy.get('.primer-form-container').contains('Import from file').click();
