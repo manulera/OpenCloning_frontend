@@ -73,7 +73,7 @@ export default function useStoreEditor() {
                 }
               }
               return {
-                sequenceData: alignmentSequenceData,
+                sequenceData: {...alignmentSequenceData, name: aln.file_name},
                 alignmentData: {
                   sequence: aln.alignment[1],
                 },
