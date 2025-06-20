@@ -2,39 +2,8 @@ import { useStore } from 'react-redux';
 import { updateEditor, addAlignment } from '@teselagen/ove';
 import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
 import { getTeselaJsonFromBase64 } from '../utils/readNwrite';
-
-function reverseComplementArray(arr) {
-  return arr.slice().reverse();
-}
-
-export function reverseComplementChromatogramData(chromatogramDataIn) {
-  const chromatogramData = { ...chromatogramDataIn };
-  const complement = { A: 'T', T: 'A', G: 'C', C: 'G', N: 'N' };
-  function reverseComplementSequence(seq) {
-    return seq
-      .map((base) => complement[base] || base).reverse();
-  }
-
-  chromatogramData.aTrace = reverseComplementArray(chromatogramData.aTrace);
-  chromatogramData.tTrace = reverseComplementArray(chromatogramData.tTrace);
-  chromatogramData.gTrace = reverseComplementArray(chromatogramData.gTrace);
-  chromatogramData.cTrace = reverseComplementArray(chromatogramData.cTrace);
-  chromatogramData.basePos = reverseComplementArray(chromatogramData.basePos);
-  chromatogramData.baseCalls = reverseComplementSequence(
-    chromatogramData.baseCalls,
-  );
-
-  chromatogramData.baseTraces = reverseComplementArray(
-    chromatogramData.baseTraces,
-  ).map((traceObj) => ({
-    aTrace: reverseComplementArray(traceObj.aTrace),
-    tTrace: reverseComplementArray(traceObj.tTrace),
-    gTrace: reverseComplementArray(traceObj.gTrace),
-    cTrace: reverseComplementArray(traceObj.cTrace),
-  }));
-
-  return chromatogramData;
-}
+import { findRotation, syncChromatogramDataWithAlignment } from '../utils/sequenceManipulation';
+import { getReverseComplementSequenceAndAnnotations, getReverseComplementSequenceString, rotateSequenceDataToPosition } from '@teselagen/sequence-utils';
 
 export default function useStoreEditor() {
   const store = useStore();
@@ -79,12 +48,32 @@ export default function useStoreEditor() {
               },
             },
             ...await Promise.all(alignmentFiles.map(async (aln) => {
-              const { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+              const fileContent = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+              let chromatogramData = fileContent.chromatogramData;
+              let alignmentSequenceData = {
+                name: aln.file_name,
+                sequence: aln.alignment[1].replaceAll('-', ''),
+              };
+              if (chromatogramData) {
+                chromatogramData = syncChromatogramDataWithAlignment(chromatogramData, aln.alignment[1]);
+              }
+              if (fileContent.features && fileContent.features.length > 0) {
+                alignmentSequenceData = fileContent;
+                let rotation = findRotation(fileContent.sequence, aln.alignment[1]);
+                // If the rotation is -1, it may be reverse complemented
+                const reverseComplemented = rotation === -1;;
+                if (reverseComplemented) {
+                  rotation = findRotation(fileContent.sequence, getReverseComplementSequenceString(aln.alignment[1]));
+                  alignmentSequenceData = getReverseComplementSequenceAndAnnotations(fileContent);
+                  rotateSequenceDataToPosition(alignmentSequenceData, rotation);
+                }
+                if (rotation !== -1 && rotation !== 0) {
+                  rotation = reverseComplemented ? fileContent.sequence.length - rotation : rotation;
+                  alignmentSequenceData = rotateSequenceDataToPosition(alignmentSequenceData, rotation);
+                }
+              }
               return {
-                sequenceData: {
-                  name: aln.file_name,
-                  sequence: aln.alignment[1].replaceAll('-', ''),
-                },
+                sequenceData: {...alignmentSequenceData, name: aln.file_name},
                 alignmentData: {
                   sequence: aln.alignment[1],
                 },

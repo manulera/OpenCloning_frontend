@@ -51,6 +51,10 @@ function MainSequenceEditor({ onCreatePrimer }) {
     updateEditor(store, editorName, { ...defaultMainEditorProps, ...extraProp });
   }, []);
 
-  return (<Editor {...{ editorName, ...defaultMainEditorProps, ...extraProp, height: '800' }} />);
+  return (
+    <div style={{ textAlign: 'left' }}>
+      <Editor {...{ editorName, ...defaultMainEditorProps, ...extraProp, height: '800' }} />
+    </div>
+  );
 }
 export default React.memo(MainSequenceEditor);

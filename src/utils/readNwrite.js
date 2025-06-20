@@ -247,7 +247,7 @@ export function convertToTeselaJson(sequence) {
 export async function getTeselaJsonFromBase64(ab1Base64, fileName = null) {
   try {
     const blob = base64ToBlob(ab1Base64);
-    const results = await (fileName.endsWith('.ab1') ? ab1ToJson(blob) : anyToJson(blob));
+    const results = await (fileName.endsWith('.ab1') ? ab1ToJson(blob) : anyToJson(blob, { fileName }));
     return results[0].parsedSequence;
   } catch (error) {
     const fileNameError = fileName || 'file';
