@@ -2,7 +2,8 @@ import { useStore } from 'react-redux';
 import { updateEditor, addAlignment } from '@teselagen/ove';
 import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
 import { getTeselaJsonFromBase64 } from '../utils/readNwrite';
-import { syncChromatogramDataWithAlignment } from '../utils/sequenceManipulation';
+import { findRotation, syncChromatogramDataWithAlignment } from '../utils/sequenceManipulation';
+import { getReverseComplementSequenceAndAnnotations, getReverseComplementSequenceString, rotateSequenceDataToPosition } from '@teselagen/sequence-utils';
 
 export default function useStoreEditor() {
   const store = useStore();
@@ -28,32 +29,6 @@ export default function useStoreEditor() {
       const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sequencing file');
       let { panelsShown } = store.getState().VectorEditor.mainEditor;
       if (alignmentFiles.length > 0) {
-        const aTracks = [
-          {
-            sequenceData,
-            alignmentData: {
-              // the alignmentData just needs the sequence < TODO this has to be changed to be the largest ---
-              sequence: alignmentFiles[0].alignment[0],
-            },
-          },
-          ...await Promise.all(alignmentFiles.map(async (aln) => {
-            let { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
-            if (chromatogramData) {
-              chromatogramData = syncChromatogramDataWithAlignment(chromatogramData, aln.alignment[1]);
-            }
-            return {
-              sequenceData: {
-                name: aln.file_name,
-                sequence: aln.alignment[1].replaceAll('-', ''),
-              },
-              alignmentData: {
-                sequence: aln.alignment[1],
-              },
-              chromatogramData,
-            };
-          })),
-        ];
-        console.log('aTracks', aTracks);
         addAlignment(store, {
           id: 'simpleAlignment',
           alignmentType: 'Sequencing alignment',
@@ -73,15 +48,34 @@ export default function useStoreEditor() {
               },
             },
             ...await Promise.all(alignmentFiles.map(async (aln) => {
-              let { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+              const fileContent = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+              let chromatogramData = fileContent.chromatogramData;
+              let alignmentSequenceData = {
+                name: aln.file_name,
+                sequence: aln.alignment[1].replaceAll('-', ''),
+              };
               if (chromatogramData) {
                 chromatogramData = syncChromatogramDataWithAlignment(chromatogramData, aln.alignment[1]);
               }
+              if (fileContent.features && fileContent.features.length > 0) {
+                alignmentSequenceData = fileContent;
+                let rotation = findRotation(fileContent.sequence, aln.alignment[1]);
+                console.log('rotation', rotation);
+                // If the rotation is -1, it may be reverse complemented
+                const reverseComplemented = rotation === -1;;
+                if (reverseComplemented) {
+                  console.log('reached')
+                  rotation = findRotation(fileContent.sequence, getReverseComplementSequenceString(aln.alignment[1]));
+                  alignmentSequenceData = getReverseComplementSequenceAndAnnotations(fileContent);
+                  rotateSequenceDataToPosition(alignmentSequenceData, rotation);
+                }
+                if (rotation !== -1 && rotation !== 0) {
+                  rotation = reverseComplemented ? fileContent.sequence.length - rotation : rotation;
+                  alignmentSequenceData = rotateSequenceDataToPosition(alignmentSequenceData, rotation);
+                }
+              }
               return {
-                sequenceData: {
-                  name: aln.file_name,
-                  sequence: aln.alignment[1].replaceAll('-', ''),
-                },
+                sequenceData: alignmentSequenceData,
                 alignmentData: {
                   sequence: aln.alignment[1],
                 },

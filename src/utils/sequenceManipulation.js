@@ -172,22 +172,6 @@ export function syncChromatogramDataWithAlignment(chromatogramData, alignmentStr
   if (rotation !== -1) {
     rotation = reverseComplemented ? originalSequence.length - rotation : rotation;
     newChromatogramData = rotateChromatogramData(newChromatogramData, rotation);
-    // const newSeq = newChromatogramData.baseCalls.join('');
-    // newChromatogramData = convertBasePosTraceToPerBpTrace({
-    //   aTrace: [],
-    //   tTrace: [],
-    //   gTrace: [],
-    //   cTrace: [],
-    //   basePos: [],
-    //   baseCalls: newSeq.split(""),
-    //   baseTraces: newSeq.split("").map(() => ({
-    //     aTrace: [],
-    //     tTrace: [],
-    //     gTrace: [],
-    //     cTrace: []
-    //   })),
-    //   qualNums: newChromatogramData.qualNums
-    // });
 
     return newChromatogramData;
   }
