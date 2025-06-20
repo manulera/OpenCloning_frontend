@@ -60,11 +60,9 @@ export default function useStoreEditor() {
               if (fileContent.features && fileContent.features.length > 0) {
                 alignmentSequenceData = fileContent;
                 let rotation = findRotation(fileContent.sequence, aln.alignment[1]);
-                console.log('rotation', rotation);
                 // If the rotation is -1, it may be reverse complemented
                 const reverseComplemented = rotation === -1;;
                 if (reverseComplemented) {
-                  console.log('reached')
                   rotation = findRotation(fileContent.sequence, getReverseComplementSequenceString(aln.alignment[1]));
                   alignmentSequenceData = getReverseComplementSequenceAndAnnotations(fileContent);
                   rotateSequenceDataToPosition(alignmentSequenceData, rotation);

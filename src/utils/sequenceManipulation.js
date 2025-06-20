@@ -168,7 +168,6 @@ export function syncChromatogramDataWithAlignment(chromatogramData, alignmentStr
     rotation = findRotation(originalSequence, getReverseComplementSequenceString(alignmentSequence));
     newChromatogramData = reverseComplementChromatogramData(newChromatogramData);
   }
-  console.log('rotation', rotation, reverseComplemented);
   if (rotation !== -1) {
     rotation = reverseComplemented ? originalSequence.length - rotation : rotation;
     newChromatogramData = rotateChromatogramData(newChromatogramData, rotation);
