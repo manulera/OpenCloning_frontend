@@ -85,7 +85,7 @@ export default function useStoreEditor() {
           ],
         });
         panelsShown = [[
-          // ...panelsShown[0].filter((p) => p.id !== 'simpleAlignment'),
+          ...panelsShown[0].filter((p) => p.id !== 'simpleAlignment'),
           {
             id: 'simpleAlignment',
             type: 'alignment',
@@ -97,7 +97,7 @@ export default function useStoreEditor() {
       }
       linkedPrimers.forEach((p) => { p.color = 'lightblue'; });
       sequenceData.primers = sequenceData.primers.concat([...linkedPrimers, ...pcrPrimers]);
-      updateEditor(store, editorName, { sequenceData: {}, selectionLayer: {}, panelsShown });
+      updateEditor(store, editorName, { sequenceData, selectionLayer, panelsShown });
     }
   };
 
