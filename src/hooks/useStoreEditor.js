@@ -2,39 +2,7 @@ import { useStore } from 'react-redux';
 import { updateEditor, addAlignment } from '@teselagen/ove';
 import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
 import { getTeselaJsonFromBase64 } from '../utils/readNwrite';
-
-function reverseComplementArray(arr) {
-  return arr.slice().reverse();
-}
-
-export function reverseComplementChromatogramData(chromatogramDataIn) {
-  const chromatogramData = { ...chromatogramDataIn };
-  const complement = { A: 'T', T: 'A', G: 'C', C: 'G', N: 'N' };
-  function reverseComplementSequence(seq) {
-    return seq
-      .map((base) => complement[base] || base).reverse();
-  }
-
-  chromatogramData.aTrace = reverseComplementArray(chromatogramData.aTrace);
-  chromatogramData.tTrace = reverseComplementArray(chromatogramData.tTrace);
-  chromatogramData.gTrace = reverseComplementArray(chromatogramData.gTrace);
-  chromatogramData.cTrace = reverseComplementArray(chromatogramData.cTrace);
-  chromatogramData.basePos = reverseComplementArray(chromatogramData.basePos);
-  chromatogramData.baseCalls = reverseComplementSequence(
-    chromatogramData.baseCalls,
-  );
-
-  chromatogramData.baseTraces = reverseComplementArray(
-    chromatogramData.baseTraces,
-  ).map((traceObj) => ({
-    aTrace: reverseComplementArray(traceObj.aTrace),
-    tTrace: reverseComplementArray(traceObj.tTrace),
-    gTrace: reverseComplementArray(traceObj.gTrace),
-    cTrace: reverseComplementArray(traceObj.cTrace),
-  }));
-
-  return chromatogramData;
-}
+import { syncChromatogramDataWithAlignment } from '../utils/sequenceManipulation';
 
 export default function useStoreEditor() {
   const store = useStore();
@@ -60,6 +28,32 @@ export default function useStoreEditor() {
       const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sequencing file');
       let { panelsShown } = store.getState().VectorEditor.mainEditor;
       if (alignmentFiles.length > 0) {
+        const aTracks = [
+          {
+            sequenceData,
+            alignmentData: {
+              // the alignmentData just needs the sequence < TODO this has to be changed to be the largest ---
+              sequence: alignmentFiles[0].alignment[0],
+            },
+          },
+          ...await Promise.all(alignmentFiles.map(async (aln) => {
+            let { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+            if (chromatogramData) {
+              chromatogramData = syncChromatogramDataWithAlignment(chromatogramData, aln.alignment[1]);
+            }
+            return {
+              sequenceData: {
+                name: aln.file_name,
+                sequence: aln.alignment[1].replaceAll('-', ''),
+              },
+              alignmentData: {
+                sequence: aln.alignment[1],
+              },
+              chromatogramData,
+            };
+          })),
+        ];
+        console.log('aTracks', aTracks);
         addAlignment(store, {
           id: 'simpleAlignment',
           alignmentType: 'Sequencing alignment',
@@ -79,7 +73,10 @@ export default function useStoreEditor() {
               },
             },
             ...await Promise.all(alignmentFiles.map(async (aln) => {
-              const { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+              let { chromatogramData } = await getTeselaJsonFromBase64(sessionStorage.getItem(`verification-${id}-${aln.file_name}`), aln.file_name);
+              if (chromatogramData) {
+                chromatogramData = syncChromatogramDataWithAlignment(chromatogramData, aln.alignment[1]);
+              }
               return {
                 sequenceData: {
                   name: aln.file_name,
@@ -94,7 +91,7 @@ export default function useStoreEditor() {
           ],
         });
         panelsShown = [[
-          ...panelsShown[0].filter((p) => p.id !== 'simpleAlignment'),
+          // ...panelsShown[0].filter((p) => p.id !== 'simpleAlignment'),
           {
             id: 'simpleAlignment',
             type: 'alignment',
@@ -106,7 +103,7 @@ export default function useStoreEditor() {
       }
       linkedPrimers.forEach((p) => { p.color = 'lightblue'; });
       sequenceData.primers = sequenceData.primers.concat([...linkedPrimers, ...pcrPrimers]);
-      updateEditor(store, editorName, { sequenceData, selectionLayer, panelsShown });
+      updateEditor(store, editorName, { sequenceData: {}, selectionLayer: {}, panelsShown });
     }
   };
 

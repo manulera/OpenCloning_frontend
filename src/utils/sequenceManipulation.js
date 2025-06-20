@@ -1,5 +1,5 @@
-import { getReverseComplementSequenceAndAnnotations, getSequenceDataBetweenRange, insertSequenceDataAtPositionOrRange } from '@teselagen/sequence-utils';
-import { fastaToJson } from '@teselagen/bio-parsers';
+import { getReverseComplementSequenceAndAnnotations, getReverseComplementSequenceString, getSequenceDataBetweenRange, insertSequenceDataAtPositionOrRange } from '@teselagen/sequence-utils';
+import { convertBasePosTraceToPerBpTrace, fastaToJson } from '@teselagen/bio-parsers';
 
 function getSpacerSequence(spacer, spacerFeatureName = 'spacer') {
   if (!spacer) {
@@ -84,4 +84,112 @@ export function simulateHomologousRecombination(templateSequence, targetSequence
   }
 
   return insertSequenceDataAtPositionOrRange(templateWithSpacers, targetSequence, insertionRangeOrPosition);
+}
+
+export function findRotation(str1, str2) {
+  const query1 = str1.toUpperCase();
+  const query2 = str2.toUpperCase();
+  // Check if strings are identical
+  if (query1 === query2) return 0;
+  // Check if they're the same length
+  if (query1.length !== query2.length) return -1;
+
+  // Double the first string and search for the second string
+  const doubled = query1 + query1;
+  const rotation = doubled.indexOf(query2);
+  return rotation === -1 ? -1 : rotation;
+}
+
+export function rotateChromatogramData(chromatogramData, rotation) {
+if (rotation === 0) {
+  return {...chromatogramData};
+}
+const {aTrace, baseCalls, basePos, baseTraces, cTrace, gTrace, qualNums, tTrace} = chromatogramData;
+const rotateTrace = rotation * 4;
+return {
+  aTrace: [...aTrace.slice(rotateTrace), ...aTrace.slice(0, rotateTrace)],
+  cTrace: [...cTrace.slice(rotateTrace), ...cTrace.slice(0, rotateTrace)],
+  gTrace: [...gTrace.slice(rotateTrace), ...gTrace.slice(0, rotateTrace)],
+  tTrace: [...tTrace.slice(rotateTrace), ...tTrace.slice(0, rotateTrace)],
+  baseCalls: [...baseCalls.slice(rotation), ...baseCalls.slice(0, rotation)],
+  basePos: [...basePos.slice(rotation), ...basePos.slice(0, rotation)],
+  baseTraces: [...baseTraces.slice(rotation), ...baseTraces.slice(0, rotation)],
+  qualNums: [...qualNums.slice(rotation), ...qualNums.slice(0, rotation)],
+}};
+
+function reverseComplementArray(arr) {
+  return arr.slice().reverse();
+}
+
+export function reverseComplementChromatogramData(chromatogramDataIn) {
+  const chromatogramData = { ...chromatogramDataIn };
+  const complement = { A: 'T', T: 'A', G: 'C', C: 'G', N: 'N' };
+  function reverseComplementSequence(seq) {
+    return seq
+      .map((base) => complement[base] || base).reverse();
+  }
+
+  chromatogramData.aTrace = reverseComplementArray(chromatogramData.aTrace);
+  chromatogramData.tTrace = reverseComplementArray(chromatogramData.tTrace);
+  chromatogramData.gTrace = reverseComplementArray(chromatogramData.gTrace);
+  chromatogramData.cTrace = reverseComplementArray(chromatogramData.cTrace);
+  chromatogramData.basePos = reverseComplementArray(chromatogramData.basePos);
+  chromatogramData.baseCalls = reverseComplementSequence(
+    chromatogramData.baseCalls,
+  );
+
+  chromatogramData.baseTraces = reverseComplementArray(
+    chromatogramData.baseTraces,
+  ).map((traceObj) => ({
+    aTrace: reverseComplementArray(traceObj.aTrace),
+    tTrace: reverseComplementArray(traceObj.tTrace),
+    gTrace: reverseComplementArray(traceObj.gTrace),
+    cTrace: reverseComplementArray(traceObj.cTrace),
+  }));
+  chromatogramData.qualNums = reverseComplementArray(chromatogramData.qualNums);
+
+  return chromatogramData;
+}
+
+export function syncChromatogramDataWithAlignment(chromatogramData, alignmentString) {
+  // If possible, syncs the chromatogram data with the alignment sequence, otherwise
+  // returns the original chromatogram data
+
+  const alignmentSequence = alignmentString.replaceAll('-', '');
+
+  const originalChromatogramData = structuredClone(chromatogramData);
+  let newChromatogramData = originalChromatogramData;
+  const originalSequence = chromatogramData.baseCalls.join('');
+  // Find the rotation of the alignment sequence relative to the original sequence
+  let rotation = findRotation(originalSequence, alignmentSequence);
+  // If the rotation is -1, it may be reverse complemented
+  const reverseComplemented = rotation === -1;;
+  if (reverseComplemented) {
+    rotation = findRotation(originalSequence, getReverseComplementSequenceString(alignmentSequence));
+    newChromatogramData = reverseComplementChromatogramData(newChromatogramData);
+  }
+  console.log('rotation', rotation, reverseComplemented);
+  if (rotation !== -1) {
+    rotation = reverseComplemented ? originalSequence.length - rotation : rotation;
+    newChromatogramData = rotateChromatogramData(newChromatogramData, rotation);
+    // const newSeq = newChromatogramData.baseCalls.join('');
+    // newChromatogramData = convertBasePosTraceToPerBpTrace({
+    //   aTrace: [],
+    //   tTrace: [],
+    //   gTrace: [],
+    //   cTrace: [],
+    //   basePos: [],
+    //   baseCalls: newSeq.split(""),
+    //   baseTraces: newSeq.split("").map(() => ({
+    //     aTrace: [],
+    //     tTrace: [],
+    //     gTrace: [],
+    //     cTrace: []
+    //   })),
+    //   qualNums: newChromatogramData.qualNums
+    // });
+
+    return newChromatogramData;
+  }
+  return originalChromatogramData;
 }
