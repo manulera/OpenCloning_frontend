@@ -1,5 +1,5 @@
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
-import { flipContainedRange } from '@teselagen/range-utils';
+import { flipContainedRange, getRangeLength } from '@teselagen/range-utils';
 
 export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
 
@@ -302,8 +302,10 @@ export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) 
   if (source.type === 'PCRSource' && source.assembly?.length > 0) {
     fwdPrimer = primers.find((p) => p.id === source.assembly[0].sequence);
     rvsPrimer = primers.find((p) => p.id === source.assembly[2].sequence);
-    fwdLength = source.assembly[0].right_location.end - source.assembly[0].right_location.start;
-    rvsLength = source.assembly[2].left_location.end - source.assembly[2].left_location.start;
+    const fwdLocation = parseFeatureLocation(source.assembly[0].right_location, 0, 0, 0, 1, sequenceLength)[0];
+    const rvsLocation = parseFeatureLocation(source.assembly[2].left_location, 0, 0, 0, 1, sequenceLength)[0];
+    fwdLength = getRangeLength(fwdLocation, sequenceLength);
+    rvsLength = getRangeLength(rvsLocation, sequenceLength);
     if (fwdLength < 0) {
       fwdLength += sequenceLength;
     }
