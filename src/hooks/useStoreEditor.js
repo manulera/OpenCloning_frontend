@@ -59,13 +59,13 @@ export default function useStoreEditor() {
               }
               if (fileContent.features && fileContent.features.length > 0) {
                 alignmentSequenceData = fileContent;
-                let rotation = findRotation(fileContent.sequence, aln.alignment[1]);
+                const alignmentSequence = aln.alignment[1].replaceAll('-', '');
+                let rotation = findRotation(fileContent.sequence, alignmentSequence);
                 // If the rotation is -1, it may be reverse complemented
-                const reverseComplemented = rotation === -1;;
+                const reverseComplemented = rotation === -1;
                 if (reverseComplemented) {
-                  rotation = findRotation(fileContent.sequence, getReverseComplementSequenceString(aln.alignment[1]));
+                  rotation = findRotation(fileContent.sequence, getReverseComplementSequenceString(alignmentSequence));
                   alignmentSequenceData = getReverseComplementSequenceAndAnnotations(fileContent);
-                  rotateSequenceDataToPosition(alignmentSequenceData, rotation);
                 }
                 if (rotation !== -1 && rotation !== 0) {
                   rotation = reverseComplemented ? fileContent.sequence.length - rotation : rotation;
