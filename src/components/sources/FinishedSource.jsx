@@ -279,8 +279,8 @@ function FinishedSource({ sourceId }) {
       break;
     case 'HomologousRecombinationSource': message = `Homologous recombination with ${source.input[0].sequence} as template and ${source.input[1].sequence} as insert.`; break;
     case 'CRISPRSource': {
-      const guidesString = source.guides.map((id) => primers.find((p) => id === p.id).name).join(', ');
-      message = `CRISPR HDR with ${source.input[0].sequence} as template, ${source.input[1].sequence} as insert and ${guidesString} as a guide${source.guides.length > 1 ? 's' : ''}`;
+      const guidesString = source.input.filter(({type}) => type === 'SourceInput').map(({sequence}) => primers.find((p) => sequence === p.id).name).join(', ');
+      message = `CRISPR HDR with ${source.input[0].sequence} as template, ${source.input[1].sequence} as insert and ${guidesString} as a guide${source.input.length > 3 ? 's' : ''}`;
     }
       break;
     case 'RepositoryIdSource': message = <RepositoryIdMessage source={source} />;

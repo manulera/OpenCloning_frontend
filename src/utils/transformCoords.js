@@ -8,7 +8,7 @@ export default function getTransformCoords(source, parentSequenceData, productLe
     return () => null;
   }
   const { type: sourceType, input } = source;
-  const fragments = sourceType !== 'PCRSource' ? structuredClone(input) : [structuredClone(input[1])];
+  let fragments = sourceType !== 'PCRSource' ? structuredClone(input) : [structuredClone(input[1])];
 
   let count = 0;
   if (sourceType === 'PCRSource') {
@@ -17,9 +17,13 @@ export default function getTransformCoords(source, parentSequenceData, productLe
     count = fwdPrimerAnnealingPart.start;
   }
 
-  fragments.forEach((f) => {
+  fragments = fragments.map((f) => {
     // The boolean handles undefined parentSequenceData (for PCR where is [undefined, value, undefined])
     const sequence = parentSequenceData.find((e) => Boolean(e) && e.id === f.sequence);
+    // If the sequence is not found, it means it's a CRISPR guide / primer
+    if (!sequence) {
+      return null;
+    }
     const { size } = sequence;
     const { left_location: left, right_location: right } = f;
     const leftLocation = left ? parseFeatureLocation(left, 0, 0, 0, 1, size)[0] : null;
@@ -37,7 +41,9 @@ export default function getTransformCoords(source, parentSequenceData, productLe
     f.rangeInAssembly = translateRange({ start: 0, end: rangeLength - 1 }, count, productLength);
     f.size = size;
     count += getRangeLength({ start: leftStart, end: rightStart - 1 }, size);
+    return f;
   });
+  fragments = fragments.filter((f) => f !== null);
   const rangeInParent = (selection, id) => {
     if (selection.start === -1) {
       return null;
