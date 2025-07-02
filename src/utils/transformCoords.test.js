@@ -6,42 +6,42 @@ const pcrSource = testData.sources.find((s) => s.type === 'PCRSource');
 
 const creLoxData = require('../../public/examples/cre_lox_recombination.json');
 
-const plasmidExcisionSource = creLoxData.sources.find((s) => s.id === 7);
-const plasmidInsertionSource = creLoxData.sources.find((s) => s.id === 11);
+const plasmidExcisionSource = creLoxData.sources.find((s) => s.id === 3);
+const plasmidInsertionSource = creLoxData.sources.find((s) => s.id === 5);
 
 describe('getTransformCoords', () => {
   it('PCRSource', () => {
     const parentSequenceData = [
-      { id: 4, size: 23 },
+      { id: 2, size: 23 },
     ];
     const productLength = 18;
     const transformCoords = getTransformCoords(pcrSource, parentSequenceData, productLength);
     // Normal primer
-    expect(transformCoords({ start: 12, end: 17 }, 4)).toEqual({ start: 8, end: 13 });
+    expect(transformCoords({ start: 12, end: 17 }, 2)).toEqual({ start: 8, end: 13 });
     // Origin-spanning primer
-    expect(transformCoords({ start: 0, end: 6 }, 4)).toEqual({ start: 19, end: 2 });
+    expect(transformCoords({ start: 0, end: 6 }, 2)).toEqual({ start: 19, end: 2 });
   });
   it('Insertion / circular Assembly', () => {
     let parentSequenceData = [
-      { id: 2, size: 151 },
+      { id: 1, size: 151 },
     ];
     let productLength = 113;
     let transformCoords = getTransformCoords(plasmidExcisionSource, parentSequenceData, productLength);
-    expect(transformCoords({ start: 1, end: 5 }, 2)).toEqual({ start: 16, end: 20 });
-    expect(transformCoords({ start: 100, end: 0 }, 2)).toEqual({ start: 115, end: 128 });
+    expect(transformCoords({ start: 1, end: 5 }, 1)).toEqual({ start: 16, end: 20 });
+    expect(transformCoords({ start: 100, end: 0 }, 1)).toEqual({ start: 115, end: 128 });
 
     parentSequenceData = [
-      { id: 8, size: 113 },
-      { id: 10, size: 38 },
+      { id: 3, size: 113 },
+      { id: 4, size: 38 },
     ];
     productLength = 151;
     transformCoords = getTransformCoords(plasmidInsertionSource, parentSequenceData, productLength);
-    expect(transformCoords({ start: 15, end: 37 }, 8)).toEqual({ start: 0, end: 22 });
-    expect(transformCoords({ start: 2, end: 35 }, 8)).toEqual(null);
-    expect(transformCoords({ start: 0, end: 19 }, 10)).toEqual({ start: 0, end: 19 });
-    expect(transformCoords({ start: 128, end: 150 }, 10)).toEqual({ start: 15, end: 37 });
-    expect(transformCoords({ start: 38, end: 112 }, 8)).toEqual({ start: 23, end: 97 });
-    expect(transformCoords({ start: 38, end: 112 }, 10)).toEqual(null);
+    expect(transformCoords({ start: 15, end: 37 }, 3)).toEqual({ start: 0, end: 22 });
+    expect(transformCoords({ start: 2, end: 35 }, 3)).toEqual(null);
+    expect(transformCoords({ start: 0, end: 19 }, 4)).toEqual({ start: 0, end: 19 });
+    expect(transformCoords({ start: 128, end: 150 }, 4)).toEqual({ start: 15, end: 37 });
+    expect(transformCoords({ start: 38, end: 112 }, 3)).toEqual({ start: 23, end: 97 });
+    expect(transformCoords({ start: 38, end: 112 }, 4)).toEqual(null);
   });
   it('Edge case', ({ skip }) => {
     // This is not priority, but it may need fixing. When a circular molecule is excised, the rangeInAssembly

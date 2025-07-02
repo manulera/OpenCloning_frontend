@@ -1,7 +1,12 @@
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange, getRangeLength } from '@teselagen/range-utils';
+import { getSourcesTakingSequenceAsInput } from '../utils/network';
 
 export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.some(({sequence}) => sequence === id))) !== undefined;
+
+export function isCompletePCRSource(source) {
+  return source.type === 'PCRSource' && source.input.length === 3 && source.input[0].type === 'AssemblyFragment';
+}
 
 export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
   let idsSequencesWithChildSource = [];
@@ -109,10 +114,10 @@ export function pcrPrimerPositionsInInput(source, sequenceData) {
   }
   const { size } = sequenceData;
 
-  const fwd = parseFeatureLocation(source.assembly[1].left_location, 0, 0, 0, 1, size)[0];
-  const rvs = parseFeatureLocation(source.assembly[1].right_location, 0, 0, 0, 1, size)[0];
+  const fwd = parseFeatureLocation(source.input[1].left_location, 0, 0, 0, 1, size)[0];
+  const rvs = parseFeatureLocation(source.input[1].right_location, 0, 0, 0, 1, size)[0];
 
-  if (!source.assembly[1].reverse_complemented) {
+  if (!source.input[1].reverse_complemented) {
     fwd.strand = 1;
     rvs.strand = -1;
     return [fwd, rvs];
@@ -138,37 +143,29 @@ export function getPCRPrimers({ primers, sources, teselaJsonCache }, sequenceId)
   let out = [];
 
   // Get PCRs that have this sequence as input
-  const sourcesInput = sources.filter((s) => s.input.includes(sequenceId));
+  const sourcesInput = getSourcesTakingSequenceAsInput(sources, sequenceId);
   const sequenceData = teselaJsonCache[sequenceId];
 
   sourcesInput.forEach((sourceInput) => {
-    if (sourceInput?.type === 'PCRSource' && sourceInput.assembly?.length === 3) {
-      const pcrPrimers = [sourceInput.assembly[0].sequence, sourceInput.assembly[2].sequence].map((id) => primers.find((p) => p.id === id));
+    if (isCompletePCRSource(sourceInput)) {
+      const pcrPrimers = [sourceInput.input[0].sequence, sourceInput.input[2].sequence].map((id) => primers.find((p) => p.id === id));
       const primerPositions = pcrPrimerPositionsInInput(sourceInput, sequenceData);
       out = out.concat(pcrPrimers.map((primer, i) => formatPrimer(primer, primerPositions[i])));
     }
   });
 
   // Get the PCR that have this sequence as output (if any)
-  const sourceOutput = sources.find((s) => s.output === sequenceId);
+  const sourceOutput = sources.find((s) => s.id === sequenceId);
   if (sourceOutput?.type === 'PCRSource') {
-    const pcrPrimers = [sourceOutput.assembly[0].sequence, sourceOutput.assembly[2].sequence].map((id) => primers.find((p) => p.id === id));
+    const pcrPrimers = [sourceOutput.input[0].sequence, sourceOutput.input[2].sequence].map((id) => primers.find((p) => p.id === id));
     const primerPositions = pcrPrimerPositionsInOutput(pcrPrimers, sequenceData);
     out = out.concat(pcrPrimers.map((primer, i) => formatPrimer(primer, primerPositions[i])));
   }
   return out;
 }
 
-export function getNextUniqueId({ sources, sequences }) {
-  const allIds = [...sources.map((s) => s.id), ...sequences.map((e) => e.id)];
-  if (allIds.length === 0) {
-    return 1;
-  }
-  return Math.max(...allIds) + 1;
-}
-
-export function getNextPrimerId(primers) {
-  const allIds = primers.map((p) => p.id);
+export function getNextUniqueId({ sources, sequences, primers }) {
+  const allIds = [...sources.map((s) => s.id), ...sequences.map((e) => e.id), ...primers.map((p) => p.id)];
   if (allIds.length === 0) {
     return 1;
   }
@@ -186,13 +183,13 @@ export function shiftSource(source, networkShift, primerShift) {
   newSource.input = newSource.input.map((i) => i + networkShift);
 
   // Primer part
-  if (newSource.type === 'PCRSource' && newSource.assembly?.length > 0) {
+  if (isCompletePCRSource(newSource)) {
     // Shift primer ids in assembly representation
-    newSource.assembly[0].sequence += primerShift;
-    newSource.assembly[2].sequence += primerShift;
+    newSource.input[0].sequence += primerShift;
+    newSource.input[2].sequence += primerShift;
 
     // Shift sequence ids in assembly representation
-    newSource.assembly[1].sequence += networkShift;
+    newSource.input[1].sequence += networkShift;
   } else if (newSource.type === 'OligoHybridizationSource') {
     if (newSource.forward_oligo) {
       newSource.forward_oligo += primerShift;
@@ -205,8 +202,8 @@ export function shiftSource(source, networkShift, primerShift) {
   }
 
   // Shift assembly representation
-  if (newSource.type !== 'PCRSource' && newSource.assembly?.length > 0) {
-    newSource.assembly.forEach((part) => {
+  if (newSource.type !== 'PCRSource' && newSource.input.length > 0) {
+    newSource.input.forEach((part) => {
       part.sequence += networkShift;
     });
   }
@@ -216,12 +213,12 @@ export function shiftSource(source, networkShift, primerShift) {
 
 export function mergePrimersInSource(source, keepId, removeId) {
   const newSource = { ...source };
-  if (newSource.type === 'PCRSource' && newSource.assembly?.length > 0) {
-    if (newSource.assembly[0].sequence === removeId) {
-      newSource.assembly[0].sequence = keepId;
+  if (isCompletePCRSource(newSource)) {
+    if (newSource.input[0].sequence === removeId) {
+      newSource.input[0].sequence = keepId;
     }
-    if (newSource.assembly[2].sequence === removeId) {
-      newSource.assembly[2].sequence = keepId;
+    if (newSource.input[2].sequence === removeId) {
+      newSource.input[2].sequence = keepId;
     }
   } else if (newSource.type === 'OligoHybridizationSource') {
     if (newSource.forward_oligo === removeId) {
@@ -274,8 +271,8 @@ export function getSourceDatabaseId(sources, sequenceId) {
 }
 
 export function primersInSource(source) {
-  if (source.type === 'PCRSource' && source.assembly?.length > 0) {
-    return [source.assembly[0].sequence, source.assembly[2].sequence];
+  if (isCompletePCRSource(source)) {
+    return [source.input[0].sequence, source.input[2].sequence];
   }
   if (source.type === 'OligoHybridizationSource') {
     return [source.forward_oligo, source.reverse_oligo];
@@ -284,6 +281,10 @@ export function primersInSource(source) {
     return source.guides;
   }
   return [];
+}
+
+export function isAssemblyComplete(source) {
+  return source.input?.some(({type}) => type === 'AssemblyFragment');
 }
 
 export function getUsedPrimerIds(sources) {
@@ -299,11 +300,11 @@ export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) 
   let rvsPrimer = null;
   let fwdLength = 0;
   let rvsLength = 0;
-  if (source.type === 'PCRSource' && source.assembly?.length > 0) {
-    fwdPrimer = primers.find((p) => p.id === source.assembly[0].sequence);
-    rvsPrimer = primers.find((p) => p.id === source.assembly[2].sequence);
-    const fwdLocation = parseFeatureLocation(source.assembly[0].right_location, 0, 0, 0, 1, sequenceLength)[0];
-    const rvsLocation = parseFeatureLocation(source.assembly[2].left_location, 0, 0, 0, 1, sequenceLength)[0];
+  if (source.type === 'PCRSource' && source.input.length === 3 && source.input[0].type === 'AssemblyFragment') {
+    fwdPrimer = primers.find((p) => p.id === source.input[0].sequence);
+    rvsPrimer = primers.find((p) => p.id === source.input[2].sequence);
+    const fwdLocation = parseFeatureLocation(source.input[0].right_location, 0, 0, 0, 1, sequenceLength)[0];
+    const rvsLocation = parseFeatureLocation(source.input[2].left_location, 0, 0, 0, 1, sequenceLength)[0];
     fwdLength = getRangeLength(fwdLocation, sequenceLength);
     rvsLength = getRangeLength(rvsLocation, sequenceLength);
     if (fwdLength < 0) {

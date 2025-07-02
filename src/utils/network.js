@@ -40,6 +40,10 @@ export function constructNetwork(sequences, sources) {
   return unsortedNetwork.sort(parentNodeSorter);
 }
 
+export function getSourcesTakingSequenceAsInput(sources, sequenceId) {
+  return sources.filter((s) => s.input.some(({sequence}) => sequence === sequenceId));
+}
+
 export function getImmediateParentSources(sources, source) {
   const parentIds = source.input.map(({sequence}) => sequence);
   return sources.filter((s) => parentIds.includes(s.id));

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { doesSourceHaveOutput, getNextPrimerId, getNextUniqueId } from './cloning_utils';
+import { doesSourceHaveOutput, getNextUniqueId } from './cloning_utils';
 import { convertToTeselaJson } from '../utils/readNwrite';
 
 function deleteFilesFromSessionStorage(sequenceId, fileName = null) {
@@ -318,14 +318,14 @@ const reducer = {
   addPrimer(state, action) {
     const primer = action.payload;
     const { primers } = state;
-    const nextPrimerId = getNextPrimerId(primers);
+    const nextPrimerId = getNextUniqueId(state);
     primers.push({ ...primer, id: nextPrimerId });
   },
 
   addPrimerAndLinkToSequence(state, action) {
     const { primer, sequenceId, position } = action.payload;
     const { primers, primer2sequenceLinks } = state;
-    const nextPrimerId = getNextPrimerId(primers);
+    const nextPrimerId = getNextUniqueId(state);
     primers.push({ ...primer, id: nextPrimerId });
     primer2sequenceLinks.push({ primerId: nextPrimerId, sequenceId, position });
   },
@@ -363,7 +363,7 @@ const reducer = {
   addPrimersToPCRSource(state, action) {
     const { sourceId, fwdPrimer, revPrimer } = action.payload;
     const { sources, primers } = state;
-    const nextId = getNextPrimerId(primers);
+    const nextId = getNextUniqueId(state);
     // For now, primers were coming with id=0 from the backend
     const copyFwdPrimer = { ...fwdPrimer };
     const copyRevPrimer = { ...revPrimer };

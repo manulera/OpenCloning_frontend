@@ -33,6 +33,8 @@ function SequenceEditor({ sequenceId }) {
   const sequence = useSelector((state) => state.cloning.sequences.find((e) => e.id === sequenceId), isEqual);
   const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, sequenceId), isEqual);
   const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, sequenceId), isEqual);
+  console.log('pcrPrimers', pcrPrimers);
+  console.log('sequenceId', sequenceId);
   const unmutableSeq = useSelector((state) => state.cloning.teselaJsonCache[sequenceId], isEqual);
   const seq = { ...unmutableSeq };
 
@@ -77,7 +79,7 @@ function SequenceEditor({ sequenceId }) {
     } else {
       const newRegion = transformToRegion(eventOutput);
       const newTimeOutId = setTimeout(() => {
-        const parentSequenceIds = parentSource.input;
+        const parentSequenceIds = parentSource.input.map(({sequence}) => sequence);
         // We add the current sequence to the selectedRegions array
         const selectedRegions = [{ id: sequenceId, selectedRegion: newRegion }];
         // If possible, add the equivalent region in the parent sequence
