@@ -1,12 +1,12 @@
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange, getRangeLength } from '@teselagen/range-utils';
 
-export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.includes(id))) !== undefined;
+export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.some(({sequence}) => sequence === id))) !== undefined;
 
 export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
   let idsSequencesWithChildSource = [];
   sources.forEach((source) => {
-    idsSequencesWithChildSource = idsSequencesWithChildSource.concat(source.input);
+    idsSequencesWithChildSource = idsSequencesWithChildSource.concat(source.input.map(({sequence}) => sequence));
   });
   const sequencesNotChildSource = [];
 
@@ -21,7 +21,7 @@ export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
 export function getInputSequencesFromSourceId(state, sourceId) {
   const thisSource = state.cloning.sources.find((s) => s.id === sourceId);
   // Sequences must be returned in the same order as in the source input
-  return thisSource.input.map((id) => state.cloning.sequences.find((e) => e.id === id));
+  return thisSource.input.map(({sequence}) => state.cloning.sequences.find((e) => e.id === sequence));
 }
 
 export function isSourceATemplate({ sources, sequences }, sourceId) {
@@ -320,3 +320,8 @@ export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) 
   }
   return { sourceId: source.id, sourceType: source.type, fwdPrimer, rvsPrimer, fwdLength, rvsLength };
 }
+
+export function doesSourceHaveOutput(cloningState, sourceId) {
+  return Boolean(cloningState.sequences.find((s) => s.id === sourceId));
+}
+

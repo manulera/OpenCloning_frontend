@@ -8,7 +8,8 @@ import useStoreEditor from '../../../../hooks/useStoreEditor';
 function PrimerDesignGibsonAssembly({ source, assemblyType }) {
   const [targets, setTargets] = React.useState(source.input);
 
-  const onInputChange = (newInput) => {
+  const onInputChange = (newInputSequenceIds) => {
+    const newInput = newInputSequenceIds.map((id) => ({ sequence: id }));
     // Prevent unsetting the input of the source
     if (!newInput.includes(source.input[0])) {
       setTargets(source.input.concat(newInput));

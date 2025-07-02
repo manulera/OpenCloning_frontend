@@ -58,7 +58,7 @@ function NetWorkNode({ sourceId }) {
   const tooltipRef = useRef(null);
   const info = useSelector((state) => {
     const s = state.cloning.sources.find((source) => source.id === sourceId);
-    const sequenceId = s.output;
+    const sequenceId = state.cloning.sequences.map((sequence) => sequence.id).includes(s.id) ? s.id : null;
     return {
       sequenceId,
       sourceInput: s.input,
@@ -71,7 +71,7 @@ function NetWorkNode({ sourceId }) {
 
   const ancestorsHidden = useSelector((state) => state.cloning.sourcesWithHiddenAncestors.includes(sourceId));
   const parentSourceIds = useSelector((state) => {
-    const parentSources = state.cloning.sources.filter((source) => sourceInput.includes(source.output));
+    const parentSources = state.cloning.sources.filter((source) => sourceInput.some(({sequence}) => sequence === source.id));
     return getSortedSourceIds(parentSources, state.cloning.sources);
   }, isEqual);
 

@@ -21,11 +21,13 @@ import { cloningActions } from '../../store/cloning';
 import SourceCopySequence from './SourceCopySequence';
 import SourceReverseComplement from './SourceReverseComplement';
 import SourceKnownGenomeRegion from './SourceKnownGenomeRegion';
+import { doesSourceHaveOutput } from '../../store/cloning_utils';
 
 // There are several types of source, this components holds the common part,
 // which for now is a select element to pick which kind of source is created
 function Source({ sourceId }) {
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
+  const hasOutput = useSelector((state) => doesSourceHaveOutput(state.cloning, sourceId));
   const { type: sourceType } = source;
   let specificSource = null;
   const templateOnlySources = ['CollectionSource', 'KnownGenomeCoordinatesSource'];
@@ -36,8 +38,8 @@ function Source({ sourceId }) {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
+    const dispatchedAction = hasOutput ? updateSequenceAndItsSource : addSequenceAndUpdateItsSource;
     // If there is only a single product, commit the result, else allow choosing via MultipleOutputsSelector
-    const dispatchedAction = source.output === null ? addSequenceAndUpdateItsSource : updateSequenceAndItsSource;
     if (sources.length === 1) {
       dispatch(dispatchedAction({ newSource: { ...sources[0], id: sourceId }, newSequence: sequences[0] }));
     } else if (chosenFragment !== null) {

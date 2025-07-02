@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getNextPrimerId, getNextUniqueId } from './cloning_utils';
+import { doesSourceHaveOutput, getNextPrimerId, getNextUniqueId } from './cloning_utils';
 import { convertToTeselaJson } from '../utils/readNwrite';
 
 function deleteFilesFromSessionStorage(sequenceId, fileName = null) {
@@ -65,8 +65,7 @@ const reducer = {
     const nextUniqueId = getNextUniqueId(state);
     sources.push({
       id: nextUniqueId,
-      input: inputSequencesIds,
-      output: null,
+      input: inputSequencesIds.map((id) => ({ sequence: id })),
       type: null,
     });
   },
@@ -200,9 +199,7 @@ const reducer = {
   addSequenceAndUpdateItsSource(state, action) {
     const { newSequence, newSource } = action.payload;
     const { sequences, sources } = state;
-    const nextUniqueId = getNextUniqueId(state);
-    newSequence.id = nextUniqueId;
-    newSource.output = nextUniqueId;
+    newSequence.id = newSource.id;
 
     const sourceIndex = sources.findIndex((s) => s.id === newSource.id);
     if (sourceIndex === -1) {
@@ -258,9 +255,9 @@ const reducer = {
     while (currentSources.length > 0) {
       const currentSource = currentSources.pop();
       sources2delete.push(currentSource.id);
-      if (currentSource.output !== null) {
-        sequences2delete.push(currentSource.output);
-        currentSources.push(...sources.filter((ss) => ss.input.includes(currentSource.output)));
+      if (doesSourceHaveOutput(state, currentSource.id)) {
+        sequences2delete.push(currentSource.id);
+        currentSources.push(...sources.filter((ss) => ss.input.some(({sequence}) => sequence === currentSource.id)));
       }
     }
     state.sources = sources.filter((s) => !sources2delete.includes(s.id));
@@ -283,8 +280,10 @@ const reducer = {
       throw new Error('Some ids are not positive integers');
     }
     // None should be repeated
-    if (new Set(ids).size !== ids.length) {
-      throw new Error('Repeated ids in the sources and sequences');
+    const sourceIds = sources.map((s) => s.id);
+    const sequenceIds = sequences.map((e) => e.id);
+    if (new Set(sourceIds).size !== sourceIds.length || new Set(sequenceIds).size !== sequenceIds.length) {
+      throw new Error('Repeated ids in sources or sequences');
     }
     state.sources = sources;
     state.sequences = sequences;

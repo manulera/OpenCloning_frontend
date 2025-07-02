@@ -5,7 +5,7 @@ export function getParentNodes(node, sequences, sources) {
   const parentSequences = sequences.filter((sequence) => node.source.input.includes(sequence.id));
 
   return parentSequences.map((parentSequence) => {
-    const parentSource = sources.find((source) => source.output === parentSequence.id);
+    const parentSource = sources.find((source) => source.id === parentSequence.id);
     const parentNode = { source: parentSource, sequence: parentSequence };
     return { ...parentNode, parentNodes: getParentNodes(parentNode, sequences, sources) };
   });
@@ -40,8 +40,13 @@ export function constructNetwork(sequences, sources) {
   return unsortedNetwork.sort(parentNodeSorter);
 }
 
+export function getImmediateParentSources(sources, source) {
+  const parentIds = source.input.map(({sequence}) => sequence);
+  return sources.filter((s) => parentIds.includes(s.id));
+}
+
 export function getAllParentSources(source, sources, parentSources = []) {
-  const thisParentSources = source.input.map((input) => sources.find((s) => s.output === input));
+  const thisParentSources = getImmediateParentSources(sources, source);
   parentSources.push(...thisParentSources);
   thisParentSources.forEach((parentSource) => {
     getAllParentSources(parentSource, sources, parentSources);
@@ -66,7 +71,7 @@ export function getSortedSourceIds(sources2sort, sources) {
 export const collectParentSequencesAndSources = (source, sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId = false) => {
   source.input.forEach((sequenceId) => {
     sequencesToExport.push(sequences.find((e) => e.id === sequenceId));
-    const parentSource = sources.find((s) => s.output === sequenceId);
+    const parentSource = sources.find((s) => s.id === sequenceId);
     sourcesToExport.push(parentSource);
     if (stopAtDatabaseId && parentSource.database_id) {
       return;
