@@ -32,12 +32,18 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   const allowedMismatchesRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (source.forward_primer) { setForwardPrimerId(source.forward_primer); }
-    if (source.reverse_primer) { setReversePrimerId(source.reverse_primer); }
-    if (source.forward_oligo) { setForwardPrimerId(source.forward_oligo); }
-    if (source.reverse_oligo) { setReversePrimerId(source.reverse_oligo); }
+    if (isPcr && source.input.length === 3) {
+      setForwardPrimerId(source.input[0].sequence);
+      setReversePrimerId(source.input[2].sequence);
+    } else if (!isPcr && source.input.length === 2) {
+      setForwardPrimerId(source.input[0].sequence);
+      setReversePrimerId(source.input[1].sequence);
+    }
+  }, [source.input]);
+
+  React.useEffect(() => {
     if (source.add_primer_annotations) { setAddPrimerFeatures(source.add_primer_annotations); }
-  }, [source.forward_oligo, source.reverse_oligo, source.forward_primer, source.reverse_primer, source.add_primer_annotations]);
+  }, [source.add_primer_annotations]);
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -49,8 +55,7 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
     };
 
     if (!isPcr) {
-      requestData.source.forward_oligo = forwardPrimerId;
-      requestData.source.reverse_oligo = reversePrimerId;
+      requestData.source.input = [forwardPrimerId, reversePrimerId].map((id) => ({ sequence: id }));
       const config = { params: { minimal_annealing: minimalAnnealingRef.current.value } };
       sendPostRequest({ endpoint: 'oligonucleotide_hybridization', requestData, config, source });
     } else {

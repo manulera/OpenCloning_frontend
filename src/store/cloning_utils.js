@@ -274,8 +274,8 @@ export function primersInSource(source) {
   if (isCompletePCRSource(source)) {
     return [source.input[0].sequence, source.input[2].sequence];
   }
-  if (source.type === 'OligoHybridizationSource') {
-    return [source.forward_oligo, source.reverse_oligo];
+  if (source.type === 'OligoHybridizationSource' && source.input.length === 2) {
+    return source.input.map(({sequence}) => sequence);
   }
   if (source.type === 'CRISPRSource' && source.guides?.length > 0) {
     return source.guides;

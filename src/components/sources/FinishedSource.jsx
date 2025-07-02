@@ -275,7 +275,7 @@ function FinishedSource({ sourceId }) {
       break;
     case 'PCRSource': message = <PCRMessage source={source} />; break;
     case 'OligoHybridizationSource':
-      message = `Hybridization of primers ${primers.find((p) => source.forward_oligo === p.id).name} and ${primers.find((p) => source.reverse_oligo === p.id).name}`;
+      message = `Hybridization of primers ${primers.find((p) => source.input[0].sequence === p.id).name} and ${primers.find((p) => source.input[1].sequence === p.id).name}`;
       break;
     case 'HomologousRecombinationSource': message = `Homologous recombination with ${source.input[0].sequence} as template and ${source.input[1].sequence} as insert.`; break;
     case 'CRISPRSource': {
