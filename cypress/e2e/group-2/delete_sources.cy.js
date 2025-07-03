@@ -25,13 +25,12 @@ describe('Test delete source functionality', () => {
 
     // Clicking on delete does delete
     deleteSourceByContent('addgene');
-    cy.get('li#source-1').should('not.exist');
-    cy.get('li#source-3').should('not.exist');
-    cy.get('li#source-7').should('not.exist');
-    cy.get('li#sequence-8').should('not.exist');
+    cy.get('.finished-source').contains('Gibson assembly').should('not.exist');
+    cy.get('.finished-source').contains('PCR with primers').should('not.exist');
+    cy.get('.finished-source').contains('addgene').should('not.exist');
 
-    cy.get('li#source-5').should('exist');
-    cy.get('li#sequence-6').should('exist');
+    cy.get('.finished-source').contains('Genome region').should('exist');
+
 
     // // Does not delete parents if the last child is deleted
     loadExample('homologous recombination');
@@ -39,23 +38,23 @@ describe('Test delete source functionality', () => {
       .click();
     // No dialog opens
     cy.get('.verify-delete-dialog').should('not.exist');
-    cy.get('li#source-7').should('not.exist');
-    cy.get('li#sequence-8').should('not.exist');
+    cy.get('.finished-source').contains('Homologous recombination').should('not.exist');
 
-    cy.get('li#sequence-4').should('exist');
-    cy.get('li#sequence-6').should('exist');
+    cy.get('.finished-source').contains('addgene').should('exist');
+    cy.get('.finished-source').contains('Genome region').should('exist');
+    cy.get('.finished-source').contains('PCR').should('exist');
   });
   it('Unsets main sequence and removes it from the editor', () => {
     manuallyTypeSequence('ATGC');
     addLane();
     manuallyTypeSequence('ATGC');
-    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').should('have.css', 'color', 'rgb(128, 128, 128)');
-    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').click();
-    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').should('not.have.css', 'color', 'rgb(128, 128, 128)');
+    cy.get('li#sequence-1 svg[data-testid="VisibilityIcon"]').should('have.css', 'color', 'rgb(128, 128, 128)');
+    cy.get('li#sequence-1 svg[data-testid="VisibilityIcon"]').click();
+    cy.get('li#sequence-1 svg[data-testid="VisibilityIcon"]').should('not.have.css', 'color', 'rgb(128, 128, 128)');
     changeTab('Sequence');
     cy.get('.main-sequence-editor').contains('4 bps').should('be.visible');
     changeTab('Cloning');
-    deleteSourceById(3);
+    deleteSourceById(2);
     changeTab('Sequence');
     cy.get('.main-sequence-editor').contains('4 bps').should('be.visible');
     changeTab('Cloning');
@@ -66,6 +65,6 @@ describe('Test delete source functionality', () => {
     changeTab('Cloning');
     addLane();
     manuallyTypeSequence('ATGC');
-    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').should('have.css', 'color', 'rgb(128, 128, 128)');
+    cy.get('li#sequence-1 svg[data-testid="VisibilityIcon"]').should('have.css', 'color', 'rgb(128, 128, 128)');
   });
 });

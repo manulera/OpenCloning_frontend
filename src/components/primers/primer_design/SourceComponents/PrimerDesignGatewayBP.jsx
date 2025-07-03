@@ -27,7 +27,6 @@ function PrimerDesignGatewayBP({ source }) {
       type: 'GatewaySource',
       reaction_type: 'BP',
       greedy,
-      output: null,
     };
     const newSequence = {
       type: 'TemplateSequence',

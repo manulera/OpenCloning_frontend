@@ -16,7 +16,6 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
     const newSource = {
       input: [Number(target)],
       type: primerDesignType === 'homologous_recombination' ? 'HomologousRecombinationSource' : 'CRISPRSource',
-      output: null,
     };
     const newSequence = {
       type: 'TemplateSequence',

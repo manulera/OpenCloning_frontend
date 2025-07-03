@@ -20,7 +20,6 @@ const initialState = {
     {
       id: 1,
       input: [],
-      output: null,
       type: null,
     },
   ],
@@ -126,7 +125,6 @@ const reducer = {
       const newSource = {
         id: nextId,
         input: [templateId],
-        output: null,
         type: 'PCRSource',
       };
       sources.push(newSource);
@@ -151,7 +149,6 @@ const reducer = {
       sources.push({
         id: getNextUniqueId(state),
         input: newSequenceIds,
-        output: null,
         type: sourceType,
       });
     }
@@ -188,7 +185,6 @@ const reducer = {
     const newSource = {
       id: newSourceId,
       input: existingSource.input,
-      output: newSequence.id,
       type: null,
     };
     existingSource.input = [newSequence.id];
@@ -220,7 +216,7 @@ const reducer = {
     }
     sources.splice(sourceIndex, 1, newSource);
 
-    newSequence.id = newSource.output;
+    newSequence.id = newSource.id;
     const sequenceIndex = sequences.findIndex((e) => e.id === newSequence.id);
     if (sequenceIndex === -1) {
       throw new Error('Sequence not found');

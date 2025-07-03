@@ -49,22 +49,24 @@ export function getImmediateParentSources(sources, source) {
   return sources.filter((s) => parentIds.includes(s.id));
 }
 
-export function getAllParentSources(source, sources, parentSources = []) {
+export function getAllParentSources(source, sources, stopAtDatabaseId = false, parentSources = []) {
   const thisParentSources = getImmediateParentSources(sources, source);
   parentSources.push(...thisParentSources);
   thisParentSources.forEach((parentSource) => {
-    getAllParentSources(parentSource, sources, parentSources);
+    if (stopAtDatabaseId && parentSource.database_id) {
+      return;
+    }
+    getAllParentSources(parentSource, sources, stopAtDatabaseId, parentSources);
   });
+  return parentSources;
 }
 
 export function getSortedSourceIds(sources2sort, sources) {
   const sortedSources = [...sources2sort];
   sortedSources.sort((source1, source2) => {
     // We also include the source itself for sorting, in case of grafting state
-    const parentSources1 = [source1];
-    const parentSources2 = [source2];
-    getAllParentSources(source1, sources, parentSources1);
-    getAllParentSources(source2, sources, parentSources2);
+    const parentSources1 = getAllParentSources(source1, sources);
+    const parentSources2 = getAllParentSources(source2, sources);
     const parentSources1Ids = parentSources1.map((source) => source.id);
     const parentSources2Ids = parentSources2.map((source) => source.id);
     return Math.min(...parentSources1Ids) - Math.min(...parentSources2Ids);
@@ -72,29 +74,27 @@ export function getSortedSourceIds(sources2sort, sources) {
   return sortedSources.map((source) => source.id);
 }
 
-export const collectParentSequencesAndSources = (source, sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId = false) => {
-  source.input.forEach((sequenceId) => {
-    sequencesToExport.push(sequences.find((e) => e.id === sequenceId));
-    const parentSource = sources.find((s) => s.id === sequenceId);
-    sourcesToExport.push(parentSource);
-    if (stopAtDatabaseId && parentSource.database_id) {
-      return;
-    }
-    collectParentSequencesAndSources(parentSource, sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId);
-  });
+export const collectParentSequencesAndSources = (source, sources, sequences, stopAtDatabaseId = false) => {
+  const parentSources = getAllParentSources(source, sources, stopAtDatabaseId);
+  const parentSourceIds = parentSources.map((s) => s.id);
+  const parentSequences = sequences.filter((s) => parentSourceIds.includes(s.id));
+  return { parentSources, parentSequences };
 };
 
 export const getSubState = (state, id, stopAtDatabaseId = false) => {
   const { sequences, sources, primers, appInfo } = state.cloning;
   const sequencesToExport = sequences.filter((e) => e.id === id);
-  const sourcesToExport = sources.filter((s) => s.output === id);
+  const sourcesToExport = sources.filter((s) => s.id === id);
   if (sequencesToExport.length === 0) {
     throw new Error(`Sequence with id ${id} not found`);
   }
   if (sourcesToExport.length === 0) {
     throw new Error(`Source with output id ${id} not found`);
   }
-  collectParentSequencesAndSources(sourcesToExport[0], sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId);
+  const { parentSources, parentSequences } = collectParentSequencesAndSources(sourcesToExport[0], sources, sequences, stopAtDatabaseId);
+  sequencesToExport.push(...parentSequences);
+  sourcesToExport.push(...parentSources);
+
   const primerIdsToExport = getUsedPrimerIds(sourcesToExport);
   const primersToExport = primers.filter((p) => primerIdsToExport.includes(p.id));
   return { sequences: sequencesToExport, sources: sourcesToExport, primers: primersToExport, appInfo };

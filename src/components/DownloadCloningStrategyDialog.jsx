@@ -24,6 +24,7 @@ function DownloadCloningStrategyDialog({ open, setOpen }) {
           event.preventDefault();
           setOpen(false);
           const cloningState = store.getState().cloning;
+          console.log('cloningState', cloningState);
           if (extension === '.zip') {
             try {
               await downloadStateAsZip(cloningState, fileName + extension);
