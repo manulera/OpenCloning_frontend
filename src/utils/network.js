@@ -144,7 +144,7 @@ export function mergePrimersInState(mergedState) {
 }
 
 export function graftState(parentState, childState, graftSourceId) {
-  const { shiftedState: shiftedParentState, networkShift } = shiftState(parentState, childState);
+  const { shiftedState: shiftedParentState, idShift } = shiftState(parentState, childState);
 
   const graftSequenceId = getGraftSequenceId(shiftedParentState);
   if (graftSequenceId === null) {
@@ -175,11 +175,11 @@ export function graftState(parentState, childState, graftSourceId) {
     files: [...shiftedParentState.files, ...childState.files],
   };
   mergedState = mergePrimersInState(mergedState);
-  return { mergedState, networkShift };
+  return { mergedState, idShift };
 }
 
 export const mergeStates = (newState, oldState, skipPrimers = false) => {
-  const { shiftedState, networkShift } = shiftState(newState, oldState, skipPrimers);
+  const { shiftedState, idShift } = shiftState(newState, oldState, skipPrimers);
   let mergedState = {
     sources: [...oldState.sources, ...shiftedState.sources],
     sequences: [...oldState.sequences, ...shiftedState.sequences],
@@ -189,5 +189,5 @@ export const mergeStates = (newState, oldState, skipPrimers = false) => {
   if (!skipPrimers) {
     mergedState = mergePrimersInState(mergedState);
   }
-  return { mergedState, networkShift };
+  return { mergedState, idShift };
 };

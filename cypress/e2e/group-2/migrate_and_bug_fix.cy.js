@@ -51,4 +51,27 @@ describe('Test that when files are loaded, old versions are migrated and bug fix
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
     cy.get('div.MuiAlert-message').should('not.exist');
   });
+  it('Works with zip files', () => {
+    cy.get('div.cloning-history').selectFile('cypress/test_files/old_and_bug_fix/cloning_strategy_with_sequencing.zip', { action: 'drag-drop' });
+    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').click();
+    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#sequence-1 svg[data-testid="RuleIcon"]').click();
+    cy.get('table').contains('BZO902_13409020_13409020.ab1');
+    cy.get('table').contains('BZO903_13409037_13409037.ab1');
+    cy.get('table').contains('BZO904_13409044_13409044.ab1');
+    // Check that the files are in the session storage
+    cy.window().its('sessionStorage')
+      .invoke('getItem', 'verification-1-BZO904_13409044_13409044.ab1')
+      .should('not.be.null')
+      .and('have.length.gt', 1000); // Ensure it's not just a tiny value
+    cy.window().its('sessionStorage')
+      .invoke('getItem', 'verification-1-BZO903_13409037_13409037.ab1')
+      .should('not.be.null')
+      .and('have.length.gt', 1000);
+    cy.window().its('sessionStorage')
+      .invoke('getItem', 'verification-1-BZO902_13409020_13409020.ab1')
+      .should('not.be.null')
+      .and('have.length.gt', 1000);
+  });
 });

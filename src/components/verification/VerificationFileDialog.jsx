@@ -26,6 +26,7 @@ import useStoreEditor from '../../hooks/useStoreEditor';
 import LoadFromDatabaseButton from './LoadFromDatabaseButton';
 import { sequencingFileExtensions } from './utils';
 import useHttpClient from '../../hooks/useHttpClient';
+import { getVerificationFileName } from '../../store/cloning_utils';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
@@ -76,7 +77,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
     const existingSequencingFilesInState = await Promise.all(store.getState().cloning.files
       .filter((f) => f.sequence_id === id && f.file_type === 'Sequencing file')
       .map(async (f) => {
-        const base64str = sessionStorage.getItem(`verification-${id}-${f.file_name}`);
+        const base64str = sessionStorage.getItem(getVerificationFileName(f));
         const trace = (await getTeselaJsonFromBase64(base64str, f.file_name)).sequence;
         return { ...f, base64str, trace };
       }));

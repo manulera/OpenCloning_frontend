@@ -5,9 +5,11 @@ import useBackendRoute from '../hooks/useBackendRoute';
 import useValidateState from '../hooks/useValidateState';
 import { cloningActions } from '../store/cloning';
 import { mergeStates } from '../utils/network';
-import { loadFilesToSessionStorage, loadHistoryFile } from '../utils/readNwrite';
+import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '../utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
+import { getVerificationFileName } from '../store/cloning_utils';
+import { isEqual } from 'lodash-es';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;
 
@@ -88,10 +90,12 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
           return;
         }
 
-        const updateState = async (newState, networkShift) => {
+        const updateState = async (newState, idShift) => {
           const validatedState = await validateState(newState);
+          // Update the verificationFiles names if needed
+          const updatedVerificationFiles = updateVerificationFileNames(verificationFiles, newState.files, validatedState.files);
           dispatch(setCloningState(validatedState));
-          await loadFilesToSessionStorage(verificationFiles, networkShift);
+          await loadFilesToSessionStorage(updatedVerificationFiles, idShift);
         };
 
         const replaceState = async () => {
@@ -99,8 +103,8 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         };
 
         const addState = async () => {
-          const { mergedState, networkShift } = mergeStates(cloningStrategy, cloningState);
-          await updateState(mergedState, networkShift);
+          const { mergedState, idShift } = mergeStates(cloningStrategy, cloningState);
+          await updateState(mergedState, idShift);
         };
 
         const errorWrapper = (fn) => async () => {

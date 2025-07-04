@@ -3,6 +3,7 @@ import VerificationFileDialog from './VerificationFileDialog';
 import store from '../../store';
 import { cloningActions } from '../../store/cloning';
 import { loadDataAndMount } from '../../../cypress/e2e/common_funcions_store';
+import { getVerificationFileName } from '../../store/cloning_utils';
 
 const { setFiles, setConfig } = cloningActions;
 
@@ -38,7 +39,7 @@ describe('<VerificationFileDialog />', () => {
   it('displays existing files and can download and delete them', () => {
     store.dispatch(setFiles(dummyFiles));
     dummyFiles.forEach((file) => {
-      sessionStorage.setItem(`verification-${file.sequence_id}-${file.file_name}`, base64str);
+      sessionStorage.setItem(getVerificationFileName(file), base64str);
     });
     cy.mount(<VerificationFileDialog id={1} dialogOpen setDialogOpen={() => {}} />);
     // Even though there are two files with the same name, only one should be displayed
@@ -84,7 +85,7 @@ describe('<VerificationFileDialog />', () => {
       cy.expect(file.alignment).to.have.length(2);
       // The file content is stored in sessionStorage
       cy.window().its('sessionStorage')
-        .invoke('getItem', `verification-${file.sequence_id}-${file.file_name}`)
+        .invoke('getItem', getVerificationFileName(file))
         .should('not.be.null', { timeout: 10000 });
 
       cy.intercept('POST', 'http://127.0.0.1:8000/align_sanger*', {
@@ -112,7 +113,7 @@ describe('<VerificationFileDialog />', () => {
         cy.expect(file.alignment).to.deep.equal(['A', 'C']);
         // The file content is stored in sessionStorage
         cy.window().its('sessionStorage')
-          .invoke('getItem', `verification-${file.sequence_id}-${file.file_name}`)
+          .invoke('getItem', getVerificationFileName(file))
           .should('not.be.null', { timeout: 10000 });
       });
   });

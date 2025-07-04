@@ -4,6 +4,10 @@ import { getSourcesTakingSequenceAsInput } from '../utils/network';
 
 export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.some(({sequence}) => sequence === id))) !== undefined;
 
+export function getVerificationFileName({ sequence_id, file_name }) {
+  return `verification-${sequence_id}-${file_name}`;
+}
+
 export function isCompletePCRSource(source) {
   return source.type === 'PCRSource' && source.input.length === 3 && source.input[0].type === 'AssemblyFragment';
 }
@@ -172,42 +176,11 @@ export function getNextUniqueId({ sources, sequences, primers }) {
   return Math.max(...allIds) + 1;
 }
 
-export function shiftSource(source, networkShift, primerShift) {
+export function shiftSource(source, idShift) {
   const newSource = { ...source };
-
   // Common part
-  newSource.id += networkShift;
-  if (newSource.output) {
-    newSource.output += networkShift;
-  }
-  newSource.input = newSource.input.map((i) => i + networkShift);
-
-  // Primer part
-  if (isCompletePCRSource(newSource)) {
-    // Shift primer ids in assembly representation
-    newSource.input[0].sequence += primerShift;
-    newSource.input[2].sequence += primerShift;
-
-    // Shift sequence ids in assembly representation
-    newSource.input[1].sequence += networkShift;
-  } else if (newSource.type === 'OligoHybridizationSource') {
-    if (newSource.forward_oligo) {
-      newSource.forward_oligo += primerShift;
-    }
-    if (newSource.reverse_oligo) {
-      newSource.reverse_oligo += primerShift;
-    }
-  } else if (newSource.type === 'CRISPRSource') {
-    newSource.guides = newSource.guides?.map((i) => i + primerShift);
-  }
-
-  // Shift assembly representation
-  if (newSource.type !== 'PCRSource' && newSource.input.length > 0) {
-    newSource.input.forEach((part) => {
-      part.sequence += networkShift;
-    });
-  }
-
+  newSource.id += idShift;
+  newSource.input = newSource.input.map((sourceInput) => ({ ...sourceInput, sequence: sourceInput.sequence + idShift }));
   return newSource;
 }
 
@@ -237,18 +210,18 @@ export function mergePrimersInSource(source, keepId, removeId) {
 export function shiftStateIds(newState, oldState, skipPrimers = false) {
   const { sources: newSources, sequences: newSequences, primers: newPrimers, files: newFiles } = newState;
   const { sources: oldSources, sequences: oldSequences, primers: oldPrimers } = oldState;
-  let networkShift = getNextUniqueId({ sources: oldSources, sequences: oldSequences });
+  let idShift = getNextUniqueId({ sources: oldSources, sequences: oldSequences, primers: oldPrimers });
   // Substract the smallest id to minimize the starting id
-  networkShift -= Math.min(...[...newSources.map((s) => s.id), ...newSequences.map((e) => e.id)]);
-  const primerShift = skipPrimers ? 0 : getNextPrimerId(oldPrimers);
+  idShift -= Math.min(...[...newSources.map((s) => s.id), ...newSequences.map((e) => e.id), ...newPrimers.map((p) => p.id)]);
+
   return {
     shiftedState: {
-      sequences: newSequences.map((e) => ({ ...e, id: e.id + networkShift })),
-      primers: newPrimers.map((p) => ({ ...p, id: p.id + primerShift })),
-      sources: newSources.map((s) => shiftSource(s, networkShift, primerShift)),
-      files: newFiles ? newFiles.map((f) => ({ ...f, sequence_id: f.sequence_id + networkShift })) : [],
+      sequences: newSequences.map((e) => ({ ...e, id: e.id + idShift })),
+      primers: newPrimers.map((p) => ({ ...p, id: p.id + idShift })),
+      sources: newSources.map((s) => shiftSource(s, idShift)),
+      files: newFiles ? newFiles.map((f) => ({ ...f, sequence_id: f.sequence_id + idShift })) : [],
     },
-    networkShift };
+    idShift, };
 }
 
 export function stringIsNotDNA(str) {

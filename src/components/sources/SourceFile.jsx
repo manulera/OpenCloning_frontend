@@ -5,7 +5,7 @@ import { useDispatch, batch, useStore } from 'react-redux';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import LabelWithTooltip from '../form/LabelWithTooltip';
 import { cloningActions } from '../../store/cloning';
-import { loadFilesToSessionStorage, loadHistoryFile } from '../../utils/readNwrite';
+import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '../../utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
 import { mergeStates, getGraftSequenceId, graftState } from '../../utils/network';
 
@@ -58,8 +58,9 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         setAlert({ message: 'Cannot graft cloning strategy as it does not converge on a single sequence, you can load it on a source without outputs', severity: 'error' });
         return;
       }
-      cloningStrategy = await validateState(cloningStrategy);
-
+      const validatedCloningStrategy = await validateState(cloningStrategy);
+      // Update the verificationFiles names if needed
+      const updatedVerificationFiles = updateVerificationFileNames(verificationFiles, cloningStrategy.files, validatedCloningStrategy.files);
       batch(async () => {
         if (!graft) {
           // Replace the source with the new one
@@ -68,14 +69,14 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         try {
           const cloningState = store.getState().cloning;
           let mergedState;
-          let networkShift;
+          let idShift;
           if (graft) {
-            ({ mergedState, networkShift } = graftState(cloningStrategy, cloningState, source.id));
+            ({ mergedState, idShift } = graftState(validatedCloningStrategy, cloningState, source.id));
           } else {
-            ({ mergedState, networkShift } = mergeStates(cloningStrategy, cloningState));
+            ({ mergedState, idShift } = mergeStates(validatedCloningStrategy, cloningState));
           }
           dispatch(setCloningState(mergedState));
-          await loadFilesToSessionStorage(verificationFiles, networkShift);
+          await loadFilesToSessionStorage(updatedVerificationFiles, idShift);
         } catch (e) {
           setAlert({ message: e.message, severity: 'error' });
           dispatch(restoreSource({ ...source, type: 'UploadedFileSource' }));
