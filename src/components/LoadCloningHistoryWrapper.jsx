@@ -90,20 +90,21 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
           return;
         }
 
+        const validatedState = await validateState(cloningStrategy);
+        // Update the verificationFiles names if needed
+        const updatedVerificationFiles = updateVerificationFileNames(verificationFiles, cloningStrategy.files, validatedState.files);
+
         const updateState = async (newState, idShift) => {
-          const validatedState = await validateState(newState);
-          // Update the verificationFiles names if needed
-          const updatedVerificationFiles = updateVerificationFileNames(verificationFiles, newState.files, validatedState.files);
-          dispatch(setCloningState(validatedState));
+          dispatch(setCloningState(newState));
           await loadFilesToSessionStorage(updatedVerificationFiles, idShift);
         };
 
         const replaceState = async () => {
-          await updateState(cloningStrategy, 0);
+          await updateState(validatedState, 0);
         };
 
         const addState = async () => {
-          const { mergedState, idShift } = mergeStates(cloningStrategy, cloningState);
+          const { mergedState, idShift } = mergeStates(validatedState, cloningState);
           await updateState(mergedState, idShift);
         };
 

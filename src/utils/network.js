@@ -130,10 +130,12 @@ export function mergePrimersInState(mergedState) {
     for (let j = i + 1; j < newState.primers.length; j++) {
       const p2 = newState.primers[j];
       if (p1.name === p2.name) {
-        if (p1.sequence === p2.sequence && p1.database_id === p2.database_id) {
+        const sameDatabaseId = (!Boolean(p1.database_id) && !Boolean(p2.database_id)) || p1.database_id === p2.database_id;
+        if (p1.sequence === p2.sequence && sameDatabaseId) {
           newState.sources = newState.sources.map((s) => mergePrimersInSource(s, p1.id, p2.id));
           removedPrimerIds.push(p2.id);
         } else {
+          console.log(p1, p2);
           throw new Error(`Primer name ${p1.name} exists in current session but has different sequence or database_id`);
         }
       }
@@ -152,10 +154,10 @@ export function graftState(parentState, childState, graftSourceId) {
   }
   const graftSequenceInParent = shiftedParentState.sequences.find((seq) => seq.id === graftSequenceId);
 
-  const parentGraftSource = shiftedParentState.sources.find((source) => source.output === graftSequenceId);
+  const parentGraftSource = shiftedParentState.sources.find((source) => source.id === graftSequenceId);
   const childGraftSource = childState.sources.find((source) => source.id === graftSourceId);
-  const graftSequenceInChild = childState.sequences.find((seq) => seq.id === childGraftSource.output);
-  const mergedSource = { ...parentGraftSource, id: childGraftSource.id, output: childGraftSource.output };
+  const graftSequenceInChild = childState.sequences.find((seq) => seq.id === childGraftSource.id);
+  const mergedSource = { ...parentGraftSource, id: childGraftSource.id };
 
   const parentSources = shiftedParentState.sources.filter((source) => source.id !== parentGraftSource.id);
   const parentSequences = shiftedParentState.sequences.filter((seq) => seq.id !== graftSequenceId);

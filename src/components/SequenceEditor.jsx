@@ -33,8 +33,6 @@ function SequenceEditor({ sequenceId }) {
   const sequence = useSelector((state) => state.cloning.sequences.find((e) => e.id === sequenceId), isEqual);
   const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, sequenceId), isEqual);
   const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, sequenceId), isEqual);
-  console.log('pcrPrimers', pcrPrimers);
-  console.log('sequenceId', sequenceId);
   const unmutableSeq = useSelector((state) => state.cloning.teselaJsonCache[sequenceId], isEqual);
   const seq = { ...unmutableSeq };
 

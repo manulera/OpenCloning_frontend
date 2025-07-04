@@ -8,6 +8,7 @@ describe('Test that when files are loaded, old versions are migrated and bug fix
     // When drag and drop
     cy.get('div.cloning-history').selectFile('cypress/test_files/old_and_bug_fix/crispr_hdr.json', { action: 'drag-drop' });
     cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').click();
     cy.get('div.MuiAlert-message').should('not.exist');
     addLane();

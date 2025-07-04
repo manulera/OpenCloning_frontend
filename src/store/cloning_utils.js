@@ -193,15 +193,13 @@ export function mergePrimersInSource(source, keepId, removeId) {
     if (newSource.input[2].sequence === removeId) {
       newSource.input[2].sequence = keepId;
     }
-  } else if (newSource.type === 'OligoHybridizationSource') {
-    if (newSource.forward_oligo === removeId) {
-      newSource.forward_oligo = keepId;
-    }
-    if (newSource.reverse_oligo === removeId) {
-      newSource.reverse_oligo = keepId;
-    }
-  } else if (newSource.type === 'CRISPRSource') {
-    newSource.guides = newSource.guides?.map((i) => (i === removeId ? keepId : i));
+  } else if (newSource.type === 'OligoHybridizationSource' || newSource.type === 'CRISPRSource') {
+    newSource.input = newSource.input.map((sourceInput) => {
+      if (sourceInput.type === 'SourceInput' && sourceInput.sequence === removeId) {
+        return { ...sourceInput, sequence: keepId };
+      }
+      return { ...sourceInput };
+    });
   }
 
   return newSource;
