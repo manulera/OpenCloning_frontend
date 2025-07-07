@@ -3,11 +3,13 @@ import React from 'react';
 function AssemblyPlanDisplayer({
   source,
 }) {
-  if (!source.assembly) {
+  const assemblyFragments = source.input.filter(i => i.type === 'AssemblyFragment');
+  console.log(assemblyFragments);
+  if (!assemblyFragments.length) {
     return null;
   }
 
-  const fragments = source.assembly.map((fragment) => {
+  const fragments = assemblyFragments.map((fragment) => {
     const { sequence, left_location, right_location, reverse_complemented } = fragment;
     const leftPart = left_location || '';
     const rightPart = right_location || '';
