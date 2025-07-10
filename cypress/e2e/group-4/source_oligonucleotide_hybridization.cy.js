@@ -14,8 +14,8 @@ describe('Tests oligo hybridization source', () => {
     // Submit
     cy.get('button').contains('Perform hybridization').click();
     // The result is shown
-    cy.get('li#sequence-2', { timeout: 20000 }).contains('50 bps');
-    cy.get('li#sequence-2 li#source-1').contains('Hybridization of primers fwd-hyb and rvs-hyb');
+    cy.get('li#sequence-1', { timeout: 20000 }).contains('50 bps');
+    cy.get('li#sequence-1 li#source-1').contains('Hybridization of primers fwd-hyb and rvs-hyb');
     // Cannot delete the primers
     cy.get('button.MuiTab-root').contains('Primers').click();
     cy.get('.primer-table-container [data-testid="DeleteIcon"]').first().click();
@@ -65,7 +65,7 @@ describe('Tests oligo hybridization source', () => {
     clickSequenceOutputArrow('li#source-1');
     cy.get('li#source-1').contains('68 bps');
     cy.get('button').contains('Choose product').click();
-    cy.get('li#sequence-2 li#source-1').should('exist');
-    cy.get('li#sequence-2').contains('68 bps');
+    cy.get('li#sequence-1 li#source-1').should('exist');
+    cy.get('li#sequence-1').contains('68 bps');
   });
 });
