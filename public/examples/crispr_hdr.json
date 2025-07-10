@@ -150,7 +150,7 @@
   ],
   "description": "Replacing a fragment in the ase1 ORF by a 3xHA tag, using CRISPR-HDR",
   "files": null,
-  "schema_version": "0.4.0",
+  "schema_version": "0.4.1",
   "backend_version": null,
   "frontend_version": null
 }

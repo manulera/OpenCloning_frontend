@@ -159,7 +159,7 @@ const reducer = {
     const { sources, sequences } = state;
 
     const sourceId = getNextUniqueId(state);
-    const sequenceId = sourceId + 1;
+    const sequenceId = sourceId;
     const newSequence = {
       ...sequence,
       id: sequenceId,
@@ -179,7 +179,7 @@ const reducer = {
     const existingSource = state.sources.find((s) => s.id === existingSourceId);
     const newSourceId = getNextUniqueId(state);
     const newSequence = {
-      id: newSourceId + 1,
+      id: newSourceId,
       type: 'TemplateSequence',
     };
     const newSource = {
