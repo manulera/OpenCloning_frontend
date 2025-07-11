@@ -10,11 +10,11 @@ describe('RepositoryId Source', () => {
     clickMultiSelectOption('Select repository', 'Addgene', 'li#source-1');
     setInputValue('Addgene ID', '39282', 'li#source-1');
     cy.get('button.MuiButtonBase-root').contains('Submit').click();
-    cy.get('li#sequence-2 .corner-id', { timeout: 20000 }).first().should('have.text', '2');
-    cy.get('li#sequence-2 li#source-1').should('exist');
-    cy.get('li#sequence-2 li#source-1').contains('Request to addgene with ID 39282');
-    cy.get('li#sequence-2').contains('pFA6a');
-    cy.get('li#sequence-2').contains('5086 bps');
+    cy.get('li#sequence-1 .corner-id', { timeout: 20000 }).first().should('have.text', '1');
+    cy.get('li#sequence-1 li#source-1').should('exist');
+    cy.get('li#sequence-1 li#source-1').contains('Request to addgene with ID 39282');
+    cy.get('li#sequence-1').contains('pFA6a');
+    cy.get('li#sequence-1').contains('5086 bps');
     // links to https://www.addgene.org/39282/sequences/
     cy.get('li#source-1 a[href="https://www.addgene.org/39282/sequences/"]').should('exist');
   });
@@ -22,11 +22,11 @@ describe('RepositoryId Source', () => {
     clickMultiSelectOption('Select repository', 'GenBank', 'li#source-1');
     setInputValue('GenBank ID', 'NM_001018957.2', 'li#source-1');
     cy.get('li#source-1 button.MuiButtonBase-root').click();
-    cy.get('li#sequence-2 .corner-id', { timeout: 20000 }).first().should('have.text', '2');
-    cy.get('li#sequence-2 li#source-1').should('exist');
-    cy.get('li#sequence-2 li#source-1').contains('Request to genbank with ID NM_001018957.2');
-    cy.get('li#sequence-2').contains('NM_001018957.2');
-    cy.get('li#sequence-2').contains('2671 bps');
+    cy.get('li#sequence-1 .corner-id', { timeout: 20000 }).first().should('have.text', '1');
+    cy.get('li#sequence-1 li#source-1').should('exist');
+    cy.get('li#sequence-1 li#source-1').contains('Request to genbank with ID NM_001018957.2');
+    cy.get('li#sequence-1').contains('NM_001018957.2');
+    cy.get('li#sequence-1').contains('2671 bps');
 
     // links to https://www.ncbi.nlm.nih.gov/nuccore/NM_001018957.2
     cy.get('li#source-1 a[href="https://www.ncbi.nlm.nih.gov/nuccore/NM_001018957.2"]').should('exist');
@@ -35,10 +35,10 @@ describe('RepositoryId Source', () => {
     clickMultiSelectOption('Select repository', 'Benchling', 'li#source-1');
     setInputValue('Benchling URL', 'https://benchling.com/siverson/f/lib_B94YxDHhQh-cidar-moclo-library/seq_dh1FrJTc-b0015_dh/edit', 'li#source-1');
     cy.get('li#source-1 button.MuiButtonBase-root').click();
-    cy.get('li#sequence-2 .corner-id', { timeout: 20000 }).first().should('have.text', '2');
-    cy.get('li#sequence-2 li#source-1').should('exist');
-    cy.get('li#sequence-2 li#source-1').contains('Request to Benchling');
-    cy.get('li#sequence-2').contains('2237 bps');
+    cy.get('li#sequence-1 .corner-id', { timeout: 20000 }).first().should('have.text', '1');
+    cy.get('li#sequence-1 li#source-1').should('exist');
+    cy.get('li#sequence-1 li#source-1').contains('Request to Benchling');
+    cy.get('li#sequence-1').contains('2237 bps');
 
     // links to the /edit
     cy.get('li#source-1 a[href="https://benchling.com/siverson/f/lib_B94YxDHhQh-cidar-moclo-library/seq_dh1FrJTc-b0015_dh/edit"]').should('exist');
@@ -77,8 +77,8 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 button').contains('Submit').click();
 
     // Shows the plasmid name
-    cy.get('li#sequence-2').contains('pFastBac1');
-    cy.get('li#sequence-2').contains('4776 bps');
+    cy.get('li#sequence-1').contains('pFastBac1');
+    cy.get('li#sequence-1').contains('4776 bps');
 
     // Links to https://www.snapgene.com/plasmids/insect_cell_vectors/pFastBac1
     cy.get('li#source-1 a[href="https://www.snapgene.com/plasmids/insect_cell_vectors/pFastBac1"]').should('exist');
@@ -88,8 +88,8 @@ describe('RepositoryId Source', () => {
     clickMultiSelectOption('Select repository', 'Euroscarf', 'li#source-1');
     setInputValue('Euroscarf ID', 'P30174', 'li#source-1');
     cy.get('li#source-1 button').contains('Submit').click();
-    cy.get('li#sequence-2').contains('pKT128');
-    cy.get('li#sequence-2').contains('4738 bps');
+    cy.get('li#sequence-1').contains('pKT128');
+    cy.get('li#sequence-1').contains('4738 bps');
 
     // Links to http://www.euroscarf.de/plasmid_details.php?accno=P30174
     cy.get('li#source-1 a[href="http://www.euroscarf.de/plasmid_details.php?accno=P30174"]').should('exist');
@@ -98,8 +98,8 @@ describe('RepositoryId Source', () => {
     clickMultiSelectOption('Select repository', 'WekWikGene', 'li#source-1');
     setInputValue('WekWikGene ID', '0000304', 'li#source-1');
     cy.get('li#source-1 button').contains('Submit').click();
-    cy.get('li#sequence-2', { timeout: 20000 }).contains('planarian');
-    cy.get('li#sequence-2').contains('3900 bps');
+    cy.get('li#sequence-1', { timeout: 20000 }).contains('planarian');
+    cy.get('li#sequence-1').contains('3900 bps');
 
     // Links to https://wekwikgene.wllsb.edu.cn/plasmids/0000304
     cy.get('li#source-1 a[href="https://wekwikgene.wllsb.edu.cn/plasmids/0000304"]').should('exist');
@@ -197,8 +197,8 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 button').contains('Submit').click();
 
     // Shows the plasmid name
-    cy.get('li#sequence-2').contains('BBa_J428091');
-    cy.get('li#sequence-2').contains('2432 bps');
+    cy.get('li#sequence-1').contains('BBa_J428091');
+    cy.get('li#sequence-1').contains('2432 bps');
 
     // Links to https://www.snapgene.com/plasmids/insect_cell_vectors/pFastBac1
     cy.get('li#source-1 a[href="https://assets.opencloning.org/annotated-igem-distribution/results/plasmids/1.gb"]').should('exist');
@@ -215,8 +215,8 @@ describe('RepositoryId Source', () => {
     // Should display the table
     cy.get('li#source-1 table').contains('Resistance').should('exist');
     cy.get('li#source-1 button').contains('Submit').click();
-    cy.get('li#sequence-2').contains('pSEVA427');
-    cy.get('li#sequence-2').contains('4611 bps');
+    cy.get('li#sequence-1').contains('pSEVA427');
+    cy.get('li#sequence-1').contains('4611 bps');
 
     // Links to the right page
     cy.get('li#source-1 a[href="https://seva-plasmids.com/maps-canonical/maps-plasmids-SEVAs-canonical-versions-web-1-3-gbk/pSEVA427.gbk"]').should('exist');

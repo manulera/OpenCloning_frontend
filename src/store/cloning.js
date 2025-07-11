@@ -187,7 +187,7 @@ const reducer = {
       input: existingSource.input,
       type: null,
     };
-    existingSource.input = [newSequence.id];
+    existingSource.input = [{ sequence: newSequence.id }];
     state.sources.push(newSource);
     state.sequences.push(newSequence);
   },

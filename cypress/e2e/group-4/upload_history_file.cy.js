@@ -18,7 +18,7 @@ describe('Test upload history from file', () => {
       cy.window().its('sessionStorage').its('length').should('eq', 0);
     });
     // No verification files are listed either
-    cy.get('li#sequence-2 [data-testid="RuleIcon"]').click();
+    cy.get('li#sequence-1 [data-testid="RuleIcon"]').click();
     cy.get('table td').should('not.exist');
   });
   it('JSON: Can merge with existing history', () => {
@@ -59,20 +59,20 @@ describe('Test upload history from file', () => {
     cy.get('div.cloning-tab-pannel').contains('final_product.gb').then(() => {
     // Check that the files are in the session storage
       cy.window().its('sessionStorage')
-        .invoke('getItem', 'verification-2-BZO904_13409044_13409044.ab1')
+        .invoke('getItem', 'verification-1-BZO904_13409044_13409044.ab1')
         .should('not.be.null')
         .and('have.length.gt', 1000); // Ensure it's not just a tiny value
       cy.window().its('sessionStorage')
-        .invoke('getItem', 'verification-2-BZO903_13409037_13409037.ab1')
+        .invoke('getItem', 'verification-1-BZO903_13409037_13409037.ab1')
         .should('not.be.null')
         .and('have.length.gt', 1000);
       cy.window().its('sessionStorage')
-        .invoke('getItem', 'verification-2-BZO902_13409020_13409020.ab1')
+        .invoke('getItem', 'verification-1-BZO902_13409020_13409020.ab1')
         .should('not.be.null')
         .and('have.length.gt', 1000);
     });
     // Clicking on the data-testid="RuleIcon" should open the verification file dialog
-    cy.get('li#sequence-2 [data-testid="RuleIcon"]').click();
+    cy.get('li#sequence-1 [data-testid="RuleIcon"]').click();
     cy.get('table').contains('BZO904_13409044_13409044.ab1');
     cy.get('table').contains('BZO903_13409037_13409037.ab1');
     cy.get('table').contains('BZO902_13409020_13409020.ab1');

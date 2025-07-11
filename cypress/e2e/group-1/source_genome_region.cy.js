@@ -32,8 +32,8 @@ describe('GenomeRegion Source', () => {
     cy.get('#source-1 a').contains('NC_001147.6').should('have.attr', 'href', 'https://www.ncbi.nlm.nih.gov/nuccore/NC_001147.6');
     // TODO: Test link to gene id
     cy.get('#source-1 a').contains('854223').should('have.attr', 'href', 'https://www.ncbi.nlm.nih.gov/gene/854223');
-    cy.get('li#sequence-2').contains('NC_001147');
-    cy.get('li#sequence-2').contains('5658 bps');
+    cy.get('li#sequence-1').contains('NC_001147');
+    cy.get('li#sequence-1').contains('5658 bps');
   });
   it('works for other assembly', () => {
     cy.get('#tab-panel-0 .MuiInputBase-root').eq(1).click();
@@ -61,8 +61,8 @@ describe('GenomeRegion Source', () => {
     cy.get('#source-1 a').contains('NC_001147.6').should('have.attr', 'href', 'https://www.ncbi.nlm.nih.gov/nuccore/NC_001147.6');
     // TODO: Test link to gene id
     cy.get('#source-1 a').contains('854223').should('have.attr', 'href', 'https://www.ncbi.nlm.nih.gov/gene/854223');
-    cy.get('li#sequence-2').contains('NC_001147');
-    cy.get('li#sequence-2').contains('5658 bps');
+    cy.get('li#sequence-1').contains('NC_001147');
+    cy.get('li#sequence-1').contains('5658 bps');
   });
   it('gives the right warnings and errors for other assembly', () => {
     cy.get('#tab-panel-0 .MuiInputBase-root').eq(1).click();
@@ -116,8 +116,8 @@ describe('GenomeRegion Source', () => {
     setInputValue('End', '20', 'li#source-1');
     clickMultiSelectOption('Strand', 'plus', 'li#source-1');
     cy.get('button.MuiButtonBase-root').contains('Submit').click();
-    cy.get('li#sequence-2 .veLinearView', { timeout: 20000 }).contains('DQ208311');
-    cy.get('li#sequence-2 .veLinearView').contains('20 bps');
+    cy.get('li#sequence-1 .veLinearView', { timeout: 20000 }).contains('DQ208311');
+    cy.get('li#sequence-1 .veLinearView').contains('20 bps');
   });
   it('gives the right errors and warnings for sequence accesion', () => {
     clickMultiSelectOption('Type of region', 'sequence accession', 'li#source-1');

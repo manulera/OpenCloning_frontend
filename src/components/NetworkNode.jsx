@@ -68,7 +68,7 @@ function NetWorkNode({ sourceId }) {
     };
   }, isEqual);
   const { sequenceId, sourceInput, hasDatabaseId, sequenceIsTemplate, sourceIsTemplate } = info;
-
+  console.log(sourceId, sourceIsTemplate);
   const ancestorsHidden = useSelector((state) => state.cloning.sourcesWithHiddenAncestors.includes(sourceId));
   const parentSourceIds = useSelector((state) => {
     const parentSources = state.cloning.sources.filter((source) => sourceInput.some(({sequence}) => sequence === source.id));

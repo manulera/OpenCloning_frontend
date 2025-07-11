@@ -46,7 +46,6 @@ function CollectionSource({ source, requestStatus, sendPostRequest }) {
     dispatch(replaceSource({
       id: sourceId,
       input: [],
-      output: source.output,
       type: null,
     }));
   };

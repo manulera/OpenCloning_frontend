@@ -135,7 +135,6 @@ export function mergePrimersInState(mergedState) {
           newState.sources = newState.sources.map((s) => mergePrimersInSource(s, p1.id, p2.id));
           removedPrimerIds.push(p2.id);
         } else {
-          console.log(p1, p2);
           throw new Error(`Primer name ${p1.name} exists in current session but has different sequence or database_id`);
         }
       }

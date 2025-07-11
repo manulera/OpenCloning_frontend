@@ -9,7 +9,6 @@ function SourceKnownGenomeRegion({ source, requestStatus, sendPostRequest }) {
       ...source,
       type: 'GenomeCoordinatesSource',
     };
-    console.log('requestData', requestData);
     sendPostRequest({ endpoint: 'genome_coordinates', requestData, source });
   }, [connectAttempt]);
 

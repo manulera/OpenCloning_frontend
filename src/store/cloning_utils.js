@@ -36,7 +36,7 @@ export function getInputSequencesFromSourceId(state, sourceId) {
 export function isSourceATemplate({ sources, sequences }, sourceId) {
   // Get the output sequence
   const source = sources.find((s) => s.id === sourceId);
-  const sequences2 = [...sequences.filter((e) => e.id === source.output), ...sequences.filter((e) => source.input.includes(e.id))];
+  const sequences2 = [...sequences.filter((e) => e.id === source.id), ...sequences.filter((e) => source.input.some((i) => i.sequence === e.id))];
   return sequences2.some((s) => s.type === 'TemplateSequence');
 }
 

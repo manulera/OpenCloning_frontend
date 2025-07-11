@@ -4,7 +4,6 @@ function AssemblyPlanDisplayer({
   source,
 }) {
   const assemblyFragments = source.input.filter(i => i.type === 'AssemblyFragment');
-  console.log(assemblyFragments);
   if (!assemblyFragments.length) {
     return null;
   }
