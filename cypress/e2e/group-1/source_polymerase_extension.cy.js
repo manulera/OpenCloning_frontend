@@ -17,14 +17,14 @@ describe('Test polymerase extension functionality', () => {
     manuallyTypeSequence('GCGCACGT', false, [3, 3]);
     addSource('PolymeraseExtensionSource');
     // Should show an alert since there are no overhangs
-    cy.get('li#source-6 .MuiAlert-message').contains('Invalid input');
+    cy.get('li#source-4 .MuiAlert-message').contains('Invalid input');
 
     // Add third sequence with correct overhangs
     addLane();
     manuallyTypeSequence('GCGCACGT', false, [-3, -3]);
     addSource('PolymeraseExtensionSource');
-    cy.get('li#source-9 button').contains('Extend with').click();
-    cy.get('li#sequence-10').should('exist');
-    cy.get('li#sequence-10 > span .overhang-representation').should('not.exist');
+    cy.get('li#source-6 button').contains('Extend with').click();
+    cy.get('li#sequence-6').should('exist');
+    cy.get('li#sequence-6 > span .overhang-representation').should('not.exist');
   });
 });

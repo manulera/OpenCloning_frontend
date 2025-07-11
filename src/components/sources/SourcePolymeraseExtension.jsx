@@ -14,7 +14,7 @@ function SourcePolymeraseExtension({ source, requestStatus, sendPostRequest }) {
 
     const requestData = {
       sequences: inputSequences,
-      source: { id: sourceId, input: inputSequences.map((e) => e.id) },
+      source: { id: sourceId, input: inputSequences.map((e) => ({ sequence: e.id })) },
     };
     sendPostRequest({ endpoint: 'polymerase_extension', requestData, source });
   };
