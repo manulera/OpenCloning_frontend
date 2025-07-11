@@ -36,7 +36,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Design primers').click();
 
     clickMultiSelectOption('Purpose of primers', 'Homologous Recombination', 'li');
-    clickMultiSelectOption('Target sequence', '6', 'li');
+    clickMultiSelectOption('Target sequence', '3', 'li');
     cy.get('button').contains('Design primers').click();
 
     // We should be now on the Sequence tab
@@ -191,18 +191,18 @@ describe('Test primer designer functionality', () => {
     // We should be now in the Sequence tab
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
-    // There should be three tabs: Seq 2, Seq 4 and Other settings
+    // There should be three tabs: Seq 1, Seq 2 and Other settings
     cy.get('.main-sequence-editor button.MuiStepButton-root').should('have.length', 4);
+    getStepButton('Seq 1').should('exist');
     getStepButton('Seq 2').should('exist');
-    getStepButton('Seq 4').should('exist');
     getStepButton('Other settings').should('exist');
     getStepButton('Results').should('exist');
 
     // We cannot submit without setting the regions
     getStepButton('Other settings').should('be.disabled');
 
-    // The current tab should be "Seq 2" and it displays the sequence pREP42-MCS+
-    checkCurrentStep('Seq 2');
+    // The current tab should be "Seq 1" and it displays the sequence pREP42-MCS+
+    checkCurrentStep('Seq 1');
     cy.get('.main-sequence-editor').should('contain', 'pREP42-MCS+');
     // Error if setting without selection
     getBottomButton('Choose region', 0).should('be.disabled');
@@ -218,7 +218,7 @@ describe('Test primer designer functionality', () => {
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('not.exist');
 
     // Go to next tab
-    getStepButton('Seq 4').click();
+    getStepButton('Seq 2').click();
     cy.get('.main-sequence-editor').should('contain', 'NC_003424');
     // select ase1 region
     cy.contains('svg', 'ase1').first().click();
@@ -325,9 +325,9 @@ describe('Test primer designer functionality', () => {
     // We should be now in the Sequence tab
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
-    // There should be three tabs: Seq 2, Seq 4 and Other settings (if we get here, the rest is the same as Gibson assembly)
+    // There should be three tabs: Seq 1, Seq 4 and Other settings (if we get here, the rest is the same as Gibson assembly)
     cy.get('.main-sequence-editor button.MuiStepButton-root').should('have.length', 4);
-    getStepButton('Seq 2').should('exist');
+    getStepButton('Seq 1').should('exist');
     getStepButton('Seq 4').should('exist');
     getStepButton('Other settings').should('exist');
     getStepButton('Results').should('exist');

@@ -88,22 +88,18 @@ const reducer = {
     if (source2update === undefined) {
       throw new Error('Source not found');
     }
-    const newSequenceId = getNextUniqueId(state);
-
-    // Update the source that will output the template sequence
-    source2update.output = newSequenceId;
 
     // Add the template sequence
     sequences.push({
-      id: newSequenceId,
+      id: sourceId,
       ...newSequence,
     });
 
     // Add the source that will take the template sequence as input
     sources.push({
-      id: newSequenceId + 1,
+      id: getNextUniqueId(state),
       ...newSource,
-      input: [...newSource.input || [], newSequenceId],
+      input: [...(newSource.input || []), { sequence: sourceId }],
     });
   },
 
@@ -372,8 +368,7 @@ const reducer = {
     if (!source) {
       throw new Error('Source not found');
     }
-    source.forward_primer = nextId;
-    source.reverse_primer = nextId + 1;
+    source.input = [ {sequence: nextId}, ...source.input, {sequence: nextId + 1} ];
   },
 
   addToSourcesWithHiddenAncestors(state, action) {

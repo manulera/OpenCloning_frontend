@@ -278,9 +278,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     const pcrSources = store.getState().cloning.sources.filter((source) => source.type === 'PCRSource');
     let usedPCRSources;
     if (designType === 'ebic') {
-      usedPCRSources = pcrSources.filter((source) => source.input.includes(templateSequenceIds[0]));
+      usedPCRSources = pcrSources.filter((source) => source.input.some((i) => i.sequence === templateSequenceIds[0]));
     } else {
-      usedPCRSources = templateSequenceIds.map((id) => pcrSources.find((source) => source.input.includes(id)));
+      usedPCRSources = templateSequenceIds.map((id) => pcrSources.find((source) => source.input.some((i) => i.sequence === id)));
     }
 
     batch(() => {

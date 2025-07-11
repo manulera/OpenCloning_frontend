@@ -3,9 +3,10 @@ import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 
 import useGatewayPrimerDesignSettings from './useGatewayPrimerDesignSettings';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 function PrimerDesignGatewayBP({ donorVectorId, pcrSource }) {
-  const templateSequenceId = pcrSource.input[0];
+  const templateSequenceId = getPcrTemplateSequenceId(pcrSource);
   const sequenceIds = React.useMemo(() => [templateSequenceId, donorVectorId], [templateSequenceId, donorVectorId]);
   const steps = React.useMemo(() => [
     { label: 'Amplified region',

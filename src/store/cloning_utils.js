@@ -12,6 +12,10 @@ export function isCompletePCRSource(source) {
   return source.type === 'PCRSource' && source.input.length === 3 && source.input[0].type === 'AssemblyFragment';
 }
 
+export function getPcrTemplateSequenceId(source) {
+  return source.input.length === 1 ? source.input[0].sequence : source.input[1].sequence;
+}
+
 export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
   let idsSequencesWithChildSource = [];
   sources.forEach((source) => {
@@ -29,8 +33,8 @@ export function getIdsOfSequencesWithoutChildSource(sources, sequences) {
 
 export function getInputSequencesFromSourceId(state, sourceId) {
   const thisSource = state.cloning.sources.find((s) => s.id === sourceId);
-  // Sequences must be returned in the same order as in the source input
-  return thisSource.input.map(({sequence}) => state.cloning.sequences.find((e) => e.id === sequence));
+  // Sequences must be returned in the same order as in the source input, primers (undefined) are filtered out
+  return thisSource.input.map(({sequence}) => state.cloning.sequences.find((e) => e.id === sequence)).filter((e) => e !== undefined);
 }
 
 export function isSourceATemplate({ sources, sequences }, sourceId) {
@@ -50,10 +54,10 @@ export function getPrimerDesignObject({ sources, sequences }) {
   const mockSequenceIds = outputSequences.map((s) => s.id);
 
   // Find the PCRs from which the mock sequences are outputs
-  const pcrSources = sources.filter((s) => mockSequenceIds.includes(s.output));
+  const pcrSources = sources.filter((s) => mockSequenceIds.includes(s.id));
 
-  // Find the template sequences form those PCRs
-  const templateSequences = sequences.filter((e) => pcrSources.some((ps) => ps.input.includes(e.id)));
+  // Find the template sequences for those PCRs
+  const templateSequences = sequences.filter((e) => pcrSources.some((ps) => ps.input.some((i) => i.sequence === e.id)));
 
   // They should not be mock sequences
   if (templateSequences.some((ts) => ts.type === 'TemplateSequence')) {
@@ -62,7 +66,7 @@ export function getPrimerDesignObject({ sources, sequences }) {
   }
 
   // Find the source they are input to (there should be zero or one)
-  const finalSources = sources.filter((s) => s.input.some((i) => mockSequenceIds.includes(i)));
+  const finalSources = sources.filter((s) => s.input.some((i) => mockSequenceIds.includes(i.sequence)));
 
   if (finalSources.length === 0) {
     // return as is
@@ -76,7 +80,7 @@ export function getPrimerDesignObject({ sources, sequences }) {
   const finalSource = finalSources[0];
 
   // Inputs to the finalSource that are not mock sequences with primer_design
-  const otherInputIds = finalSource.input.filter((i) => !mockSequenceIds.includes(i));
+  const otherInputIds = finalSource.input.map((i) => i.sequence).filter((i) => !mockSequenceIds.includes(i));
   const otherInputs = sequences.filter((e) => otherInputIds.includes(e.id));
   // There should be no TemplateSequence as an input that does not have primer_design set
   if (otherInputs.some((i) => i.type === 'TemplateSequence' && i.primer_design === undefined)) {
@@ -84,6 +88,7 @@ export function getPrimerDesignObject({ sources, sequences }) {
     return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
   }
 
+  console.log({ finalSource, otherInputIds, pcrSources, outputSequences });
   return { finalSource, otherInputIds, pcrSources, outputSequences };
 }
 
