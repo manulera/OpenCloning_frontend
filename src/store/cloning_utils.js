@@ -54,7 +54,10 @@ export function getPrimerDesignObject({ sources, sequences }) {
   const mockSequenceIds = outputSequences.map((s) => s.id);
 
   // Find the PCRs from which the mock sequences are outputs
-  const pcrSources = sources.filter((s) => mockSequenceIds.includes(s.id));
+  const pcrSources = sources.filter((s) => s.type === 'PCRSource' && mockSequenceIds.includes(s.id));
+  if (pcrSources.length === 0) {
+    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
+  }
 
   // Find the template sequences for those PCRs
   const templateSequences = sequences.filter((e) => pcrSources.some((ps) => ps.input.some((i) => i.sequence === e.id)));
