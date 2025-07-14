@@ -136,8 +136,7 @@ const reducer = {
         id: newSequenceId,
       });
       newSequenceIds.push(newSequenceId);
-      const newSource = sources.find((s) => s.id === id);
-      newSource.output = newSequenceId;
+
     });
 
     if (sourceType !== null) {

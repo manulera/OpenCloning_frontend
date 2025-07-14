@@ -27,7 +27,6 @@ function SourceTypeSelector({ source }) {
     }));
   };
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
-  console.log(sourceId, inputSequences);
   const sequencesExist = useSelector((state) => state.cloning.sequences.length > 0, shallowEqual);
   const options = [];
   if (inputSequences.length === 0) {

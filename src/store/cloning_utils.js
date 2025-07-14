@@ -91,7 +91,6 @@ export function getPrimerDesignObject({ sources, sequences }) {
     return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
   }
 
-  console.log({ finalSource, otherInputIds, pcrSources, outputSequences });
   return { finalSource, otherInputIds, pcrSources, outputSequences };
 }
 

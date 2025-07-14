@@ -8,14 +8,6 @@ import VerifyDeleteDialog from './VerifyDeleteDialog';
 import useStoreEditor from '../../hooks/useStoreEditor';
 import { isSequenceInputOfAnySource } from '../../store/cloning_utils';
 
-function sourceHasDownstreamChildren(sources, sourceId) {
-  const currentSource = sources.find((source) => source.id === sourceId);
-  if (!currentSource.output) {
-    return false;
-  }
-  return sources.find((source) => source.input.includes(currentSource.output)) !== undefined;
-}
-
 const { deleteSourceAndItsChildren, setMainSequenceId } = cloningActions;
 
 function SourceBox({ children, sourceId }) {

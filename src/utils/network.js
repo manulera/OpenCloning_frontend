@@ -22,24 +22,6 @@ function parentNodeSorter(a, b) {
   return Math.min(...aValue) - Math.min(...bValue);
 }
 
-export function constructNetwork(sequences, sources) {
-  const sequencesNoSeq = sequences.map((seq) => ({ ...seq, sequence: '' }));
-  const network = [];
-  // To construct the network, we start by the elements of DNA that are not input for anything
-  // and the sources that have no output
-  const sequenceIdsThatAreInput = sources.reduce((result, source) => result.concat(source.input), []);
-  const sequencesThatAreNotInput = sequencesNoSeq.filter((sequence) => !sequenceIdsThatAreInput.includes(sequence.id));
-
-  const sourcesWithoutOutput = sources.filter((source) => source.output === null);
-
-  sequencesThatAreNotInput.forEach((sequence) => network.push({ sequence, source: sources.find((s) => s.output === sequence.id) }));
-  sourcesWithoutOutput.forEach((source) => network.push({ sequence: null, source }));
-
-  const unsortedNetwork = network.map((node) => ({ ...node, parentNodes: getParentNodes(node, sequencesNoSeq, sources).sort(parentNodeSorter) }));
-
-  return unsortedNetwork.sort(parentNodeSorter);
-}
-
 export function getSourcesTakingSequenceAsInput(sources, sequenceId) {
   return sources.filter((s) => s.input.some(({sequence}) => sequence === sequenceId));
 }
@@ -111,11 +93,11 @@ export const shiftState = (newState, oldState, skipPrimers = false) => {
   return shiftStateIds(newState, oldState, skipPrimers);
 };
 
-export function getGraftSequenceId(parentState) {
-  const sequenceIdsThatAreInput = parentState.sources.reduce((result, source) => result.concat(source.input), []);
-  const sequenceIdsThatAreNotInput = parentState.sequences.filter((sequence) => !sequenceIdsThatAreInput.includes(sequence.id)).map((seq) => seq.id);
-  const sourcesWithoutOutput = parentState.sources.filter((source) => source.output === null);
-
+export function getGraftSequenceId({ sources, sequences }) {
+  const sequenceIdsThatAreInput = sources.reduce((result, source) => result.concat(source.input.map(({sequence}) => sequence)), []);
+  const allSequenceIds = sequences.map((seq) => seq.id);
+  const sequenceIdsThatAreNotInput = allSequenceIds.filter((sequenceId) => !sequenceIdsThatAreInput.includes(sequenceId));
+  const sourcesWithoutOutput = sources.filter((source) => !allSequenceIds.includes(source.id));
   if (sourcesWithoutOutput.length === 0 && sequenceIdsThatAreNotInput.length === 1) {
     return sequenceIdsThatAreNotInput[0];
   }
