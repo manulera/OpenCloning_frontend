@@ -185,7 +185,7 @@
   ],
   "description": "Cloning the ase1 gene from S. pombe's genome into pREP42-MCS+ expression vector using Gibson assembly.",
   "files": null,
-  "schema_version": "0.4.1",
+  "schema_version": "0.4.3",
   "backend_version": null,
   "frontend_version": null
 }
