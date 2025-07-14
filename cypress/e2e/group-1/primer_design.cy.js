@@ -416,9 +416,9 @@ describe('Test primer designer functionality', () => {
     checkCurrentStep('Results');
 
     // Check that the primers are correct
-    cy.get('.primer-design-form input').first().should('have.value', 'seq_2_EcoRI_fwd');
+    cy.get('.primer-design-form input').first().should('have.value', 'seq_1_EcoRI_fwd');
     cy.get('.primer-design-form input').eq(1).invoke('val').should('match', /^TTTGAATTCAAA/);
-    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_2_BamHI_rvs');
+    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_1_BamHI_rvs');
     cy.get('.primer-design-form input').eq(3).invoke('val').should('match', /^TTTGGATCCGGG/);
 
     // Save the primers
@@ -433,7 +433,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Perform PCR').click();
 
     // Check that the PCR was successful
-    cy.get('li').contains('PCR with primers seq_2_EcoRI_fwd and seq_2_BamHI_rvs').should('exist');
+    cy.get('li').contains('PCR with primers seq_1_EcoRI_fwd and seq_1_BamHI_rvs').should('exist');
   });
 
   it('Restriction ligation primer design - invert site', () => {
@@ -551,8 +551,8 @@ describe('Test primer designer functionality', () => {
     checkCurrentStep('Results');
 
     // Check that the primers are correct
-    cy.get('.primer-design-form input').first().should('have.value', 'seq_2_fwd');
-    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_2_rvs');
+    cy.get('.primer-design-form input').first().should('have.value', 'seq_1_fwd');
+    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_1_rvs');
 
     // Save the primers
     cy.get('button').contains('Save primers').click();
@@ -566,7 +566,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Perform PCR').click();
 
     // Check that the PCR was successful
-    cy.get('li').contains('PCR with primers seq_2_fwd and seq_2_rvs').should('exist');
+    cy.get('li').contains('PCR with primers seq_1_fwd and seq_1_rvs').should('exist');
   });
 
   it('Retains primer design info even when displaying another sequence', () => {
@@ -587,7 +587,7 @@ describe('Test primer designer functionality', () => {
     addLane();
     manuallyTypeSequence('ACGT');
     // Click on the data-testid="VisibilityIcon"
-    cy.get('li#sequence-6 svg[data-testid="VisibilityIcon"]').click();
+    cy.get('li#sequence-3 svg[data-testid="VisibilityIcon"]').click();
     // The sequence should be visible
     cy.get('.main-sequence-editor').contains('4 bps').should('exist');
     cy.get('.primer-design').should('not.be.visible');
@@ -605,12 +605,12 @@ describe('Test primer designer functionality', () => {
     // No alert is visible (Request is not sent)
     cy.get('.open-cloning div.MuiAlert-standardError').should('not.exist');
     // Select the wrong donor vector
-    clickMultiSelectOption('Donor vector', '6', 'li');
+    clickMultiSelectOption('Donor vector', 'pcDNA', 'li');
     cy.get('.open-cloning div.MuiAlert-standardError').contains('At least two').should('exist');
     // Also shows the att sites present in the wrong donor vector
     cy.get('.open-cloning div.MuiAlert-standardError').contains('attR1').should('exist');
     // Select the correct donor vector
-    clickMultiSelectOption('Donor vector', '4', 'li');
+    clickMultiSelectOption('Donor vector', 'pDONR221', 'li');
     cy.get('button').contains('Design primers').click();
 
     // We should be on the Sequence tab
@@ -734,6 +734,6 @@ describe('Test primer designer functionality', () => {
     cy.get('.open-cloning li button').contains('Submit').click();
 
     // Check that the BP reaction was successful
-    cy.get('li#source-9').contains('Gateway BP reaction').should('exist');
+    cy.get('li#source-12').contains('Gateway BP reaction').should('exist');
   });
 });

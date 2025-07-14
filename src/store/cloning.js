@@ -109,6 +109,7 @@ const reducer = {
     // and a list of templateIds to be amplified by PCR. Their outputs
     // will be used as input for a subsequent assembly reaction.
     const { sourceId, templateIds, sourceType, newSequence } = action.payload;
+    console.log({ sourceId, templateIds, sourceType, newSequence });
     const { sources, sequences } = state;
 
     if (sources.find((s) => s.id === sourceId) === undefined) {
@@ -120,7 +121,7 @@ const reducer = {
       const nextId = getNextUniqueId(state);
       const newSource = {
         id: nextId,
-        input: [templateId],
+        input: [{ sequence: templateId }],
         type: 'PCRSource',
       };
       sources.push(newSource);
@@ -128,22 +129,18 @@ const reducer = {
     });
 
     // Add the output sequences
-    const newSequenceIds = [];
     sources2update.forEach((id) => {
-      const newSequenceId = getNextUniqueId(state);
       sequences.push({
         ...newSequence,
-        id: newSequenceId,
+        id,
       });
-      newSequenceIds.push(newSequenceId);
-
     });
 
     if (sourceType !== null) {
       // Add the Assembly that takes the PCR outputs as input
       sources.push({
         id: getNextUniqueId(state),
-        input: newSequenceIds,
+        input: sources2update.map((id) => ({ sequence: id })),
         type: sourceType,
       });
     }

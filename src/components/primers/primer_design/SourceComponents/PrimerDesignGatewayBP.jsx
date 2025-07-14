@@ -25,7 +25,7 @@ function PrimerDesignGatewayBP({ source }) {
   const onSubmit = (event) => {
     event.preventDefault();
     const newSource = {
-      input: [Number(target)],
+      input: [{ sequence: Number(target) }],
       type: 'GatewaySource',
       reaction_type: 'BP',
       greedy,
