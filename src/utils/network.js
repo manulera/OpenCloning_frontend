@@ -51,6 +51,8 @@ export function getSortedSourceIds(sources2sort, sources) {
     const parentSources2 = getAllParentSources(source2, sources);
     const parentSources1Ids = parentSources1.map((source) => source.id);
     const parentSources2Ids = parentSources2.map((source) => source.id);
+    parentSources1Ids.push(source1.id);
+    parentSources2Ids.push(source2.id);
     return Math.min(...parentSources1Ids) - Math.min(...parentSources2Ids);
   });
   return sortedSources.map((source) => source.id);
