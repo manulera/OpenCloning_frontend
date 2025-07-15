@@ -34,7 +34,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
   const fileNames = useSelector((state) => state.cloning.files.filter((f) => (f.sequence_id === id)).map((f) => f.file_name), shallowEqual);
   const fileTypes = useSelector((state) => state.cloning.files.filter((f) => (f.sequence_id === id)).map((f) => f.file_type), shallowEqual);
   const hasSequencingFile = fileTypes.includes('Sequencing file');
-  const databaseId = useSelector((state) => state.cloning.sources.find((s) => s.output === id)?.database_id, isEqual);
+  const databaseId = useSelector((state) => state.cloning.sources.find((s) => s.id === id)?.database_id, isEqual);
 
   const sequence = useSelector((state) => state.cloning.sequences.find((e) => e.id === id), shallowEqual);
   const [loadingMessage, setLoadingMessage] = useState('');
