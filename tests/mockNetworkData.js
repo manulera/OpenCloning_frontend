@@ -8,7 +8,7 @@ export const mockSequences = [
 ];
 
 export const mockSources = [
-  { id: 1, input: [{sequence: 2}], },
+  { id: 1, input: [{sequence: 2}, {sequence: 3}], },
   { id: 2, input: [{sequence: 7}, {sequence: 8}],  type: 'OligoHybridizationSource' },
   { id: 3, input: [{sequence: 4}, {sequence: 5}],  database_id: 100 },
   { id: 4, input: [], },
