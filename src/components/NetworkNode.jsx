@@ -62,7 +62,7 @@ function NetWorkNode({ sourceId }) {
     return {
       sequenceId,
       sourceInput: s.input,
-      hasDatabaseId: Boolean(getSourceDatabaseId(state.cloning.sources, s.output)),
+      hasDatabaseId: Boolean(getSourceDatabaseId(state.cloning.sources, s.id)),
       sequenceIsTemplate: sequenceId && state.cloning.sequences.find((sequence) => sequence.id === sequenceId).type === 'TemplateSequence',
       sourceIsTemplate: isSourceATemplate(state.cloning, sourceId),
     };

@@ -7,7 +7,7 @@ import './PrimerList.css';
 import { cloningActions } from '../../store/cloning';
 import ImportPrimersButton from './import_primers/ImportPrimersButton';
 import PrimerDatabaseImportForm from './import_primers/PrimerDatabaseImportForm';
-import { getUsedPrimerIds } from '../../store/cloning_utils';
+import { getUsedPrimerIds, isCompleteOligoHybridizationSource, isCompletePCRSource } from '../../store/cloning_utils';
 import useDatabase from '../../hooks/useDatabase';
 import DownloadPrimersButton from './DownloadPrimersButton';
 import useMultiplePrimerDetails from './primer_details/useMultiplePrimerDetails';
@@ -37,7 +37,7 @@ function PrimerList() {
     shallowEqual,
   );
   const pcrSourceIds = useSelector((state) => state.cloning.sources
-    .filter((source) => source.type === 'PCRSource' && source.assembly?.length > 0)
+    .filter((source) => isCompletePCRSource(source) || isCompleteOligoHybridizationSource(source))
     .map((source) => source.id));
   const { primerDetails, retryGetPrimerDetails, requestStatus: primerDetailsRequestStatus } = useMultiplePrimerDetails(primers);
   const { pcrDetails, retryGetPCRDetails, requestStatus: pcrDetailsRequestStatus } = usePCRDetails(pcrSourceIds);

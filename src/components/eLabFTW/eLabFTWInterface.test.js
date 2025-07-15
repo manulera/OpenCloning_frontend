@@ -35,7 +35,7 @@ const HISTORY_FILE_INTERNAL_PRIMER_ID1 = getUniqueId();
 const HISTORY_FILE_INTERNAL_PRIMER_ID2 = getUniqueId();
 const HISTORY_FILE_ANCESTOR_INTERNAL_SEQUENCE_ID = getUniqueId();
 const HISTORY_FILE_ANCESTOR_DATABASE_ID = getUniqueId();
-const HISTORY_FILE_INTERNAL_SOURCE_ID = getUniqueId();
+const HISTORY_FILE_INTERNAL_SOURCE_ID = HISTORY_FILE_INTERNAL_SEQUENCE_ID;
 const HISTORY_FILE_ANCESTOR_INTERNAL_SOURCE_ID = getUniqueId();
 // const
 
@@ -572,8 +572,7 @@ const substate = {
   ],
   sources: [
     {
-      id: HISTORY_FILE_INTERNAL_SOURCE_ID,
-      output: HISTORY_FILE_INTERNAL_SEQUENCE_ID,
+      id: HISTORY_FILE_INTERNAL_SOURCE_ID
     },
   ],
   appInfo: {
@@ -613,7 +612,6 @@ const substateWithAncestors = {
     ...substate.sources,
     {
       id: HISTORY_FILE_ANCESTOR_INTERNAL_SOURCE_ID,
-      output: HISTORY_FILE_ANCESTOR_INTERNAL_SEQUENCE_ID,
       database_id: HISTORY_FILE_ANCESTOR_DATABASE_ID,
     },
   ],

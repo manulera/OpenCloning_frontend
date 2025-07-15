@@ -12,6 +12,10 @@ export function isCompletePCRSource(source) {
   return source.type === 'PCRSource' && source.input.length === 3 && source.input[0].type === 'AssemblyFragment';
 }
 
+export function isCompleteOligoHybridizationSource(source) {
+  return source.type === 'OligoHybridizationSource' && source.input.length === 2 && source.overhang_crick_3prime !== undefined && source.overhang_crick_3prime !== null;
+}
+
 export function getPcrTemplateSequenceId(source) {
   return source.input.length === 1 ? source.input[0].sequence : source.input[1].sequence;
 }
@@ -244,7 +248,7 @@ export function formatGatewaySites(sites) {
 }
 
 export function getSourceDatabaseId(sources, sequenceId) {
-  const source = sources.find((s) => s.output === sequenceId);
+  const source = sources.find((s) => s.id === sequenceId);
   return source?.database_id;
 }
 
@@ -278,7 +282,8 @@ export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) 
   let rvsPrimer = null;
   let fwdLength = 0;
   let rvsLength = 0;
-  if (source.type === 'PCRSource' && source.input.length === 3 && source.input[0].type === 'AssemblyFragment') {
+
+  if (isCompletePCRSource(source)) {
     fwdPrimer = primers.find((p) => p.id === source.input[0].sequence);
     rvsPrimer = primers.find((p) => p.id === source.input[2].sequence);
     const fwdLocation = parseFeatureLocation(source.input[0].right_location, 0, 0, 0, 1, sequenceLength)[0];
@@ -291,11 +296,11 @@ export function getPrimerBindingInfoFromSource(primers, source, sequenceLength) 
     if (rvsLength < 0) {
       rvsLength += sequenceLength;
     }
-  } else if (source.type === 'OligoHybridizationSource' && source.overhang_crick_3prime !== undefined) {
-    fwdPrimer = primers.find((p) => p.id === source.forward_oligo);
-    rvsPrimer = primers.find((p) => p.id === source.reverse_oligo);
+  } else if (isCompleteOligoHybridizationSource(source)) {
+    fwdPrimer = primers.find((p) => p.id === source.input[0].sequence);
+    rvsPrimer = primers.find((p) => p.id === source.input[1].sequence);
     fwdLength = fwdPrimer.sequence.length + source.overhang_crick_3prime;
-    rvsLength = rvsPrimer.sequence.length - source.overhang_crick_3prime;
+    rvsLength = fwdLength;
   }
   return { sourceId: source.id, sourceType: source.type, fwdPrimer, rvsPrimer, fwdLength, rvsLength };
 }

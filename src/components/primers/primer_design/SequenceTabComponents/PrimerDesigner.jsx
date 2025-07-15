@@ -31,7 +31,6 @@ function PrimerDesigner() {
     return null;
   }
 
-  console.log([...templateSequencesIds, ...otherInputIds], mainSequenceId);
   // The network supports design of primers, but the current main sequence is not part of it
   const showPrimerDesigner = [...templateSequencesIds, ...otherInputIds].includes(mainSequenceId);
 

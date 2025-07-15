@@ -99,7 +99,7 @@ async function submitSequenceToDatabase({ submissionData: { title, categoryId, p
   const { backendVersion, schemaVersion, frontendVersion } = appInfo;
 
   const sequence2export = sequences.find((e) => e.id === id);
-  const parentSource = sources.find((s) => s.output === sequence2export.id);
+  const parentSource = sources.find((s) => s.id === id);
   if (parentSource.database_id) {
     throw new Error('Sequence already has a database_id');
   }

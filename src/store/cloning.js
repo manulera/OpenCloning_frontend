@@ -109,7 +109,6 @@ const reducer = {
     // and a list of templateIds to be amplified by PCR. Their outputs
     // will be used as input for a subsequent assembly reaction.
     const { sourceId, templateIds, sourceType, newSequence } = action.payload;
-    console.log({ sourceId, templateIds, sourceType, newSequence });
     const { sources, sequences } = state;
 
     if (sources.find((s) => s.id === sourceId) === undefined) {
@@ -411,7 +410,7 @@ const reducer = {
     if (!sequence) {
       throw new Error('Sequence not found');
     }
-    const source = state.sources.find((s) => s.output === id);
+    const source = state.sources.find((s) => s.id === id);
     if (!source) {
       throw new Error('Source not found');
     }

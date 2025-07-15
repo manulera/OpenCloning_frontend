@@ -23,14 +23,14 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
         // If the cloning strategy should end on a single sequence, set the databaseId for the right source
         const terminalSequences = getIdsOfSequencesWithoutChildSource(cloningStrategy.sources, cloningStrategy.sequences);
         if (terminalSequences.length === 1) {
-          const lastSource = cloningStrategy.sources.find((s) => s.output === terminalSequences[0]);
+          const lastSource = cloningStrategy.sources.find((s) => s.id === terminalSequences[0]);
           lastSource.database_id = databaseId;
         }
-        // When importing sources that had inputs that we don't want to load, we need to add some templatesequences
-        const allSequenceIds = cloningStrategy.sequences.map((e) => e.id);
+        // When importing sources that had inputs that we don't want to load, we turn them into database sources
+        const allSequenceIds = [...cloningStrategy.sequences.map((e) => e.id), ...cloningStrategy.primers.map((e) => e.id)];
         cloningStrategy.sources = cloningStrategy.sources.map((s) => {
-          if (s.input.some((id) => !allSequenceIds.includes(id))) {
-            return { id: s.id, type: 'DatabaseSource', input: [], output: s.output, database_id: s.database_id };
+          if (s.input.some(({sequence}) => !allSequenceIds.includes(sequence))) {
+            return { id: s.id, type: 'DatabaseSource', input: [], database_id: s.database_id };
           }
           return s;
         });
@@ -50,7 +50,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
         // Get the sequence name from the database and update the cloning strategy with it if it is different
         await Promise.all(cloningStrategy.sources.filter((s) => s.database_id).map(async (cloningSource) => {
           const seqDatabaseId = cloningSource.database_id;
-          const sequence = cloningStrategy.sequences.find((e) => e.id === cloningSource.output);
+          const sequence = cloningStrategy.sequences.find((e) => e.id === cloningSource.id);
           const seq = convertToTeselaJson(sequence);
           const databaseName = await database.getSequenceName(seqDatabaseId);
           if (seq.name !== databaseName) {
