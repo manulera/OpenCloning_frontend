@@ -14,7 +14,7 @@ function SourceTypeSelector({ source }) {
   const { id: sourceId, type: sourceType } = source;
   const dispatch = useDispatch();
   const database = useDatabase();
-  const sourceIsPrimerDesign = useSelector((state) => source.output && state.cloning.sequences.find((e) => e.id === source.output).primer_design !== undefined);
+  const sourceIsPrimerDesign = useSelector((state) => Boolean(state.cloning.sequences.find((e) => e.id === source.id)?.primer_design));
   const noExternalRequests = useSelector((state) => state.cloning.config.noExternalRequests);
 
   const onChange = (event) => {
@@ -22,8 +22,7 @@ function SourceTypeSelector({ source }) {
     dispatch(replaceSource({
       id: sourceId,
       type: event.target.value,
-      input: source.input,
-      output: source.output,
+      input: source.input
     }));
   };
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);

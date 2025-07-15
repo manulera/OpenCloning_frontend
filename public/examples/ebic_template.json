@@ -50,6 +50,12 @@
       "id": 1,
       "type": "GenomeCoordinatesSource",
       "input": [],
+      "assembly_accession": "GCA_000002945.3",
+      "sequence_accession": "CU329670.1",
+      "locus_tag": "SPOM_SPAPB1A10.09",
+      "gene_id": null,
+      "start": 1877189,
+      "end": 1881726,
       "strand": 1
     },
     {
@@ -57,7 +63,11 @@
       "type": "PCRSource",
       "output_name": "left_homology_arm",
       "database_id": null,
-      "input": [],
+      "input": [
+        {
+          "sequence": 1
+        }
+      ],
       "circular": null,
       "add_primer_features": false
     },
@@ -66,7 +76,11 @@
       "type": "PCRSource",
       "output_name": "right_homology_arm",
       "database_id": null,
-      "input": [],
+      "input": [
+        {
+          "sequence": 1
+        }
+      ],
       "circular": null,
       "add_primer_features": false
     },
@@ -99,7 +113,20 @@
       "type": "RestrictionAndLigationSource",
       "output_name": "golgen_gate",
       "database_id": null,
-      "input": [],
+      "input": [
+        {
+          "sequence": 2
+        },
+        {
+          "sequence": 3
+        },
+        {
+          "sequence": 4
+        },
+        {
+          "sequence": 5
+        }
+      ],
       "circular": null,
       "restriction_enzymes": [
         "BsaI"
@@ -110,7 +137,14 @@
       "type": "HomologousRecombinationSource",
       "output_name": "engineered_allele",
       "database_id": null,
-      "input": [],
+      "input": [
+        {
+          "sequence": 1
+        },
+        {
+          "sequence": 6
+        }
+      ],
       "circular": null
     }
   ],
