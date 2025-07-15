@@ -50,7 +50,7 @@ export function isSourceATemplate({ sources, sequences }, sourceId) {
 
 export function getPrimerDesignObject({ sources, sequences }) {
   // Find sequences that are templates and have primer_design set
-  const outputSequences = sequences.filter((e) => e.type === 'TemplateSequence' && e.primer_design !== undefined);
+  const outputSequences = sequences.filter((e) => e.type === 'TemplateSequence' && Boolean(e.primer_design));
   if (outputSequences.length === 0) {
     // return 'No primer design sequence templates found';
     return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
