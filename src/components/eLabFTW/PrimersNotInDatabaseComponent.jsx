@@ -8,6 +8,7 @@ function PrimersNotInDatabaseComponent({ id, submissionData, setSubmissionData }
   const primerCategoryId = submissionData?.primerCategoryId;
   const primers = useSelector((state) => {
     const subState = getSubState(state, id, true);
+    console.log('subState', subState);
     return subState.primers.filter((p) => !p.database_id);
   });
 

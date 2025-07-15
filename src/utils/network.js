@@ -73,7 +73,7 @@ export const getSubState = (state, id, stopAtDatabaseId = false) => {
     throw new Error(`Sequence with id ${id} not found`);
   }
   if (sourcesToExport.length === 0) {
-    throw new Error(`Source with output id ${id} not found`);
+    throw new Error(`Source with id ${id} not found`);
   }
   const { parentSources, parentSequences } = collectParentSequencesAndSources(sourcesToExport[0], sources, sequences, stopAtDatabaseId);
   sequencesToExport.push(...parentSequences);

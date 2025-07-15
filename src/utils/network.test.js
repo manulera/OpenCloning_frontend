@@ -90,7 +90,7 @@ describe('getSubState', () => {
       },
     };
 
-    expect(() => getSubState(state, 1)).toThrow('Source with output id 1 not found');
+    expect(() => getSubState(state, 1)).toThrow('Source with id 1 not found');
   });
   it('should return the correct substate with used primers only', () => {
     const state = {
