@@ -325,10 +325,10 @@ describe('Test primer designer functionality', () => {
     // We should be now in the Sequence tab
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
-    // There should be three tabs: Seq 1, Seq 4 and Other settings (if we get here, the rest is the same as Gibson assembly)
+    // There should be three tabs: Seq 1, Seq 2 and Other settings (if we get here, the rest is the same as Gibson assembly)
     cy.get('.main-sequence-editor button.MuiStepButton-root').should('have.length', 4);
     getStepButton('Seq 1').should('exist');
-    getStepButton('Seq 4').should('exist');
+    getStepButton('Seq 2').should('exist');
     getStepButton('Other settings').should('exist');
     getStepButton('Results').should('exist');
 
