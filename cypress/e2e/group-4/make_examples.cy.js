@@ -68,20 +68,20 @@ describe('Makes all examples', () => {
     // Load addgene plasmid
     addLane();
     addSource('RepositoryIdSource', true);
-    clickMultiSelectOption('Select repository', 'Addgene', 'li#source-4');
-    setInputValue('Addgene ID', '39296', 'li#source-4');
+    clickMultiSelectOption('Select repository', 'Addgene', 'li#source-5');
+    setInputValue('Addgene ID', '39296', 'li#source-5');
     cy.get('button.MuiButtonBase-root').contains('Submit').click();
-    cy.get('li#sequence-3', { timeout: 20000 }).should('exist');
+    cy.get('li#sequence-5', { timeout: 20000 }).should('exist');
 
     // Do a restriction-ligation
     addSource('RestrictionAndLigationSource');
-    clickMultiSelectOption('Assembly inputs', 'Select all', 'li#source-4');
-    clickMultiSelectOption('Enzymes used', 'AscI', 'li#source-4');
-    clickMultiSelectOption('Enzymes used', 'SalI', 'li#source-4');
-    cy.get('li#source-4 button.submit-backend-api').click();
-    cy.get('li#source-4').contains('Choose product', { timeout: 20000 }).click();
-    cy.get('li#sequence-8', { timeout: 20000 }).contains('ase1').should('exist');
-    cy.get('li#sequence-8').contains('kanMX').should('exist');
+    clickMultiSelectOption('Assembly inputs', 'Select all', 'li#source-6');
+    clickMultiSelectOption('Enzymes used', 'AscI', 'li#source-6');
+    clickMultiSelectOption('Enzymes used', 'SalI', 'li#source-6');
+    cy.get('li#source-6 button.submit-backend-api').click();
+    cy.get('li#source-6').contains('Choose product', { timeout: 20000 }).click();
+    cy.get('li#sequence-6', { timeout: 20000 }).contains('ase1').should('exist');
+    cy.get('li#sequence-6').contains('kanMX').should('exist');
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').click();
     cy.get('[role="menuitem"]').contains('Save cloning history to file').click();
     cy.get('button').contains('Save file').click();
