@@ -1,7 +1,8 @@
-const { defineConfig } = require('cypress');
-const fs = require('fs');
-const istanbul = require('vite-plugin-istanbul');
-const { execSync } = require('child_process');
+import { defineConfig } from 'cypress';
+import fs from 'fs';
+import istanbul from 'vite-plugin-istanbul';
+import { execSync } from 'child_process';
+import { ViteEjsPlugin } from 'vite-plugin-ejs';
 
 // Function to get git tag information
 function getGitTag() {
@@ -12,7 +13,7 @@ function getGitTag() {
   }
 }
 
-module.exports = defineConfig({
+export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       on('task', {
@@ -29,7 +30,11 @@ module.exports = defineConfig({
         },
       });
       if (process.env.VITE_COVERAGE) {
-        require('@cypress/code-coverage/task')(on, config);
+        try {
+          import('@cypress/code-coverage/task.js').then((task) => task.default(on, config));
+        } catch (error) {
+          console.warn('Could not load code coverage task:', error.message);
+        }
       }
 
       // Filter specs by test group if specified
@@ -60,6 +65,9 @@ module.exports = defineConfig({
             extension: ['.js', '.jsx'],
             requireEnv: true,
           }),
+          ViteEjsPlugin({
+            umami_website_id: process.env.VITE_UMAMI_WEBSITE_ID,
+          }),
         ],
         define: {
           __APP_VERSION__: JSON.stringify(getGitTag()),
@@ -68,7 +76,11 @@ module.exports = defineConfig({
     },
     setupNodeEvents(on, config) {
       if (process.env.VITE_COVERAGE) {
-        require('@cypress/code-coverage/task')(on, config);
+        try {
+          import('@cypress/code-coverage/task.js').then((task) => task.default(on, config));
+        } catch (error) {
+          console.warn('Could not load code coverage task:', error.message);
+        }
       }
       return config;
     },

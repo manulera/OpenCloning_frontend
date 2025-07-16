@@ -3338,7 +3338,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^14.4.1":
+"cypress@npm:^14.5.2":
   version: 14.5.2
   resolution: "cypress@npm:14.5.2"
   dependencies:
@@ -7598,7 +7598,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^3.2.4"
     "@zip.js/zip.js": "npm:^2.7.62"
     axios: "npm:^1.9.0"
-    cypress: "npm:^14.4.1"
+    cypress: "npm:^14.5.2"
     dom-to-svg: "npm:^0.12.2"
     eslint: "npm:^9.28.0"
     eslint-config-airbnb: "npm:^19.0.4"
