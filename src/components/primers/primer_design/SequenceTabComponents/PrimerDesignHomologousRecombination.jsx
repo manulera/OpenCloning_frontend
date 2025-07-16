@@ -2,11 +2,11 @@ import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 import usePrimerDesignSettings from './usePrimerDesignSettings';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 export default function PrimerDesignHomologousRecombination({ homologousRecombinationTargetId, pcrSource }) {
-  const templateSequenceId = pcrSource.input[0];
+  const templateSequenceId = getPcrTemplateSequenceId(pcrSource);
   const sequenceIds = React.useMemo(() => [templateSequenceId, homologousRecombinationTargetId], [templateSequenceId, homologousRecombinationTargetId]);
-
   const steps = React.useMemo(() => [
     { label: 'Amplified region',
       description: `Select the fragment of sequence ${templateSequenceId} to be amplified in the editor and click "Choose region"`,

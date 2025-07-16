@@ -2,9 +2,10 @@ import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 import useEBICPrimerDesignSettings from './useEBICPrimerDesignSettings';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 function PrimerDesignEBIC({ pcrSources }) {
-  const templateSequenceId = pcrSources[0].input[0];
+  const templateSequenceId = getPcrTemplateSequenceId(pcrSources[0]);
   const sequenceIds = React.useMemo(() => [templateSequenceId], [templateSequenceId]);
   const primerDesignSettings = useEBICPrimerDesignSettings();
 

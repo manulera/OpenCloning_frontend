@@ -10,6 +10,8 @@ import { getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
+import useValidateState from './hooks/useValidateState';
+import { formatTemplate } from './utils/readNwrite';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
@@ -21,6 +23,7 @@ function App() {
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: { id: 1 }, sendPostRequest: null, setHistoryFileError });
   const [urlLoaded, setUrlLoaded] = React.useState(false);
   const configLoaded = useSelector((state) => state.cloning.config.loaded);
+  const validateState = useValidateState();
 
   const httpClient = useHttpClient();
 
@@ -62,7 +65,10 @@ function App() {
             const baseUrl = 'https://assets.opencloning.org/OpenCloning-submission';
             const url = `${baseUrl}/processed/${urlParams.key}/templates/${urlParams.template}`;
             const { data } = await httpClient.get(url);
-            dispatch(setCloningState(data));
+            const validatedData = await validateState(data);
+            const newState = formatTemplate(validatedData, url);
+
+            dispatch(setCloningState(newState));
           } catch (error) {
             addAlert({
               message: 'Error loading template',

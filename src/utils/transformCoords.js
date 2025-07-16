@@ -1,23 +1,29 @@
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange, getRangeLength, isRangeWithinRange, translateRange } from '@teselagen/range-utils';
 import { isEqual } from 'lodash-es';
+import { isAssemblyComplete } from '../store/cloning_utils';
 
-export default function getTransformCoords({ assembly, type: sourceType }, parentSequenceData, productLength) {
-  if (!assembly) {
+export default function getTransformCoords(source, parentSequenceData, productLength) {
+  if (!isAssemblyComplete(source)) {
     return () => null;
   }
-
-  const fragments = sourceType !== 'PCRSource' ? structuredClone(assembly) : [structuredClone(assembly[1])];
+  const { type: sourceType, input } = source;
+  let fragments = sourceType !== 'PCRSource' ? structuredClone(input) : [structuredClone(input[1])];
 
   let count = 0;
   if (sourceType === 'PCRSource') {
-    // Primer is linear sequence, so no need to pass location
-    const fwdPrimerAnnealingPart = parseFeatureLocation(assembly[0].right_location, 0, 0, 0, 1, null)[0];
+    // Primer is linear sequence, so no need to pass the sequence length
+    const fwdPrimerAnnealingPart = parseFeatureLocation(input[0].right_location, 0, 0, 0, 1, null)[0];
     count = fwdPrimerAnnealingPart.start;
   }
 
-  fragments.forEach((f) => {
-    const sequence = parentSequenceData.find((e) => e.id === f.sequence);
+  fragments = fragments.map((f) => {
+    // The boolean handles undefined parentSequenceData (for PCR where is [undefined, value, undefined])
+    const sequence = parentSequenceData.find((e) => Boolean(e) && e.id === f.sequence);
+    // If the sequence is not found, it means it's a CRISPR guide / primer
+    if (!sequence) {
+      return null;
+    }
     const { size } = sequence;
     const { left_location: left, right_location: right } = f;
     const leftLocation = left ? parseFeatureLocation(left, 0, 0, 0, 1, size)[0] : null;
@@ -35,7 +41,9 @@ export default function getTransformCoords({ assembly, type: sourceType }, paren
     f.rangeInAssembly = translateRange({ start: 0, end: rangeLength - 1 }, count, productLength);
     f.size = size;
     count += getRangeLength({ start: leftStart, end: rightStart - 1 }, size);
+    return f;
   });
+  fragments = fragments.filter((f) => f !== null);
   const rangeInParent = (selection, id) => {
     if (selection.start === -1) {
       return null;

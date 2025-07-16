@@ -39,7 +39,7 @@ describe('<SubmitToDatabaseComponent />', () => {
     cy.mount(
       <Provider store={store}>
         <SubmitToDatabaseComponent
-          id={1}
+          id={mockPrimers[0].id}
           resourceType="primer"
           setSubmissionData={setSubmissionDataSpy}
         />
@@ -90,7 +90,7 @@ describe('<SubmitToDatabaseComponent />', () => {
     cy.mount(
       <Provider store={store}>
         <SubmitToDatabaseComponent
-          id={1}
+          id={mockSequences[0].id}
           resourceType="sequence"
           setSubmissionData={setSubmissionDataSpy}
         />
@@ -151,7 +151,7 @@ describe('<SubmitToDatabaseComponent />', () => {
     cy.mount(
       <Provider store={store}>
         <SubmitToDatabaseComponent
-          id={1}
+          id={mockPrimers[0].id}
           resourceType="primer"
           setSubmissionData={cy.spy()}
         />

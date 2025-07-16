@@ -38,9 +38,7 @@ export default function useBackendAPI() {
       setRequestStatus({ status: null, message: '' });
 
       const receivedSources = resp.data.sources.map(modifySource);
-      if (output !== null) {
-        receivedSources.forEach((s) => { s.output = output; });
-      }
+
       setSources(receivedSources); setSequences(resp.data.sequences);
     } catch (error) {
       setRequestStatus({ status: 'error', message: error2String(error) });

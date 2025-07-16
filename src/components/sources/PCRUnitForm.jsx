@@ -73,9 +73,9 @@ function PCRUnitForm({ primers, forwardPrimerId, reversePrimerId, onChangeForwar
         <FormControl fullWidth>
           <SingleInputSelector
             label="Target sequence"
-            selectedId={sourceInput[index] || ''}
-            onChange={(e) => updateInput(e.target.value)}
-            inputSequenceIds={sourceInput}
+            selectedId={sourceInput[index]?.sequence || ''}
+            onChange={(e) => updateInput({ sequence: e.target.value })}
+            inputSequenceIds={sourceInput.map(({sequence}) => sequence)}
             disabled={index === 0}
           />
         </FormControl>

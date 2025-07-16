@@ -6,7 +6,7 @@ import OverhangsDisplay from './OverhangsDisplay';
 import NewSourceBox from './sources/NewSourceBox';
 import { cloningActions } from '../store/cloning';
 import getTransformCoords from '../utils/transformCoords';
-import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
+import { getPCRPrimers, getPrimerLinks, isSequenceInputOfAnySource } from '../store/cloning_utils';
 
 const transformToRegion = (eventOutput) => {
   if (eventOutput.selectionLayer) {
@@ -18,7 +18,7 @@ const transformToRegion = (eventOutput) => {
 };
 
 function AddSourceComponent({ sequenceId }) {
-  const isRootNode = useSelector((state) => !state.cloning.sources.some((source) => source.input.includes(sequenceId)));
+  const isRootNode = useSelector((state) => !isSequenceInputOfAnySource(sequenceId, state.cloning.sources));
   return isRootNode ? (
     <div className="hang-from-node">
       <div>
@@ -45,9 +45,9 @@ function SequenceEditor({ sequenceId }) {
     (p2) => p2.name === p.name && p2.start === p.start && p2.end === p.end,
   ));
   seqCopy.primers = [...seqCopy.primers, ...pcrPrimers2Include, ...linkedPrimers];
-  const parentSource = useSelector((state) => state.cloning.sources.find((source) => source.output === sequenceId), isEqual);
+  const parentSource = useSelector((state) => state.cloning.sources.find((source) => source.id === sequenceId), isEqual);
   const stateSelectedRegion = useSelector((state) => state.cloning.selectedRegions.find((r) => r.id === sequenceId)?.selectedRegion, isEqual);
-  const parentSequenceData = useSelector((state) => parentSource.input.map((id) => state.cloning.teselaJsonCache[id]), isEqual);
+  const parentSequenceData = useSelector((state) => parentSource.input.map(({sequence}) => state.cloning.teselaJsonCache[sequence]), isEqual);
   const [rangeInParent, setRangeInParent] = React.useState(() => null);
   React.useEffect(() => {
     const callBack = getTransformCoords(parentSource, parentSequenceData, seqCopy.size);
@@ -77,7 +77,7 @@ function SequenceEditor({ sequenceId }) {
     } else {
       const newRegion = transformToRegion(eventOutput);
       const newTimeOutId = setTimeout(() => {
-        const parentSequenceIds = parentSource.input;
+        const parentSequenceIds = parentSource.input.map(({sequence}) => sequence);
         // We add the current sequence to the selectedRegions array
         const selectedRegions = [{ id: sequenceId, selectedRegion: newRegion }];
         // If possible, add the equivalent region in the parent sequence

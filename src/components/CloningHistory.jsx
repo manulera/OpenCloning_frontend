@@ -10,9 +10,9 @@ function CloningHistory() {
   const startingSourceIds = useSelector(
     (state) => {
       const sequenceIds = state.cloning.sequences.map((sequence) => sequence.id);
-      const sequenceIdsOfInputs = state.cloning.sources.flatMap((source) => source.input);
+      const sequenceIdsOfInputs = state.cloning.sources.flatMap((source) => source.input.map(({ sequence }) => sequence));
       const terminalSequences = sequenceIds.filter((sequenceId) => !sequenceIdsOfInputs.includes(sequenceId));
-      const terminalSources = state.cloning.sources.filter((source) => terminalSequences.includes(source.output) || source.output === null);
+      const terminalSources = state.cloning.sources.filter((source) => terminalSequences.includes(source.id) || !sequenceIds.includes(source.id));
       return getSortedSourceIds(terminalSources, state.cloning.sources);
     },
     isEqual,

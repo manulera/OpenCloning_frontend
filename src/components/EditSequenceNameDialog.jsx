@@ -11,10 +11,6 @@ function EditSequenceNameDialog({ id, dialogOpen, setDialogOpen }) {
   const [name, setName] = React.useState('');
   const [originalName, setOriginalName] = React.useState('');
   const [error, setError] = React.useState('');
-  const [sequence, source] = useSelector(({ cloning }) => [
-    cloning.sequences.find((e) => e.id === id),
-    cloning.sources.find((s) => s.output === id),
-  ], isEqual);
   const store = useStore();
   const backendRoute = useBackendRoute();
   const httpClient = useHttpClient();
@@ -23,6 +19,9 @@ function EditSequenceNameDialog({ id, dialogOpen, setDialogOpen }) {
   const dispatch = useDispatch();
 
   const changeName = async (newName) => {
+    const {sources, sequences} = store.getState().cloning;
+    const source = sources.find((s) => s.id === id);
+    const sequence = sequences.find((s) => s.id === id);
     setError('');
     const url = backendRoute('rename_sequence');
     try {
@@ -39,7 +38,7 @@ function EditSequenceNameDialog({ id, dialogOpen, setDialogOpen }) {
     const seq = store.getState().cloning.teselaJsonCache[id];
     setName(seq.name);
     setOriginalName(seq.name);
-  }, [sequence]);
+  }, [id]);
 
   const nameIsNotValid = /\s/.test(name);
   const submissionAllowed = name && name !== originalName && !nameIsNotValid;

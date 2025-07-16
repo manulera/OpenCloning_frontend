@@ -7,7 +7,7 @@ describe('Test verification files', () => {
 
   it('Can upload sequencing files', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/cloning_strategy_with_sequencing.json', { force: true });
-    cy.get('#sequence-2 svg[data-testid="RuleIcon"]').click();
+    cy.get('#sequence-1 svg[data-testid="RuleIcon"]').click();
 
     cy.get('button').contains('Submit files').click();
     // Add sequencing files
@@ -24,7 +24,7 @@ describe('Test verification files', () => {
     cy.get('.verification-file-dialog button').contains('Close').click();
 
     // Verify files are visible in the alignment tab
-    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').click();
+    cy.get('li#sequence-1 svg[data-testid="VisibilityIcon"]').click();
     cy.get('div.veTabActive.veTabAlignments').should('be.visible');
     cy.get('div.alignmentTrackNameDiv').contains('BZO902-13409020-13409020.ab1').should('exist');
     cy.get('div.alignmentTrackNameDiv').contains('dummy_sequencing.fasta').should('exist');
@@ -34,10 +34,10 @@ describe('Test verification files', () => {
     changeTab('Cloning');
     addLane();
     manuallyTypeSequence('ATGC', false);
-    cy.get('li#sequence-4 svg[data-testid="VisibilityIcon"]').click();
+    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').click();
 
     changeTab('Cloning');
-    cy.get('#sequence-2 svg[data-testid="RuleIcon"]').click();
+    cy.get('#sequence-1 svg[data-testid="RuleIcon"]').click();
     cy.get('.verification-file-dialog button').contains('See alignments').click();
     cy.get('div.veTabActive.veTabAlignments').should('be.visible');
     cy.get('div.alignmentTrackNameDiv').contains('BZO902-13409020-13409020.ab1').should('exist');

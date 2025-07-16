@@ -4,14 +4,14 @@ import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 
 function SourceReverseComplement({ source, requestStatus, sendPostRequest }) {
-  const { id: sourceId } = source;
+  const { id: sourceId, input } = source;
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const onSubmit = (event) => {
     event.preventDefault();
 
     const requestData = {
       sequences: inputSequences,
-      source: { id: sourceId, input: inputSequences.map((e) => e.id) },
+      source: { id: sourceId, input },
     };
     sendPostRequest({ endpoint: 'reverse_complement', requestData, source });
   };

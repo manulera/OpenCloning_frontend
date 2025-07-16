@@ -16,7 +16,7 @@ const helpSingleSite = 'Even if input sequences contain multiple att sites '
 // A component representing the ligation or gibson assembly of several fragments
 function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const assemblyType = source.type;
-  const { id: sourceId, input: inputSequenceIds } = source;
+  const { id: sourceId, input: sourceInput } = source;
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const inputContainsTemplates = inputSequences.some((sequence) => sequence.type === 'TemplateSequence');
   const [minimalHomology, setMinimalHomology] = React.useState(20);
@@ -65,7 +65,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const onSubmit = (event) => {
     event.preventDefault();
     const requestData = {
-      source: { id: sourceId, input: inputSequences.map((e) => e.id), output_name: source.output_name },
+      source: { id: sourceId, input: inputSequences.map((e) => ({ sequence: e.id })), output_name: source.output_name },
       sequences: inputSequences,
     };
     if (['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource', 'InVivoAssemblySource'].includes(assemblyType)) {
@@ -101,7 +101,8 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
     }
   };
 
-  const onChangeInput = (newInput) => {
+  const onChangeInput = (newInputSequenceIds) => {
+    const newInput = newInputSequenceIds.map((id) => ({ sequence: id }));
     // We prevent setting empty input
     if (newInput.length === 0) {
       return;
@@ -114,7 +115,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       <form onSubmit={onSubmit}>
         <FormControl fullWidth>
           <MultipleInputsSelector {...{
-            inputSequenceIds, onChange: onChangeInput, label: 'Assembly inputs',
+            inputSequenceIds: sourceInput.map(({sequence}) => sequence), onChange: onChangeInput, label: 'Assembly inputs',
           }}
           />
         </FormControl>

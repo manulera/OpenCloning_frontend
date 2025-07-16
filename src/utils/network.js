@@ -5,7 +5,7 @@ export function getParentNodes(node, sequences, sources) {
   const parentSequences = sequences.filter((sequence) => node.source.input.includes(sequence.id));
 
   return parentSequences.map((parentSequence) => {
-    const parentSource = sources.find((source) => source.output === parentSequence.id);
+    const parentSource = sources.find((source) => source.id === parentSequence.id);
     const parentNode = { source: parentSource, sequence: parentSequence };
     return { ...parentNode, parentNodes: getParentNodes(parentNode, sequences, sources) };
   });
@@ -22,70 +22,63 @@ function parentNodeSorter(a, b) {
   return Math.min(...aValue) - Math.min(...bValue);
 }
 
-export function constructNetwork(sequences, sources) {
-  const sequencesNoSeq = sequences.map((seq) => ({ ...seq, sequence: '' }));
-  const network = [];
-  // To construct the network, we start by the elements of DNA that are not input for anything
-  // and the sources that have no output
-  const sequenceIdsThatAreInput = sources.reduce((result, source) => result.concat(source.input), []);
-  const sequencesThatAreNotInput = sequencesNoSeq.filter((sequence) => !sequenceIdsThatAreInput.includes(sequence.id));
-
-  const sourcesWithoutOutput = sources.filter((source) => source.output === null);
-
-  sequencesThatAreNotInput.forEach((sequence) => network.push({ sequence, source: sources.find((s) => s.output === sequence.id) }));
-  sourcesWithoutOutput.forEach((source) => network.push({ sequence: null, source }));
-
-  const unsortedNetwork = network.map((node) => ({ ...node, parentNodes: getParentNodes(node, sequencesNoSeq, sources).sort(parentNodeSorter) }));
-
-  return unsortedNetwork.sort(parentNodeSorter);
+export function getSourcesTakingSequenceAsInput(sources, sequenceId) {
+  return sources.filter((s) => s.input.some(({sequence}) => sequence === sequenceId));
 }
 
-export function getAllParentSources(source, sources, parentSources = []) {
-  const thisParentSources = source.input.map((input) => sources.find((s) => s.output === input));
+export function getImmediateParentSources(sources, source) {
+  const parentIds = source.input.map(({sequence}) => sequence);
+  return sources.filter((s) => parentIds.includes(s.id));
+}
+
+export function getAllParentSources(source, sources, stopAtDatabaseId = false, parentSources = []) {
+  const thisParentSources = getImmediateParentSources(sources, source);
   parentSources.push(...thisParentSources);
   thisParentSources.forEach((parentSource) => {
-    getAllParentSources(parentSource, sources, parentSources);
+    if (stopAtDatabaseId && parentSource.database_id) {
+      return;
+    }
+    getAllParentSources(parentSource, sources, stopAtDatabaseId, parentSources);
   });
+  return parentSources;
 }
 
 export function getSortedSourceIds(sources2sort, sources) {
   const sortedSources = [...sources2sort];
   sortedSources.sort((source1, source2) => {
     // We also include the source itself for sorting, in case of grafting state
-    const parentSources1 = [source1];
-    const parentSources2 = [source2];
-    getAllParentSources(source1, sources, parentSources1);
-    getAllParentSources(source2, sources, parentSources2);
+    const parentSources1 = getAllParentSources(source1, sources);
+    const parentSources2 = getAllParentSources(source2, sources);
     const parentSources1Ids = parentSources1.map((source) => source.id);
     const parentSources2Ids = parentSources2.map((source) => source.id);
+    parentSources1Ids.push(source1.id);
+    parentSources2Ids.push(source2.id);
     return Math.min(...parentSources1Ids) - Math.min(...parentSources2Ids);
   });
   return sortedSources.map((source) => source.id);
 }
 
-export const collectParentSequencesAndSources = (source, sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId = false) => {
-  source.input.forEach((sequenceId) => {
-    sequencesToExport.push(sequences.find((e) => e.id === sequenceId));
-    const parentSource = sources.find((s) => s.output === sequenceId);
-    sourcesToExport.push(parentSource);
-    if (stopAtDatabaseId && parentSource.database_id) {
-      return;
-    }
-    collectParentSequencesAndSources(parentSource, sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId);
-  });
+export const collectParentSequencesAndSources = (source, sources, sequences, stopAtDatabaseId = false) => {
+  const parentSources = getAllParentSources(source, sources, stopAtDatabaseId);
+  const parentSourceIds = parentSources.map((s) => s.id);
+  const parentSequences = sequences.filter((s) => parentSourceIds.includes(s.id));
+  return { parentSources, parentSequences };
 };
 
 export const getSubState = (state, id, stopAtDatabaseId = false) => {
   const { sequences, sources, primers, appInfo } = state.cloning;
   const sequencesToExport = sequences.filter((e) => e.id === id);
-  const sourcesToExport = sources.filter((s) => s.output === id);
+  const sourcesToExport = sources.filter((s) => s.id === id);
   if (sequencesToExport.length === 0) {
     throw new Error(`Sequence with id ${id} not found`);
   }
   if (sourcesToExport.length === 0) {
-    throw new Error(`Source with output id ${id} not found`);
+    throw new Error(`Source with id ${id} not found`);
   }
-  collectParentSequencesAndSources(sourcesToExport[0], sources, sequences, sequencesToExport, sourcesToExport, stopAtDatabaseId);
+  const { parentSources, parentSequences } = collectParentSequencesAndSources(sourcesToExport[0], sources, sequences, stopAtDatabaseId);
+  sequencesToExport.push(...parentSequences);
+  sourcesToExport.push(...parentSources);
+
   const primerIdsToExport = getUsedPrimerIds(sourcesToExport);
   const primersToExport = primers.filter((p) => primerIdsToExport.includes(p.id));
   return { sequences: sequencesToExport, sources: sourcesToExport, primers: primersToExport, appInfo };
@@ -102,11 +95,11 @@ export const shiftState = (newState, oldState, skipPrimers = false) => {
   return shiftStateIds(newState, oldState, skipPrimers);
 };
 
-export function getGraftSequenceId(parentState) {
-  const sequenceIdsThatAreInput = parentState.sources.reduce((result, source) => result.concat(source.input), []);
-  const sequenceIdsThatAreNotInput = parentState.sequences.filter((sequence) => !sequenceIdsThatAreInput.includes(sequence.id)).map((seq) => seq.id);
-  const sourcesWithoutOutput = parentState.sources.filter((source) => source.output === null);
-
+export function getGraftSequenceId({ sources, sequences }) {
+  const sequenceIdsThatAreInput = sources.reduce((result, source) => result.concat(source.input.map(({sequence}) => sequence)), []);
+  const allSequenceIds = sequences.map((seq) => seq.id);
+  const sequenceIdsThatAreNotInput = allSequenceIds.filter((sequenceId) => !sequenceIdsThatAreInput.includes(sequenceId));
+  const sourcesWithoutOutput = sources.filter((source) => !allSequenceIds.includes(source.id));
   if (sourcesWithoutOutput.length === 0 && sequenceIdsThatAreNotInput.length === 1) {
     return sequenceIdsThatAreNotInput[0];
   }
@@ -121,7 +114,8 @@ export function mergePrimersInState(mergedState) {
     for (let j = i + 1; j < newState.primers.length; j++) {
       const p2 = newState.primers[j];
       if (p1.name === p2.name) {
-        if (p1.sequence === p2.sequence && p1.database_id === p2.database_id) {
+        const sameDatabaseId = (!Boolean(p1.database_id) && !Boolean(p2.database_id)) || p1.database_id === p2.database_id;
+        if (p1.sequence === p2.sequence && sameDatabaseId) {
           newState.sources = newState.sources.map((s) => mergePrimersInSource(s, p1.id, p2.id));
           removedPrimerIds.push(p2.id);
         } else {
@@ -135,7 +129,7 @@ export function mergePrimersInState(mergedState) {
 }
 
 export function graftState(parentState, childState, graftSourceId) {
-  const { shiftedState: shiftedParentState, networkShift } = shiftState(parentState, childState);
+  const { shiftedState: shiftedParentState, idShift } = shiftState(parentState, childState);
 
   const graftSequenceId = getGraftSequenceId(shiftedParentState);
   if (graftSequenceId === null) {
@@ -143,10 +137,10 @@ export function graftState(parentState, childState, graftSourceId) {
   }
   const graftSequenceInParent = shiftedParentState.sequences.find((seq) => seq.id === graftSequenceId);
 
-  const parentGraftSource = shiftedParentState.sources.find((source) => source.output === graftSequenceId);
+  const parentGraftSource = shiftedParentState.sources.find((source) => source.id === graftSequenceId);
   const childGraftSource = childState.sources.find((source) => source.id === graftSourceId);
-  const graftSequenceInChild = childState.sequences.find((seq) => seq.id === childGraftSource.output);
-  const mergedSource = { ...parentGraftSource, id: childGraftSource.id, output: childGraftSource.output };
+  const graftSequenceInChild = childState.sequences.find((seq) => seq.id === childGraftSource.id);
+  const mergedSource = { ...parentGraftSource, id: childGraftSource.id };
 
   const parentSources = shiftedParentState.sources.filter((source) => source.id !== parentGraftSource.id);
   const parentSequences = shiftedParentState.sequences.filter((seq) => seq.id !== graftSequenceId);
@@ -166,11 +160,11 @@ export function graftState(parentState, childState, graftSourceId) {
     files: [...shiftedParentState.files, ...childState.files],
   };
   mergedState = mergePrimersInState(mergedState);
-  return { mergedState, networkShift };
+  return { mergedState, idShift };
 }
 
 export const mergeStates = (newState, oldState, skipPrimers = false) => {
-  const { shiftedState, networkShift } = shiftState(newState, oldState, skipPrimers);
+  const { shiftedState, idShift } = shiftState(newState, oldState, skipPrimers);
   let mergedState = {
     sources: [...oldState.sources, ...shiftedState.sources],
     sequences: [...oldState.sequences, ...shiftedState.sequences],
@@ -180,5 +174,5 @@ export const mergeStates = (newState, oldState, skipPrimers = false) => {
   if (!skipPrimers) {
     mergedState = mergePrimersInState(mergedState);
   }
-  return { mergedState, networkShift };
+  return { mergedState, idShift };
 };

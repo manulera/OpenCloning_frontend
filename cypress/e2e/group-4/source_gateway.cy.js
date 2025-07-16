@@ -8,7 +8,7 @@ describe('Tests Gateway cloning functionality', () => {
     loadExample('Gateway cloning');
     deleteSourceByContent('Gateway BP reaction');
     addSource('GatewaySource');
-    clickMultiSelectOption('Assembly inputs', '4');
+    clickMultiSelectOption('Assembly inputs', '2');
 
     // Submit icon not visible
     cy.get('.open-cloning button.submit-backend-api').should('not.exist');
@@ -46,7 +46,7 @@ describe('Tests Gateway cloning functionality', () => {
     // Test that circular only works with select all
     deleteSourceByContent('Gateway BP reaction');
     addSource('GatewaySource');
-    clickMultiSelectOption('Assembly inputs', '4');
+    clickMultiSelectOption('Assembly inputs', '2');
     clickMultiSelectOption('Reaction type', 'BP');
     cy.get('span').contains('Single-site recombination').click({ force: true });
     cy.get('span').contains('Circular assemblies').click({ force: true });

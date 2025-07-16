@@ -1,7 +1,7 @@
 {
   "sequences": [
     {
-      "id": 2,
+      "id": 1,
       "type": "TextFileSequence",
       "sequence_file_format": "genbank",
       "overhang_crick_3prime": 0,
@@ -9,7 +9,7 @@
       "file_content": "LOCUS       pFA6a-kanMX6||3938|synthetic 3938 bp    DNA     circular UNK 01-JAN-1980\nDEFINITION  pFA6a-kanMX6||3938|synthetic circular DNA.|circular.\nACCESSION   pFA6a-kanMX6||3938|synthetic\nVERSION     pFA6a-kanMX6||3938|synthetic\nKEYWORDS    .\nSOURCE      .\n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\nORIGIN\n        1 gaggcggttt gcgtattggg cgctcttccg cttcctcgct cactgactcg ctgcgctcgg\n       61 tcgttcggct gcggcgagcg gtatcagctc actcaaaggc ggtaatacgg ttatccacag\n      121 aatcagggga taacgcagga aagaacatgt gagcaaaagg ccagcaaaag gccaggaacc\n      181 gtaaaaaggc cgcgttgctg gcgtttttcc ataggctccg cccccctgac gagcatcaca\n      241 aaaatcgacg ctcaagtcag aggtggcgaa acccgacagg actataaaga taccaggcgt\n      301 ttccccctgg aagctccctc gtgcgctctc ctgttccgac cctgccgctt accggatacc\n      361 tgtccgcctt tctcccttcg ggaagcgtgg cgctttctca tagctcacgc tgtaggtatc\n      421 tcagttcggt gtaggtcgtt cgctccaagc tgggctgtgt gcacgaaccc cccgttcagc\n      481 ccgaccgctg cgccttatcc ggtaactatc gtcttgagtc caacccggta agacacgact\n      541 tatcgccact ggcagcagcc actggtaaca ggattagcag agcgaggtat gtaggcggtg\n      601 ctacagagtt cttgaagtgg tggcctaact acggctacac tagaagaaca gtatttggta\n      661 tctgcgctct gctgaagcca gttaccttcg gaaaaagagt tggtagctct tgatccggca\n      721 aacaaaccac cgctggtagc ggtggttttt ttgtttgcaa gcagcagatt acgcgcagaa\n      781 aaaaaggatc tcaagaagat cctttgatct tttctacggg gtctgacgct cagtggaacg\n      841 aaaactcacg ttaagggatt ttggtcatga gattatcaaa aaggatcttc acctagatcc\n      901 ttttaaatta aaaatgaagt tttaaatcaa tctaaagtat atatgagtaa acttggtctg\n      961 acagttacca atgcttaatc agtgaggcac ctatctcagc gatctgtcta tttcgttcat\n     1021 ccatagttgc ctgactcccc gtcgtgtaga taactacgat acgggagggc ttaccatctg\n     1081 gccccagtgc tgcaatgata ccgcgagacc cacgctcacc ggctccagat ttatcagcaa\n     1141 taaaccagcc agccggaagg gccgagcgca gaagtggtcc tgcaacttta tccgcctcca\n     1201 tccagtctat taattgttgc cgggaagcta gagtaagtag ttcgccagtt aatagtttgc\n     1261 gcaacgttgt tgccattgct acaggcatcg tggtgtcacg ctcgtcgttt ggtatggctt\n     1321 cattcagctc cggttcccaa cgatcaaggc gagttacatg atcccccatg ttgtgcaaaa\n     1381 aagcggttag ctccttcggt cctccgatcg ttgtcagaag taagttggcc gcagtgttat\n     1441 cactcatggt tatggcagca ctgcataatt ctcttactgt catgccatcc gtaagatgct\n     1501 tttctgtgac tggtgagtac tcaaccaagt cattctgaga atagtgtatg cggcgaccga\n     1561 gttgctcttg cccggcgtca atacgggata ataccgcgcc acatagcaga actttaaaag\n     1621 tgctcatcat tggaaaacgt tcttcggggc gaaaactctc aaggatctta ccgctgttga\n     1681 gatccagttc gatgtaaccc actcgtgcac ccaactgatc ttcagcatct tttactttca\n     1741 ccagcgtttc tgggtgagca aaaacaggaa ggcaaaatgc cgcaaaaaag ggaataaggg\n     1801 cgacacggaa atgttgaata ctcatactct tcctttttca atattattga agcatttatc\n     1861 agggttattg tctcatgagc ggatacatat ttgaatgtat ttagaaaaat aaacaaatag\n     1921 gggttccgcg cacatttccc cgaaaagtgc cacctgacgt ctaagaaacc attattatca\n     1981 tgacattaac ctataaaaat aggcgtatca cgaggccctt tcgtctcgcg cgtttcggtg\n     2041 atgacggtga aaacctctga cacatgcagc tcccggagac ggtcacagct tgtctgtaag\n     2101 cggatgccgg gagcagacaa gcccgtcagg gcgcgtcagc gggtgttggc gggtgtcggg\n     2161 gctggcttaa ctatgcggca tcagagcaga ttgtactgag agtgcaccat atggacatat\n     2221 tgtcgttaga acgcggctac aattaataca taaccttatg tatcatacac atacgattta\n     2281 ggtgacacta tagaacgcgg ccgccagctg aagcttcgta cgctgcaggt cgacggatcc\n     2341 ccgggttaat taaggcgcgc cagatctgtt tagcttgcct cgtccccgcc gggtcacccg\n     2401 gccagcgaca tggaggccca gaataccctc cttgacagtc ttgacgtgcg cagctcaggg\n     2461 gcatgatgtg actgtcgccc gtacatttag cccatacatc cccatgtata atcatttgca\n     2521 tccatacatt ttgatggccg cacggcgcga agcaaaaatt acggctcctc gctgcagacc\n     2581 tgcgagcagg gaaacgctcc cctcacagac gcgttgaatt gtccccacgc cgcgcccctg\n     2641 tagagaaata taaaaggtta ggatttgcca ctgaggttct tctttcatat acttcctttt\n     2701 aaaatcttgc taggatacag ttctcacatc acatccgaac ataaacaacc atgggtaagg\n     2761 aaaagactca cgtttcgagg ccgcgattaa attccaacat ggatgctgat ttatatgggt\n     2821 ataaatgggc tcgcgataat gtcgggcaat caggtgcgac aatctatcga ttgtatggga\n     2881 agcccgatgc gccagagttg tttctgaaac atggcaaagg tagcgttgcc aatgatgtta\n     2941 cagatgagat ggtcagacta aactggctga cggaatttat gcctcttccg accatcaagc\n     3001 attttatccg tactcctgat gatgcatggt tactcaccac tgcgatcccc ggcaaaacag\n     3061 cattccaggt attagaagaa tatcctgatt caggtgaaaa tattgttgat gcgctggcag\n     3121 tgttcctgcg ccggttgcat tcgattcctg tttgtaattg tccttttaac agcgatcgcg\n     3181 tatttcgtct cgctcaggcg caatcacgaa tgaataacgg tttggttgat gcgagtgatt\n     3241 ttgatgacga gcgtaatggc tggcctgttg aacaagtctg gaaagaaatg cataagcttt\n     3301 tgccattctc accggattca gtcgtcactc atggtgattt ctcacttgat aaccttattt\n     3361 ttgacgaggg gaaattaata ggttgtattg atgttggacg agtcggaatc gcagaccgat\n     3421 accaggatct tgccatccta tggaactgcc tcggtgagtt ttctccttca ttacagaaac\n     3481 ggctttttca aaaatatggt attgataatc ctgatatgaa taaattgcag tttcatttga\n     3541 tgctcgatga gtttttctaa tcagtactga caataaaaag attcttgttt tcaagaactt\n     3601 gtcatttgta tagttttttt atattgtagt tgttctattt taatcaaatg ttagcgtgat\n     3661 ttatattttt tttcgcctcg acatcatctg cccagatgcg aagttaagtg cgcagaaagt\n     3721 aatatcatgc gtcaatcgta tgtgaatgct ggtcgctata ctgctgtcga ttcgatacta\n     3781 acgccgccat ccagtttaaa cgagctcgaa ttcatcgatg atatcagatc cactagtggc\n     3841 ctatgcggcc gcggatctgc cggtctccct atagtgagtc gtattaattt cgataagcca\n     3901 ggttaacctg cattaatgaa tcggccaacg cgcgggga\n//"
     },
     {
-      "id": 4,
+      "id": 2,
       "type": "TextFileSequence",
       "sequence_file_format": "genbank",
       "overhang_crick_3prime": 0,
@@ -20,11 +20,10 @@
   "sources": [
     {
       "id": 1,
-      "input": [],
-      "output": 2,
       "type": "UploadedFileSource",
       "output_name": null,
       "database_id": null,
+      "input": [],
       "sequence_file_format": "fasta",
       "file_name": "pFA6a-kanMX6.fasta",
       "index_in_file": 0,
@@ -32,14 +31,16 @@
       "coordinates": null
     },
     {
-      "id": 3,
-      "input": [
-        2
-      ],
-      "output": 4,
+      "id": 2,
       "type": "AnnotationSource",
       "output_name": null,
       "database_id": null,
+      "input": [
+        {
+          "type": "SourceInput",
+          "sequence": 1
+        }
+      ],
       "annotation_tool": "plannotate",
       "annotation_tool_version": "1.2.2",
       "annotation_report": [
@@ -303,14 +304,14 @@
   ],
   "primers": [
     {
-      "id": 1,
+      "id": 3,
       "type": "Primer",
       "name": "fwd",
       "database_id": null,
       "sequence": "TAAGCAGTCGACatgcaaacagtaatgatggatg"
     },
     {
-      "id": 2,
+      "id": 4,
       "type": "Primer",
       "name": "rvs",
       "database_id": null,
@@ -319,7 +320,7 @@
   ],
   "description": "",
   "files": null,
-  "schema_version": "0.3.0a0",
+  "schema_version": "0.4.3",
   "backend_version": null,
   "frontend_version": null
 }

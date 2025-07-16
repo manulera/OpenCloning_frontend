@@ -28,15 +28,15 @@ function SubSequenceDisplayer({
   let selectionLayer = null;
 
   if (['PCRSource'].includes(source.type)) {
-    const leftLocation = parseFeatureLocation(source.assembly[1].left_location, 0, 0, 1, seq.length)[0];
-    const rightLocation = parseFeatureLocation(source.assembly[1].right_location, 0, 0, 1, seq.length)[0];
+    const leftLocation = parseFeatureLocation(source.input[1].left_location, 0, 0, 1, seq.length)[0];
+    const rightLocation = parseFeatureLocation(source.input[1].right_location, 0, 0, 1, seq.length)[0];
     // Special case for the whole sequence amplification
     if (isEqual(leftLocation, rightLocation)) {
       selectionLayer = {
         start: 0,
         end: seq.size - 1,
       };
-    } else if (!source.assembly[1].reverse_complemented) {
+    } else if (!source.input[1].reverse_complemented) {
       selectionLayer = {
         start: leftLocation.start,
         end: rightLocation.end,

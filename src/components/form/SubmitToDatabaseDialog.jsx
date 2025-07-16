@@ -20,7 +20,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
       return false;
     }
     const substate = getSubState(state, id, true);
-    const immediateParent = substate.sources.find((source) => source.output === id);
+    const immediateParent = substate.sources.find((source) => source.id === id);
     return substate.sources.some((source) => (source.id !== immediateParent?.id) && !source.database_id);
   });
 
@@ -83,7 +83,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
               try {
                 ({ databaseId, primerMappings } = await database.submitSequenceToDatabase({ submissionData, substate, id }));
               } catch (error) {
-                console.error(error.message);
+                console.error(error);
                 setErrorMessage(error.message);
                 return;
               }
@@ -97,6 +97,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
               });
             }
           } catch (error) {
+            console.error(error);
             setErrorMessage(error.message);
             return;
           }

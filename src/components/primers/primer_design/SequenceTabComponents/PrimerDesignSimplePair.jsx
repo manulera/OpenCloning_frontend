@@ -2,9 +2,10 @@ import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 import usePrimerDesignSettings from './usePrimerDesignSettings';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 function PrimerDesignSimplePair({ pcrSource }) {
-  const templateSequenceId = pcrSource.input[0];
+  const templateSequenceId = getPcrTemplateSequenceId(pcrSource);
   const sequenceIds = React.useMemo(() => [templateSequenceId], [templateSequenceId]);
 
   const steps = React.useMemo(() => [

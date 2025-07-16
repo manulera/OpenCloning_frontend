@@ -8,10 +8,11 @@ import { downloadTextFile } from '../../utils/readNwrite';
 import { usePCRDetails } from './primer_details/usePCRDetails';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import useMultiplePrimerDetails from './primer_details/useMultiplePrimerDetails';
+import { isCompleteOligoHybridizationSource, isCompletePCRSource } from '../../store/cloning_utils';
 
 function DownloadPrimersDialog({ primers, open, onClose }) {
   const pcrSourceIds = useSelector((state) => state.cloning.sources
-    .filter((source) => source.type === 'PCRSource' && source.assembly?.length > 0)
+    .filter((source) => isCompletePCRSource(source) || isCompleteOligoHybridizationSource(source))
     .map((source) => source.id));
   const [fileName, setFileName] = React.useState('primers');
   const [extension, setExtension] = React.useState('.csv');

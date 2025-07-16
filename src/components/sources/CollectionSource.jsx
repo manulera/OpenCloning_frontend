@@ -30,8 +30,8 @@ function CollectionSource({ source, requestStatus, sendPostRequest }) {
       requestData = { id: sourceId, ...selectedSource };
     } else if (selectedSource.type === 'OligoHybridizationSource') {
       const { primers } = store.getState().cloning;
-      const forwardOligo = primers.find((primer) => primer.id === selectedSource.forward_oligo);
-      const reverseOligo = primers.find((primer) => primer.id === selectedSource.reverse_oligo);
+      const forwardOligo = primers.find((primer) => primer.id === selectedSource.input[0].sequence);
+      const reverseOligo = primers.find((primer) => primer.id === selectedSource.input[1].sequence);
       requestData = { source: { id: sourceId, ...selectedSource }, primers: [forwardOligo, reverseOligo] };
     }
     sendPostRequest({ endpoint, requestData, source, modifySource });
@@ -46,7 +46,6 @@ function CollectionSource({ source, requestStatus, sendPostRequest }) {
     dispatch(replaceSource({
       id: sourceId,
       input: [],
-      output: source.output,
       type: null,
     }));
   };

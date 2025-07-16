@@ -11,11 +11,11 @@ import SelectPrimerForm from '../primers/SelectPrimerForm';
 // A component representing the ligation of several fragments
 function SourceHomologousRecombination({ source, requestStatus, sendPostRequest }) {
   const isCrispr = source.type === 'CRISPRSource';
-  const { id: sourceId, input: inputSequenceIds } = source;
+  const { id: sourceId, input } = source;
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), isEqual);
   const inputsAreNotTemplates = inputSequences.every((sequence) => sequence.type !== 'TemplateSequence');
-  const [template, setTemplate] = React.useState(inputSequenceIds.length > 0 ? inputSequenceIds[0] : null);
-  const [insert, setInsert] = React.useState(inputSequenceIds.length > 1 ? inputSequenceIds[1] : null);
+  const [template, setTemplate] = React.useState(input.length > 0 ? input[0].sequence : null);
+  const [insert, setInsert] = React.useState(input.length > 1 ? input[1].sequence : null);
   const [selectedPrimers, setSelectedPrimers] = React.useState([]);
   const { updateSource } = cloningActions;
   const dispatch = useDispatch();
@@ -27,13 +27,12 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
   const onSubmit = (event) => {
     event.preventDefault();
     const requestData = {
-      source: { id: sourceId, input: inputSequenceIds, output_name: source.output_name },
+      source: { id: sourceId, input, output_name: source.output_name },
       sequences: inputSequences,
     };
     const config = { params: { minimal_homology: minimalHomologyRef.current.value } };
     if (isCrispr) {
       requestData.guides = selectedPrimers.map((primerId) => primers.find((p) => p.id === primerId));
-      requestData.source.guides = selectedPrimers;
       sendPostRequest({ endpoint: 'crispr', requestData, config, source });
     } else {
       sendPostRequest({ endpoint: 'homologous_recombination', requestData, config, source });
@@ -46,16 +45,16 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
     if (insert) {
       newInput.push(insert);
     }
-    dispatch(updateSource({ id: sourceId, input: newInput }));
+    dispatch(updateSource({ id: sourceId, input: newInput.map((id) => ({ sequence: id })) }));
   };
 
   const onInsertChange = (event) => {
     if (event.target.value === '') {
       setInsert(null);
-      dispatch(updateSource({ id: sourceId, input: [template] }));
+      dispatch(updateSource({ id: sourceId, input: [{ sequence: template }] }));
     } else {
       setInsert(Number(event.target.value));
-      dispatch(updateSource({ id: sourceId, input: [template, Number(event.target.value)] }));
+      dispatch(updateSource({ id: sourceId, input: [{ sequence: template }, { sequence: Number(event.target.value) }] }));
     }
   };
 
@@ -67,7 +66,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
             label="Template sequence"
             {...{ selectedId: template,
               onChange: onTemplateChange,
-              inputSequenceIds: [...new Set(inputSequenceIds)].filter(
+                inputSequenceIds: [...new Set(input.map(({sequence}) => sequence))].filter(
                 (id) => id !== insert,
               ) }}
           />
@@ -78,7 +77,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
             allowUnset
             {...{ selectedId: insert,
               onChange: onInsertChange,
-              inputSequenceIds: [...new Set(inputSequenceIds)].filter(
+              inputSequenceIds: [...new Set(input.map(({sequence}) => sequence))].filter(
                 (id) => id !== template,
               ) }}
           />

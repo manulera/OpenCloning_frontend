@@ -1,5 +1,5 @@
 import { BlobReader, TextWriter, ZipReader } from '@zip.js/zip.js';
-import { setInputValue, deleteSourceByContent, loadExample } from '../common_functions';
+import { setInputValue, deleteSourceByContent, loadExample, closeAlerts } from '../common_functions';
 
 describe('Test download history file', () => {
   beforeEach(() => {
@@ -36,6 +36,13 @@ describe('Test download history file', () => {
   it('Can download zip files', () => {
     // Load the zip example
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
+    cy.contains('Read from file final_product.gb', { timeout: 20000 }).should('exist');
+    // Alerts can cover the app bar
+    cy.get('body').then(($body) => {
+      if ($body.find('.MuiAlert-message').length > 0) {
+        closeAlerts();
+      }
+    });
     cy.get('div.cloning-tab-pannel').contains('final_product.gb', { timeout: 20000 });
     // Download the zip file
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').click();
@@ -70,9 +77,9 @@ describe('Test download history file', () => {
             .then((entries) => {
               const filenames = entries.map((entry) => entry.filename);
               expect(filenames).to.include('cloning_strategy.json');
-              expect(filenames).to.include('verification-2-BZO902_13409020_13409020.ab1');
-              expect(filenames).to.include('verification-2-BZO903_13409037_13409037.ab1');
-              expect(filenames).to.include('verification-2-BZO904_13409044_13409044.ab1');
+              expect(filenames).to.include('verification-1-BZO902_13409020_13409020.ab1');
+              expect(filenames).to.include('verification-1-BZO903_13409037_13409037.ab1');
+              expect(filenames).to.include('verification-1-BZO904_13409044_13409044.ab1');
 
               // Get and parse the JSON file content
               const jsonEntry = entries.find((entry) => entry.filename === 'cloning_strategy.json');

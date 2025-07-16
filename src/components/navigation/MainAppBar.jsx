@@ -60,10 +60,9 @@ function MainAppBar() {
     setOpenTemplateDialog(false);
     if (url) {
       let { data } = await httpClient.get(url);
+      data = await validateState(data);
       if (isTemplate) {
         data = formatTemplate(data, url);
-      } else {
-        data = await validateState(data);
       }
       dispatch(setCloningState(data));
     }

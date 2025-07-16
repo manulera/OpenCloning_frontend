@@ -11,9 +11,9 @@ describe('ManuallyTyped Source', () => {
     cy.get('#tab-panel-0 #sequence').type('atata');
     cy.get('.select-source > form > .MuiButtonBase-root').click();
     cy.get('.select-source > :nth-child(2)', { timeout: 20000 }).should('have.text', 'Manually typed sequence');
-    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > .node-text > .corner-id').should('have.text', '2');
-    cy.get('#sequence-2 .veLinearView').should('exist');
-    cy.get('#sequence-2 .veCircularView').should('not.exist');
+    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > .node-text > .corner-id').should('have.text', '1');
+    cy.get('#sequence-1 .veLinearView').should('exist');
+    cy.get('#sequence-1 .veCircularView').should('not.exist');
   });
 
   it('works on circular case', () => {
@@ -22,9 +22,9 @@ describe('ManuallyTyped Source', () => {
     cy.get('input[type="checkbox"]').click();
     cy.get('.select-source > form > .MuiButtonBase-root').click();
     cy.get('.select-source > :nth-child(2)', { timeout: 20000 }).should('have.text', 'Manually typed sequence');
-    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > .node-text > .corner-id').should('have.text', '2');
-    cy.get('#sequence-2 .veCircularView').should('exist');
-    cy.get('#sequence-2 .veLinearView').should('not.exist');
+    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > .node-text > .corner-id').should('have.text', '1');
+    cy.get('#sequence-1 .veCircularView').should('exist');
+    cy.get('#sequence-1 .veLinearView').should('not.exist');
   });
 
   it('works only with ACGT', () => {

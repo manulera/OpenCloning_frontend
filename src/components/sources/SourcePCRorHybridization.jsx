@@ -2,7 +2,7 @@ import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Button, Checkbox, FormControl, FormControlLabel, InputAdornment, TextField } from '@mui/material';
 
-import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
+import { doesSourceHaveOutput, getInputSequencesFromSourceId, getPcrTemplateSequenceId } from '../../store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import PCRUnitForm from './PCRUnitForm';
 import PrimerDesignSourceForm from '../primers/primer_design/SourceComponents/PrimerDesignSourceForm';
@@ -21,7 +21,8 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const primers = useSelector((state) => state.cloning.primers);
   const isPcr = inputSequences.length !== 0;
-  const outputIsPrimerDesign = useSelector((state) => isPcr && source.output && state.cloning.sequences.find((e) => e.id === source.output).primer_design !== undefined);
+  const hasOutput = useSelector((state) => doesSourceHaveOutput(state.cloning, sourceId));
+  const outputIsPrimerDesign = useSelector((state) => isPcr && hasOutput && state.cloning.sequences.find((e) => e.id === source.id).primer_design !== undefined);
 
   const [forwardPrimerId, setForwardPrimerId] = React.useState('');
   const [reversePrimerId, setReversePrimerId] = React.useState('');
@@ -32,12 +33,18 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   const allowedMismatchesRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (source.forward_primer) { setForwardPrimerId(source.forward_primer); }
-    if (source.reverse_primer) { setReversePrimerId(source.reverse_primer); }
-    if (source.forward_oligo) { setForwardPrimerId(source.forward_oligo); }
-    if (source.reverse_oligo) { setReversePrimerId(source.reverse_oligo); }
+    if (isPcr && source.input.length === 3) {
+      setForwardPrimerId(source.input[0].sequence);
+      setReversePrimerId(source.input[2].sequence);
+    } else if (!isPcr && source.input.length === 2) {
+      setForwardPrimerId(source.input[0].sequence);
+      setReversePrimerId(source.input[1].sequence);
+    }
+  }, [source.input]);
+
+  React.useEffect(() => {
     if (source.add_primer_annotations) { setAddPrimerFeatures(source.add_primer_annotations); }
-  }, [source.forward_oligo, source.reverse_oligo, source.forward_primer, source.reverse_primer, source.add_primer_annotations]);
+  }, [source.add_primer_annotations]);
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -45,12 +52,11 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
     const requestData = {
       sequences: inputSequences,
       primers: [forwardPrimerId, reversePrimerId].map((id) => primers.find((p) => p.id === id)),
-      source: { id: sourceId, input: inputSequences.map((e) => e.id), output_name: source.output_name },
+      source: { id: sourceId, input: inputSequences.map((e) => ({ sequence: e.id })), output_name: source.output_name },
     };
 
     if (!isPcr) {
-      requestData.source.forward_oligo = forwardPrimerId;
-      requestData.source.reverse_oligo = reversePrimerId;
+      requestData.source.input = [forwardPrimerId, reversePrimerId].map((id) => ({ sequence: id }));
       const config = { params: { minimal_annealing: minimalAnnealingRef.current.value } };
       sendPostRequest({ endpoint: 'oligonucleotide_hybridization', requestData, config, source });
     } else {
@@ -70,8 +76,9 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
   if (outputIsPrimerDesign && !forwardPrimerId && !reversePrimerId) {
     const goToPrimerDesign = () => {
       dispatch(setCurrentTab(3));
-      dispatch(setMainSequenceId(source.input[0]));
-      updateStoreEditor('mainEditor', source.input[0]);
+      const templateSequenceId = getPcrTemplateSequenceId(source);
+      dispatch(setMainSequenceId(templateSequenceId));
+      updateStoreEditor('mainEditor', templateSequenceId);
       // Scroll to the top of the tab panels container
       document.querySelector('.tab-panels-container')?.scrollTo({
         top: 0,
@@ -89,14 +96,14 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
     );
   }
 
-  if (designingPrimers && !source.output) {
+  if (designingPrimers && !hasOutput) {
     return <PrimerDesignSourceForm source={source} />;
   }
 
   return (
     <div className="pcr_or_hybridization">
       <form onSubmit={onSubmit}>
-        {isPcr && !source.output && !forwardPrimerId && !reversePrimerId && (
+        {isPcr && !hasOutput && !forwardPrimerId && !reversePrimerId && (
           <Button variant="contained" color="success" sx={{ my: 2 }} onClick={onPrimerDesign}>Design primers</Button>
         )}
         <PCRUnitForm

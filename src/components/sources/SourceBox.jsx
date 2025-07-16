@@ -6,14 +6,7 @@ import { cloningActions } from '../../store/cloning';
 import './SourceBox.css';
 import VerifyDeleteDialog from './VerifyDeleteDialog';
 import useStoreEditor from '../../hooks/useStoreEditor';
-
-function sourceHasDownstreamChildren(sources, sourceId) {
-  const currentSource = sources.find((source) => source.id === sourceId);
-  if (!currentSource.output) {
-    return false;
-  }
-  return sources.find((source) => source.input.includes(currentSource.output)) !== undefined;
-}
+import { isSequenceInputOfAnySource } from '../../store/cloning_utils';
 
 const { deleteSourceAndItsChildren, setMainSequenceId } = cloningActions;
 
@@ -29,14 +22,14 @@ function SourceBox({ children, sourceId }) {
     const { mainSequenceId, sources } = store.getState().cloning;
     const source = sources.find((s) => s.id === sourceId);
     dispatch(deleteSourceAndItsChildren(sourceId));
-    if (mainSequenceId && mainSequenceId === source.output) {
+    if (mainSequenceId && mainSequenceId === sourceId) {
       updateStoreEditor('mainEditor', null);
       dispatch(setMainSequenceId(null));
     }
   };
   const onClickDeleteSource = () => {
     const state = store.getState().cloning;
-    if (sourceHasDownstreamChildren(state.sources, sourceId)) {
+    if (isSequenceInputOfAnySource(sourceId, state.sources)) {
       setDialogOpen(true);
     } else {
       deleteSource();

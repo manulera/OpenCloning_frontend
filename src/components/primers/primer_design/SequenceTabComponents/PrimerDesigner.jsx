@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import { Box, Button } from '@mui/material';
-import { getPrimerDesignObject } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId, getPrimerDesignObject } from '../../../../store/cloning_utils';
 import PrimerDesignHomologousRecombination from './PrimerDesignHomologousRecombination';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '../../../../store/cloning';
@@ -18,9 +18,10 @@ function PrimerDesigner() {
   const { setMainSequenceId } = cloningActions;
 
   const { finalSource, otherInputIds, pcrSources, outputSequences } = useSelector((state) => getPrimerDesignObject(state.cloning), isEqual);
+  console.log({ finalSource, otherInputIds, pcrSources, outputSequences });
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
 
-  const templateSequencesIds = pcrSources.map((pcrSource) => pcrSource.input[0]);
+  const templateSequencesIds = pcrSources.map((pcrSource) => getPcrTemplateSequenceId(pcrSource));
   const openPrimerDesigner = () => {
     updateStoreEditor('mainEditor', templateSequencesIds[0]);
     dispatch(setMainSequenceId(templateSequencesIds[0]));

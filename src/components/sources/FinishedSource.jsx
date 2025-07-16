@@ -211,7 +211,7 @@ function PCRMessage({ source }) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const primers = useSelector((state) => state.cloning.primers, isEqual);
   const { pcrDetails, retryGetPCRDetails, requestStatus } = usePCRDetails([source.id]);
-  const [fwdPrimer, rvsPrimer] = [source.assembly[0].sequence, source.assembly[2].sequence];
+  const [fwdPrimer, rvsPrimer] = [source.input[0].sequence, source.input[2].sequence];
   return (
     <div>
       <div>{`PCR with primers ${primers.find((p) => fwdPrimer === p.id).name} and ${primers.find((p) => rvsPrimer === p.id).name}`}</div>
@@ -275,12 +275,12 @@ function FinishedSource({ sourceId }) {
       break;
     case 'PCRSource': message = <PCRMessage source={source} />; break;
     case 'OligoHybridizationSource':
-      message = `Hybridization of primers ${primers.find((p) => source.forward_oligo === p.id).name} and ${primers.find((p) => source.reverse_oligo === p.id).name}`;
+      message = `Hybridization of primers ${primers.find((p) => source.input[0].sequence === p.id).name} and ${primers.find((p) => source.input[1].sequence === p.id).name}`;
       break;
-    case 'HomologousRecombinationSource': message = `Homologous recombination with ${source.input[0]} as template and ${source.input[1]} as insert.`; break;
+    case 'HomologousRecombinationSource': message = `Homologous recombination with ${source.input[0].sequence} as template and ${source.input[1].sequence} as insert.`; break;
     case 'CRISPRSource': {
-      const guidesString = source.guides.map((id) => primers.find((p) => id === p.id).name).join(', ');
-      message = `CRISPR HDR with ${source.input[0]} as template, ${source.input[1]} as insert and ${guidesString} as a guide${source.guides.length > 1 ? 's' : ''}`;
+      const guidesString = source.input.filter(({type}) => type === 'SourceInput').map(({sequence}) => primers.find((p) => sequence === p.id).name).join(', ');
+      message = `CRISPR HDR with ${source.input[0].sequence} as template, ${source.input[1].sequence} as insert and ${guidesString} as a guide${source.input.length > 3 ? 's' : ''}`;
     }
       break;
     case 'RepositoryIdSource': message = <RepositoryIdMessage source={source} />;

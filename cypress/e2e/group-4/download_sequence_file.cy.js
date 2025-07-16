@@ -7,7 +7,7 @@ describe('Test download sequence file', () => {
   it('Can download the file', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('Examples').click();
     cy.get('li span').contains('Integration of cassette by homologous recombination').click();
-    cy.get('li#sequence-2 svg[data-testid="DownloadIcon"]', { timeOut: 20000 }).click();
+    cy.get('li#sequence-1 svg[data-testid="DownloadIcon"]', { timeOut: 20000 }).click();
     setInputValue('File name', 'example', '.MuiDialogContent-root');
     // Download file as gb
     cy.get('.MuiDialogActions-root button').contains('Save file').click();
@@ -19,7 +19,7 @@ describe('Test download sequence file', () => {
       expect(fileContent).to.include('/label="rvs"');
     });
     // Also the PCR product contains primers
-    cy.get('li#sequence-4 svg[data-testid="DownloadIcon"]').first().click();
+    cy.get('li#sequence-2 svg[data-testid="DownloadIcon"]').first().click();
     setInputValue('File name', 'example2', '.MuiDialogContent-root');
     // Download file as gb
     cy.get('.MuiDialogActions-root button').contains('Save file').click();
@@ -32,7 +32,7 @@ describe('Test download sequence file', () => {
     });
 
     // Download file as fasta
-    cy.get('li#sequence-2 svg[data-testid="DownloadIcon"]').click();
+    cy.get('li#sequence-1 svg[data-testid="DownloadIcon"]').click();
     setInputValue('File name', 'example', '.MuiDialogContent-root');
     cy.get('.MuiDialogContent-root span').contains('fasta').click();
     cy.get('.MuiDialogActions-root button').contains('Save file').click();
@@ -40,7 +40,7 @@ describe('Test download sequence file', () => {
       expect(fileContent).to.include('>pFA6a-5FLAG-hphMX6');
     });
     // Donwload history as json
-    cy.get('li#sequence-4 svg[data-testid="DownloadIcon"]').first().click();
+    cy.get('li#sequence-2 svg[data-testid="DownloadIcon"]').first().click();
     setInputValue('File name', 'example', '.MuiDialogContent-root');
     cy.get('.MuiDialogContent-root span').contains('json').click();
     cy.get('.MuiDialogActions-root button').contains('Save file').click();

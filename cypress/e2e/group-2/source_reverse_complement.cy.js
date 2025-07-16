@@ -16,14 +16,14 @@ describe('Tests Reverse Complement Source functionality', () => {
     cy.get('button').contains('Reverse complement').click();
 
     // Check that the resulting sequence is the reverse complement
-    cy.get('li#sequence-4 svg[data-testid="VisibilityIcon"]').first().click();
+    cy.get('li#sequence-2 svg[data-testid="VisibilityIcon"]').first().click();
     cy.get('.veTabSequenceMap').contains('Sequence Map').click();
     cy.get('svg.rowViewTextContainer text').contains('ttcg').should('not.exist');
     cy.get('svg.rowViewTextContainer text').contains('cgaa').should('exist');
 
     // Check that an error is displayed when server is down
     changeTab('Cloning');
-    deleteSourceById(3);
+    deleteSourceById(2);
     addSource('ReverseComplementSource');
     cy.intercept('POST', 'http://127.0.0.1:8000/reverse_complement', {
       forceNetworkError: true,

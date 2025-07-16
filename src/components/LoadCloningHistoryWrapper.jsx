@@ -5,9 +5,11 @@ import useBackendRoute from '../hooks/useBackendRoute';
 import useValidateState from '../hooks/useValidateState';
 import { cloningActions } from '../store/cloning';
 import { mergeStates } from '../utils/network';
-import { loadFilesToSessionStorage, loadHistoryFile } from '../utils/readNwrite';
+import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '../utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
+import { getVerificationFileName } from '../store/cloning_utils';
+import { isEqual } from 'lodash-es';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;
 
@@ -88,19 +90,22 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
           return;
         }
 
-        const updateState = async (newState, networkShift) => {
-          const validatedState = await validateState(newState);
-          dispatch(setCloningState(validatedState));
-          await loadFilesToSessionStorage(verificationFiles, networkShift);
+        const validatedState = await validateState(cloningStrategy);
+        // Update the verificationFiles names if needed
+        const updatedVerificationFiles = updateVerificationFileNames(verificationFiles, cloningStrategy.files, validatedState.files);
+
+        const updateState = async (newState, idShift) => {
+          dispatch(setCloningState(newState));
+          await loadFilesToSessionStorage(updatedVerificationFiles, idShift);
         };
 
         const replaceState = async () => {
-          await updateState(cloningStrategy, 0);
+          await updateState(validatedState, 0);
         };
 
         const addState = async () => {
-          const { mergedState, networkShift } = mergeStates(cloningStrategy, cloningState);
-          await updateState(mergedState, networkShift);
+          const { mergedState, idShift } = mergeStates(validatedState, cloningState);
+          await updateState(mergedState, idShift);
         };
 
         const errorWrapper = (fn) => async () => {

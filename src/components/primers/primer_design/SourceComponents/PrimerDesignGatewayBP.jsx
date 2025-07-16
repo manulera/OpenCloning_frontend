@@ -8,6 +8,7 @@ import LabelWithTooltip from '../../../form/LabelWithTooltip';
 import useGatewaySites from '../../../../hooks/useGatewaySites';
 import NoAttPSitesError from '../common/NoAttPSitesError';
 import RetryAlert from '../../../form/RetryAlert';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 const { addTemplateChildAndSubsequentSource, setCurrentTab, setMainSequenceId } = cloningActions;
 
@@ -18,16 +19,16 @@ function PrimerDesignGatewayBP({ source }) {
   const { updateStoreEditor } = useStoreEditor();
   const { requestStatus, sites: sitesInTarget, attemptAgain } = useGatewaySites({ target, greedy });
   const nbOfAttPSites = sitesInTarget.filter((site) => site.siteName.startsWith('attP')).length;
+  const inputSequenceId = getPcrTemplateSequenceId(source);
 
   const dispatch = useDispatch();
   const onSubmit = (event) => {
     event.preventDefault();
     const newSource = {
-      input: [Number(target)],
+      input: [{ sequence: Number(target) }],
       type: 'GatewaySource',
       reaction_type: 'BP',
       greedy,
-      output: null,
     };
     const newSequence = {
       type: 'TemplateSequence',
@@ -37,8 +38,8 @@ function PrimerDesignGatewayBP({ source }) {
 
     batch(() => {
       dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id }));
-      dispatch(setMainSequenceId(source.input[0]));
-      updateStoreEditor('mainEditor', source.input[0]);
+      dispatch(setMainSequenceId(inputSequenceId));
+      updateStoreEditor('mainEditor', inputSequenceId);
       dispatch(setCurrentTab(3));
       // Scroll to the top of the page after 300ms
       setTimeout(() => {

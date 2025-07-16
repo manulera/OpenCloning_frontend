@@ -4,16 +4,18 @@ import { batch, useDispatch } from 'react-redux';
 import MultipleInputsSelector from '../../../sources/MultipleInputsSelector';
 import { cloningActions } from '../../../../store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 function PrimerDesignGibsonAssembly({ source, assemblyType }) {
-  const [targets, setTargets] = React.useState(source.input);
+  const [targets, setTargets] = React.useState(source.input.map(({ sequence }) => sequence));
+  const inputSequenceId = getPcrTemplateSequenceId(source);
 
-  const onInputChange = (newInput) => {
+  const onInputChange = (newInputSequenceIds) => {
     // Prevent unsetting the input of the source
-    if (!newInput.includes(source.input[0])) {
-      setTargets(source.input.concat(newInput));
+    if (!newInputSequenceIds.includes(inputSequenceId)) {
+      setTargets( (prev) => [...prev, ...newInputSequenceIds]);
     } else {
-      setTargets(newInput);
+      setTargets(newInputSequenceIds);
     }
   };
 
@@ -32,8 +34,8 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
     // Slice from the second on
       const newPCRTemplates = targets.slice(1);
       dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: newPCRTemplates, sourceType: assemblyType }));
-      dispatch(setMainSequenceId(source.input[0]));
-      updateStoreEditor('mainEditor', source.input[0]);
+      dispatch(setMainSequenceId(inputSequenceId));
+      updateStoreEditor('mainEditor', inputSequenceId);
       dispatch(setCurrentTab(3));
       // Scroll to the top of the page after 300ms
       setTimeout(() => {

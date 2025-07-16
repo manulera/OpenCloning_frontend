@@ -8,10 +8,10 @@ describe('File Source', () => {
   it('works on normal case', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how
     cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
-    cy.get('li#sequence-2', { timeout: 20000 }).contains('CU329670');
+    cy.get('li#sequence-1', { timeout: 20000 }).contains('CU329670');
     // Shows warning
     cy.get('#global-error-message-wrapper').contains('LOCUS line is wrongly formatted');
-    cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb');
+    cy.get('li#sequence-1 li#source-1').contains('Read from file ase1.gb');
   });
   it('gives the right error when file has a wrong extension', () => {
     //  This does not really test that clicking the button opens the file interface, but I did not see how
@@ -26,7 +26,7 @@ describe('File Source', () => {
   it('allows to circularize non-fasta files', () => {
     cy.get('li#source-1').contains('Circularize').click();
     cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
-    cy.get('li#sequence-2 svg.circularViewSvg', { timeout: 20000 }).should('exist');
+    cy.get('li#sequence-1 svg.circularViewSvg', { timeout: 20000 }).should('exist');
   });
   it('works when circularize is checked and file is multi-fasta', () => {
     cy.get('li#source-1').contains('Circularize').click();
@@ -52,11 +52,11 @@ describe('File Source', () => {
     addLane();
     addSource('UploadedFileSource', true);
     cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/cloning_strategy_with_sequencing.json', { force: true });
-    cy.get('li#source-37').contains('final_product.gb').then(() => {
+    cy.get('li#source-23').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 0);
     });
     // No verification files are listed either
-    cy.get('li#sequence-38 [data-testid="RuleIcon"]').click();
+    cy.get('li#sequence-23 [data-testid="RuleIcon"]').click();
     cy.get('.verification-file-dialog table td').should('not.exist');
     cy.get('.verification-file-dialog button').contains('Close').click();
 
@@ -82,7 +82,7 @@ describe('File Source', () => {
     cy.get('li#source-1').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 3);
     });
-    cy.get('li#sequence-2 [data-testid="RuleIcon"]').click();
+    cy.get('li#sequence-1 [data-testid="RuleIcon"]').click();
     cy.get('.verification-file-dialog table tr').should('have.length', 4);
     cy.get('.verification-file-dialog button').contains('Close').click();
 
@@ -94,7 +94,7 @@ describe('File Source', () => {
     cy.get('li#source-3').contains('final_product.gb').then(() => {
       cy.window().its('sessionStorage').its('length').should('eq', 6);
     });
-    cy.get('li#sequence-4 [data-testid="RuleIcon"]').click();
+    cy.get('li#sequence-3 [data-testid="RuleIcon"]').click();
     cy.get('.verification-file-dialog table tr').should('have.length', 4);
     cy.get('.verification-file-dialog button').contains('Close').click();
 
@@ -124,7 +124,7 @@ describe('File Source', () => {
     clickMultiSelectOption('Source type', 'Submit file', 'li#source-1');
     cy.get('li#source-1 .submit-sequence-file input[type="file"]').first().selectFile('public/examples/templateless_PCR.json', { force: true });
     // Replaces the template sequence by the actual input
-    cy.get('li#sequence-2').contains('139 bps', { timeout: 20000 });
+    cy.get('li#sequence-1').contains('139 bps', { timeout: 20000 });
     cy.get('li#source-1').contains('Polymerase extension');
     cy.get('.open-cloning li').contains('Hybridization of primers fwd_hyb and rvs_hyb');
   });
@@ -144,9 +144,9 @@ describe('File Source', () => {
     setInputValue('Start', '0', 'li');
     setInputValue('End', '20', 'li');
     cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
-    cy.get('li#sequence-2 li#source-1').contains('Read from file ase1.gb,');
-    cy.get('li#sequence-2 li#source-1').contains('then extracted subsequence 1..20');
-    cy.get('li#sequence-2').contains('20 bps');
+    cy.get('li#sequence-1 li#source-1').contains('Read from file ase1.gb,');
+    cy.get('li#sequence-1 li#source-1').contains('then extracted subsequence 1..20');
+    cy.get('li#sequence-1').contains('20 bps');
 
     // Shows warning when not all sequences in the file are compatible with the coordinates
     deleteSourceByContent('Read from file');
@@ -158,7 +158,7 @@ describe('File Source', () => {
     setInputValue('End', '12', 'li');
     cy.get('form.submit-sequence-file input').last().selectFile('public/examples/dummy_multi_fasta.fasta', { force: true });
     cy.get('#global-error-message-wrapper').contains('Some sequences were not extracted', { timeout: 20000 });
-    cy.get('li#sequence-2').contains('12 bps');
+    cy.get('li#sequence-1').contains('12 bps');
 
     // Shows errors when the coordinates are not valid
     deleteSourceByContent('Read from file');

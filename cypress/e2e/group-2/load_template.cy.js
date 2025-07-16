@@ -30,4 +30,12 @@ describe('Test load template functionality', () => {
       expect($img[0].naturalWidth).to.be.greaterThan(0);
     });
   });
+  it('Change source type is disabled for PCRs in template sources', () => {
+    // Load EBIC template
+    cy.get('div.cloning-history').selectFile('public/examples/ebic_template.json', { action: 'drag-drop' });
+
+    cy.get('div.cloning-history').contains('common_plasmid').should('exist');
+    // The PCR source type should be disabled
+    cy.get('input[value="PCRSource"]').should('be.disabled');
+  });
 });

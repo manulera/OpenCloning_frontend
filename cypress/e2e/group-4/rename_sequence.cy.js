@@ -6,8 +6,8 @@ describe('Can rename a sequence', () => {
   });
   it('Works as expected', () => {
     manuallyTypeSequence('atata');
-    cy.get('li#sequence-2 .sequenceNameText').contains('name').should('exist');
-    cy.get('li#sequence-2 svg[data-testid="EditIcon"]').click();
+    cy.get('li#sequence-1 .sequenceNameText').contains('name').should('exist');
+    cy.get('li#sequence-1 svg[data-testid="EditIcon"]').click();
     // Cannot submit if name didn't change
     cy.get('div[role="presentation"] button').contains('Cancel').should('exist');
     cy.get('div[role="presentation"] button').contains('Rename').should('not.exist');
@@ -36,7 +36,7 @@ describe('Can rename a sequence', () => {
     cy.get('code').contains('"output_name": "name-2"').should('exist');
     // If the server is down, you get an error
     cy.get('button.MuiTab-root').contains('Cloning').click();
-    cy.get('li#sequence-2 svg[data-testid="EditIcon"]').click();
+    cy.get('li#sequence-1 svg[data-testid="EditIcon"]').click();
     cy.get('div[role="presentation"]').contains('Rename sequence').first().click();
     setInputValue('New name', 'name-3', 'div[role="presentation"]');
     cy.intercept('POST', 'http://127.0.0.1:8000/*', { forceNetworkError: true }).as('error');

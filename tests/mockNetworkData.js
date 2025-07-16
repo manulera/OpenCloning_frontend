@@ -8,20 +8,20 @@ export const mockSequences = [
 ];
 
 export const mockSources = [
-  { id: 'source1', input: [2], output: 1 },
-  { id: 'source2', input: [3], output: 2, type: 'OligoHybridizationSource', forward_oligo: 1, reverse_oligo: 2 },
-  { id: 'source3', input: [4, 5], output: 3, database_id: 100 },
-  { id: 'source4', input: [], output: 4 },
-  { id: 'source5', input: [], output: 5, type: 'OligoHybridizationSource', forward_oligo: 3, reverse_oligo: 4 },
-  { id: 'source6', input: [], output: 6 },
+  { id: 1, input: [{sequence: 2}, {sequence: 3}], },
+  { id: 2, input: [{sequence: 7}, {sequence: 8}],  type: 'OligoHybridizationSource' },
+  { id: 3, input: [{sequence: 4}, {sequence: 5}],  database_id: 100 },
+  { id: 4, input: [], },
+  { id: 5, input: [{sequence: 9}, {sequence: 10}],  type: 'OligoHybridizationSource' },
+  { id: 6, input: [], },
 ];
 
 export const mockPrimers = [
-  { id: 1, name: 'Primer1' },
-  { id: 2, name: 'Primer2', database_id: 123 },
-  { id: 3, name: 'Primer3' },
-  { id: 4, name: 'Primer4' },
-  { id: 5, name: 'unused' },
+  { id: 7, name: 'Primer1' },
+  { id: 8, name: 'Primer2', database_id: 123 },
+  { id: 9, name: 'Primer3' },
+  { id: 10, name: 'Primer4' },
+  { id: 11, name: 'unused' },
 ];
 
 export const mockTeselaJsonCache = {

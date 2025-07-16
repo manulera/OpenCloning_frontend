@@ -13,9 +13,10 @@ export function usePCRDetails(sourceIds) {
   const { getPrimerDetails, getHeterodimerDetails } = usePrimerDetailsEndpoints();
   const bindingInfos = useSelector((state) => {
     const { primers, sources, teselaJsonCache } = state.cloning;
+
     return sourceIds.map((sourceId) => {
       const source = sources.find((s) => s.id === sourceId);
-      const sequenceLength = teselaJsonCache[source.input[0]].size;
+      const sequenceLength = source.type === 'PCRSource' && teselaJsonCache[source.input[1].sequence].size;
       return getPrimerBindingInfoFromSource(primers, source, sequenceLength);
     });
   }, isEqual);

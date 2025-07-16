@@ -4,7 +4,7 @@ import { pcrPrimerPositionsInInput } from './cloning_utils';
 // Template sequence fwd
 const source1 = {
   type: 'PCRSource',
-  assembly: [
+  input: [
     {
       sequence: 1,
       left_location: null,
@@ -29,7 +29,7 @@ const source1 = {
 // Template sequence rvs
 const source2 = {
   type: 'PCRSource',
-  assembly: [
+  input: [
     {
       sequence: 1,
       left_location: null,

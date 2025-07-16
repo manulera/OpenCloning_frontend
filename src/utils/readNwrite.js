@@ -9,6 +9,8 @@ import {
   configure,
 } from '@zip.js/zip.js';
 import { tidyUpSequenceData } from '@teselagen/sequence-utils';
+import { getVerificationFileName } from '../store/cloning_utils';
+import { isEqual } from 'lodash-es';
 
 configure({
   useWebWorkers: false,
@@ -82,7 +84,7 @@ export const downloadStateAsJson = async (cloningState, fileName = 'cloning_stra
 export const downloadStateAsZip = async (cloningState, zipFileName = 'cloning_strategy.zip') => {
   const output = formatStateForJsonExport(cloningState);
   output.files = cloningState.files;
-  const fileNames = cloningState.files.map((file) => `verification-${file.sequence_id}-${file.file_name}`);
+  const fileNames = cloningState.files.map((file) => getVerificationFileName(file));
   const files2write = [
     { name: 'cloning_strategy.json', reader: new TextReader(prettyPrintJson(output)) },
     ...fileNames.map((fileName) => {
@@ -191,7 +193,7 @@ export async function loadHistoryFile(file) {
       newCloningStrategy.files = [];
     }
     // Missing files in zip
-    const stateFileNames = newCloningStrategy.files.map((f) => `verification-${f.sequence_id}-${f.file_name}`);
+    const stateFileNames = newCloningStrategy.files.map((f) => getVerificationFileName(f));
     const verificationFileNames = verificationFiles.map((f) => f.name);
 
     const missingFile = stateFileNames.find((name) => !verificationFileNames.includes(name));
@@ -224,10 +226,10 @@ export async function loadHistoryFile(file) {
   return { cloningStrategy: newCloningStrategy, verificationFiles };
 }
 
-export const loadFilesToSessionStorage = async (files, networkShift = 0) => {
+export const loadFilesToSessionStorage = async (files, idShift = 0) => {
   await Promise.all(files.map(async (file) => {
     const fileContent = await file2base64(file);
-    const filename = file.name.replace(/verification-(\d+)-/, (match, num) => `verification-${parseInt(num, 10) + networkShift}-`);
+    const filename = file.name.replace(/verification-(\d+)-/, (match, num) => `verification-${parseInt(num, 10) + idShift}-`);
     sessionStorage.setItem(filename, fileContent);
   }));
 };
@@ -264,4 +266,25 @@ export function formatTemplate(data, url) {
     ...s, image: [`${rootGithubUrl}/${kitUrl}/${s.image[0]}`, s.image[1]],
   }));
   return newData;
+}
+
+export function updateVerificationFileNames(verificationFiles, originalFiles, validatedFiles) {
+  if (isEqual(originalFiles.map((f) => getVerificationFileName(f)), validatedFiles.map((f) => getVerificationFileName(f)))) {
+    return [...verificationFiles];
+  }
+  return verificationFiles.map((file) => {
+    const preValidationName = file.name;
+    const newFileIndex = originalFiles.findIndex((f) => getVerificationFileName(f) === preValidationName);
+
+    if (newFileIndex !== -1) {
+      const postValidationName = getVerificationFileName(validatedFiles[newFileIndex]);
+      if (preValidationName !== postValidationName) {
+        // Create a new File object with the updated name
+        return new File([file], postValidationName, { type: file.type });
+      }
+    }
+
+    // Return the original file if no update is needed
+    return file;
+  });
 }

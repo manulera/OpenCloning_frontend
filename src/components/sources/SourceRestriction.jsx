@@ -16,7 +16,7 @@ function SourceRestriction({ source, requestStatus, sendPostRequest }) {
     e.preventDefault();
     if (enzymes.length === 0) { return; }
     const requestData = {
-      source: { id: sourceId, input: inputSequences.map((e) => e.id) },
+      source: { id: sourceId, input: source.input },
       sequences: inputSequences,
     };
     sendPostRequest({ endpoint: 'restriction', requestData, source, config: { params: { restriction_enzymes: enzymes } } });

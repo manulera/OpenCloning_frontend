@@ -36,7 +36,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Design primers').click();
 
     clickMultiSelectOption('Purpose of primers', 'Homologous Recombination', 'li');
-    clickMultiSelectOption('Target sequence', '6', 'li');
+    clickMultiSelectOption('Target sequence', '3', 'li');
     cy.get('button').contains('Design primers').click();
 
     // We should be now on the Sequence tab
@@ -191,18 +191,18 @@ describe('Test primer designer functionality', () => {
     // We should be now in the Sequence tab
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
-    // There should be three tabs: Seq 2, Seq 4 and Other settings
+    // There should be three tabs: Seq 1, Seq 2 and Other settings
     cy.get('.main-sequence-editor button.MuiStepButton-root').should('have.length', 4);
+    getStepButton('Seq 1').should('exist');
     getStepButton('Seq 2').should('exist');
-    getStepButton('Seq 4').should('exist');
     getStepButton('Other settings').should('exist');
     getStepButton('Results').should('exist');
 
     // We cannot submit without setting the regions
     getStepButton('Other settings').should('be.disabled');
 
-    // The current tab should be "Seq 2" and it displays the sequence pREP42-MCS+
-    checkCurrentStep('Seq 2');
+    // The current tab should be "Seq 1" and it displays the sequence pREP42-MCS+
+    checkCurrentStep('Seq 1');
     cy.get('.main-sequence-editor').should('contain', 'pREP42-MCS+');
     // Error if setting without selection
     getBottomButton('Choose region', 0).should('be.disabled');
@@ -218,7 +218,7 @@ describe('Test primer designer functionality', () => {
     cy.get('.main-sequence-editor div.MuiAlert-standardError').should('not.exist');
 
     // Go to next tab
-    getStepButton('Seq 4').click();
+    getStepButton('Seq 2').click();
     cy.get('.main-sequence-editor').should('contain', 'NC_003424');
     // select ase1 region
     cy.contains('svg', 'ase1').first().click();
@@ -325,10 +325,10 @@ describe('Test primer designer functionality', () => {
     // We should be now in the Sequence tab
     cy.get('button.MuiTab-root.Mui-selected').contains('Sequence').should('exist');
 
-    // There should be three tabs: Seq 2, Seq 4 and Other settings (if we get here, the rest is the same as Gibson assembly)
+    // There should be three tabs: Seq 1, Seq 2 and Other settings (if we get here, the rest is the same as Gibson assembly)
     cy.get('.main-sequence-editor button.MuiStepButton-root').should('have.length', 4);
+    getStepButton('Seq 1').should('exist');
     getStepButton('Seq 2').should('exist');
-    getStepButton('Seq 4').should('exist');
     getStepButton('Other settings').should('exist');
     getStepButton('Results').should('exist');
 
@@ -416,9 +416,9 @@ describe('Test primer designer functionality', () => {
     checkCurrentStep('Results');
 
     // Check that the primers are correct
-    cy.get('.primer-design-form input').first().should('have.value', 'seq_2_EcoRI_fwd');
+    cy.get('.primer-design-form input').first().should('have.value', 'seq_1_EcoRI_fwd');
     cy.get('.primer-design-form input').eq(1).invoke('val').should('match', /^TTTGAATTCAAA/);
-    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_2_BamHI_rvs');
+    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_1_BamHI_rvs');
     cy.get('.primer-design-form input').eq(3).invoke('val').should('match', /^TTTGGATCCGGG/);
 
     // Save the primers
@@ -433,7 +433,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Perform PCR').click();
 
     // Check that the PCR was successful
-    cy.get('li').contains('PCR with primers seq_2_EcoRI_fwd and seq_2_BamHI_rvs').should('exist');
+    cy.get('li').contains('PCR with primers seq_1_EcoRI_fwd and seq_1_BamHI_rvs').should('exist');
   });
 
   it('Restriction ligation primer design - invert site', () => {
@@ -551,8 +551,8 @@ describe('Test primer designer functionality', () => {
     checkCurrentStep('Results');
 
     // Check that the primers are correct
-    cy.get('.primer-design-form input').first().should('have.value', 'seq_2_fwd');
-    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_2_rvs');
+    cy.get('.primer-design-form input').first().should('have.value', 'seq_1_fwd');
+    cy.get('.primer-design-form input').eq(2).should('have.value', 'seq_1_rvs');
 
     // Save the primers
     cy.get('button').contains('Save primers').click();
@@ -566,7 +566,7 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Perform PCR').click();
 
     // Check that the PCR was successful
-    cy.get('li').contains('PCR with primers seq_2_fwd and seq_2_rvs').should('exist');
+    cy.get('li').contains('PCR with primers seq_1_fwd and seq_1_rvs').should('exist');
   });
 
   it('Retains primer design info even when displaying another sequence', () => {
@@ -587,7 +587,7 @@ describe('Test primer designer functionality', () => {
     addLane();
     manuallyTypeSequence('ACGT');
     // Click on the data-testid="VisibilityIcon"
-    cy.get('li#sequence-6 svg[data-testid="VisibilityIcon"]').click();
+    cy.get('li#sequence-3 svg[data-testid="VisibilityIcon"]').click();
     // The sequence should be visible
     cy.get('.main-sequence-editor').contains('4 bps').should('exist');
     cy.get('.primer-design').should('not.be.visible');
@@ -605,12 +605,12 @@ describe('Test primer designer functionality', () => {
     // No alert is visible (Request is not sent)
     cy.get('.open-cloning div.MuiAlert-standardError').should('not.exist');
     // Select the wrong donor vector
-    clickMultiSelectOption('Donor vector', '6', 'li');
+    clickMultiSelectOption('Donor vector', 'pcDNA', 'li');
     cy.get('.open-cloning div.MuiAlert-standardError').contains('At least two').should('exist');
     // Also shows the att sites present in the wrong donor vector
     cy.get('.open-cloning div.MuiAlert-standardError').contains('attR1').should('exist');
     // Select the correct donor vector
-    clickMultiSelectOption('Donor vector', '4', 'li');
+    clickMultiSelectOption('Donor vector', 'pDONR221', 'li');
     cy.get('button').contains('Design primers').click();
 
     // We should be on the Sequence tab
@@ -734,6 +734,6 @@ describe('Test primer designer functionality', () => {
     cy.get('.open-cloning li button').contains('Submit').click();
 
     // Check that the BP reaction was successful
-    cy.get('li#source-9').contains('Gateway BP reaction').should('exist');
+    cy.get('li#source-12').contains('Gateway BP reaction').should('exist');
   });
 });

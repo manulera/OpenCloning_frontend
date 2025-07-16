@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getNextPrimerId, getNextUniqueId } from './cloning_utils';
+import { doesSourceHaveOutput, getNextUniqueId } from './cloning_utils';
 import { convertToTeselaJson } from '../utils/readNwrite';
 
 function deleteFilesFromSessionStorage(sequenceId, fileName = null) {
@@ -20,7 +20,6 @@ const initialState = {
     {
       id: 1,
       input: [],
-      output: null,
       type: null,
     },
   ],
@@ -65,8 +64,7 @@ const reducer = {
     const nextUniqueId = getNextUniqueId(state);
     sources.push({
       id: nextUniqueId,
-      input: inputSequencesIds,
-      output: null,
+      input: inputSequencesIds.map((id) => ({ sequence: id })),
       type: null,
     });
   },
@@ -90,22 +88,18 @@ const reducer = {
     if (source2update === undefined) {
       throw new Error('Source not found');
     }
-    const newSequenceId = getNextUniqueId(state);
-
-    // Update the source that will output the template sequence
-    source2update.output = newSequenceId;
 
     // Add the template sequence
     sequences.push({
-      id: newSequenceId,
+      id: sourceId,
       ...newSequence,
     });
 
     // Add the source that will take the template sequence as input
     sources.push({
-      id: newSequenceId + 1,
+      id: getNextUniqueId(state),
       ...newSource,
-      input: [...newSource.input || [], newSequenceId],
+      input: [...(newSource.input || []), { sequence: sourceId }],
     });
   },
 
@@ -126,8 +120,7 @@ const reducer = {
       const nextId = getNextUniqueId(state);
       const newSource = {
         id: nextId,
-        input: [templateId],
-        output: null,
+        input: [{ sequence: templateId }],
         type: 'PCRSource',
       };
       sources.push(newSource);
@@ -135,24 +128,18 @@ const reducer = {
     });
 
     // Add the output sequences
-    const newSequenceIds = [];
     sources2update.forEach((id) => {
-      const newSequenceId = getNextUniqueId(state);
       sequences.push({
         ...newSequence,
-        id: newSequenceId,
+        id,
       });
-      newSequenceIds.push(newSequenceId);
-      const newSource = sources.find((s) => s.id === id);
-      newSource.output = newSequenceId;
     });
 
     if (sourceType !== null) {
       // Add the Assembly that takes the PCR outputs as input
       sources.push({
         id: getNextUniqueId(state),
-        input: newSequenceIds,
-        output: null,
+        input: sources2update.map((id) => ({ sequence: id })),
         type: sourceType,
       });
     }
@@ -163,7 +150,7 @@ const reducer = {
     const { sources, sequences } = state;
 
     const sourceId = getNextUniqueId(state);
-    const sequenceId = sourceId + 1;
+    const sequenceId = sourceId;
     const newSequence = {
       ...sequence,
       id: sequenceId,
@@ -183,16 +170,15 @@ const reducer = {
     const existingSource = state.sources.find((s) => s.id === existingSourceId);
     const newSourceId = getNextUniqueId(state);
     const newSequence = {
-      id: newSourceId + 1,
+      id: newSourceId,
       type: 'TemplateSequence',
     };
     const newSource = {
       id: newSourceId,
       input: existingSource.input,
-      output: newSequence.id,
       type: null,
     };
-    existingSource.input = [newSequence.id];
+    existingSource.input = [{ sequence: newSequence.id }];
     state.sources.push(newSource);
     state.sequences.push(newSequence);
   },
@@ -200,9 +186,7 @@ const reducer = {
   addSequenceAndUpdateItsSource(state, action) {
     const { newSequence, newSource } = action.payload;
     const { sequences, sources } = state;
-    const nextUniqueId = getNextUniqueId(state);
-    newSequence.id = nextUniqueId;
-    newSource.output = nextUniqueId;
+    newSequence.id = newSource.id;
 
     const sourceIndex = sources.findIndex((s) => s.id === newSource.id);
     if (sourceIndex === -1) {
@@ -223,7 +207,7 @@ const reducer = {
     }
     sources.splice(sourceIndex, 1, newSource);
 
-    newSequence.id = newSource.output;
+    newSequence.id = newSource.id;
     const sequenceIndex = sequences.findIndex((e) => e.id === newSequence.id);
     if (sequenceIndex === -1) {
       throw new Error('Sequence not found');
@@ -258,9 +242,9 @@ const reducer = {
     while (currentSources.length > 0) {
       const currentSource = currentSources.pop();
       sources2delete.push(currentSource.id);
-      if (currentSource.output !== null) {
-        sequences2delete.push(currentSource.output);
-        currentSources.push(...sources.filter((ss) => ss.input.includes(currentSource.output)));
+      if (doesSourceHaveOutput(state, currentSource.id)) {
+        sequences2delete.push(currentSource.id);
+        currentSources.push(...sources.filter((ss) => ss.input.some(({sequence}) => sequence === currentSource.id)));
       }
     }
     state.sources = sources.filter((s) => !sources2delete.includes(s.id));
@@ -283,8 +267,10 @@ const reducer = {
       throw new Error('Some ids are not positive integers');
     }
     // None should be repeated
-    if (new Set(ids).size !== ids.length) {
-      throw new Error('Repeated ids in the sources and sequences');
+    const sourceIds = sources.map((s) => s.id);
+    const sequenceIds = sequences.map((e) => e.id);
+    if (new Set(sourceIds).size !== sourceIds.length || new Set(sequenceIds).size !== sequenceIds.length) {
+      throw new Error('Repeated ids in sources or sequences');
     }
     state.sources = sources;
     state.sequences = sequences;
@@ -319,14 +305,14 @@ const reducer = {
   addPrimer(state, action) {
     const primer = action.payload;
     const { primers } = state;
-    const nextPrimerId = getNextPrimerId(primers);
+    const nextPrimerId = getNextUniqueId(state);
     primers.push({ ...primer, id: nextPrimerId });
   },
 
   addPrimerAndLinkToSequence(state, action) {
     const { primer, sequenceId, position } = action.payload;
     const { primers, primer2sequenceLinks } = state;
-    const nextPrimerId = getNextPrimerId(primers);
+    const nextPrimerId = getNextUniqueId(state);
     primers.push({ ...primer, id: nextPrimerId });
     primer2sequenceLinks.push({ primerId: nextPrimerId, sequenceId, position });
   },
@@ -364,7 +350,7 @@ const reducer = {
   addPrimersToPCRSource(state, action) {
     const { sourceId, fwdPrimer, revPrimer } = action.payload;
     const { sources, primers } = state;
-    const nextId = getNextPrimerId(primers);
+    const nextId = getNextUniqueId(state);
     // For now, primers were coming with id=0 from the backend
     const copyFwdPrimer = { ...fwdPrimer };
     const copyRevPrimer = { ...revPrimer };
@@ -377,8 +363,7 @@ const reducer = {
     if (!source) {
       throw new Error('Source not found');
     }
-    source.forward_primer = nextId;
-    source.reverse_primer = nextId + 1;
+    source.input = [ {sequence: nextId}, ...source.input, {sequence: nextId + 1} ];
   },
 
   addToSourcesWithHiddenAncestors(state, action) {
@@ -425,7 +410,7 @@ const reducer = {
     if (!sequence) {
       throw new Error('Sequence not found');
     }
-    const source = state.sources.find((s) => s.output === id);
+    const source = state.sources.find((s) => s.id === id);
     if (!source) {
       throw new Error('Source not found');
     }

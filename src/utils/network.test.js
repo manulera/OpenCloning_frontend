@@ -6,67 +6,56 @@ describe('collectParentSequencesAndSources', () => {
     const sequencesToExport = [];
     const sourcesToExport = [];
 
-    collectParentSequencesAndSources(
-      mockSources.find((s) => s.output === 1),
+    const { parentSequences, parentSources } = collectParentSequencesAndSources(
+      mockSources.find((s) => s.id === 1),
       mockSources,
       mockSequences,
-      sequencesToExport,
-      sourcesToExport,
     );
 
-    expect(sequencesToExport).toEqual([
+    expect(parentSequences).toEqual([
       { id: 2, name: 'Seq2' },
       { id: 3, name: 'Seq3' },
       { id: 4, name: 'Seq4' },
       { id: 5, name: 'Seq5' },
     ]);
 
-    expect(sourcesToExport).toEqual([
-      mockSources.find((s) => s.output === 2),
-      mockSources.find((s) => s.output === 3),
-      mockSources.find((s) => s.output === 4),
-      mockSources.find((s) => s.output === 5),
+    expect(parentSources).toEqual([
+      mockSources.find((s) => s.id === 2),
+      mockSources.find((s) => s.id === 3),
+      mockSources.find((s) => s.id === 4),
+      mockSources.find((s) => s.id === 5),
     ]);
   });
 
   it('should stop collecting when stopAtDatabaseId is true and a source with database_id is found', () => {
-    const sequencesToExport = [];
-    const sourcesToExport = [];
 
-    collectParentSequencesAndSources(
-      mockSources.find((s) => s.output === 1),
+    const { parentSequences, parentSources } = collectParentSequencesAndSources(
+      mockSources.find((s) => s.id === 1),
       mockSources,
       mockSequences,
-      sequencesToExport,
-      sourcesToExport,
       true,
     );
 
-    expect(sequencesToExport).toEqual([
+    expect(parentSequences).toEqual([
       { id: 2, name: 'Seq2' },
       { id: 3, name: 'Seq3' },
     ]);
 
-    expect(sourcesToExport).toEqual([
-      mockSources.find((s) => s.output === 2),
-      mockSources.find((s) => s.output === 3),
+    expect(parentSources).toEqual([
+      mockSources.find((s) => s.id === 2),
+      mockSources.find((s) => s.id === 3),
     ]);
   });
 
   it('should handle sources with no input', () => {
-    const sequencesToExport = [];
-    const sourcesToExport = [];
-
-    collectParentSequencesAndSources(
-      mockSources.find((s) => s.output === 4),
+    const { parentSequences, parentSources } = collectParentSequencesAndSources(
+      mockSources.find((s) => s.id === 4),
       mockSources,
       mockSequences,
-      sequencesToExport,
-      sourcesToExport,
     );
 
-    expect(sequencesToExport).toEqual([]);
-    expect(sourcesToExport).toEqual([]);
+    expect(parentSequences).toEqual([]);
+    expect(parentSources).toEqual([]);
   });
 });
 
@@ -90,7 +79,7 @@ describe('getSubState', () => {
       },
     };
 
-    expect(() => getSubState(state, 1)).toThrow('Source with output id 1 not found');
+    expect(() => getSubState(state, 1)).toThrow('Source with id 1 not found');
   });
   it('should return the correct substate with used primers only', () => {
     const state = {
@@ -113,18 +102,18 @@ describe('getSubState', () => {
     ]);
 
     expect(substate.sources).toEqual([
-      mockSources.find((s) => s.output === 1),
-      mockSources.find((s) => s.output === 2),
-      mockSources.find((s) => s.output === 3),
-      mockSources.find((s) => s.output === 4),
-      mockSources.find((s) => s.output === 5),
+      mockSources.find((s) => s.id === 1),
+      mockSources.find((s) => s.id === 2),
+      mockSources.find((s) => s.id === 3),
+      mockSources.find((s) => s.id === 4),
+      mockSources.find((s) => s.id === 5),
     ]);
 
     expect(substate.primers).toEqual([
-      mockPrimers.find((p) => p.id === 1),
-      mockPrimers.find((p) => p.id === 2),
-      mockPrimers.find((p) => p.id === 3),
-      mockPrimers.find((p) => p.id === 4),
+      mockPrimers.find((p) => p.id === 7),
+      mockPrimers.find((p) => p.id === 8),
+      mockPrimers.find((p) => p.id === 9),
+      mockPrimers.find((p) => p.id === 10),
     ]);
   });
   it('should work with database_id', () => {
@@ -145,14 +134,14 @@ describe('getSubState', () => {
     ]);
 
     expect(substate.sources).toEqual([
-      mockSources.find((s) => s.output === 1),
-      mockSources.find((s) => s.output === 2),
-      mockSources.find((s) => s.output === 3),
+      mockSources.find((s) => s.id === 1),
+      mockSources.find((s) => s.id === 2),
+      mockSources.find((s) => s.id === 3),
     ]);
 
     expect(substate.primers).toEqual([
-      mockPrimers.find((p) => p.id === 1),
-      mockPrimers.find((p) => p.id === 2),
+      mockPrimers.find((p) => p.id === 7),
+      mockPrimers.find((p) => p.id === 8),
     ]);
   });
 });

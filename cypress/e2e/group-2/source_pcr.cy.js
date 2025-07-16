@@ -11,20 +11,20 @@ describe('Tests PCR functionality', () => {
     manuallyTypeSequence('TTTTACGTACGTAAAAAAGCGCGCGCTTTTT');
     addSource('PCRSource');
 
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
 
     // Change minimal annealing
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    setInputValue('Minimal annealing', '8', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     // The result is shown
-    cy.get('li#sequence-4 li#source-3', { timeout: 20000 }).should('exist');
+    cy.get('li#sequence-4 li#source-4', { timeout: 20000 }).should('exist');
     cy.get('li#sequence-4').contains('22 bps');
-    cy.get('li#source-3').contains('PCR with primers fwd_test and rvs_test').should('exist');
-    cy.get('li#source-3').contains('See PCR details').click();
+    cy.get('li#source-4').contains('PCR with primers fwd_test and rvs_test').should('exist');
+    cy.get('li#source-4').contains('See PCR details').click();
     cy.get('div[role="dialog"]').should('exist');
     cy.get('div[role="dialog"]').within(() => {
-      cy.contains('PCR 3');
+      cy.contains('PCR 4');
       cy.get('table').should('exist');
     });
   });
@@ -33,13 +33,13 @@ describe('Tests PCR functionality', () => {
     addPrimer('rvs_test', 'GCGCGCGC');
     manuallyTypeSequence('TTTTACGTACGTAAAAAAACGTACGTTTTTT');
     addSource('PCRSource');
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'fwd_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'fwd_test', 'li#source-4');
     // Change minimal annealing
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    setInputValue('Minimal annealing', '8', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     // The result is shown
-    cy.get('li#sequence-4 li#source-3', { timeout: 20000 }).should('exist');
+    cy.get('li#sequence-4 li#source-4', { timeout: 20000 }).should('exist');
     cy.get('li#sequence-4').contains('22 bps');
   });
   it('gives the right error for minimal annealing', () => {
@@ -48,8 +48,8 @@ describe('Tests PCR functionality', () => {
     manuallyTypeSequence('TTTTACGTACGTAAAAAAGCGCGCGCTTTTT');
     addSource('PCRSource');
 
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
     cy.get('.MuiAlert-message').contains('No pair of annealing primers was found.');
@@ -60,8 +60,8 @@ describe('Tests PCR functionality', () => {
     manuallyTypeSequence('TTTTACGTACGTAAAAAAGCGCGCGCTTTTT');
     addSource('PCRSource');
 
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
     cy.get('.MuiAlert-message').contains('No pair of annealing primers was found.');
@@ -73,9 +73,9 @@ describe('Tests PCR functionality', () => {
     addSource('PCRSource');
     // Submission not available until primers are both selected
     cy.get('button').contains('Perform PCR').should('not.exist');
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
     cy.get('button').contains('Perform PCR').should('not.exist');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
     cy.get('button').contains('Perform PCR').should('exist');
   });
 
@@ -85,11 +85,11 @@ describe('Tests PCR functionality', () => {
     manuallyTypeSequence('TTTTACGTACGTAAAAAAGCGCGCGCTTTTT');
     addSource('PCRSource');
 
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
 
     // Change minimal annealing
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    setInputValue('Minimal annealing', '8', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
 
@@ -97,10 +97,10 @@ describe('Tests PCR functionality', () => {
     cy.get('.MuiAlert-message');
 
     // Set the mismatches
-    setInputValue('Mismatches allowed', '1', 'li#source-3');
+    setInputValue('Mismatches allowed', '1', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     // The result is shown
-    cy.get('li#sequence-4 li#source-3', { timeout: 20000 }).should('exist');
+    cy.get('li#sequence-4 li#source-4', { timeout: 20000 }).should('exist');
     cy.get('li#sequence-4').contains('22 bps');
   });
   it('works when there are two possible PCR products', () => {
@@ -109,10 +109,10 @@ describe('Tests PCR functionality', () => {
     manuallyTypeSequence('ACGTACGTTTTTACGTACGTAAAAAAGCGCGCGCTTTTT');
 
     addSource('PCRSource');
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
 
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    setInputValue('Minimal annealing', '8', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     cy.get('.multiple-output-selector').should('exist');
 
@@ -121,10 +121,10 @@ describe('Tests PCR functionality', () => {
     manuallyTypeSequence(getReverseComplementSequenceString('ACGTACGTTTTTACGTACGTAAAAAAGCGCGCGCTTTTT'));
 
     addSource('PCRSource');
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-5');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-5');
 
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    setInputValue('Minimal annealing', '8', 'li#source-5');
     cy.get('button').contains('Perform PCR').click();
     cy.get('.multiple-output-selector').should('exist');
   });
@@ -133,9 +133,9 @@ describe('Tests PCR functionality', () => {
     addPrimer('rvs_test', 'GCGCGCGC');
     manuallyTypeSequence('TTTTACGTACGTAAAAAAGCGCGCGCTTTTT');
     addSource('PCRSource');
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
+    setInputValue('Minimal annealing', '8', 'li#source-4');
     cy.get('span').contains('Add primer features').click({ force: true });
     cy.get('button').contains('Perform PCR').click();
 
@@ -152,9 +152,9 @@ describe('Tests PCR functionality', () => {
     // Delete the source and do the same without ticking
     deleteSourceByContent('PCR');
     addSource('PCRSource');
-    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-3');
-    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-3');
-    setInputValue('Minimal annealing', '8', 'li#source-3');
+    clickMultiSelectOption('Forward primer', 'fwd_test', 'li#source-4');
+    clickMultiSelectOption('Reverse primer', 'rvs_test', 'li#source-4');
+    setInputValue('Minimal annealing', '8', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
 
     // Check that the features are NOT present in the by downloading the json

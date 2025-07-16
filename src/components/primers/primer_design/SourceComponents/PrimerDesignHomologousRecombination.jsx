@@ -4,6 +4,7 @@ import { batch, useDispatch } from 'react-redux';
 import SingleInputSelector from '../../../sources/SingleInputSelector';
 import { cloningActions } from '../../../../store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
+import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
   const [target, setTarget] = React.useState('');
@@ -11,12 +12,12 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
   const { updateStoreEditor } = useStoreEditor();
   const { addTemplateChildAndSubsequentSource, setCurrentTab, setMainSequenceId } = cloningActions;
   const dispatch = useDispatch();
+  const inputSequenceId = getPcrTemplateSequenceId(source);
   const onSubmit = (event) => {
     event.preventDefault();
     const newSource = {
-      input: [Number(target)],
+      input: [{ sequence: Number(target) }],
       type: primerDesignType === 'homologous_recombination' ? 'HomologousRecombinationSource' : 'CRISPRSource',
-      output: null,
     };
     const newSequence = {
       type: 'TemplateSequence',
@@ -26,8 +27,8 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
 
     batch(() => {
       dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id }));
-      dispatch(setMainSequenceId(source.input[0]));
-      updateStoreEditor('mainEditor', source.input[0]);
+      dispatch(setMainSequenceId(inputSequenceId));
+      updateStoreEditor('mainEditor', inputSequenceId);
       dispatch(setCurrentTab(3));
       // Scroll to the top of the page after 300ms
       setTimeout(() => {
@@ -45,7 +46,7 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
           {' '}
           to amplify a fragment of sequence
           {' '}
-          {source.input[0]}
+          {inputSequenceId}
           {' '}
           and insert it into a
           {' '}
