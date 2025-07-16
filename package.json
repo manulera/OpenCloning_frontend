@@ -2,6 +2,7 @@
     "name": "open_cloning_frontend",
     "homepage": "./",
     "version": "0.1.0",
+    "type": "module",
     "private": true,
     "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -70,7 +71,7 @@
         "husky": "^9.1.7",
         "jsdom": "^22.1.0",
         "pinst": "^3.0.0",
-        "vite": "4.5.14",
+        "vite": "5.4.19",
         "vite-plugin-istanbul": "5.0.0",
         "vitest": "^3.2.1"
     },
