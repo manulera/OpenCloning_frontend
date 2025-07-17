@@ -104,9 +104,30 @@ function App() {
 
   React.useEffect(() => {
     // Load application configuration
-    httpClient.get(`${import.meta.env.BASE_URL}config.json`).then(({ data }) => {
-      dispatch(setConfig(data));
-    });
+    httpClient.get(`${import.meta.env.BASE_URL}config.json`)
+      .then(({ data }) => {
+        // Validate that data is an object, not HTML
+        if (typeof data === 'object' && data !== null && !data.hasOwnProperty('length')) {
+          dispatch(setConfig(data));
+        } else {
+          console.error('Invalid config data received:', data);
+          // Use default config
+          dispatch(setConfig({
+            backendUrl: 'http://localhost:8000',
+            showAppBar: true,
+            loaded: true,
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load config:', error);
+        // Use default config on error
+        dispatch(setConfig({
+          backendUrl: 'http://localhost:8000',
+          showAppBar: true,
+          loaded: true,
+        }));
+      });
     // Load known errors from google sheet
     httpClient.get(`${import.meta.env.BASE_URL}known_errors.json`)
       .then(({ data }) => { dispatch(setKnownErrors(data || {})); })
