@@ -19,7 +19,8 @@ export default defineConfig({
       on('task', {
         readFileMaybe(filename) {
           if (fs.existsSync(filename)) {
-            return fs.readFileSync(filename, 'utf8');
+            return fs.readFileSync(filename,
+              'utf8');
           }
 
           return null;
@@ -61,7 +62,8 @@ export default defineConfig({
         plugins: [
           (process.env.VITE_COVERAGE) && istanbul({
             include: 'src/*',
-            exclude: ['node_modules', 'tests/'],
+            exclude: ['node_modules',
+              'tests/'],
             extension: ['.js', '.jsx'],
             requireEnv: true,
           }),
@@ -69,6 +71,9 @@ export default defineConfig({
             umami_website_id: process.env.VITE_UMAMI_WEBSITE_ID,
           }),
         ],
+        optimizeDeps: {
+          entries: ['src/**/*.jsx', 'src/**/*.js', 'cypress/**/*.js'],
+        },
         define: {
           __APP_VERSION__: JSON.stringify(getGitTag()),
         },
