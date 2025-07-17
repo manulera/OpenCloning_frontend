@@ -45,56 +45,34 @@ export default ({ mode }) => {
       }),
       {
         name: 'copy-config',
-        // When running the dev server, copy the config file to the public folder
-        // as config.json so it can be fetched by the frontend
-        configureServer(server) {
-          try {
-            const configPath = resolve(__dirname, 'public', configFileName);
-            const destPath = resolve(__dirname, 'public', 'config.json');
-
-            // Check if source file exists
-            if (!fs.existsSync(configPath)) {
-              console.warn(`Config file ${configFileName} not found at ${configPath}`);
-              return;
-            }
-
-            fs.copyFileSync(configPath, destPath);
-            console.log(`Config file copied from ${configFileName} to config.json`);
-          } catch (error) {
-            console.error('Failed to copy config file:', error);
-          }
-        },
-        // When building the project, copy the config file to the build folder
-        // as config.json so it can be fetched by the frontend
-        writeBundle() {
-          try {
-            const configPath = resolve(__dirname, 'public', configFileName);
-            const destPath = resolve(__dirname, 'build', 'config.json');
-
-            // Check if source file exists
-            if (!fs.existsSync(configPath)) {
-              console.warn(`Config file ${configFileName} not found at ${configPath}`);
-              return;
-            }
-
-            fs.copyFileSync(configPath, destPath);
-            console.log(`Config file copied from ${configFileName} to build/config.json`);
-          } catch (error) {
-            console.error('Failed to copy config file:', error);
-          }
-        },
-        // Add a hook that runs when the server starts to ensure config is copied
-        buildStart() {
+        // Copy config file immediately when plugin loads
+        configResolved() {
           try {
             const configPath = resolve(__dirname, 'public', configFileName);
             const destPath = resolve(__dirname, 'public', 'config.json');
 
             if (fs.existsSync(configPath)) {
               fs.copyFileSync(configPath, destPath);
-              console.log(`Config file copied on build start`);
+              console.log(`Config file copied from ${configFileName} to config.json`);
+            } else {
+              console.warn(`Config file ${configFileName} not found at ${configPath}`);
             }
           } catch (error) {
-            console.error('Failed to copy config file on build start:', error);
+            console.error('Failed to copy config file:', error);
+          }
+        },
+        // When building the project, copy the config file to the build folder
+        writeBundle() {
+          try {
+            const configPath = resolve(__dirname, 'public', configFileName);
+            const destPath = resolve(__dirname, 'build', 'config.json');
+
+            if (fs.existsSync(configPath)) {
+              fs.copyFileSync(configPath, destPath);
+              console.log(`Config file copied from ${configFileName} to build/config.json`);
+            }
+          } catch (error) {
+            console.error('Failed to copy config file:', error);
           }
         },
       },
