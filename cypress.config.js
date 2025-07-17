@@ -1,7 +1,10 @@
-const { defineConfig } = require('cypress');
-const fs = require('fs');
-const istanbul = require('vite-plugin-istanbul');
-const { execSync } = require('child_process');
+import { defineConfig } from 'cypress';
+import fs from 'fs';
+import istanbul from 'vite-plugin-istanbul';
+import { execSync } from 'child_process';
+import { ViteEjsPlugin } from 'vite-plugin-ejs';
+import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
+
 
 // Function to get git tag information
 function getGitTag() {
@@ -12,13 +15,14 @@ function getGitTag() {
   }
 }
 
-module.exports = defineConfig({
+export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       on('task', {
         readFileMaybe(filename) {
           if (fs.existsSync(filename)) {
-            return fs.readFileSync(filename, 'utf8');
+            return fs.readFileSync(filename,
+              'utf8');
           }
 
           return null;
@@ -29,7 +33,12 @@ module.exports = defineConfig({
         },
       });
       if (process.env.VITE_COVERAGE) {
-        require('@cypress/code-coverage/task')(on, config);
+        try {
+          console.log('Loading code coverage task for e2e');
+          registerCodeCoverageTasks(on, config);
+        } catch (error) {
+          console.warn('Could not load code coverage task:', error.message);
+        }
       }
 
       // Filter specs by test group if specified
@@ -56,11 +65,18 @@ module.exports = defineConfig({
         plugins: [
           (process.env.VITE_COVERAGE) && istanbul({
             include: 'src/*',
-            exclude: ['node_modules', 'tests/'],
+            exclude: ['node_modules',
+              'tests/'],
             extension: ['.js', '.jsx'],
             requireEnv: true,
           }),
+          ViteEjsPlugin({
+            umami_website_id: process.env.VITE_UMAMI_WEBSITE_ID,
+          }),
         ],
+        optimizeDeps: {
+          entries: ['src/**/*.jsx', 'src/**/*.js', 'cypress/**/*.js'],
+        },
         define: {
           __APP_VERSION__: JSON.stringify(getGitTag()),
         },
@@ -68,7 +84,12 @@ module.exports = defineConfig({
     },
     setupNodeEvents(on, config) {
       if (process.env.VITE_COVERAGE) {
-        require('@cypress/code-coverage/task')(on, config);
+        try {
+          console.log('Loading code coverage task for component');
+          registerCodeCoverageTasks(on, config);
+        } catch (error) {
+          console.warn('Could not load code coverage task:', error.message);
+        }
       }
       return config;
     },

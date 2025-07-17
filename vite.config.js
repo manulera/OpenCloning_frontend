@@ -45,19 +45,35 @@ export default ({ mode }) => {
       }),
       {
         name: 'copy-config',
-        // When running the dev server, copy the config file to the public folder
-        // as config.json so it can be fetched by the frontend
-        configureServer(server) {
-          const configPath = resolve(__dirname, 'public', configFileName);
-          const destPath = resolve(__dirname, 'public', 'config.json');
-          fs.copyFileSync(configPath, destPath);
+        // Copy config file immediately when plugin loads
+        configResolved() {
+          try {
+            const configPath = resolve(__dirname, 'public', configFileName);
+            const destPath = resolve(__dirname, 'public', 'config.json');
+
+            if (fs.existsSync(configPath)) {
+              fs.copyFileSync(configPath, destPath);
+              console.log(`Config file copied from ${configFileName} to config.json`);
+            } else {
+              console.warn(`Config file ${configFileName} not found at ${configPath}`);
+            }
+          } catch (error) {
+            console.error('Failed to copy config file:', error);
+          }
         },
         // When building the project, copy the config file to the build folder
-        // as config.json so it can be fetched by the frontend
         writeBundle() {
-          const configPath = resolve(__dirname, 'public', configFileName);
-          const destPath = resolve(__dirname, 'build', 'config.json');
-          fs.copyFileSync(configPath, destPath);
+          try {
+            const configPath = resolve(__dirname, 'public', configFileName);
+            const destPath = resolve(__dirname, 'build', 'config.json');
+
+            if (fs.existsSync(configPath)) {
+              fs.copyFileSync(configPath, destPath);
+              console.log(`Config file copied from ${configFileName} to build/config.json`);
+            }
+          } catch (error) {
+            console.error('Failed to copy config file:', error);
+          }
         },
       },
     ],

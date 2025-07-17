@@ -14,13 +14,13 @@ If you want to quickly set up a local instance of the frontend and backend of th
 
 ## Running the site locally
 
-We use node 18.8, to manage different versions of node, we use `nvm`. Installation instructions [here](https://github.com/nvm-sh/nvm#installing-and-updating).
+We use node 22.17, to manage different versions of node, we use `nvm`. Installation instructions [here](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```bash
-# Install node 18.8 (first time only)
-nvm install 18.8
-# Activate node 18.8
-nvm use 18.8
+# Install node 22.17 (first time only)
+nvm install 22.17
+# Activate node 22.17
+nvm use 22.17
 ```
 
 To handle dependencies and build the site, [yarn 3](https://v3.yarnpkg.com/) is used.
