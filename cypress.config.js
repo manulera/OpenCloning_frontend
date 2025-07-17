@@ -3,6 +3,8 @@ import fs from 'fs';
 import istanbul from 'vite-plugin-istanbul';
 import { execSync } from 'child_process';
 import { ViteEjsPlugin } from 'vite-plugin-ejs';
+import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
+
 
 // Function to get git tag information
 function getGitTag() {
@@ -32,7 +34,8 @@ export default defineConfig({
       });
       if (process.env.VITE_COVERAGE) {
         try {
-          import('@cypress/code-coverage/task.js').then((task) => task.default(on, config));
+          console.log('Loading code coverage task for e2e');
+          registerCodeCoverageTasks(on, config);
         } catch (error) {
           console.warn('Could not load code coverage task:', error.message);
         }
@@ -82,7 +85,8 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       if (process.env.VITE_COVERAGE) {
         try {
-          import('@cypress/code-coverage/task.js').then((task) => task.default(on, config));
+          console.log('Loading code coverage task for component');
+          registerCodeCoverageTasks(on, config);
         } catch (error) {
           console.warn('Could not load code coverage task:', error.message);
         }

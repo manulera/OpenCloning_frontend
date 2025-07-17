@@ -315,7 +315,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cypress/code-coverage@npm:^3.14.4":
+"@cypress/code-coverage@npm:^3.14.5":
   version: 3.14.5
   resolution: "@cypress/code-coverage@npm:3.14.5"
   dependencies:
@@ -7580,7 +7580,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "open_cloning_frontend@workspace:."
   dependencies:
-    "@cypress/code-coverage": "npm:^3.14.4"
+    "@cypress/code-coverage": "npm:^3.14.5"
     "@cypress/react": "npm:^9.0.1"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
