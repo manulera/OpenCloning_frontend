@@ -14,7 +14,7 @@ function SourceAnnotation({ source, requestStatus, sendPostRequest }) {
 
     const requestData = {
       sequence: inputSequences[0],
-      source: { id: source.id, input: inputSequences.map((e) => e.id), annotation_tool: annotationTool },
+      source: { id: source.id, input: inputSequences.map((e) => ({ sequence: e.id })), annotation_tool: annotationTool },
     };
     sendPostRequest({ endpoint: 'annotate/plannotate', requestData, source });
   };
