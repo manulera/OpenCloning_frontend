@@ -96,6 +96,24 @@ function App() {
             strand,
           }
           dispatch(updateSource(source));
+        } else if (urlParams.source === 'locus_tag') {
+          const { locus_tag, assembly_accession, padding } = urlParams;
+          if (!locus_tag || !assembly_accession) {
+            addAlert({
+              message: 'Error loading locus tag from URL parameters',
+              severity: 'error',
+            });
+            return;
+          }
+
+          const source = {
+            id: 1,
+            type: 'KnownGenomeCoordinatesSource',
+            assembly_accession,
+            locus_tag,
+            padding: padding ? Number(padding) : 1000,
+          }
+          dispatch(updateSource(source));
         }
       }
     }
