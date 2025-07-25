@@ -31,4 +31,28 @@ describe('Test load from URL', () => {
     cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1168936');
     cy.contains('Error loading genome sequence from URL parameters', { timeout: 10000 }).should('exist');
   });
+  it('can load from locus tag', () => {
+    // Without padding
+    cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715');
+    cy.get('.finished-source').contains('Genome region', { timeout: 10000 }).should('exist');
+    cy.get('.finished-source').contains('1306681:1309359').should('exist');
+    // With padding
+    cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715&padding=1200');
+    cy.get('.finished-source').contains('Genome region', { timeout: 10000 }).should('exist');
+    cy.get('.finished-source').contains('1306481:1309559').should('exist');
+
+    // Handles error if locus tag or assembly accession is wrong and can retry
+    cy.intercept('GET','https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_000002945.3/annotation_report?search_text=SPNCRNA.1715', {
+      statusCode: 404,
+      body: 'Not Found'
+    }).as('getAnnotationReport1');
+    cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715');
+    cy.wait('@getAnnotationReport1');
+    cy.contains('Could not retrieve genome sequence').should('exist');
+    cy.intercept('GET','https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_000002945.3/annotation_report?search_text=SPNCRNA.1715').as('getAnnotationReport2');
+    cy.get('button').contains('Retry').click();
+    cy.wait('@getAnnotationReport2');
+    cy.contains('Could not retrieve genome sequence').should('exist');
+
+  });
 });

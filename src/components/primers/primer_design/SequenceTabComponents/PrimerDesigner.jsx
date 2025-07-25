@@ -18,7 +18,7 @@ function PrimerDesigner() {
   const { setMainSequenceId } = cloningActions;
 
   const { finalSource, otherInputIds, pcrSources, outputSequences } = useSelector((state) => getPrimerDesignObject(state.cloning), isEqual);
-  console.log({ finalSource, otherInputIds, pcrSources, outputSequences });
+
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
 
   const templateSequencesIds = pcrSources.map((pcrSource) => getPcrTemplateSequenceId(pcrSource));

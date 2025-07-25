@@ -22,9 +22,8 @@ function formatGeneCoords(gene) {
   return `${accessionVersion} (${start}..${end}${strand === -1 ? ', complement' : ''})`;
 }
 
-function formatBackendPayloadWithGene(assemblyId, gene, shiftUpstream, shiftDownstream) {
+export function formatBackendPayloadWithGene(assemblyId, gene, shiftUpstream, shiftDownstream) {
   const { accessionVersion, start, end, strand } = getGeneCoordsInfo(gene);
-
   const shiftedStart = start - (strand === 1 ? shiftUpstream : shiftDownstream);
   const shiftedEnd = end + (strand === 1 ? shiftDownstream : shiftUpstream);
 
