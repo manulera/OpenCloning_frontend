@@ -244,4 +244,13 @@ describe('GenomeRegion Source', () => {
     cy.get('#source-1 a', { timeout: 20000 }).contains('GCF_000002945.2').should('have.attr', 'href', 'https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002945.2');
     cy.get('#source-1 a').contains('NC_003424.3').should('have.attr', 'href', 'https://www.ncbi.nlm.nih.gov/nuccore/NC_003424.3');
   });
+  it('gives the right errors and warnings for custom coordinates in another assembly', () => {
+    clickMultiSelectOption('Type of region', 'coordinates in other assembly', 'li#source-1');
+    setInputValue('Assembly ID', 'Hello', 'li#source-1');
+    cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/Hello/dataset_report?filters.assembly_version=all_assemblies', {
+      statusCode: 404,
+      body: {}
+    }).as('getAssemblyInfo');
+    cy.get('div').contains('Assembly ID does not exist').should('exist');
+  });
 });

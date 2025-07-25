@@ -162,7 +162,10 @@ function AssemblyIdSelector({ setAssemblyId, setHasAnnotation = () => {}, onAsse
   const onChange = async (userInput, resp) => {
     setPairedAccessionWithAnnotation('');
     setSpecies(resp === null ? null : resp.species);
-    if (resp === null || resp.exactMatch) {
+    if (resp === null) {
+      setAssemblyId('');
+      setExactMatch(true);
+    } else if (resp.exactMatch) {
       setAssemblyId(userInput);
       setExactMatch(true);
     } else {
