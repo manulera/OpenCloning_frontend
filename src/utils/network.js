@@ -170,6 +170,7 @@ export const mergeStates = (newState, oldState, skipPrimers = false) => {
     sequences: [...oldState.sequences, ...shiftedState.sequences],
     primers: [...oldState.primers, ...shiftedState.primers],
     files: [...oldState.files, ...shiftedState.files],
+    sourcesWithHiddenAncestors: oldState.sourcesWithHiddenAncestors,
   };
   if (!skipPrimers) {
     mergedState = mergePrimersInState(mergedState);

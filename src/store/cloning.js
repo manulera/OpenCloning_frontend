@@ -257,7 +257,7 @@ const reducer = {
   },
 
   setState(state, action) {
-    const { sources, sequences, primers, description, files } = action.payload;
+    const { sources, sequences, primers, description, files, sourcesWithHiddenAncestors } = action.payload;
     if (!Array.isArray(sources) || !Array.isArray(sequences)) {
       throw new Error('Cloning strategy not valid: fields `sources` and `sequences` should exist and be arrays');
     }
@@ -278,6 +278,7 @@ const reducer = {
     state.primers = primers || [];
     state.description = description || '';
     state.files = files || [];
+    state.sourcesWithHiddenAncestors = sourcesWithHiddenAncestors || [];
     sequences.forEach((e) => {
       if (e.type === 'TextFileSequence') {
         state.teselaJsonCache[e.id] = convertToTeselaJson(e);
