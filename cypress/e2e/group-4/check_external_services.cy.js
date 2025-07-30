@@ -45,7 +45,7 @@ describe('Test delete source functionality', () => {
     cy.get('.MuiDialog-container button').contains('Close').click();
 
     // Change to a different type of source
-    clickMultiSelectOption('Source type', 'Repository ID', '.open-cloning');
+    clickMultiSelectOption('Source type', 'Repository', '.open-cloning');
     cy.get('.open-cloning li#source-1').contains('Affected by external errors').should('not.exist');
   });
 });
