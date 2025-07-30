@@ -31,7 +31,7 @@ function SourceTypeSelector({ source }) {
   if (inputSequences.length === 0) {
     options.push(<MenuItem key="UploadedFileSource" value="UploadedFileSource">Submit file</MenuItem>);
     if (!noExternalRequests) {
-      options.push(<MenuItem key="RepositoryIdSource" value="RepositoryIdSource">Repository ID</MenuItem>);
+      options.push(<MenuItem key="RepositoryIdSource" value="RepositoryIdSource">Repository</MenuItem>);
       options.push(<MenuItem key="GenomeCoordinatesSource" value="GenomeCoordinatesSource">Genome region</MenuItem>);
     }
     options.push(<MenuItem key="ManuallyTypedSource" value="ManuallyTypedSource">Enter manually</MenuItem>);

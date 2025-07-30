@@ -63,19 +63,29 @@ export function PrimerInfoDialog({ primerDetails, open, onClose, pcrDetails }) {
   );
 }
 
-const primerProblematicValues = (primerDetails) => {
+const primerProblematicValues = (primerDetails, pcrDetails) => {
+  const pcrDetail = pcrDetails.find(({ fwdPrimer, rvsPrimer }) => fwdPrimer.id === primerDetails.id || rvsPrimer.id === primerDetails.id);
   const problematicValues = {
     homodimer: '',
     hairpin: '',
     gcContent: '',
     meltingTemperature: '',
   };
-  if (primerDetails.gc_content < 0.30 || primerDetails.gc_content > 0.70) {
+  let gcContent = primerDetails.gc_content;
+  let meltingTemperature = primerDetails.melting_temperature;
+  if (pcrDetail) {
+    const pcrPrimer = primerDetails.id === pcrDetail.fwdPrimer.id ? pcrDetail.fwdPrimer : pcrDetail.rvsPrimer;
+    meltingTemperature = pcrPrimer.melting_temperature;
+    gcContent = pcrPrimer.gc_content;
+  }
+
+  if (gcContent < 0.30 || gcContent > 0.70) {
     problematicValues.gcContent = 'GC content is outside the optimal range';
   }
-  if (primerDetails.melting_temperature < 50 || primerDetails.melting_temperature > 70) {
+  if (meltingTemperature < 50 || meltingTemperature > 70) {
     problematicValues.meltingTemperature = 'Melting temperature is outside the optimal range';
   }
+
   return problematicValues;
   if (primerDetails.homodimer && primerDetails.homodimer.deltaG < -8000) {
     problematicValues.homodimer = 'May form homodimers';
@@ -96,7 +106,7 @@ function PrimerInfoIcon({ primerDetails, pcrDetails }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const warning = primerWarning(primerProblematicValues(primerDetails));
+  const warning = primerWarning(primerProblematicValues(primerDetails, pcrDetails));
   let tooltipTitle = 'Primer details';
   const disabled = primerDetails.melting_temperature === undefined;
   if (disabled) {

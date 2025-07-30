@@ -157,6 +157,7 @@ function MainAppBar() {
                   {item.display}
                 </MenuItem>
               ))}
+              <MenuItem><a style={{ color: 'inherit', textDecoration: 'none' }} target="_blank" href="https://docs.opencloning.org">Documentation</a></MenuItem>
               <MenuItem onClick={() => { setOpenExampleDialog(true); handleMenuClose(); }}>Examples</MenuItem>
               <MenuItem onClick={() => { setOpenTemplateDialog(true); handleMenuClose(); }}>Templates</MenuItem>
               <MenuItem onClick={() => { setOpenFeedbackDialog(true); handleMenuClose(); }}>Feedback</MenuItem>
@@ -169,6 +170,7 @@ function MainAppBar() {
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={onFileChange} accept=".json,.zip" />
             {fileList && <LoadCloningHistoryWrapper fileList={fileList} clearFiles={() => setFileList([])} />}
             <ButtonWithMenu menuItems={helpMenu}>About</ButtonWithMenu>
+            <Button><a style={{ color: 'inherit', textDecoration: 'none' }} target="_blank" href="https://docs.opencloning.org">Documentation</a></Button>
             <Button onClick={() => setOpenExampleDialog(true)}>Examples</Button>
             <Button onClick={() => setOpenTemplateDialog(true)}>Templates</Button>
             <Button onClick={() => setOpenFeedbackDialog(true)}>Feedback</Button>
