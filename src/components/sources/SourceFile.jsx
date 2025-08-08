@@ -11,6 +11,14 @@ import { mergeStates, getGraftSequenceId, graftState } from '../../utils/network
 
 const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 
+const fileFormatToExtension = {
+  genbank: 'gb',
+  fasta: 'fasta',
+  snapgene: 'dna',
+  embl: 'embl',
+  json: 'json',
+};
+
 // A component providing an interface to import a file
 function SourceFile({ source, requestStatus, sendPostRequest }) {
   const [circularize, setCircularize] = React.useState(false);
@@ -38,7 +46,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
     ) {
       // If file format is explicitly set, rename file to match that extension
       if (fileFormat) {
-        files[0] = new File([files[0]], files[0].name.replace(/\.[^/.]+$/, `.${fileFormat}`), {
+        files[0] = new File([files[0]], files[0].name.replace(/\.[^/.]+$/, `.${fileFormatToExtension[fileFormat]}`), {
           type: fileFormat === 'json' ? 'application/json' : files[0].type,
         });
       }
@@ -125,7 +133,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
           <MenuItem value="">Guess from extension</MenuItem>
           <MenuItem value="genbank">Genbank / Ape</MenuItem>
           <MenuItem value="fasta">FASTA</MenuItem>
-          <MenuItem value="dna">Snapgene</MenuItem>
+          <MenuItem value="snapgene">SnapGene (.dna)</MenuItem>
           <MenuItem value="embl">EMBL</MenuItem>
           <MenuItem value="json">JSON (history file)</MenuItem>
           <MenuItem value="zip">Zip (history folder)</MenuItem>
