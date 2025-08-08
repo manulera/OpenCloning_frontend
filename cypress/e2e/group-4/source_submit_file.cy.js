@@ -175,4 +175,9 @@ describe('File Source', () => {
     cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('public/examples/ase1.gb', { force: true });
     cy.get('li#source-1 .MuiAlert-message').contains('Input should be greater than or equal');
   });
+  it('works when loading a SnapGene file', () => {
+    clickMultiSelectOption('File format', 'SnapGene', 'li#source-1');
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/addgene-plasmid-39296-sequence-49545.dna', { force: true });
+    cy.get('li#source-1').contains('Read from file');
+  });
 });
