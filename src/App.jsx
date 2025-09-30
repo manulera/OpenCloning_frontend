@@ -12,6 +12,7 @@ import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
 import useValidateState from './hooks/useValidateState';
 import { formatTemplate } from './utils/readNwrite';
+import { getELabFTWVersion } from './components/eLabFTW/common';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
@@ -121,11 +122,21 @@ function App() {
   }, [configLoaded]);
 
   React.useEffect(() => {
-    // Load application configuration
-    httpClient.get(`${import.meta.env.BASE_URL}config.json`)
-      .then(({ data }) => {
+    async function loadConfig() {
+      // Load application configuration
+      try {
+        const { data } = await httpClient.get(`${import.meta.env.BASE_URL}config.json`);
         // Validate that data is an object, not HTML
         if (typeof data === 'object' && data !== null && !data.hasOwnProperty('length')) {
+          if (data.database === 'elabftw') {
+            try {
+              const version = await getELabFTWVersion();
+              data.eLabFTWVersion = version;
+            } catch (error) {
+              console.error('Failed to load eLabFTW version:', error);
+              data.eLabFTWVersion = null;
+            }
+          }
           dispatch(setConfig(data));
         } else {
           console.error('Invalid config data received:', data);
@@ -136,8 +147,7 @@ function App() {
             loaded: true,
           }));
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Failed to load config:', error);
         // Use default config on error
         dispatch(setConfig({
@@ -145,7 +155,9 @@ function App() {
           showAppBar: true,
           loaded: true,
         }));
-      });
+      }
+    }
+    loadConfig();
     // Load known errors from google sheet
     httpClient.get(`${import.meta.env.BASE_URL}known_errors.json`)
       .then(({ data }) => { dispatch(setKnownErrors(data || {})); })
