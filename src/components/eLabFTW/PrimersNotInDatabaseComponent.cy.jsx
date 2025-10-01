@@ -11,9 +11,6 @@ const defaultState = {
   sequences: mockSequences,
   sources: mockSources,
   primers: mockPrimers,
-  config: {
-    eLabFTWVersion: 50200,
-  },
 };
 
 const createTestStore = (cloningState) => configureStore({
