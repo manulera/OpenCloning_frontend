@@ -53,6 +53,10 @@ describe('<PrimersNotInDatabaseComponent />', () => {
           { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Other' },
         ],
+      }).withArgs('/api/v2/info').resolves({
+        data: {
+          elabftw_version_int: 50200,
+        },
       });
     // In this case, it should show only 1, because substate goes only up to
     // the sequence with database_id, and one of the primers already has a database_id
@@ -122,6 +126,10 @@ describe('<PrimersNotInDatabaseComponent />', () => {
             { id: 2, title: 'Other' },
           ],
         });
+      }).withArgs('/api/v2/info').resolves({
+        data: {
+          elabftw_version_int: 50200,
+        }
       });
     // Mount with new data (simulating a failed update)
     const store = createTestStore(defaultState);

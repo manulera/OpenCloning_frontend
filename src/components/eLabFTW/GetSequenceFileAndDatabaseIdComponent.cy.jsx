@@ -45,6 +45,13 @@ const commonStubHandler = (url, config) => {
       },
     });
   }
+  if (url === '/api/v2/info') {
+    return Promise.resolve({
+      data: {
+        elabftw_version_int: 50200,
+      },
+    });
+  }
   return null;
 };
 
