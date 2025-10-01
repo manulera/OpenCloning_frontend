@@ -14,6 +14,9 @@ const defaultState = {
   sources: mockSources,
   primers: mockPrimers,
   teselaJsonCache: mockTeselaJsonCache,
+  config: {
+    eLabFTWVersion: 50200,
+  },
 };
 
 const createTestStore = (cloningState) => configureStore({
