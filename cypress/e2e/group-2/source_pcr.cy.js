@@ -97,6 +97,7 @@ describe('Tests PCR functionality', () => {
     cy.get('.MuiAlert-message');
 
     // Set the mismatches
+    setInputValue('Minimal annealing', '7', 'li#source-4');
     setInputValue('Mismatches allowed', '1', 'li#source-4');
     cy.get('button').contains('Perform PCR').click();
     // The result is shown
