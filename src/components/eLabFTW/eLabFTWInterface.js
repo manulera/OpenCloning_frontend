@@ -4,7 +4,7 @@ import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseI
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
 import GetPrimerComponent from './GetPrimerComponent';
-import { eLabFTWHttpClient, writeHeaders, readHeaders, baseUrl } from './common';
+import { eLabFTWHttpClient, writeHeaders, readHeaders, baseUrl, getELabFTWVersion } from './common';
 import { getFileFromELabFTW, error2String } from './utils';
 import LoadHistoryComponent from './LoadHistoryComponent';
 
@@ -24,11 +24,12 @@ const linkToParent = async (childId, parentId) => {
 };
 
 const createResource = async (categoryId) => {
+  const eLabFTWVersion = await getELabFTWVersion();
+  const categoryKey = eLabFTWVersion && eLabFTWVersion >= 50300 ? 'category' : 'category_id';
   const createdItemResponse = await eLabFTWHttpClient.post(
     '/api/v2/items',
     {
-      category_id: categoryId,
-      tags: [],
+      [categoryKey]: categoryId,
     },
     { headers: writeHeaders },
   );

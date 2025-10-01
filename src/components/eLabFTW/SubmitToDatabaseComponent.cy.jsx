@@ -32,6 +32,10 @@ describe('<SubmitToDatabaseComponent />', () => {
           { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Sequences' },
         ],
+      }).withArgs('/api/v2/info').resolves({
+        data: {
+          elabftw_version_int: 50200,
+        },
       });
     const store = createTestStore(defaultState);
     const setSubmissionDataSpy = cy.spy().as('setSubmissionDataSpy');
@@ -83,6 +87,10 @@ describe('<SubmitToDatabaseComponent />', () => {
           { id: PRIMER_CATEGORY_ID, title: 'Primers' },
           { id: 2, title: 'Sequences' },
         ],
+      }).withArgs('/api/v2/info').resolves({
+        data: {
+          elabftw_version_int: 50200,
+        },
       });
     const store = createTestStore(defaultState);
     const setSubmissionDataSpy = cy.spy().as('setSubmissionDataSpy');
@@ -145,7 +153,11 @@ describe('<SubmitToDatabaseComponent />', () => {
             { id: PRIMER_CATEGORY_ID, title: 'Primers' },
             { id: 2, title: 'Sequences' },
           ],
-        });
+        })
+      }).withArgs('/api/v2/info', { headers: { Authorization: 'test-read-key' } }).resolves({
+        data: {
+          elabftw_version_int: 50200,
+        },
       });
 
     cy.mount(

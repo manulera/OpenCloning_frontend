@@ -18,3 +18,9 @@ export const makeSequenceMetadata = (sequence) => JSON.stringify({
     },
   },
 });
+
+export const getELabFTWVersion = async () => {
+  const url = `/api/v2/info`;
+  const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders });
+  return resp.data.elabftw_version_int;
+};

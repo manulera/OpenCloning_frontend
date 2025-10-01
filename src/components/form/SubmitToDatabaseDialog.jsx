@@ -12,6 +12,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
   const [submissionData, setSubmissionData] = React.useState(null);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const database = useDatabase();
 
   // Checks if there are parent sources that are not in the database
@@ -28,6 +29,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
     setDialogOpen(false);
     setErrorMessage('');
     setDisclaimerAccepted(false);
+    setIsSubmitting(false);
   };
 
   if (hasUnsavedIntermediates && !disclaimerAccepted) {
@@ -59,12 +61,16 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
         sx: { width: '40%' },
         onSubmit: async (event) => {
           event.preventDefault();
+          if (isSubmitting) {
+            return;
+          }
           // This should never happen
           if (!database.isSubmissionDataValid(submissionData)) {
             setErrorMessage('Submission data is invalid');
             return;
           }
           try {
+            setIsSubmitting(true);
             if (resourceType === 'primer') {
               const oldPrimer = store.getState().cloning.primers.find((p) => p.id === id);
               const primerDatabaseId = await database.submitPrimerToDatabase({ submissionData, primer: oldPrimer });
@@ -85,6 +91,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
               } catch (error) {
                 console.error(error);
                 setErrorMessage(error.message);
+                setIsSubmitting(false);
                 return;
               }
               batch(() => {
@@ -99,8 +106,10 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
           } catch (error) {
             console.error(error);
             setErrorMessage(error.message);
+            setIsSubmitting(false);
             return;
           }
+          setIsSubmitting(false);
           setDialogOpen(false);
           setErrorMessage('');
         },
@@ -114,7 +123,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button type="submit" disabled={submissionData === null || !database.isSubmissionDataValid(submissionData)}>Submit</Button>
+        <Button type="submit" disabled={isSubmitting || submissionData === null || !database.isSubmissionDataValid(submissionData)}>Submit</Button>
       </DialogActions>
     </Dialog>
 

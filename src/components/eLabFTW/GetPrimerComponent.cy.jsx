@@ -107,6 +107,13 @@ describe('<GetPrimerComponent />', () => {
           }],
         });
       }
+      if (url === '/api/v2/info') {
+        return Promise.resolve({
+          data: {
+            elabftw_version_int: 50200,
+          },
+        });
+      }
     });
 
     cy.mount(<GetPrimerComponent setPrimer={setPrimerSpy} setError={setErrorSpy} />);
@@ -135,7 +142,14 @@ describe('<GetPrimerComponent />', () => {
           data: [{ id: PRIMER_CATEGORY_ID, title: 'Primers' }],
         });
       }
-    }); 
+      if (url === '/api/v2/info') {
+        return Promise.resolve({
+          data: {
+            elabftw_version_int: 50200,
+          },
+        });
+      }
+    });
 
     cy.mount(<GetPrimerComponent setPrimer={setPrimerSpy} setError={setErrorSpy} />);
 
@@ -170,6 +184,13 @@ describe('<GetPrimerComponent />', () => {
             title: 'Invalid Primer',
             metadata: '{invalid json}',
           }],
+        });
+      }
+      if (url === '/api/v2/info') {
+        return Promise.resolve({
+          data: {
+            elabftw_version_int: 50200,
+          },
         });
       }
     });
@@ -213,6 +234,13 @@ describe('<GetPrimerComponent />', () => {
         }
         return Promise.resolve({
           data: [{ id: 1, title: 'Test Primer' }],
+        });
+      }
+      if (url === '/api/v2/info') {
+        return Promise.resolve({
+          data: {
+            elabftw_version_int: 50200,
+          },
         });
       }
     });
