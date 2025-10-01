@@ -192,6 +192,7 @@ vi.mock('./common', async (importOriginal) => {
       get: requestMocker('get'),
       delete: requestMocker('delete'),
     },
+    getELabFTWVersion: () => Promise.resolve(50200),
   };
 });
 
