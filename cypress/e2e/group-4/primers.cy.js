@@ -242,6 +242,16 @@ describe('Tests primer functionality', () => {
     cy.get('.import-primers-modal-content tbody tr').eq(0).contains('cagctagctac');
     cy.get('.import-primers-modal-content tbody tr').eq(1).contains('oligo2');
     cy.get('.import-primers-modal-content tbody tr').eq(1).contains('cggttagct');
+    cy.get('.import-primers-modal-content button').contains('Cancel').click();
+    // Should work with semicolon delimiter
+    cy.get('.primer-form-container').contains('Import from file').click();
+    cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/semicolon.csv', { force: true });
+    cy.get('.import-primers-modal-content tbody tr').should('have.length', 2);
+    cy.get('.import-primers-modal-content [data-testid="CheckCircleIcon"]').should('have.length', 2);
+    cy.get('.import-primers-modal-content tbody tr').eq(0).contains('oligo3');
+    cy.get('.import-primers-modal-content tbody tr').eq(0).contains('cagctagctac');
+    cy.get('.import-primers-modal-content tbody tr').eq(1).contains('oligo4');
+    cy.get('.import-primers-modal-content tbody tr').eq(1).contains('cggttagct');
     // Clicking on Cancel should close the modal and primers should not be added
     cy.get('.import-primers-modal-content .MuiButtonBase-root').contains('Cancel').click();
     cy.get('.import-primers-modal-content').should('not.exist');
@@ -259,6 +269,12 @@ describe('Tests primer functionality', () => {
     cy.get('.primer-form-container input').selectFile('cypress/test_files/wrong_extension.txt', { force: true });
     cy.get('#global-error-message-wrapper').contains('File must be a .csv or .tsv file').should('exist');
     // Close the error
+    cy.get('#global-error-message-wrapper button').click();
+
+    // Error if file contains both delimiters
+    cy.get('.primer-form-container').contains('Import from file').click();
+    cy.get('.primer-form-container input').selectFile('cypress/test_files/import_oligos/both_delimiters.csv', { force: true });
+    cy.get('#global-error-message-wrapper').contains('File must contain only one delimiter, either comma or semicolon').should('exist');
     cy.get('#global-error-message-wrapper button').click();
 
     cy.get('.primer-form-container').contains('Import from file').click();
