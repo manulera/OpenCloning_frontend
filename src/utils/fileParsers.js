@@ -7,14 +7,19 @@ export const primersFromTextFile = async (fileUploaded, existingNames) => {
 
   let delimiter = null;
   if (fileUploaded.name.endsWith('.csv')) {
-    delimiter = ',';
+    delimiter = new RegExp('[,;]');
   } else if (fileUploaded.name.endsWith('.tsv')) {
-    delimiter = '\t';
+    delimiter = /\t/;
   } else {
     throw new Error('File must be a .csv or .tsv file');
   }
   // Remove empty lines
   const lines = allLines.filter(line => line.trim() !== '');
+
+  // If any line contains , and ;, throw an error
+  if (fileUploaded.name.endsWith('.csv') && fileContent.includes(',') && fileContent.includes(';')) {
+    throw new Error('File must contain only one delimiter, either comma or semicolon');
+  }
 
   if (lines.length === 0) {
     throw new Error('File is empty');
