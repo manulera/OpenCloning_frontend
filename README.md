@@ -174,6 +174,12 @@ VITE_ELABFTW_API_READ_KEY=<key>
 VITE_ELABFTW_API_WRITE_KEY=<key>
 ```
 
+To build the image for local testing:
+
+```bash
+docker build -t manulera/opencloningfrontend:local --build-arg BASE_URL=/opencloning/ .
+```
+
 ### Running scripts
 
 > There is probably a better way to do this, but this is what I have found for now.
