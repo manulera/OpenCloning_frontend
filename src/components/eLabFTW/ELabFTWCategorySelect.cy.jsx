@@ -16,7 +16,7 @@ describe('<ELabFTWCategorySelect />', () => {
       data: {
         elabftw_version_int: 50300,
       },
-    }).withArgs('api/v2/teams/current/resources_categories', { headers: { Authorization: 'test-read-key' } }).resolves({
+    }).withArgs('/api/v2/teams/current/resources_categories', { headers: { Authorization: 'test-read-key' } }).resolves({
       data: [
         { id: 1, title: 'Category 1' },
         { id: 2, title: 'Category 2' },

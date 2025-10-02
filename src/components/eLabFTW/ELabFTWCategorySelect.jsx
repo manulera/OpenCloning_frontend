@@ -16,7 +16,7 @@ function ELabFTWCategorySelect({ setCategory, label = 'Resource category', ...re
       }
     ).catch(() => setRequestStatus({ status: 'error', message: 'Could not retrieve eLabFTW version' }));
   }, [retry]);
-  const url = eLabFTWVersion && eLabFTWVersion >= 50300 ? 'api/v2/teams/current/resources_categories' : '/api/v2/items_types';
+  const url = eLabFTWVersion && eLabFTWVersion >= 50300 ? '/api/v2/teams/current/resources_categories' : '/api/v2/items_types';
   const getOptionsFromResponse = (data) => data;
   const messages = { loadingMessage: 'retrieving categories', errorMessage: 'Could not retrieve categories from eLab' };
   const onChange = (value) => setCategory(value);
