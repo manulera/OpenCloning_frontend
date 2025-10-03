@@ -26,24 +26,24 @@ function DatabaseMessage({ source }) {
       </div>
       {/* If the database interface has a LoadHistoryComponent, show a button to load the history */}
       {LoadHistoryComponent && (
-      <>
-        {!loadingHistory && (
-        <div>
-          <Button sx={{ marginTop: 2 }} variant="contained" color="primary" onClick={() => setLoadingHistory(true)}>
-            Load history
-          </Button>
-        </div>
-        )}
-        {loadingHistory && (
-          <>
+        <>
+          {!loadingHistory && (
             <div>
-              <LoadHistoryComponent loadDatabaseFile={loadDatabaseFile} handleClose={handleClose} databaseId={source.database_id} />
+              <Button sx={{ marginTop: 2 }} variant="contained" color="primary" onClick={() => setLoadingHistory(true)}>
+                Load history
+              </Button>
             </div>
-            {historyFileError && <Alert sx={{ marginTop: 2 }} severity="error">{historyFileError}</Alert>}
-          </>
-        )}
+          )}
+          {loadingHistory && (
+            <>
+              <div>
+                <LoadHistoryComponent loadDatabaseFile={loadDatabaseFile} handleClose={handleClose} databaseId={source.database_id} />
+              </div>
+              {historyFileError && <Alert sx={{ marginTop: 2 }} severity="error">{historyFileError}</Alert>}
+            </>
+          )}
 
-      </>
+        </>
       )}
     </>
   );
@@ -66,7 +66,7 @@ function EuroscarfMessage({ source }) {
   );
 }
 
-function WekWikGeneMessage({ source }) {
+function WeKwikGeneMessage({ source }) {
   const { repository_id: repositoryId } = source;
   return (
     <>
@@ -78,7 +78,7 @@ function WekWikGeneMessage({ source }) {
         </a>
       </strong>
       {' '}
-      from WekWikGene
+      from WeKwikGene
     </>
   );
 }
@@ -113,6 +113,27 @@ function SnapGenePlasmidMessage({ source }) {
       </strong>
       {' '}
       from SnapGene
+    </>
+  );
+}
+
+function OpenDNACollectionsMessage({ source }) {
+  const { repository_id: repositoryId, sequence_file_url: sequenceFileUrl } = source;
+  return (
+    <>
+      Plasmid
+      {' '}
+
+      <a href={sequenceFileUrl.replace('https://assets.opencloning.org/open-dna-collections', 'https://github.com/Reclone-org/open-dna-collections/tree/main')} target="_blank" rel="noopener noreferrer">
+        {repositoryId.split('/')[1]}
+      </a>
+      {' '} from collection {' '}
+      <a href={`https://github.com/Reclone-org/open-dna-collections/tree/main/${repositoryId.split('/')[0]}`} target="_blank" rel="noopener noreferrer">
+        {repositoryId.split('/')[0]}
+      </a>
+
+      {' '}
+      from <a href="https://github.com/Reclone-org/open-dna-collections" target="_blank" rel="noopener noreferrer">Open DNA Collections</a>
     </>
   );
 }
@@ -221,11 +242,11 @@ function PCRMessage({ source }) {
         </Button>
       </RequestStatusWrapper>
       {pcrDetails.length > 0 && dialogOpen && (
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogContent>
-          <PCRTable pcrDetail={pcrDetails[0]} />
-        </DialogContent>
-      </Dialog>
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+          <DialogContent>
+            <PCRTable pcrDetail={pcrDetails[0]} />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
@@ -279,7 +300,7 @@ function FinishedSource({ sourceId }) {
       break;
     case 'HomologousRecombinationSource': message = `Homologous recombination with ${source.input[0].sequence} as template and ${source.input[1].sequence} as insert.`; break;
     case 'CRISPRSource': {
-      const guidesString = source.input.filter(({type}) => type === 'SourceInput').map(({sequence}) => primers.find((p) => sequence === p.id).name).join(', ');
+      const guidesString = source.input.filter(({ type }) => type === 'SourceInput').map(({ sequence }) => primers.find((p) => sequence === p.id).name).join(', ');
       message = `CRISPR HDR with ${source.input[0].sequence} as template, ${source.input[1].sequence} as insert and ${guidesString} as a guide${source.input.length > 3 ? 's' : ''}`;
     }
       break;
@@ -293,20 +314,22 @@ function FinishedSource({ sourceId }) {
       break;
     case 'SnapGenePlasmidSource': message = <SnapGenePlasmidMessage source={source} />;
       break;
-    case 'WekWikGeneIdSource': message = <WekWikGeneMessage source={source} />;
+    case 'WekWikGeneIdSource': message = <WeKwikGeneMessage source={source} />;
       break;
     case 'GatewaySource': message = <GatewayMessage source={source} />;
+      break;
+    case 'OpenDNACollectionsSource': message = <OpenDNACollectionsMessage source={source} />;
       break;
     case 'GenomeCoordinatesSource':
       message = (
         <>
           <h4 style={{ marginBottom: '5px' }}>Genome region</h4>
           {source.assembly_accession && (
-          <div>
-            <strong>Assembly:</strong>
-            {' '}
-            <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${source.assembly_accession}`} target="_blank" rel="noopener noreferrer">{source.assembly_accession}</a>
-          </div>
+            <div>
+              <strong>Assembly:</strong>
+              {' '}
+              <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${source.assembly_accession}`} target="_blank" rel="noopener noreferrer">{source.assembly_accession}</a>
+            </div>
           )}
           <div>
             <strong>Coords:</strong>
@@ -315,20 +338,20 @@ function FinishedSource({ sourceId }) {
             {`(${source.start}:${source.end}, ${source.strand})`}
           </div>
           {source.locus_tag && (
-          <div>
-            <strong>Locus tag:</strong>
-            {' '}
-            {source.locus_tag}
-          </div>
+            <div>
+              <strong>Locus tag:</strong>
+              {' '}
+              {source.locus_tag}
+            </div>
           )}
           {source.gene_id && (
-          <div>
-            <strong>Gene ID:</strong>
-            {' '}
-            <a href={`https://www.ncbi.nlm.nih.gov/gene/${source.gene_id}`} target="_blank" rel="noopener noreferrer">
-              {source.gene_id}
-            </a>
-          </div>
+            <div>
+              <strong>Gene ID:</strong>
+              {' '}
+              <a href={`https://www.ncbi.nlm.nih.gov/gene/${source.gene_id}`} target="_blank" rel="noopener noreferrer">
+                {source.gene_id}
+              </a>
+            </div>
           )}
 
         </>

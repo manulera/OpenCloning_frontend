@@ -1,4 +1,4 @@
-import { addSource, clickMultiSelectOption, setInputValue } from '../common_functions';
+import { addSource, clickMultiSelectOption, selectOptionShould, setInputValue } from '../common_functions';
 
 describe('RepositoryId Source', () => {
   beforeEach(() => {
@@ -94,9 +94,9 @@ describe('RepositoryId Source', () => {
     // Links to http://www.euroscarf.de/plasmid_details.php?accno=P30174
     cy.get('li#source-1 a[href="http://www.euroscarf.de/plasmid_details.php?accno=P30174"]').should('exist');
   });
-  it('works with WekWikGene', () => {
-    clickMultiSelectOption('Select repository', 'WekWikGene', 'li#source-1');
-    setInputValue('WekWikGene ID', '0000304', 'li#source-1');
+  it('works with WeKwikGene', () => {
+    clickMultiSelectOption('Select repository', 'WeKwikGene', 'li#source-1');
+    setInputValue('WeKwikGene ID', '0000304', 'li#source-1');
     cy.get('li#source-1 button').contains('Submit').click();
     cy.get('li#sequence-1', { timeout: 20000 }).contains('planarian');
     cy.get('li#sequence-1').contains('3900 bps');
@@ -160,15 +160,15 @@ describe('RepositoryId Source', () => {
     cy.get('li#source-1 button.MuiButtonBase-root').click();
     cy.get('.MuiAlert-message', { timeout: 20000 }).should('be.visible');
 
-    // WekWikGene =================================
-    clickMultiSelectOption('Select repository', 'WekWikGene', 'li#source-1');
+    // WeKwikGene =================================
+    clickMultiSelectOption('Select repository', 'WeKwikGene', 'li#source-1');
     // Cannot submit empty
     cy.get('li#source-1 button.MuiButtonBase-root').should('not.exist');
     // Cannot submit value that does not fit the regex
-    setInputValue('WekWikGene ID', 'blah', 'li#source-1');
+    setInputValue('WeKwikGene ID', 'blah', 'li#source-1');
     cy.get('li#source-1 button.MuiButtonBase-root').should('not.exist');
     // An id that does not exist returns an error
-    setInputValue('WekWikGene ID', '999999999999999', 'li#source-1');
+    setInputValue('WeKwikGene ID', '999999999999999', 'li#source-1');
     cy.get('li#source-1 button.MuiButtonBase-root').click();
     cy.get('.MuiAlert-message', { timeout: 20000 }).should('be.visible');
   });
@@ -220,5 +220,20 @@ describe('RepositoryId Source', () => {
 
     // Links to the right page
     cy.get('li#source-1 a[href="https://seva-plasmids.com/maps-canonical/maps-plasmids-SEVAs-canonical-versions-web-1-3-gbk/pSEVA427.gbk"]').should('exist');
+  });
+  it('works with Open DNA Collections', () => {
+    clickMultiSelectOption('Select repository', 'Open DNA Collections', 'li#source-1');
+    cy.get('li#source-1 label').contains('Plasmid name', { timeout: 20000 }).should('exist');
+    clickMultiSelectOption('Plasmid name', 'CD_ZB', 'li#source-1');
+    cy.get('li#source-1 button').contains('Submit').should('exist');
+    clickMultiSelectOption('Collection', 'Open Reporters Collection', 'li#source-1 label');
+    selectOptionShould('Plasmid name', 'CD_ZB', 'not.exist', 'li#source-1');
+    cy.get('li#source-1 button').contains('Submit').should('not.exist');
+    selectOptionShould('Plasmid name', 'ODC_0093', 'exist', 'li#source-1');
+    cy.get('button svg[data-testid="ClearIcon"]').click({ force: true });
+    clickMultiSelectOption('Plasmid name', 'CD_ZB', 'li#source-1');
+    cy.get('li#source-1 button').contains('Submit').click();
+    cy.get('li#sequence-1').contains('CD_ZB');
+    cy.get('li#sequence-1').contains('2155 bps');
   });
 });
