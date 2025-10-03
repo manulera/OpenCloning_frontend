@@ -26,6 +26,7 @@ export const classNameToEndPointMap = {
   IGEMSource: 'repository_id',
   SEVASource: 'repository_id',
   WekWikGeneIdSource: 'repository_id',
+  OpenDNACollectionsSource: 'repository_id',
   GenomeCoordinatesSource: 'genome_coordinates',
   ManuallyTypedSource: 'manually_typed',
   OligoHybridizationSource: 'oligonucleotide_hybridization',

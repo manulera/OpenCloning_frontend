@@ -1,4 +1,7 @@
 import React from 'react';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import ClearIcon from '@mui/icons-material/Clear';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
@@ -30,7 +33,7 @@ function validateRepositoryId(repositoryId, repository) {
       break;
     case 'wekwikgene':
       if (!repositoryId.match(/^\d+$/)) {
-        return 'WekWikGene IDs must be numbers (e.g. 0000304)';
+        return 'WeKwikGene IDs must be numbers (e.g. 0000304)';
       }
       break;
     default:
@@ -52,7 +55,7 @@ const inputLabels = {
   genbank: 'GenBank ID',
   benchling: 'Benchling URL',
   euroscarf: 'Euroscarf ID',
-  wekwikgene: 'WekWikGene ID',
+  wekwikgene: 'WeKwikGene ID',
 };
 
 const snapgeneCheckOption = (option, inputValue) => option.name.toLowerCase().includes(inputValue.toLowerCase());
@@ -125,6 +128,23 @@ function SEVASuccessComponent({ option }) {
   );
 }
 
+const openDNACollectionsGetOptions = (data, inputValue, groupedBy) => data.map((p) => ({
+  name: `${p.id}` + (p.plasmid_name ? ` - ${p.plasmid_name}` : ''),
+  plasmid_name: p.plasmid_name,
+  plasmid_id: p.id,
+  collection: p.collection,
+  url: `https://assets.opencloning.org/open-dna-collections/${p.path}`,
+})).filter((p) => p.name.toLowerCase().includes(inputValue.toLowerCase()) && (groupedBy ? p.collection === groupedBy : true));
+
+function OpenDNACollectionsSuccessComponent({ option }) {
+  return (
+    <Alert severity="info" sx={{ mb: 1 }}>
+      Plasmid <a href={option.url} target="_blank" rel="noopener noreferrer">{option.name}</a> {' '}
+      from collection <a href={`https://github.com/Reclone-org/open-dna-collections/tree/main/${option.collection}`} target="_blank" rel="noopener noreferrer">{option.collection}</a>
+    </Alert>
+  );
+}
+
 function IndexJsonSelector({
   url,
   setInputValue,
@@ -134,12 +154,15 @@ function IndexJsonSelector({
   SuccessComponent,
   responseProcessCallback = (resp) => resp.data,
   requiredInput = 3,
+  groupField = null, // You can pass the name of the field to group by
 }) {
   const [userInput, setUserInput] = React.useState('');
   const [data, setData] = React.useState(null);
   const [options, setOptions] = React.useState([]);
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' });
   const [retry, setRetry] = React.useState(0);
+  const [groups, setGroups] = React.useState([]);
+  const [groupedBy, setGroupedBy] = React.useState(null);
 
   React.useEffect(() => {
     const fetchOptions = async () => {
@@ -149,6 +172,9 @@ function IndexJsonSelector({
         setData(responseProcessCallback(resp));
         if (requiredInput === 0) {
           setOptions(getOptions(resp.data, ''));
+        }
+        if (groupField) {
+          setGroups([...new Set(resp.data.map((p) => p[groupField]))].sort());
         }
         setRequestStatus({ status: 'success' });
       } catch (error) {
@@ -163,7 +189,7 @@ function IndexJsonSelector({
       // When clearing the input via x button
       setUserInput('');
       if (requiredInput === 0) {
-        setOptions(getOptions(data, ''));
+        setOptions(getOptions(data, '', groupedBy));
       } else {
         setOptions([]);
       }
@@ -175,13 +201,36 @@ function IndexJsonSelector({
       return;
     }
 
-    setOptions(getOptions(data, newInputValue));
+    setOptions(getOptions(data, newInputValue, groupedBy));
+  };
+
+  const onGroupChange = (newGroup) => {
+    setUserInput('');
+    setInputValue('')
+    setGroupedBy(newGroup);
+    setOptions(getOptions(data, '', newGroup))
   };
 
   const selectedOption = options.find((option) => option.name === userInput);
-
+  console.log(selectedOption);
   return (
     <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry(retry + 1)}>
+      {groupField && (
+        <FormControl fullWidth>
+          <InputLabel>{groupField.charAt(0).toUpperCase() + groupField.slice(1).replace(/([A-Z])/g, ' $1')}</InputLabel>
+          <Select
+            endAdornment={groupedBy && (<InputAdornment position="end"><IconButton onClick={() => onGroupChange(null)}><ClearIcon /></IconButton></InputAdornment>)}
+            value={groupedBy}
+            onChange={(e) => onGroupChange(e.target.value)}
+            // Capitalize the first letter and add a space before each capital letter
+            label={groupField.charAt(0).toUpperCase() + groupField.slice(1).replace(/([A-Z])/g, ' $1')}
+          >
+            {groups.map((group) => (
+              <MenuItem value={group}>{group}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
       <FormControl fullWidth>
         <Autocomplete
           onChange={(event, value) => {
@@ -192,7 +241,7 @@ function IndexJsonSelector({
               setInputValue('');
             }
           }}
-        // Change options only when input changes (not when an option is picked)
+          // Change options only when input changes (not when an option is picked)
           onInputChange={(event, newInputValue, reason) => (reason === 'input') && onInputChange(newInputValue)}
           id="tags-standard"
           options={options}
@@ -256,6 +305,10 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
       extra.repository_id = inputValue.plasmid_name;
       extra.sequence_file_url = inputValue.data.GenBank_link;
     }
+    if (selectedRepository === 'open_dna_collections') {
+      extra.repository_id = inputValue.collection + '/' + inputValue.plasmid_id;
+      extra.sequence_file_url = inputValue.url.replace(/ /g, '%20');
+    }
     const requestData = { id: sourceId, ...extra, repository_name: selectedRepository };
     sendPostRequest({ endpoint: `repository_id/${selectedRepository}`, requestData, source });
   };
@@ -271,18 +324,19 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           label="Select repository"
         >
           <MenuItem value="addgene">Addgene</MenuItem>
-          <MenuItem value="genbank">GenBank</MenuItem>
           <MenuItem value="benchling">Benchling</MenuItem>
-          <MenuItem value="snapgene">SnapGene</MenuItem>
           <MenuItem value="euroscarf">Euroscarf</MenuItem>
+          <MenuItem value="genbank">GenBank</MenuItem>
           <MenuItem value="igem">iGEM</MenuItem>
-          <MenuItem value="wekwikgene">WekWikGene</MenuItem>
+          <MenuItem value="open_dna_collections">Open DNA Collections</MenuItem>
           <MenuItem value="seva">SEVA Plasmids</MenuItem>
+          <MenuItem value="snapgene">SnapGene</MenuItem>
+          <MenuItem value="wekwikgene">WeKwikGene</MenuItem>
         </Select>
       </FormControl>
       {selectedRepository !== '' && (
         <form onSubmit={onSubmit}>
-          {selectedRepository !== 'snapgene' && selectedRepository !== 'igem' && selectedRepository !== 'seva' && (
+          {selectedRepository !== 'snapgene' && selectedRepository !== 'igem' && selectedRepository !== 'seva' && selectedRepository !== 'open_dna_collections' && (
             <>
               <FormControl fullWidth>
                 <TextField
@@ -296,37 +350,37 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               </FormControl>
               {/* Extra info for benchling case */}
               {selectedRepository === 'benchling' && (
-              <Alert severity="info" sx={{ mb: 1 }}>
-                The sequence must be publicly accessible. Use the URL from a sequence editor page (ending in &quot;/edit&quot;), like
-                {' '}
-                <a target="_blank" rel="noopener noreferrer" href="https://benchling.com/siverson/f/lib_B94YxDHhQh-cidar-moclo-library/seq_dh1FrJTc-b0015_dh/edit">this example</a>
-                .
-              </Alert>
+                <Alert severity="info" sx={{ mb: 1 }}>
+                  The sequence must be publicly accessible. Use the URL from a sequence editor page (ending in &quot;/edit&quot;), like
+                  {' '}
+                  <a target="_blank" rel="noopener noreferrer" href="https://benchling.com/siverson/f/lib_B94YxDHhQh-cidar-moclo-library/seq_dh1FrJTc-b0015_dh/edit">this example</a>
+                  .
+                </Alert>
               )}
             </>
           )}
           {selectedRepository === 'snapgene'
-          && (
-          <IndexJsonSelector
-            url="https://assets.opencloning.org/SnapGene_crawler/index.json"
-            setInputValue={setInputValue}
-            getOptions={snapgeneGetOptions}
-            noOptionsText="Type at least 3 characters to search, see SnapGene plasmids for options"
-            inputLabel="Plasmid name"
-            SuccessComponent={SnapgeneSuccessComponent}
-            requiredInput={3}
-          />
-          )}
+            && (
+              <IndexJsonSelector
+                url="https://assets.opencloning.org/SnapGene_crawler/index.json"
+                setInputValue={setInputValue}
+                getOptions={snapgeneGetOptions}
+                noOptionsText="Type at least 3 characters to search, see SnapGene plasmids for options"
+                inputLabel="Plasmid name"
+                SuccessComponent={SnapgeneSuccessComponent}
+                requiredInput={3}
+              />
+            )}
           {selectedRepository === 'igem' && (
-          <IndexJsonSelector
-            url="https://assets.opencloning.org/annotated-igem-distribution/results/index.json"
-            setInputValue={setInputValue}
-            getOptions={iGEMGetOptions}
-            noOptionsText=""
-            inputLabel="Plasmid name"
-            SuccessComponent={iGEMSuccessComponent}
-            requiredInput={0}
-          />
+            <IndexJsonSelector
+              url="https://assets.opencloning.org/annotated-igem-distribution/results/index.json"
+              setInputValue={setInputValue}
+              getOptions={iGEMGetOptions}
+              noOptionsText=""
+              inputLabel="Plasmid name"
+              SuccessComponent={iGEMSuccessComponent}
+              requiredInput={0}
+            />
           )}
           {selectedRepository === 'seva' && (
             <IndexJsonSelector
@@ -336,8 +390,19 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               noOptionsText="Type at least 3 characters to search"
               inputLabel="Plasmid name"
               SuccessComponent={SEVASuccessComponent}
-
               requiredInput={3}
+            />
+          )}
+          {selectedRepository === 'open_dna_collections' && (
+            <IndexJsonSelector
+              url="https://assets.opencloning.org/open-dna-collections/scripts/index.json"
+              setInputValue={setInputValue}
+              getOptions={openDNACollectionsGetOptions}
+              noOptionsText=""
+              inputLabel="Plasmid name"
+              SuccessComponent={OpenDNACollectionsSuccessComponent}
+              requiredInput={0}
+              groupField="collection"
             />
           )}
           {inputValue && !error && (<SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>)}

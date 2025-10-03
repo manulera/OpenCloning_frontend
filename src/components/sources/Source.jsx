@@ -61,7 +61,9 @@ function Source({ sourceId }) {
       specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'EuroscarfSource':
       specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;
-    case 'WekWikGeneSource':
+    case 'WekWikGeneIdSource':
+      specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;
+    case 'OpenDNACollectionsSource':
       specificSource = <SourceRepositoryId {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'LigationSource':
       specificSource = <SourceAssembly {...{ source, requestStatus, sendPostRequest }} />; break;
