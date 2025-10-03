@@ -19,24 +19,31 @@ const categoryFilter = (category, previousCategory) => {
 }
 
 function Assembler() {
-    const [assembly, setAssembly] = React.useState([{ category: '', id: null }])
+    const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
 
     const setCategory = (category, index) => {
         if (category === '') {
             const newAssembly = assembly.slice(0, index)
-            newAssembly[index] = { category: '', id: null }
+            newAssembly[index] = { category: '', id: [] }
             setAssembly(newAssembly)
             return
         }
-        setAssembly(assembly.map((item, i) => i === index ? { category, id: null } : item))
+        setAssembly(assembly.map((item, i) => i === index ? { category, id: [] } : item))
     }
-    const setId = (id, index) => {
-        if (!id) {
-            setAssembly(assembly.map((item, i) => i === index ? { ...item, id: null } : item))
+    const setId = (idArray, index) => {
+        // Handle case where user clears all selections (empty array)
+        if (!idArray || idArray.length === 0) {
+            setAssembly(assembly.map((item, i) => i === index ? { ...item, id: [] } : item))
             return
         }
-        const option = formattedData.find((item) => item.id === id)
-        setAssembly(assembly.map((item, i) => i === index ? { id, category: option.category } : item))
+
+        // For multiple selection, we need to determine the category based on the first selected item
+        // or maintain the current category if it's already set
+        const currentItem = assembly[index]
+        const firstOption = formattedData.find((item) => item.id === idArray[0])
+        const category = currentItem.category || firstOption?.category || ''
+
+        setAssembly(assembly.map((item, i) => i === index ? { id: idArray, category } : item))
     }
 
     React.useEffect(() => {
@@ -45,7 +52,7 @@ function Assembler() {
             return
         }
         if (assembly[lastPosition].category !== '') {
-            const newAssembly = [...assembly, { category: '', id: null }]
+            const newAssembly = [...assembly, { category: '', id: [] }]
             setAssembly(newAssembly)
         }
     }, [assembly])
@@ -55,35 +62,39 @@ function Assembler() {
             <h1>Assembler</h1>
 
             <Stack direction="row">
-                {assembly.map((item, index) => (
-                    <Box key={index} sx={{ width: '200px' }}>
-                        <FormControl fullWidth>
-                            <InputLabel>Category</InputLabel>
-                            <Select
-                                endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
-                                value={item.category}
-                                onChange={(e) => setCategory(e.target.value, index)}
-                                label="Category"
-                                disabled={index < assembly.length - 1}
-                            >
-                                {categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category)).map((category) => (
-                                    <MenuItem value={category}>{category}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl fullWidth>
-                            <Autocomplete
-                                value={item.id}
-                                onChange={(e, value) => setId(value, index)}
-                                label="ID"
-                                options={formattedData.filter((d) => item.category === '' || d.category === item.category).map((item) => item.id)}
-                                renderInput={(params) => <TextField {...params} label="ID" />}
-                            />
-                        </FormControl>
-                    </Box>
-                ))}
+                {assembly.map((item, index) => {
+                    const allowedCategories = item.category ? [item.category] : categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category))
+
+                    return (
+                        <Box key={index} sx={{ width: '200px' }} >
+                            <FormControl fullWidth>
+                                <InputLabel>Category</InputLabel>
+                                <Select
+                                    endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
+                                    value={item.category}
+                                    onChange={(e) => setCategory(e.target.value, index)}
+                                    label="Category"
+                                    disabled={index < assembly.length - 1}
+                                >
+                                    {allowedCategories.map((category) => (
+                                        <MenuItem value={category}>{category}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl fullWidth>
+                                <Autocomplete
+                                    multiple
+                                    value={item.id}
+                                    onChange={(e, value) => setId(value, index)}
+                                    label="ID"
+                                    options={formattedData.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
+                                    renderInput={(params) => <TextField {...params} label="ID" />}
+                                />
+                            </FormControl>
+                        </Box>)
+                })}
             </Stack>
-        </div>
+        </div >
     )
 }
 
