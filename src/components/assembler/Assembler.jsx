@@ -1,7 +1,7 @@
 import React from 'react'
 import data from './assembler_data.json'
 import data2 from './assembler_data2.json'
-import { Autocomplete, Box, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
+import { Alert, Autocomplete, Box, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear';
 
 let formattedData = data.map((item) => ({
@@ -57,17 +57,20 @@ function Assembler() {
         }
     }, [assembly])
 
+    const assemblyComplete = assembly.every((item) => item.category !== '' && item.id.length > 0)
+
     return (
-        <div style={{ marginLeft: '200px' }}>
+        <Box sx={{ p: 3 }}>
             <h1>Assembler</h1>
 
-            <Stack direction="row">
+            <Stack direction="row" spacing={2}>
                 {assembly.map((item, index) => {
                     const allowedCategories = item.category ? [item.category] : categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category))
-
+                    const isCompleted = item.category !== '' && item.id.length > 0
+                    const borderColor = isCompleted ? 'success.main' : 'primary.main'
                     return (
-                        <Box key={index} sx={{ width: '200px' }} >
-                            <FormControl fullWidth>
+                        <Box key={index} sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
+                            <FormControl fullWidth sx={{ mb: 2 }}>
                                 <InputLabel>Category</InputLabel>
                                 <Select
                                     endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
@@ -94,7 +97,8 @@ function Assembler() {
                         </Box>)
                 })}
             </Stack>
-        </div >
+            {assemblyComplete && <Alert severity="success">Assembly complete</Alert>}
+        </Box>
     )
 }
 
