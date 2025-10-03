@@ -63,38 +63,75 @@ function Assembler() {
         <Box sx={{ p: 3 }}>
             <h1>Assembler</h1>
 
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" alignItems="center" spacing={1}>
                 {assembly.map((item, index) => {
                     const allowedCategories = item.category ? [item.category] : categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category))
                     const isCompleted = item.category !== '' && item.id.length > 0
                     const borderColor = isCompleted ? 'success.main' : 'primary.main'
+
                     return (
-                        <Box key={index} sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
-                            <FormControl fullWidth sx={{ mb: 2 }}>
-                                <InputLabel>Category</InputLabel>
-                                <Select
-                                    endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
-                                    value={item.category}
-                                    onChange={(e) => setCategory(e.target.value, index)}
-                                    label="Category"
-                                    disabled={index < assembly.length - 1}
-                                >
-                                    {allowedCategories.map((category) => (
-                                        <MenuItem value={category}>{category}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <Autocomplete
-                                    multiple
-                                    value={item.id}
-                                    onChange={(e, value) => setId(value, index)}
-                                    label="ID"
-                                    options={formattedData.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
-                                    renderInput={(params) => <TextField {...params} label="ID" />}
-                                />
-                            </FormControl>
-                        </Box>)
+                        <React.Fragment key={index}>
+                            {/* Link before first box */}
+                            {index === 0 && item.category !== '' && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
+                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+                                    <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                        {formattedData.find((d) => d.category === item.category).left_overhang}
+                                    </Box>
+                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+                                </Box>
+                            )}
+
+                            <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
+                                <FormControl fullWidth sx={{ mb: 2 }}>
+                                    <InputLabel>Category</InputLabel>
+                                    <Select
+                                        endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
+                                        value={item.category}
+                                        onChange={(e) => setCategory(e.target.value, index)}
+                                        label="Category"
+                                        disabled={index < assembly.length - 1}
+                                    >
+                                        {allowedCategories.map((category) => (
+                                            <MenuItem value={category}>{category}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth>
+                                    <Autocomplete
+                                        multiple
+                                        value={item.id}
+                                        onChange={(e, value) => setId(value, index)}
+                                        label="ID"
+                                        options={formattedData.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
+                                        renderInput={(params) => <TextField {...params} label="ID" />}
+                                    />
+                                </FormControl>
+                            </Box>
+
+                            {/* Link between boxes */}
+                            {index < assembly.length - 1 && item.category !== '' && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
+                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+                                    <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                        {formattedData.find((d) => d.category === item.category).right_overhang}
+                                    </Box>
+                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+                                </Box>
+                            )}
+
+                            {/* Link after last box */}
+                            {index === assembly.length - 1 && item.category !== '' && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
+                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+                                    <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                        {formattedData.find((d) => d.category === item.category).right_overhang}
+                                    </Box>
+                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+                                </Box>
+                            )}
+                        </React.Fragment>
+                    )
                 })}
             </Stack>
             {assemblyComplete && <Alert severity="success">Assembly complete</Alert>}
