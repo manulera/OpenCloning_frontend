@@ -17,7 +17,6 @@ import Assembler from './components/assembler/Assembler';
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
 function App() {
-  return <Assembler />;
   const dispatch = useDispatch();
   const database = useDatabase();
   const { addAlert } = useAlerts();
@@ -163,6 +162,7 @@ function App() {
   if (!stateLoaded) {
     return <div className="loading-state-message">Loading...</div>;
   }
+  return <Assembler />;
   return (
     <div className="App">
       {showAppBar && (

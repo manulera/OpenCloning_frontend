@@ -1,8 +1,9 @@
 import React from 'react'
 import data from './assembler_data.json'
 import data2 from './assembler_data2.json'
-import { Alert, Autocomplete, Box, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
+import { Alert, Autocomplete, Box, Button, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear';
+import { useAssembler } from './useAssembler';
 
 let formattedData = data.map((item) => ({
     ...item,
@@ -18,8 +19,32 @@ const categoryFilter = (category, previousCategory) => {
     return previousCategory.split('_')[1] === category.split('_')[0]
 }
 
+function AssemblerLink({ overhang }) {
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
+            <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+            <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
+                {overhang}
+            </Box>
+            <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+        </Box>
+    )
+}
+
 function Assembler() {
     const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
+    const { requestSources, requestAssemblies } = useAssembler()
+    const [requestedSources, setRequestedSources] = React.useState([])
+    const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
+    const onSubmitAssembly = async () => {
+        const sources = assembly.map(({ id }) => id.map((id) => (formattedData.find((item) => item.id === id).source)))
+        const resp = await requestSources(sources)
+        setRequestedSources(resp)
+        const assemblies = await requestAssemblies(resp)
+        setRequestedAssemblies(assemblies)
+    }
+
+    console.log('requestedAssemblies', requestedAssemblies)
 
     const setCategory = (category, index) => {
         if (category === '') {
@@ -48,7 +73,7 @@ function Assembler() {
 
     React.useEffect(() => {
         const lastPosition = assembly.length - 1
-        if (assembly[lastPosition].category.endsWith('F')) {
+        if (assembly[lastPosition].category.endsWith('A')) {
             return
         }
         if (assembly[lastPosition].category !== '') {
@@ -73,13 +98,7 @@ function Assembler() {
                         <React.Fragment key={index}>
                             {/* Link before first box */}
                             {index === 0 && item.category !== '' && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
-                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-                                    <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                        {formattedData.find((d) => d.category === item.category).left_overhang}
-                                    </Box>
-                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-                                </Box>
+                                <AssemblerLink overhang={formattedData.find((d) => d.category === item.category).left_overhang} />
                             )}
 
                             <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
@@ -93,7 +112,7 @@ function Assembler() {
                                         disabled={index < assembly.length - 1}
                                     >
                                         {allowedCategories.map((category) => (
-                                            <MenuItem value={category}>{category}</MenuItem>
+                                            <MenuItem value={category}>{category === 'F_A' ? 'Backbone' : category}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
@@ -111,30 +130,22 @@ function Assembler() {
 
                             {/* Link between boxes */}
                             {index < assembly.length - 1 && item.category !== '' && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
-                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-                                    <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                        {formattedData.find((d) => d.category === item.category).right_overhang}
-                                    </Box>
-                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-                                </Box>
+                                <AssemblerLink overhang={formattedData.find((d) => d.category === item.category).right_overhang} />
                             )}
 
                             {/* Link after last box */}
                             {index === assembly.length - 1 && item.category !== '' && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
-                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-                                    <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                        {formattedData.find((d) => d.category === item.category).right_overhang}
-                                    </Box>
-                                    <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-                                </Box>
+                                <AssemblerLink overhang={formattedData.find((d) => d.category === item.category).right_overhang} />
                             )}
                         </React.Fragment>
                     )
                 })}
             </Stack>
-            {assemblyComplete && <Alert severity="success">Assembly complete</Alert>}
+            {assemblyComplete && <>
+                <Alert severity="success">Assembly complete</Alert>
+                <Button variant="contained" color="primary" onClick={onSubmitAssembly}>Submit</Button>
+            </>}
+
         </Box>
     )
 }

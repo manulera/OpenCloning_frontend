@@ -42,5 +42,9 @@
     {
         "name": "F",
         "overhang": "CGCT"
+    },
+    {
+        "name": "backbone",
+        "overhang": "GGAG"
     }
 ]
