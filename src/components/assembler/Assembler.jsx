@@ -1,5 +1,4 @@
 import React from 'react'
-import data from './assembler_data.json'
 import data2 from './assembler_data2.json'
 import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear';
@@ -8,16 +7,11 @@ import { arrayCombinations } from '../eLabFTW/utils';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useDispatch } from 'react-redux';
 import { cloningActions } from '../../store/cloning';
+import RequestStatusWrapper from '../form/RequestStatusWrapper';
+import useHttpClient from '../../hooks/useHttpClient';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
-
-let formattedData = data.map((item) => ({
-    ...item,
-    category: data2.find((item2) => item2.overhang === item.left_overhang).name + '_' + data2.find((item2) => item2.overhang === item.right_overhang).name
-}))
-
-const categories = [...new Set(formattedData.map((item) => item.category))].sort()
 
 const categoryFilter = (category, previousCategory) => {
     if (previousCategory === '') {
@@ -38,7 +32,8 @@ function AssemblerLink({ overhang }) {
     )
 }
 
-function Assembler() {
+function AssemblerComponent({ data, categories }) {
+
     const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
     const { requestSources, requestAssemblies } = useAssembler()
     const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
@@ -47,7 +42,7 @@ function Assembler() {
     const dispatch = useDispatch()
     const onSubmitAssembly = async () => {
         clearAssembly()
-        const sources = assembly.map(({ id }) => id.map((id) => (formattedData.find((item) => item.id === id).source)))
+        const sources = assembly.map(({ id }) => id.map((id) => (data.find((item) => item.id === id).source)))
         let errorMessage = 'Error fetching sequences'
         try {
             setLoadingMessage('Requesting sequences...')
@@ -89,7 +84,7 @@ function Assembler() {
         // For multiple selection, we need to determine the category based on the first selected item
         // or maintain the current category if it's already set
         const currentItem = assembly[index]
-        const firstOption = formattedData.find((item) => item.id === idArray[0])
+        const firstOption = data.find((item) => item.id === idArray[0])
         const category = currentItem.category || firstOption?.category || ''
 
         setAssembly(assembly.map((item, i) => i === index ? { id: idArray, category } : item))
@@ -132,7 +127,7 @@ function Assembler() {
                         <React.Fragment key={index}>
                             {/* Link before first box */}
                             {index === 0 && item.category !== '' && (
-                                <AssemblerLink overhang={formattedData.find((d) => d.category === item.category).left_overhang} />
+                                <AssemblerLink overhang={data.find((d) => d.category === item.category).left_overhang} />
                             )}
 
                             <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
@@ -156,7 +151,7 @@ function Assembler() {
                                         value={item.id}
                                         onChange={(e, value) => setId(value, index)}
                                         label="ID"
-                                        options={formattedData.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
+                                        options={data.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
                                         renderInput={(params) => <TextField {...params} label="ID" />}
                                     />
                                 </FormControl>
@@ -164,12 +159,12 @@ function Assembler() {
 
                             {/* Link between boxes */}
                             {index < assembly.length - 1 && item.category !== '' && (
-                                <AssemblerLink overhang={formattedData.find((d) => d.category === item.category).right_overhang} />
+                                <AssemblerLink overhang={data.find((d) => d.category === item.category).right_overhang} />
                             )}
 
                             {/* Link after last box */}
                             {index === assembly.length - 1 && item.category !== '' && (
-                                <AssemblerLink overhang={formattedData.find((d) => d.category === item.category).right_overhang} />
+                                <AssemblerLink overhang={data.find((d) => d.category === item.category).right_overhang} />
                             )}
                         </React.Fragment>
                     )
@@ -222,6 +217,40 @@ function Assembler() {
             }
 
         </Box >
+    )
+}
+
+function Assembler() {
+    const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
+    const [retry, setRetry] = React.useState(0)
+    const [data, setData] = React.useState([])
+    const [categories, setCategories] = React.useState([])
+    const httpClient = useHttpClient()
+    React.useEffect(() => {
+        setRequestStatus({ status: 'loading' })
+        const fetchData = async () => {
+            try {
+                const { data } = await httpClient.get('https://assets.opencloning.org/open-dna-collections/scripts/index_overhangs.json')
+                const formattedData = data.map((item) => ({
+                    ...item,
+                    category: data2.find((item2) => item2.overhang === item.left_overhang).name + '_' + data2.find((item2) => item2.overhang === item.right_overhang).name
+                }))
+
+                const categories = [...new Set(formattedData.map((item) => item.category))].sort()
+                setData(formattedData)
+                setCategories(categories)
+                setRequestStatus({ status: 'success' })
+            } catch (error) {
+                setRequestStatus({ status: 'error', message: 'Could not load assembler data' })
+            }
+        }
+        fetchData()
+
+    }, [retry])
+    return (
+        <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
+            <AssemblerComponent data={data} categories={categories} />
+        </RequestStatusWrapper>
     )
 }
 
