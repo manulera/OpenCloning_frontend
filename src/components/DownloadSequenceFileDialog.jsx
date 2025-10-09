@@ -1,30 +1,24 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import { downloadSequence } from '../utils/readNwrite';
 import { exportSubStateThunk } from '../utils/thunks';
 import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
+import { substateHasFiles } from '../utils/network';
 
 // You can override the downloadSequence function by passing a downloadCallback that takes the fileName and sequence as arguments
 function DownloadSequenceFileDialog({ id, dialogOpen, setDialogOpen, downloadCallback }) {
   const [fileName, setFileName] = React.useState('');
   const [extension, setExtension] = React.useState('.gb');
-  const sequenceData = useSelector(({ cloning }) => cloning.teselaJsonCache[id], isEqual);
-  const seqCopy = structuredClone(sequenceData);
-  const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, id), isEqual);
-  const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, id), isEqual);
-  // To be able to use this function for non-state sequences
-  if (seqCopy) {
-    seqCopy.primers = [...seqCopy.primers, ...linkedPrimers, ...pcrPrimers];
-  }
+  const hasFiles = useSelector(({ cloning }) => substateHasFiles(cloning, id), isEqual);
+  const sequenceName = useSelector(({ cloning }) => cloning.teselaJsonCache[id]?.name || '', isEqual);
+  const store = useStore();
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    if (sequenceData) {
-      setFileName(sequenceData.name);
-    }
-  }, [sequenceData]);
+    setFileName(sequenceName);
+  }, [sequenceName]);
 
   return (
     <Dialog
@@ -35,10 +29,17 @@ function DownloadSequenceFileDialog({ id, dialogOpen, setDialogOpen, downloadCal
         onSubmit: (event) => {
           event.preventDefault();
           setDialogOpen(false);
+          if (extension === '.json' || extension === '.zip') {
+            dispatch(exportSubStateThunk(fileName + extension, id, extension.slice(1)));
+            return;
+          }
+          const {cloning} = store.getState();
+          const seqCopy = structuredClone(cloning.teselaJsonCache[id]);
+          const linkedPrimers = getPrimerLinks(cloning, id);
+          const pcrPrimers = getPCRPrimers(cloning, id);
+          seqCopy.primers = [...seqCopy.primers, ...linkedPrimers, ...pcrPrimers];
           if (downloadCallback) {
             downloadCallback(fileName + extension, seqCopy);
-          } else if (extension === '.json') {
-            dispatch(exportSubStateThunk(fileName + extension, id));
           } else {
             downloadSequence(fileName + extension, seqCopy);
           }
@@ -68,6 +69,7 @@ function DownloadSequenceFileDialog({ id, dialogOpen, setDialogOpen, downloadCal
             <FormControlLabel value=".gb" control={<Radio />} label="genbank" />
             <FormControlLabel value=".fasta" control={<Radio />} label="fasta" />
             <FormControlLabel value=".json" control={<Radio />} label="json (sequence + history)" />
+            {hasFiles && <FormControlLabel value=".zip" control={<Radio />} label="zip (sequence + history + verification files)" />}
           </RadioGroup>
         </FormControl>
 

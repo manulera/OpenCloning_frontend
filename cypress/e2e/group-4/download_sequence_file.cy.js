@@ -1,3 +1,4 @@
+import { BlobReader, ZipReader } from '@zip.js/zip.js';
 import { setInputValue } from '../common_functions';
 
 describe('Test download sequence file', () => {
@@ -8,6 +9,9 @@ describe('Test download sequence file', () => {
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('Examples').click();
     cy.get('li span').contains('Integration of cassette by homologous recombination').click();
     cy.get('li#sequence-1 svg[data-testid="DownloadIcon"]', { timeOut: 20000 }).click();
+    // Can only download zip if the sequence has associated verification files
+    cy.get('label').contains('json').should('exist');
+    cy.get('label').contains('zip').should('not.exist');
     setInputValue('File name', 'example', '.MuiDialogContent-root');
     // Download file as gb
     cy.get('.MuiDialogActions-root button').contains('Save file').click();
@@ -67,4 +71,34 @@ describe('Test download sequence file', () => {
       expect(fileContent).to.include('"name": "rvs"');
     });
   });
+  it('Can download the file as zip', () => {
+    cy.get('div.cloning-history').selectFile('cypress/test_files/sequencing/3seqs_with_sequencing.zip', { action: 'drag-drop' });
+
+    const expectedFileContents = {
+      2: ['verification-2-seq2.fasta', 'verification-2-seq2_2.fasta'],
+      3: ['verification-2-seq2.fasta', 'verification-3-seq3.fasta', 'verification-2-seq2_2.fasta'],
+      4: ['verification-4-seq4.fasta'],
+    }
+    for (const sequenceId of [2, 3, 4]) {
+      cy.get(`li#sequence-${sequenceId} svg[data-testid="DownloadIcon"]`).first().click();
+      setInputValue('File name', `seq-with-files`, '.MuiDialogContent-root');
+      cy.get('.MuiDialogContent-root span').contains('zip').click();
+      cy.get('.MuiDialogActions-root button').contains('Save file').click();
+
+      cy.readFile(`cypress/downloads/seq-with-files.zip`, null)
+        .then((fileContent) => {
+          const blob = new Blob([fileContent], { type: 'application/zip' });
+          const zipReader = new ZipReader(new BlobReader(blob));
+        cy.wrap(
+          zipReader.getEntries()
+            .then((entries) => {
+              const filenames = entries.map((entry) => entry.filename);
+              expect(new Set(filenames.slice(1))).to.deep.equal(new Set(expectedFileContents[sequenceId]));
+            })
+            .finally(() => zipReader.close()),
+        );
+      });
+    }
+  });
+
 });

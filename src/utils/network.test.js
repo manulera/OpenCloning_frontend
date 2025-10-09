@@ -1,4 +1,4 @@
-import { mockSources, mockSequences, mockPrimers } from '../../tests/mockNetworkData';
+import { mockSources, mockSequences, mockPrimers, mockFiles } from '../../tests/mockNetworkData';
 import { collectParentSequencesAndSources, getSubState } from './network';
 
 describe('collectParentSequencesAndSources', () => {
@@ -81,12 +81,13 @@ describe('getSubState', () => {
 
     expect(() => getSubState(state, 1)).toThrow('Source with id 1 not found');
   });
-  it('should return the correct substate with used primers only', () => {
+  it('should return the correct substate with used primers and files only', () => {
     const state = {
       cloning: {
         sequences: mockSequences,
         sources: mockSources,
         primers: mockPrimers,
+        files: mockFiles,
       },
     };
 
@@ -115,6 +116,7 @@ describe('getSubState', () => {
       mockPrimers.find((p) => p.id === 9),
       mockPrimers.find((p) => p.id === 10),
     ]);
+    expect(substate.files).toEqual(mockFiles.slice(0, 3));
   });
   it('should work with database_id', () => {
     const state = {

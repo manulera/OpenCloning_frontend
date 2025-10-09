@@ -24,6 +24,13 @@ export const mockPrimers = [
   { id: 11, name: 'unused' },
 ];
 
+export const mockFiles = [
+  { sequence_id: 1, file_name: 'file1.gb' },
+  { sequence_id: 1, file_name: 'file2.gb' },
+  { sequence_id: 2, file_name: 'file3.gb' },
+  { sequence_id: 7, file_name: 'file4.gb' },
+];
+
 export const mockTeselaJsonCache = {
   1: { name: 'Seq1' },
   2: { name: 'Seq2' },
