@@ -12,7 +12,10 @@ export function getParentNodes(node, sequences, sources) {
 }
 
 export function substateHasFiles(cloningState, id) {
-  return cloningState.files ? cloningState.files.some((f) => f.sequence_id === id) : false;
+  const source = cloningState.sources.find((s) => s.id === id);
+  const allParentIds = getAllParentSources(source, cloningState.sources).map((s) => s.id);
+  allParentIds.push(id);
+  return cloningState.files ? cloningState.files.some((f) => allParentIds.includes(f.sequence_id)) : false;
 };
 
 function getAllSourceIdsInParentNodes(node) {

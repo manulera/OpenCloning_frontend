@@ -99,6 +99,13 @@ describe('Test download sequence file', () => {
         );
       });
     }
+    // You can download as zip, even if only the parents have verification files
+    cy.get('li#sequence-3 svg[data-testid="RuleIcon"]').first().click();
+    cy.get('.verification-file-dialog svg[data-testid="DeleteIcon"]').click({ force: true });
+    // Click outside
+    cy.get('body').click('topLeft');
+    cy.get('li#sequence-3 svg[data-testid="DownloadIcon"]').first().click();
+    cy.get('label').contains('zip').should('exist');
   });
 
 });
