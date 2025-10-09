@@ -12,7 +12,6 @@ import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
 import useValidateState from './hooks/useValidateState';
 import { formatTemplate } from './utils/readNwrite';
-import Assembler from './components/assembler/Assembler';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
@@ -162,7 +161,6 @@ function App() {
   if (!stateLoaded) {
     return <div className="loading-state-message">Loading...</div>;
   }
-  return <Assembler />;
   return (
     <div className="App">
       {showAppBar && (

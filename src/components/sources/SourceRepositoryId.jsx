@@ -212,7 +212,7 @@ function IndexJsonSelector({
   };
 
   const selectedOption = options.find((option) => option.name === userInput);
-  console.log(selectedOption);
+
   return (
     <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry(retry + 1)}>
       {groupField && (

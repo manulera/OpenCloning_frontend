@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { classNameToEndPointMap } from '../../utils/sourceFunctions'
 import useBackendRoute from '../../hooks/useBackendRoute'
 import useHttpClient from '../../hooks/useHttpClient'
+import { arrayCombinations } from '../eLabFTW/utils'
 
 
 export const useAssembler = () => {
@@ -28,18 +29,10 @@ export const useAssembler = () => {
     return processedOutput
   }, [])
 
-  const combinations = (sets) => {
-    if (sets.length === 1) {
-      return sets[0].map((el) => [el]);
-    } else
-      return sets[0].flatMap((val) =>
-        combinations(sets.slice(1)).map((c) => [val].concat(c))
-      );
-  };
 
   const requestAssemblies = useCallback(async (requestedSources) => {
 
-    const assemblies = combinations(requestedSources);
+    const assemblies = arrayCombinations(requestedSources);
     const output = []
     for (let assembly of assemblies) {
       const url = backendRoute('restriction_and_ligation')
