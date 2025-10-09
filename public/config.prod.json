@@ -2,5 +2,6 @@
     "backendUrl": "https://api.opencloning.org",
     "database": null,
     "showAppBar": true,
-    "noExternalRequests": false
+    "noExternalRequests": false,
+    "enableAssembler": true
 }
