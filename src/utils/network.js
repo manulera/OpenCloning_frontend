@@ -11,6 +11,13 @@ export function getParentNodes(node, sequences, sources) {
   });
 }
 
+export function substateHasFiles(cloningState, id) {
+  const source = cloningState.sources.find((s) => s.id === id);
+  const allParentIds = getAllParentSources(source, cloningState.sources).map((s) => s.id);
+  allParentIds.push(id);
+  return cloningState.files ? cloningState.files.some((f) => allParentIds.includes(f.sequence_id)) : false;
+};
+
 function getAllSourceIdsInParentNodes(node) {
   const parentNodesSourceIds = node.parentNodes.map((parentNode) => parentNode.source.id);
   return parentNodesSourceIds.concat(node.parentNodes.flatMap((parentNode) => getAllSourceIdsInParentNodes(parentNode)));
@@ -66,7 +73,7 @@ export const collectParentSequencesAndSources = (source, sources, sequences, sto
 };
 
 export const getSubState = (state, id, stopAtDatabaseId = false) => {
-  const { sequences, sources, primers, appInfo } = state.cloning;
+  const { sequences, sources, primers, appInfo, files } = state.cloning;
   const sequencesToExport = sequences.filter((e) => e.id === id);
   const sourcesToExport = sources.filter((s) => s.id === id);
   if (sequencesToExport.length === 0) {
@@ -81,7 +88,9 @@ export const getSubState = (state, id, stopAtDatabaseId = false) => {
 
   const primerIdsToExport = getUsedPrimerIds(sourcesToExport);
   const primersToExport = primers.filter((p) => primerIdsToExport.includes(p.id));
-  return { sequences: sequencesToExport, sources: sourcesToExport, primers: primersToExport, appInfo };
+  const outputIds = sourcesToExport.map((s) => s.id);
+  const filesToExport = files ? files.filter((f) => outputIds.includes(f.sequence_id)) : [];
+  return { sequences: sequencesToExport, sources: sourcesToExport, primers: primersToExport, appInfo, files: filesToExport };
 };
 
 export const shiftState = (newState, oldState, skipPrimers = false) => {
