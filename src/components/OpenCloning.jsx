@@ -22,7 +22,7 @@ function OpenCloning() {
   const [smallDevice, setSmallDevice] = useState(window.innerWidth < 600);
   const hasAppBar = useSelector((state) => state.cloning.config.showAppBar, isEqual);
   const enableAssembler = useSelector((state) => state.cloning.config.enableAssembler);
-  console.log(enableAssembler)
+
   React.useEffect(() => {
     const handleResize = () => {
       setSmallDevice(window.innerWidth < 600);
