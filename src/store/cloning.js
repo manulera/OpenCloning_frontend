@@ -34,6 +34,7 @@ const initialState = {
   config: {
     loaded: false,
     backendUrl: null,
+    enableAssembler: false,
   },
   sourcesWithHiddenAncestors: [],
   teselaJsonCache: {},
@@ -299,7 +300,7 @@ const reducer = {
   },
 
   setConfig(state, action) {
-    state.config = action.payload;
+    Object.assign(state.config, action.payload);
     state.config.loaded = true;
   },
 

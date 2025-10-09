@@ -11,6 +11,7 @@ import DataModelDisplayer from './DataModelDisplayer';
 import CloningHistory from './CloningHistory';
 import SequenceTab from './SequenceTab';
 import AppAlerts from './AppAlerts';
+import Assembler from './assembler/Assembler';
 
 const { setCurrentTab } = cloningActions;
 
@@ -20,6 +21,7 @@ function OpenCloning() {
   const tabPanelsRef = useRef(null);
   const [smallDevice, setSmallDevice] = useState(window.innerWidth < 600);
   const hasAppBar = useSelector((state) => state.cloning.config.showAppBar, isEqual);
+  const enableAssembler = useSelector((state) => state.cloning.config.enableAssembler);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -57,6 +59,7 @@ function OpenCloning() {
         <CustomTab label="Description" index={2} />
         <CustomTab label="Sequence" index={3} />
         <CustomTab label="Data model" index={4} />
+        {enableAssembler && <CustomTab label="Assembler" index={5} />}
       </Tabs>
       <div className="tab-panels-container" ref={tabPanelsRef}>
         <TabPanel index={1} value={currentTab} className="primer-tab-pannel">
@@ -83,6 +86,9 @@ function OpenCloning() {
         <TabPanel index={4} value={currentTab} className="data-model-tab-pannel">
           <DataModelDisplayer />
         </TabPanel>
+        {enableAssembler && <TabPanel index={5} value={currentTab} className="assembler-tab-pannel">
+          <Assembler />
+        </TabPanel>}
       </div>
     </div>
   );

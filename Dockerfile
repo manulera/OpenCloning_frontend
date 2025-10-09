@@ -31,4 +31,5 @@ ENV BACKEND_URL=http://127.0.0.1:8000
 ENV DATABASE=""
 ENV SHOW_APP_BAR="true"
 ENV NO_EXTERNAL_REQUESTS="false"
+ENV ENABLE_ASSEMBLER="false"
 CMD ["sh", "docker_entrypoint.sh"]
