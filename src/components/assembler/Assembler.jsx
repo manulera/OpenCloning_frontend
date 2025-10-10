@@ -32,6 +32,13 @@ function AssemblerLink({ overhang }) {
     )
 }
 
+function formatItemName(item) {
+    if (item.plasmid_name && item.id !== item.plasmid_name) {
+        return `${item.id} (${item.plasmid_name})`
+    }
+    return item.id
+}
+
 function AssemblerComponent({ data, categories }) {
 
     const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
@@ -152,6 +159,7 @@ function AssemblerComponent({ data, categories }) {
                                         onChange={(e, value) => setId(value, index)}
                                         label="ID"
                                         options={data.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
+                                        getOptionLabel={(id) => formatItemName(data.find((d) => d.id === id))}
                                         renderInput={(params) => <TextField {...params} label="ID" />}
                                     />
                                 </FormControl>
@@ -204,7 +212,7 @@ function AssemblerComponent({ data, categories }) {
                                     </TableCell>
                                     {parts.map((part, colIndex) => (
                                         <TableCell key={colIndex}>
-                                            {part}
+                                            {formatItemName(data.find((d) => d.id === part))}
                                         </TableCell>
                                     ))}
 
