@@ -270,6 +270,21 @@ function FileMessage({ source }) {
   return common;
 }
 
+function HomologousRecombinationMessage({ source }) {
+  if (source.input.length === 1) {
+    return (
+      <div>
+        Excission by homologous recombination.
+      </div>
+    );
+  }
+  return (
+    <div>
+      Homologous recombination with {source.input[0].sequence} as template and {source.input[1].sequence} as insert.
+    </div>
+  );
+}
+
 function FinishedSource({ sourceId }) {
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
   const primers = useSelector((state) => state.cloning.primers, isEqual);
@@ -298,7 +313,7 @@ function FinishedSource({ sourceId }) {
     case 'OligoHybridizationSource':
       message = `Hybridization of primers ${primers.find((p) => source.input[0].sequence === p.id).name} and ${primers.find((p) => source.input[1].sequence === p.id).name}`;
       break;
-    case 'HomologousRecombinationSource': message = `Homologous recombination with ${source.input[0].sequence} as template and ${source.input[1].sequence} as insert.`; break;
+    case 'HomologousRecombinationSource': message = <HomologousRecombinationMessage source={source} />; break;
     case 'CRISPRSource': {
       const guidesString = source.input.filter(({ type }) => type === 'SourceInput').map(({ sequence }) => primers.find((p) => sequence === p.id).name).join(', ');
       message = `CRISPR HDR with ${source.input[0].sequence} as template, ${source.input[1].sequence} as insert and ${guidesString} as a guide${source.input.length > 3 ? 's' : ''}`;
