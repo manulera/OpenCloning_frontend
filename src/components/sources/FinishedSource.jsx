@@ -273,15 +273,15 @@ function FileMessage({ source }) {
 function HomologousRecombinationMessage({ source }) {
   if (source.input.length === 1) {
     return (
-      <div>
+      <>
         Excission by homologous recombination.
-      </div>
+      </>
     );
   }
   return (
-    <div>
+    <>
       Homologous recombination with {source.input[0].sequence} as template and {source.input[1].sequence} as insert.
-    </div>
+    </>
   );
 }
 
