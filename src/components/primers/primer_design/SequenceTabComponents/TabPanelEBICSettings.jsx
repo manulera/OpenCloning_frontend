@@ -6,7 +6,7 @@ import StepNavigation from './StepNavigation';
 
 function TabPanelEBICSettings() {
   const { error, selectedTab, sequenceIds, primers, submissionPreventedMessage, designPrimers, primerDesignSettings } = usePrimerDesign();
-  const { max_inside, max_outside, updateSettings } = primerDesignSettings;
+  const { max_inside, max_outside, target_tm, target_tm_tolerance, updateSettings } = primerDesignSettings;
 
   return (
     <TabPanel value={selectedTab} index={sequenceIds.length}>
@@ -15,35 +15,65 @@ function TabPanelEBICSettings() {
           <FormLabel>Primer settings</FormLabel>
           <Box sx={{ pt: 1.5 }}>
 
-            <FormControl sx={{ mr: 2 }}>
-              <TextField
-                label="Max inside"
-                value={max_inside}
-                onChange={(e) => { updateSettings({ max_inside: Number(e.target.value) }); }}
-                type="number"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">bp</InputAdornment>,
-                  sx: { width: '10em' },
-                }}
-                error={max_inside < 0}
-                helperText={max_inside < 0 ? 'Max inside must be greater than 0' : ''}
-              />
-            </FormControl>
+            <Box>
+              <FormControl sx={{ mr: 2 }}>
+                <TextField
+                  label="Max inside"
+                  value={max_inside}
+                  onChange={(e) => { updateSettings({ max_inside: Number(e.target.value) }); }}
+                  type="number"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">bp</InputAdornment>,
+                    sx: { width: '10em' },
+                  }}
+                  error={max_inside < 0}
+                  helperText={max_inside < 0 ? 'Max inside must be greater than 0' : ''}
+                />
+              </FormControl>
 
-            <FormControl sx={{ mr: 2 }}>
-              <TextField
-                label="Max outside"
-                value={max_outside}
-                onChange={(e) => { updateSettings({ max_outside: Number(e.target.value) }); }}
-                type="number"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">bp</InputAdornment>,
-                  sx: { width: '10em' },
-                }}
-                error={max_outside < 0}
-                helperText={max_outside < 0 ? 'Max outside must be greater than 0' : ''}
-              />
-            </FormControl>
+              <FormControl sx={{ mr: 2 }}>
+                <TextField
+                  label="Max outside"
+                  value={max_outside}
+                  onChange={(e) => { updateSettings({ max_outside: Number(e.target.value) }); }}
+                  type="number"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">bp</InputAdornment>,
+                    sx: { width: '10em' },
+                  }}
+                  error={max_outside < 0}
+                  helperText={max_outside < 0 ? 'Max outside must be greater than 0' : ''}
+                />
+              </FormControl>
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+              <FormControl sx={{ mr: 2 }}>
+                <TextField
+                  label="Target Tm"
+                  value={target_tm}
+                  onChange={(e) => { updateSettings({ target_tm: Number(e.target.value) }); }}
+                  type="number"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">°C</InputAdornment>,
+                    sx: { width: '10em' },
+                  }}
+                />
+              </FormControl>
+
+              <FormControl sx={{ mr: 2 }}>
+                <TextField
+                  label="Tm tolerance"
+                  value={target_tm_tolerance}
+                  onChange={(e) => { updateSettings({ target_tm_tolerance: Number(e.target.value) }); }}
+                  type="number"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">°C</InputAdornment>,
+                    sx: { width: '10em' },
+                  }}
+                />
+              </FormControl>
+            </Box>
           </Box>
         </Box>
       </Box>
