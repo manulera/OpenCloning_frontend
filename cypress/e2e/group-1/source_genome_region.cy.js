@@ -187,7 +187,7 @@ describe('GenomeRegion Source', () => {
     clearInputValue('Species', 'li#source-1');
     // There should not be Assembly ID field
     cy.get('li#source-1 label').contains('Assembly ID').should('not.exist');
-    setInputValue('Species', 'coli', 'li#source-1');
+    setInputValue('Species', 'E coli', 'li#source-1');
     clickMultiSelectOption('Species', 'Escherichia coli', 'li#source-1', { timeout: 20000 });
     // Ase1 should not be there
     setInputValue('Gene', 'ase1', 'li#source-1');
