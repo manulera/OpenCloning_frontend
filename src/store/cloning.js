@@ -42,10 +42,10 @@ const initialState = {
   files: [],
   appInfo: {},
   // Global primer design settings affecting Tm calculations
-  global_primer_settings: {
-    primer_dna_concentration_nM: 50, // default 50 nM
-    monovalent_ions_mM: 50, // e.g. Na+ / K+
-    divalent_ions_mM: 1.5, // e.g. Mg2+
+  globalPrimerSettings: {
+    primer_dna_conc: 50, // default 50 nM
+    primer_salt_monovalent: 50, // e.g. Na+ / K+
+    primer_salt_divalent: 1.5, // e.g. Mg2+
   },
 };
 
@@ -440,8 +440,8 @@ const reducer = {
   // Update global primer settings
   setGlobalPrimerSettings(state, action) {
     const updates = action.payload;
-    state.global_primer_settings = {
-      ...state.global_primer_settings,
+    state.globalPrimerSettings = {
+      ...state.globalPrimerSettings,
       ...updates,
     };
   },

@@ -5,23 +5,23 @@ import { cloningActions } from '../../../../store/cloning';
 
 function GlobalPrimerSettingsDialog({ open, onClose }) {
     const dispatch = useDispatch();
-    const current = useSelector((state) => state.cloning.global_primer_settings);
+    const current = useSelector((state) => state.cloning.globalPrimerSettings);
     const [dnaConc, setDnaConc] = React.useState(String(current.primer_dna_concentration ?? ''));
-    const [mono, setMono] = React.useState(String(current.monovalent_ions_mM ?? ''));
-    const [diva, setDiva] = React.useState(String(current.divalent_ions_mM ?? ''));
+    const [mono, setMono] = React.useState(String(current.primer_salt_monovalent ?? ''));
+    const [diva, setDiva] = React.useState(String(current.primer_salt_divalent ?? ''));
 
     React.useEffect(() => {
         setDnaConc(String(current.primer_dna_concentration ?? ''));
-        setMono(String(current.monovalent_ions_mM ?? ''));
-        setDiva(String(current.divalent_ions_mM ?? ''));
+        setMono(String(current.primer_salt_monovalent ?? ''));
+        setDiva(String(current.primer_salt_divalent ?? ''));
     }, [current]);
 
     const onSubmit = (e) => {
         e.preventDefault();
         const updates = {
             primer_dna_concentration: Number(dnaConc),
-            monovalent_ions_mM: Number(mono),
-            divalent_ions_mM: Number(diva),
+            primer_salt_monovalent: Number(mono),
+            primer_salt_divalent: Number(diva),
         };
         dispatch(cloningActions.setGlobalPrimersettings(updates));
         onClose();

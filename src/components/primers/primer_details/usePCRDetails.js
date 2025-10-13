@@ -41,7 +41,7 @@ export function usePCRDetails(sourceIds) {
       }
     };
     getAllDetails();
-  }, [bindingInfos, connectionAttempt]);
+  }, [bindingInfos, connectionAttempt, getPrimerDetails, getHeterodimerDetails]);
 
   return { pcrDetails, retryGetPCRDetails, requestStatus };
 }

@@ -41,27 +41,27 @@ function HeaderWithTooltip() {
 
 function GlobalPrimerSettingsSection() {
     const dispatch = useDispatch();
-    const current = useSelector((state) => state.cloning.global_primer_settings);
+    const current = useSelector((state) => state.cloning.globalPrimerSettings);
     const [editing, setEditing] = React.useState(false);
     const [form, setForm] = React.useState({
-        primer_dna_concentration_nM: current.primer_dna_concentration_nM,
-        monovalent_ions_mM: current.monovalent_ions_mM,
-        divalent_ions_mM: current.divalent_ions_mM,
+        primer_dna_conc: current.primer_dna_conc,
+        primer_salt_monovalent: current.primer_salt_monovalent,
+        primer_salt_divalent: current.primer_salt_divalent,
     });
 
     const fieldsValid = {
-        primer_dna_concentration_nM: form.primer_dna_concentration_nM > 0,
-        monovalent_ions_mM: form.monovalent_ions_mM > 0,
-        divalent_ions_mM: form.divalent_ions_mM > 0,
+        primer_dna_conc: form.primer_dna_conc > 0,
+        primer_salt_monovalent: form.primer_salt_monovalent > 0,
+        primer_salt_divalent: form.primer_salt_divalent > 0,
     }
     const allFieldsValid = Object.values(fieldsValid).every((valid) => valid);
 
     React.useEffect(() => {
         if (!editing) {
             setForm({
-                primer_dna_concentration_nM: current.primer_dna_concentration_nM,
-                monovalent_ions_mM: current.monovalent_ions_mM,
-                divalent_ions_mM: current.divalent_ions_mM,
+                primer_dna_conc: current.primer_dna_conc,
+                primer_salt_monovalent: current.primer_salt_monovalent,
+                primer_salt_divalent: current.primer_salt_divalent,
             });
         }
     }, [current, editing]);
@@ -73,17 +73,17 @@ function GlobalPrimerSettingsSection() {
     const onCancel = () => {
         setEditing(false);
         setForm({
-            primer_dna_concentration_nM: current.primer_dna_concentration_nM,
-            monovalent_ions_mM: current.monovalent_ions_mM,
-            divalent_ions_mM: current.divalent_ions_mM,
+            primer_dna_conc: current.primer_dna_conc,
+            primer_salt_monovalent: current.primer_salt_monovalent,
+            primer_salt_divalent: current.primer_salt_divalent,
         });
     };
 
     const onSave = () => {
         dispatch(setGlobalPrimerSettings({
-            primer_dna_concentration_nM: Number(form.primer_dna_concentration_nM),
-            monovalent_ions_mM: Number(form.monovalent_ions_mM),
-            divalent_ions_mM: Number(form.divalent_ions_mM),
+            primer_dna_conc: Number(form.primer_dna_conc),
+            primer_salt_monovalent: Number(form.primer_salt_monovalent),
+            primer_salt_divalent: Number(form.primer_salt_divalent),
         }));
         setEditing(false);
     };
@@ -97,8 +97,8 @@ function GlobalPrimerSettingsSection() {
                     <TextField
                         label="PrimerDNA concentration"
                         type="number"
-                        value={form.primer_dna_concentration_nM}
-                        onChange={onChange('primer_dna_concentration_nM')}
+                        value={form.primer_dna_conc}
+                        onChange={onChange('primer_dna_conc')}
                         inputProps={{ min: 0, step: '1' }}
                         variant="standard"
                         required
@@ -106,14 +106,14 @@ function GlobalPrimerSettingsSection() {
                         InputProps={{
                             endAdornment: <InputAdornment position="end">nM</InputAdornment>,
                         }}
-                        error={!fieldsValid.primer_dna_concentration_nM}
-                        helperText={!fieldsValid.primer_dna_concentration_nM ? 'Must be greater than 0' : ''}
+                        error={!fieldsValid.primer_dna_conc}
+                        helperText={!fieldsValid.primer_dna_conc ? 'Must be greater than 0' : ''}
                     />
                     <TextField
                         label="Monovalent ions"
                         type="number"
-                        value={form.monovalent_ions_mM}
-                        onChange={onChange('monovalent_ions_mM')}
+                        value={form.primer_salt_monovalent}
+                        onChange={onChange('primer_salt_monovalent')}
                         inputProps={{ min: 0, step: '0.1' }}
                         variant="standard"
                         required
@@ -121,14 +121,14 @@ function GlobalPrimerSettingsSection() {
                         InputProps={{
                             endAdornment: <InputAdornment position="end">mM</InputAdornment>,
                         }}
-                        error={!fieldsValid.monovalent_ions_mM}
-                        helperText={!fieldsValid.monovalent_ions_mM ? 'Must be greater than 0' : ''}
+                        error={!fieldsValid.primer_salt_monovalent}
+                        helperText={!fieldsValid.primer_salt_monovalent ? 'Must be greater than 0' : ''}
                     />
                     <TextField
                         label="Divalent ions"
                         type="number"
-                        value={form.divalent_ions_mM}
-                        onChange={onChange('divalent_ions_mM')}
+                        value={form.primer_salt_divalent}
+                        onChange={onChange('primer_salt_divalent')}
                         inputProps={{ min: 0, step: '0.1' }}
                         variant="standard"
                         required
@@ -136,8 +136,8 @@ function GlobalPrimerSettingsSection() {
                         InputProps={{
                             endAdornment: <InputAdornment position="end">mM</InputAdornment>,
                         }}
-                        error={!fieldsValid.divalent_ions_mM}
-                        helperText={!fieldsValid.divalent_ions_mM ? 'Must be greater than 0' : ''}
+                        error={!fieldsValid.primer_salt_divalent}
+                        helperText={!fieldsValid.primer_salt_divalent ? 'Must be greater than 0' : ''}
                     />
                     {!editing ? (
                         <Stack direction="row" justifyContent="center">

@@ -23,7 +23,7 @@ export default function useMultiplePrimerDetails(primers) {
       }
     };
     fetchPrimerDetails();
-  }, [primers, connectionAttempt]);
+  }, [primers, connectionAttempt, getPrimerDetails]);
 
   return { primerDetails, retryGetPrimerDetails, requestStatus };
 }
