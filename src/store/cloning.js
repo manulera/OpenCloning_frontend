@@ -41,6 +41,12 @@ const initialState = {
   alerts: [],
   files: [],
   appInfo: {},
+  // Global primer design settings affecting Tm calculations
+  global_primer_settings: {
+    primer_dna_concentration_nM: 50, // default 50 nM
+    monovalent_ions_mM: 50, // e.g. Na+ / K+
+    divalent_ions_mM: 1.5, // e.g. Mg2+
+  },
 };
 
 /* eslint-disable no-param-reassign */
@@ -429,6 +435,15 @@ const reducer = {
 
   updateAppInfo(state, action) {
     state.appInfo = { ...state.appInfo, ...action.payload };
+  },
+
+  // Update global primer settings
+  setGlobalPrimerSettings(state, action) {
+    const updates = action.payload;
+    state.global_primer_settings = {
+      ...state.global_primer_settings,
+      ...updates,
+    };
   },
 };
 
