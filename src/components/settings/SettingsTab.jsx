@@ -95,7 +95,7 @@ function GlobalPrimerSettingsSection() {
 
                 <Stack spacing={2} sx={{ maxWidth: 300, margin: 'auto' }}>
                     <TextField
-                        label="PrimerDNA concentration"
+                        label="Primer DNA concentration"
                         type="number"
                         value={form.primer_dna_conc}
                         onChange={onChange('primer_dna_conc')}
