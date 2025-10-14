@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs';
 import { isEqual } from 'lodash-es';
 import DescriptionEditor from './DescriptionEditor';
 import PrimerList from './primers/PrimerList';
+import SettingsTab from './settings/SettingsTab';
 import { cloningActions } from '../store/cloning';
 import TabPanel from './navigation/TabPanel';
 import CustomTab from './navigation/CustomTab';
@@ -59,7 +60,8 @@ function OpenCloning() {
         <CustomTab label="Description" index={2} />
         <CustomTab label="Sequence" index={3} />
         <CustomTab label="Data model" index={4} />
-        {enableAssembler && <CustomTab label="Assembler" index={5} />}
+        <CustomTab label="Settings" index={5} />
+        {enableAssembler && <CustomTab label="Assembler" index={6} />}
       </Tabs>
       <div className="tab-panels-container" ref={tabPanelsRef}>
         <TabPanel index={1} value={currentTab} className="primer-tab-pannel">
@@ -86,7 +88,10 @@ function OpenCloning() {
         <TabPanel index={4} value={currentTab} className="data-model-tab-pannel">
           <DataModelDisplayer />
         </TabPanel>
-        {enableAssembler && <TabPanel index={5} value={currentTab} className="assembler-tab-pannel">
+        <TabPanel index={5} value={currentTab} className="settings-tab-pannel">
+          <SettingsTab />
+        </TabPanel>
+        {enableAssembler && <TabPanel index={6} value={currentTab} className="assembler-tab-pannel">
           <Assembler />
         </TabPanel>}
       </div>

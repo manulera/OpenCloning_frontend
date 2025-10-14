@@ -76,21 +76,21 @@ function PrimerList() {
       </div>
       <div className="primer-form-container">
         {(editingPrimerId && (
-        <PrimerForm
-          key="primer-edit"
-          submitPrimer={editPrimer}
-          cancelForm={() => setEditingPrimerId(null)}
-          existingNames={primers.filter((p) => p.name !== editingPrimer.name).map((p) => p.name)}
-          disabledSequenceText={primerIdsInUse.includes(editingPrimerId) ? 'Cannot edit sequence in use' : ''}
-          primer={editingPrimer}
-        />
+          <PrimerForm
+            key="primer-edit"
+            submitPrimer={editPrimer}
+            cancelForm={() => setEditingPrimerId(null)}
+            existingNames={primers.filter((p) => p.name !== editingPrimer.name).map((p) => p.name)}
+            disabledSequenceText={primerIdsInUse.includes(editingPrimerId) ? 'Cannot edit sequence in use' : ''}
+            primer={editingPrimer}
+          />
         )) || (addingPrimer && (
-        <PrimerForm
-          key="primer-add"
-          submitPrimer={addPrimer}
-          cancelForm={switchAddingPrimer}
-          existingNames={primers.map((p) => p.name)}
-        />
+          <PrimerForm
+            key="primer-add"
+            submitPrimer={addPrimer}
+            cancelForm={switchAddingPrimer}
+            existingNames={primers.map((p) => p.name)}
+          />
         )) || (importingPrimer && (
           <PrimerDatabaseImportForm
             submitPrimer={addPrimer}
@@ -98,25 +98,25 @@ function PrimerList() {
             existingNames={primers.map((p) => p.name)}
           />
         )) || (
-          <div className="primer-add-container">
-            <Button
-              variant="contained"
-              onClick={switchAddingPrimer}
-            >
-              Add Primer
-            </Button>
-            <ImportPrimersButton addPrimer={addPrimer} />
-            <DownloadPrimersButton primers={primers} />
-            {database && (
+            <div className="primer-add-container">
               <Button
                 variant="contained"
-                onClick={() => setImportingPrimer(true)}
+                onClick={switchAddingPrimer}
               >
-                {`Import from ${database.name}`}
+                Add Primer
               </Button>
-            )}
-          </div>
-        )}
+              <ImportPrimersButton addPrimer={addPrimer} />
+              <DownloadPrimersButton primers={primers} />
+              {database && (
+                <Button
+                  variant="contained"
+                  onClick={() => setImportingPrimer(true)}
+                >
+                  {`Import from ${database.name}`}
+                </Button>
+              )}
+            </div>
+          )}
       </div>
 
     </>

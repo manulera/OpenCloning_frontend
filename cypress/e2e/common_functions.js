@@ -45,7 +45,7 @@ export function selectOptionShould(label, option, shouldWhat = 'exist', parentSe
   cy.get('body').click(0, 0);
 }
 
-export function setInputValue(label, value, parentSelector = '') {
+export function setInputValue(label, value, parentSelector = 'body') {
   cy.get(parentSelector).contains(label).siblings('div').first()
     .children('input')
     .clear('');
@@ -54,26 +54,26 @@ export function setInputValue(label, value, parentSelector = '') {
     .type(value);
 }
 
-export function setAutocompleteValue(label, value, parentSelector = '') {
+export function setAutocompleteValue(label, value, parentSelector = 'body') {
   setInputValue(label, value, parentSelector);
   // We use the regex so that its the exact match
   cy.get('div[role="presentation"]').contains(new RegExp(`^${value}$`)).click();
 }
 
-export function clearAutocompleteValue(label, parentSelector = '') {
+export function clearAutocompleteValue(label, parentSelector = 'body') {
   cy.get(parentSelector).contains(label).siblings('div').click();
   cy.get(parentSelector).contains(label).siblings('div').find('button.MuiAutocomplete-clearIndicator')
     .first()
     .click();
 }
 
-export function clearInputValue(label, parentSelector = '') {
+export function clearInputValue(label, parentSelector = 'body') {
   cy.get(parentSelector).contains(label).siblings('div').first()
     .children('input')
     .clear('');
 }
 
-export function checkInputValue(label, value, parentSelector = '') {
+export function checkInputValue(label, value, parentSelector = 'body') {
   cy.get(parentSelector).contains(label).siblings('div').first()
     .children('input')
     .should('have.value', value);
@@ -134,7 +134,7 @@ export function manuallyTypeSequence(seq, circular = false, overhangs = []) {
     });
 }
 
-export function waitForEnzymes(parentSelector = '') {
+export function waitForEnzymes(parentSelector = 'body') {
   cy.get(`${parentSelector} .enzyme-multi-select`, { timeout: 20000 }).should('exist');
 }
 

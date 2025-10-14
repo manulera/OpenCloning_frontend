@@ -191,7 +191,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
         throw new Error('Invalid fragment orientation');
       }
     });
-    const { cloning: { sequences, teselaJsonCache } } = store.getState();
+    const { cloning: { sequences, teselaJsonCache, globalPrimerSettings } } = store.getState();
     let requestData;
     let params;
     let endpoint;
@@ -258,6 +258,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       };
     }
 
+    requestData.settings = globalPrimerSettings;
     const url = backendRoute(`primer_design/${endpoint}`);
 
     try {
