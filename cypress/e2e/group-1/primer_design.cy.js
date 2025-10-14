@@ -20,6 +20,12 @@ function updateSpacer(index, value) {
   cy.wait(500);
 }
 
+const defaultPrimerDesignSettings = {
+  primer_dna_conc: 50,
+  primer_salt_monovalent: 50,
+  primer_salt_divalent: 1.5
+};
+
 describe('Test primer designer functionality', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -133,6 +139,7 @@ describe('Test primer designer functionality', () => {
       expect(interception.request.query.homology_length).to.equal('20');
       expect(interception.request.query.target_tm).to.equal('30');
       expect(interception.request.query.minimal_hybridization_length).to.equal('10');
+      expect(interception.request.query.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
     // Back to default values
@@ -264,6 +271,7 @@ describe('Test primer designer functionality', () => {
       expect(interception.request.query.homology_length).to.equal('20');
       expect(interception.request.query.minimal_hybridization_length).to.equal('30');
       expect(interception.request.query.target_tm).to.equal('30');
+      expect(interception.request.query.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
     // Back to sensible values
@@ -410,6 +418,7 @@ describe('Test primer designer functionality', () => {
       expect(interception.request.query.target_tm).to.equal('40');
       expect(interception.request.query.left_enzyme_inverted).to.equal('false');
       expect(interception.request.query.right_enzyme_inverted).to.equal('false');
+      expect(interception.request.query.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
     // We should be on the Results tab
@@ -498,6 +507,7 @@ describe('Test primer designer functionality', () => {
     cy.wait('@primerDesign').then((interception) => {
       expect(interception.request.query.left_enzyme_inverted).to.equal('true');
       expect(interception.request.query.right_enzyme_inverted).to.equal('true');
+      expect(interception.request.query.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
     // We should be on the Results tab
@@ -545,6 +555,7 @@ describe('Test primer designer functionality', () => {
       expect(interception.request.query.minimal_hybridization_length).to.equal('10');
       expect(interception.request.query.target_tm).to.equal('40');
       expect(interception.request.body.pcr_template.forward_orientation).to.equal(false);
+      expect(interception.request.query.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
     // We should be on the Results tab

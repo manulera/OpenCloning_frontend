@@ -24,11 +24,11 @@ const mockReply = {
 describe('PrimerList', () => {
     beforeEach(() => {
         store.dispatch(setConfig({ backendUrl: 'http://127.0.0.1:8000' }));
-        store.dispatch(setPrimers([
-            { id: 1, name: 'P1', sequence: 'AAA' },
-        ]));
     });
     it('displays the right information', () => {
+        store.dispatch(setPrimers([
+            { id: 1, name: 'P1', sequence: 'TCATTAAAGTTAACG' },
+        ]));
 
         cy.mount(
             <Provider store={store}>
@@ -36,13 +36,17 @@ describe('PrimerList', () => {
             </Provider>
         );
         cy.get('td.name').contains('P1');
-        cy.get('td.melting-temperature').contains('60');
-        cy.get('td.length').contains('3');
-        cy.get('td.sequence').contains('AAA');
+        cy.get('td.length').contains('15');
+        cy.get('td.gc-content').contains('27');
+        cy.get('td.melting-temperature').contains('37.5');
+        cy.get('td.sequence').contains('TCATTAAAGTTAACG');
     });
 
     it('caches primer details across re-renders and re-renders on global settings change', () => {
         let calls = 0;
+        store.dispatch(setPrimers([
+            { id: 1, name: 'P1', sequence: 'AAA' },
+        ]));
         cy.intercept('POST', 'http://127.0.0.1:8000/primer_details*', (req) => {
             calls += 1;
             const respReply = calls === 1 ? mockReply : {
