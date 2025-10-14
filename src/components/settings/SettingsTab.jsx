@@ -89,7 +89,7 @@ function GlobalPrimerSettingsSection() {
     };
 
     return (
-        <Card>
+        <Card className="settings-tab">
             <HeaderWithTooltip />
             <CardContent sx={{ margin: 'auto' }}>
 
