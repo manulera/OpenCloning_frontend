@@ -239,9 +239,11 @@ export function convertToTeselaJson(sequence) {
   // For some reason, as it is it does not read circular or linear properly from certain files
   const { parsedSequence } = genbankToJson(sequence.file_content)[0];
 
-  if (sequence.file_content.split('\n')[0].includes('linear')) {
-    parsedSequence.circular = false;
-  }
+  // TODO: Remove this eventually?
+  // if (sequence.file_content.split('\n')[0].includes('linear')) {
+  //   parsedSequence.circular = false;
+  // }
+
   parsedSequence.id = sequence.id;
   return tidyUpSequenceData(parsedSequence);
 }
