@@ -8,7 +8,7 @@ import error2String from '../../../../utils/error2String';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '../../../../store/cloning';
 import { stringIsNotDNA } from '../../../../store/cloning_utils';
-import { joinSequencesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
+import { ebicTemplateAnnotation, joinSequencesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
 import useHttpClient from '../../../../hooks/useHttpClient';
 
 function changeValueAtIndex(current, index, newValue) {
@@ -97,6 +97,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
         };
         newSequenceProduct.features.push(leftFeature);
         newSequenceProduct.features.push(rightFeature);
+        setSequenceProduct(newSequenceProduct);
+      } else if (designType === 'ebic') {
+        newSequenceProduct = ebicTemplateAnnotation(sequences[0], rois[0].selectionLayer, primerDesignSettings);
         setSequenceProduct(newSequenceProduct);
       }
     }
@@ -249,15 +252,16 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     } else if (designType === 'ebic') {
       endpoint = 'ebic';
       requestData = {
-        sequence: sequences.find((e) => e.id === templateSequenceIds[0]),
-        location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[templateSequenceIds[0]].size),
-        // forward_orientation: fragmentOrientations[0] === 'forward',
+        template: {
+          sequence: sequences.find((e) => e.id === templateSequenceIds[0]),
+          location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[templateSequenceIds[0]].size),
+          // forward_orientation: fragmentOrientations[0] === 'forward',
+        },
       };
       params = {
         ...paramsForRequest,
       };
     }
-
     requestData.settings = globalPrimerSettings;
     const url = backendRoute(`primer_design/${endpoint}`);
 
