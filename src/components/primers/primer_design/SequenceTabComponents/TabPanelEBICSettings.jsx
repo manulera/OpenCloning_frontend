@@ -87,7 +87,7 @@ function TabPanelEBICSettings() {
       updateSettings({ padding_left: newPaddingLeft, padding_right: newPaddingRight });
       setCutsitesInMarginsError(cutsitesInMargins);
     }
-  }, [templateSequence, restrictionSitesToAvoid, rois]);
+  }, [templateSequence, restrictionSitesToAvoid, rois, max_inside, max_outside, padding_left, padding_right]);
 
   return (
     <TabPanel value={selectedTab} index={sequenceIds.length}>
@@ -197,7 +197,11 @@ function TabPanelEBICSettings() {
         </Box>
       </Box>
       {error && <Alert severity="error" sx={{ width: 'fit-content', margin: 'auto', mt: 2 }}>{error}</Alert>}
-      {cutsitesInMarginsError && <Alert severity="error" sx={{ width: 'fit-content', margin: 'auto', mt: 2 }}>Cutsites in margins</Alert>}
+      {cutsitesInMarginsError && (
+        <Alert severity="error" sx={{ width: 'fit-content', margin: 'auto', mt: 2 }}>
+          Restriction enzyme cut sites were detected in the margin regions. Please adjust the margin size or select different restriction sites to avoid this issue.
+        </Alert>
+      )}
       <StepNavigation
         onStepCompletion={designPrimers}
         stepCompletionText="Design primers"
