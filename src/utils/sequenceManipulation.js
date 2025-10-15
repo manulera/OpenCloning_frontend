@@ -1,5 +1,6 @@
 import { getReverseComplementSequenceAndAnnotations, getReverseComplementSequenceString, getSequenceDataBetweenRange, insertSequenceDataAtPositionOrRange } from '@teselagen/sequence-utils';
-import { convertBasePosTraceToPerBpTrace, fastaToJson } from '@teselagen/bio-parsers';
+import { fastaToJson } from '@teselagen/bio-parsers';
+import { tidyUpSequenceData } from '@teselagen/sequence-utils';
 
 function getSpacerSequence(spacer, spacerFeatureName = 'spacer') {
   if (!spacer) {
@@ -175,4 +176,45 @@ export function syncChromatogramDataWithAlignment(chromatogramData, alignmentStr
     return newChromatogramData;
   }
   return originalChromatogramData;
+}
+
+export function ebicTemplateAnnotation(templateSequence, roi, {max_inside, max_outside, padding_left, padding_right}) {
+  const leftFeature = {
+    start: roi.start - padding_left,
+    end: roi.start - 1,
+    type: 'misc_feature',
+    name: 'left_homology_arm',
+    strand: 1,
+    forward: true,
+  };
+  const leftMargin = {
+    start: roi.start - max_outside,
+    end: roi.start + max_inside - 1,
+    type: 'misc_feature',
+    name: 'left_margin',
+    strand: null,
+    forward: true,
+  };
+  const rightMargin = {
+    start: roi.end - max_inside,
+    end: roi.end + max_outside - 1,
+    type: 'misc_feature',
+    name: 'right_margin',
+    strand: -1,
+  };
+  const rightFeature = {
+    start: roi.end + 1,
+    end: roi.end + padding_right,
+    type: 'misc_feature',
+    name: 'right_homology_arm',
+    strand: -1,
+  };
+
+  const annotatedSequence = structuredClone(templateSequence);
+  annotatedSequence.features.push(leftFeature);
+  annotatedSequence.features.push(leftMargin);
+  annotatedSequence.features.push(rightMargin);
+  annotatedSequence.features.push(rightFeature);
+
+  return tidyUpSequenceData(annotatedSequence);
 }

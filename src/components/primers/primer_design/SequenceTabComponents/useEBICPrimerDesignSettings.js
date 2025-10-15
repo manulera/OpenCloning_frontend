@@ -16,6 +16,9 @@ export default function useEBICPrimerDesignSettings() {
     max_outside: 20,
     target_tm: 61,
     target_tm_tolerance: 3,
+    restrictionSitesToAvoid: [],
+    padding_left: 1000,
+    padding_right: 1000,
   });
   const [error, setError] = React.useState(getError(settings));
   const updateSettings = (newSettings) => {
