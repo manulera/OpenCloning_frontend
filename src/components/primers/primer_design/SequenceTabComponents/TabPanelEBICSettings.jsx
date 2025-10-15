@@ -53,7 +53,7 @@ function trimPadding({ templateSequence, padding_left, padding_right, restrictio
   let paddingLeft = padding_left;
   let paddingRight = padding_right;
   if (leftCutsites.length > 0) {
-    paddingLeft = rightArm.length - 1 - Math.max(...leftCutsites.map((cutsite) => cutsite.recognitionSiteRange.end));
+    paddingLeft = leftArm.length - 1 - Math.max(...leftCutsites.map((cutsite) => cutsite.recognitionSiteRange.end));
   }
   if (rightCutsites.length > 0) {
     paddingRight = Math.min(...rightCutsites.map((cutsite) => cutsite.recognitionSiteRange.start));
