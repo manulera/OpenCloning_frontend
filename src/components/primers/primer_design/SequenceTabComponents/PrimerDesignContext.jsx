@@ -3,12 +3,11 @@ import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import { updateEditor } from '@teselagen/ove';
 import { isEqual } from 'lodash-es';
 import useBackendRoute from '../../../../hooks/useBackendRoute';
-import { selectedRegion2SequenceLocation } from '../../../../utils/selectedRegionUtils';
 import error2String from '../../../../utils/error2String';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '../../../../store/cloning';
 import { stringIsNotDNA } from '../../../../store/cloning_utils';
-import { ebicTemplateAnnotation, joinSequencesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
+import { computeSequenceProduct, buildDesignPrimerRequest } from './primerDesignLogic';
 import useHttpClient from '../../../../hooks/useHttpClient';
 
 function changeValueAtIndex(current, index, newValue) {
@@ -58,51 +57,20 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
   const submissionPreventedMessage = getSubmissionPreventedMessage();
 
   React.useEffect(() => {
-    let newSequenceProduct = null;
-    if (submissionPreventedMessage === '') {
-      const { teselaJsonCache } = store.getState().cloning;
-      const sequences = sequenceIds.map((id) => teselaJsonCache[id]);
-      if (designType === 'simple_pair' || designType === 'restriction_ligation') {
-        const enzymeSpacers = designType === 'restriction_ligation' ? primerDesignSettings.enzymeSpacers : ['', ''];
-        const extendedSpacers = [enzymeSpacers[0] + spacers[0], spacers[1] + enzymeSpacers[1]];
-        newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
-        newSequenceProduct.name = 'PCR product';
-      } else if (designType === 'gibson_assembly') {
-        newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
-        newSequenceProduct.name = 'Gibson Assembly product';
-      } else if (designType === 'homologous_recombination') {
-        newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois, fragmentOrientations[0] === 'reverse', spacers);
-        newSequenceProduct.name = 'Homologous recombination product';
-      } else if (designType === 'gateway_bp') {
-        newSequenceProduct = joinSequencesIntoSingleSequence([sequences[0]], [rois[0].selectionLayer], fragmentOrientations, spacers, false, 'primer tail');
-        newSequenceProduct.name = 'PCR product';
-        const { knownCombination } = primerDesignSettings;
-        const leftFeature = {
-          start: knownCombination.translationFrame[0],
-          end: spacers[0].length - 1,
-          type: 'CDS',
-          name: 'translation frame',
-          strand: 1,
-          forward: true,
-        };
-        const nbAas = Math.floor((spacers[1].length - knownCombination.translationFrame[1]) / 3);
-        const rightStart = newSequenceProduct.sequence.length - knownCombination.translationFrame[1] - nbAas * 3;
-        const rightFeature = {
-          start: rightStart,
-          end: newSequenceProduct.sequence.length - knownCombination.translationFrame[1] - 1,
-          type: 'CDS',
-          name: 'translation frame',
-          strand: 1,
-          forward: true,
-        };
-        newSequenceProduct.features.push(leftFeature);
-        newSequenceProduct.features.push(rightFeature);
-        setSequenceProduct(newSequenceProduct);
-      } else if (designType === 'ebic') {
-        newSequenceProduct = ebicTemplateAnnotation(sequences[0], rois[0].selectionLayer, primerDesignSettings);
-        setSequenceProduct(newSequenceProduct);
-      }
-    }
+    const { teselaJsonCache, sequences } = store.getState().cloning;
+    const newSequenceProduct = submissionPreventedMessage === ''
+      ? computeSequenceProduct({
+        designType,
+        rois,
+        spacers,
+        primerDesignSettings,
+        fragmentOrientations,
+        circularAssembly,
+        sequenceIds,
+        teselaJsonCache,
+        sequences,
+      })
+      : null;
     setSequenceProduct(newSequenceProduct);
   }, [rois, spacersAreValid, fragmentOrientations, circularAssembly, designType, spacers, primerDesignSettings]);
 
@@ -195,74 +163,20 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       }
     });
     const { cloning: { sequences, teselaJsonCache, globalPrimerSettings } } = store.getState();
-    let requestData;
-    let params;
-    let endpoint;
-    const paramsForRequest = Object.fromEntries(
-      Object.entries(primerDesignSettings)
-        .filter(([_, value]) => typeof value !== 'function'),
-    );
-    if (designType === 'gibson_assembly') {
-      params = {
-        ...paramsForRequest,
-        circular: circularAssembly,
-      };
-      requestData = {
-        pcr_templates: sequenceIds.map((id, index) => ({
-          sequence: sequences.find((e) => e.id === id),
-          location: selectedRegion2SequenceLocation(rois[index], teselaJsonCache[id].size),
-          forward_orientation: fragmentOrientations[index] === 'forward',
-        })),
-        spacers,
-      };
-      endpoint = 'gibson_assembly';
-    } else if (designType === 'homologous_recombination') {
-      const [pcrTemplateId, homologousRecombinationTargetId] = sequenceIds;
-      params = {
-        ...paramsForRequest,
-      };
-      requestData = {
-        pcr_template: {
-          sequence: sequences.find((e) => e.id === pcrTemplateId),
-          location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[pcrTemplateId].size),
-          forward_orientation: fragmentOrientations[0] === 'forward',
-        },
-        homologous_recombination_target: {
-          sequence: sequences.find((e) => e.id === homologousRecombinationTargetId),
-          location: selectedRegion2SequenceLocation(rois[1], teselaJsonCache[homologousRecombinationTargetId].size),
-        },
-        spacers,
-      };
-      endpoint = 'homologous_recombination';
-    } else if (designType === 'simple_pair' || designType === 'gateway_bp' || designType === 'restriction_ligation') {
-      const pcrTemplateId = sequenceIds[0];
-      params = {
-        ...paramsForRequest,
-      };
 
-      requestData = {
-        pcr_template: {
-          sequence: sequences.find((e) => e.id === pcrTemplateId),
-          location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[pcrTemplateId].size),
-          forward_orientation: fragmentOrientations[0] === 'forward',
-        },
-        spacers,
-      };
-      endpoint = 'simple_pair';
-    } else if (designType === 'ebic') {
-      endpoint = 'ebic';
-      requestData = {
-        template: {
-          sequence: sequences.find((e) => e.id === templateSequenceIds[0]),
-          location: selectedRegion2SequenceLocation(rois[0], teselaJsonCache[templateSequenceIds[0]].size),
-          // forward_orientation: fragmentOrientations[0] === 'forward',
-        },
-      };
-      params = {
-        ...paramsForRequest,
-      };
-    }
-    requestData.settings = globalPrimerSettings;
+    const { endpoint, requestData, params } = buildDesignPrimerRequest({
+      designType,
+      sequenceIds,
+      rois,
+      fragmentOrientations,
+      spacers,
+      circularAssembly,
+      primerDesignSettings,
+      teselaJsonCache,
+      sequences,
+      globalPrimerSettings,
+    });
+
     const url = backendRoute(`primer_design/${endpoint}`);
 
     try {

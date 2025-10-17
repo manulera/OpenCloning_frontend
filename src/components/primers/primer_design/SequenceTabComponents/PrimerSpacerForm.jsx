@@ -28,6 +28,9 @@ function PrimerSpacerForm({ open = true }) {
     }
   }, [spacers]);
 
+  // Cleanup pending debounce timer on unmount
+  React.useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
   const fragmentCount = templateSequenceIds.length;
 
   const sequenceNamesWrapped = [...templateSequenceNames, templateSequenceNames[0]];

@@ -2,7 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import PrimerDesignStepper from './PrimerDesignStepper';
 import TabPanelSelectRoi from './TabPanelSelectRoi';
-import TabPannelSettings from './TabPannelSettings';
+import TabPanelSettings from './TabPanelSettings';
 import TabPanelResults from './TabPanelResults';
 import { usePrimerDesign } from './PrimerDesignContext';
 import TabPanelEBICSettings from './TabPanelEBICSettings';
@@ -19,7 +19,7 @@ function PrimerDesignForm() {
           index={index}
         />
       ))}
-      {designType !== 'ebic' && <TabPannelSettings />}
+      {designType !== 'ebic' && <TabPanelSettings />}
       {designType === 'ebic' && <TabPanelEBICSettings />}
       <TabPanelResults />
     </Box>
