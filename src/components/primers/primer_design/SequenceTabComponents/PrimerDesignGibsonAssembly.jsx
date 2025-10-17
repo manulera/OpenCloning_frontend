@@ -5,9 +5,9 @@ import usePrimerDesignSettings from './usePrimerDesignSettings';
 import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
 
 export default function PrimerDesignGibsonAssembly({ pcrSources }) {
-  const templateSequencesIds = React.useMemo(() => pcrSources.map(getPcrTemplateSequenceId), [pcrSources]);
+  const templateSequenceIds = React.useMemo(() => pcrSources.map(getPcrTemplateSequenceId), [pcrSources]);
   const steps = React.useMemo(() => [
-    ...templateSequencesIds.map((id, index) => (
+    ...templateSequenceIds.map((id, index) => (
       { label: `Seq ${id}`, selectOrientation: true }
     )),
   ], [pcrSources]);
@@ -16,7 +16,7 @@ export default function PrimerDesignGibsonAssembly({ pcrSources }) {
   return (
     <PrimerDesignProvider
       designType="gibson_assembly"
-      sequenceIds={templateSequencesIds}
+      sequenceIds={templateSequenceIds}
       primerDesignSettings={primerDesignSettings}
       steps={steps}
     >

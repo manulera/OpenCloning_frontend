@@ -8,7 +8,7 @@ import OrientationPicker from './OrientationPicker';
 import { usePrimerDesign } from './PrimerDesignContext';
 import RestrictionSpacerForm from './RestrictionSpacerForm';
 
-function TabPannelSettings() {
+function TabPanelSettings() {
   const { error, templateSequenceIds, designType, selectedTab, sequenceIds, circularAssembly, onCircularAssemblyChange, designPrimers, primers, primerDesignSettings, submissionPreventedMessage } = usePrimerDesign();
   return (
     <TabPanel value={selectedTab} index={sequenceIds.length}>
@@ -56,4 +56,4 @@ function TabPannelSettings() {
   );
 }
 
-export default TabPannelSettings;
+export default TabPanelSettings;
