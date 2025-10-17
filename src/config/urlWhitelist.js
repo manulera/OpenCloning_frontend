@@ -16,4 +16,6 @@ export default [
   'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/taxonomy/taxon_suggest',
   'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/taxon',
   'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession',
+  // Addgene API
+  'https://api.addgene.org',
 ];

@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import AddgeneRepositorySelector from './AddgeneRepositorySelector';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import getHttpClient from '../../utils/getHttpClient';
@@ -338,16 +339,26 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
         <form onSubmit={onSubmit}>
           {selectedRepository !== 'snapgene' && selectedRepository !== 'igem' && selectedRepository !== 'seva' && selectedRepository !== 'open_dna_collections' && (
             <>
-              <FormControl fullWidth>
-                <TextField
-                  label={inputLabels[selectedRepository]}
-                  id={`repository-id-${sourceId}`}
-                  value={inputValue}
-                  onChange={(event) => setInputValue(event.target.value)}
+              {selectedRepository === 'addgene' ? (
+                <AddgeneRepositorySelector
+                  inputValue={inputValue}
+                  setInputValue={setInputValue}
                   helperText={helperText}
-                  error={error !== ''}
+                  error={error}
+                  sourceId={sourceId}
                 />
-              </FormControl>
+              ) : (
+                <FormControl fullWidth>
+                  <TextField
+                    label={inputLabels[selectedRepository]}
+                    id={`repository-id-${sourceId}`}
+                    value={inputValue}
+                    onChange={(event) => setInputValue(event.target.value)}
+                    helperText={helperText}
+                    error={error !== ''}
+                  />
+                </FormControl>
+              )}
               {/* Extra info for benchling case */}
               {selectedRepository === 'benchling' && (
                 <Alert severity="info" sx={{ mb: 1 }}>
