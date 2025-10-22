@@ -32,4 +32,5 @@ ENV DATABASE=""
 ENV SHOW_APP_BAR="true"
 ENV NO_EXTERNAL_REQUESTS="false"
 ENV ENABLE_ASSEMBLER="false"
+ENV ENABLE_PLANNOTATE="false"
 CMD ["sh", "docker_entrypoint.sh"]
