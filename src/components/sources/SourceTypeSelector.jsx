@@ -16,6 +16,7 @@ function SourceTypeSelector({ source }) {
   const database = useDatabase();
   const sourceIsPrimerDesign = useSelector((state) => Boolean(state.cloning.sequences.find((e) => e.id === source.id)?.primer_design));
   const noExternalRequests = useSelector((state) => state.cloning.config.noExternalRequests);
+  const enablePlannotate = useSelector((state) => state.cloning.config.enablePlannotate);
 
   const onChange = (event) => {
     // Clear the source other than these fields
@@ -49,7 +50,9 @@ function SourceTypeSelector({ source }) {
       options.push(<MenuItem key="PCRSource" value="PCRSource">PCR</MenuItem>);
       options.push(<MenuItem key="PolymeraseExtensionSource" value="PolymeraseExtensionSource">Polymerase extension</MenuItem>);
       options.push(<MenuItem key="ReverseComplementSource" value="ReverseComplementSource">Reverse complement</MenuItem>);
-      options.push(<MenuItem key="AnnotationSource" value="AnnotationSource">Annotate features</MenuItem>);
+      if (enablePlannotate) {
+        options.push(<MenuItem key="AnnotationSource" value="AnnotationSource">Annotate features</MenuItem>);
+      }
     }
     options.push(<MenuItem key="LigationSource" value="LigationSource">Ligation (sticky / blunt)</MenuItem>);
     options.push(<MenuItem key="GibsonAssemblySource" value="GibsonAssemblySource">Gibson assembly</MenuItem>);

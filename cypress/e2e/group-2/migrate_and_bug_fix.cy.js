@@ -7,56 +7,56 @@ describe('Test that when files are loaded, old versions are migrated and bug fix
   it('Can migrate old files', () => {
     // When drag and drop
     cy.get('div.cloning-history').selectFile('cypress/test_files/old_and_bug_fix/crispr_hdr.json', { action: 'drag-drop' });
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
 
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     addLane();
     // When loading from file in source
     addSource('UploadedFileSource', true);
     cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/old_and_bug_fix/crispr_hdr.json', { force: true });
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     // When loading from menu
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/old_and_bug_fix/crispr_hdr.json', { force: true });
     cy.get('.history-loaded-dialog').contains('Replace existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
   });
   it('Can fix bugs in old files', () => {
     // When drag and drop
     cy.get('div.cloning-history').selectFile('cypress/test_files/old_and_bug_fix/gateway.json', { action: 'drag-drop' });
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
-    cy.get('div.MuiAlert-message').contains('contained an error');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').contains('contained an error');
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     addLane();
     // When loading from file in source
     addSource('UploadedFileSource', true);
     cy.get('form.submit-sequence-file input').last().selectFile('cypress/test_files/old_and_bug_fix/gateway.json', { force: true });
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
-    cy.get('div.MuiAlert-message').contains('contained an error');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').contains('contained an error');
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     // When loading from menu
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/old_and_bug_fix/gateway.json', { force: true });
     cy.get('.history-loaded-dialog').contains('Replace existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').first().click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
   });
   it('Works with zip files', () => {
     cy.get('div.cloning-history').selectFile('cypress/test_files/old_and_bug_fix/cloning_strategy_with_sequencing.zip', { action: 'drag-drop' });
-    cy.get('div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message', { timeout: 20000 }).contains('migrated to the latest version');
     cy.get('div.MuiAlert-action svg[data-testid="CloseIcon"]').click();
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     cy.get('#sequence-1 svg[data-testid="RuleIcon"]').click();
     cy.get('table').contains('BZO902_13409020_13409020.ab1');
     cy.get('table').contains('BZO903_13409037_13409037.ab1');

@@ -33,7 +33,7 @@ describe('Test drag and drop functionality', () => {
   it('Can load a history file', () => {
     cy.get('div.cloning-history').selectFile('public/examples/homologous_recombination.json', { action: 'drag-drop' });
     // No error message should be displayed
-    cy.get('div.MuiAlert-message').should('not.exist');
+    cy.get('div#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     cy.get('div.tf-tree.tf-ancestor-tree').contains('Homologous recombination with').should('exist');
   });
   it('Shows the right errors when dropping wrong files', () => {

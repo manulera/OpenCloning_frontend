@@ -35,6 +35,7 @@ const initialState = {
     loaded: false,
     backendUrl: null,
     enableAssembler: false,
+    enablePlannotate: false,
   },
   sourcesWithHiddenAncestors: [],
   teselaJsonCache: {},
