@@ -15,14 +15,14 @@ function ToolTipWrapper({ title, children, enabled = false }) {
   return children;
 }
 
-function StepNavigation({ onStepCompletion, allowStepCompletion, stepCompletionText, isFirstStep = false, nextDisabled = false, nextToolTip = '', stepCompletionToolTip = '' }) {
+function StepNavigation({ onStepCompletion, allowStepCompletion, stepCompletionText, isFirstStep = false, nextDisabled = false, nextToolTip = '', stepCompletionToolTip = '', handleBack: backOverride, handleNext: nextOverride }) {
   const { handleBack, handleNext } = usePrimerDesign();
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
       <Button
         color="inherit"
         disabled={isFirstStep}
-        onClick={handleBack}
+        onClick={backOverride || handleBack}
         sx={{ mr: 1 }}
       >
         Back
@@ -36,7 +36,7 @@ function StepNavigation({ onStepCompletion, allowStepCompletion, stepCompletionT
       </ToolTipWrapper>
 
       <ToolTipWrapper title={nextToolTip} enabled={nextDisabled}>
-        <Button color="inherit" disabled={nextDisabled} onClick={handleNext} sx={{ mr: 1 }}>
+        <Button color="inherit" disabled={nextDisabled} onClick={nextOverride || handleNext} sx={{ mr: 1 }}>
           Next
         </Button>
       </ToolTipWrapper>
