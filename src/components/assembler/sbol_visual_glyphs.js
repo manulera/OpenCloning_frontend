@@ -10,11 +10,13 @@ import ribosomeEntrySite from './sbol_visual_glyphs/ribosome-entry-site.svg'
 import specificRecombinationSite from './sbol_visual_glyphs/specific-recombination-site.svg'
 import terminator from './sbol_visual_glyphs/terminator.svg'
 import threePrimeStickyRestrictionSite from './sbol_visual_glyphs/three-prime-sticky-restriction-site.svg'
+import cdsStop from './sbol_visual_glyphs/cds-stop.svg'
 
 // Map glyph names (without extension) to their SVG imports
 export const sbolVisualGlyphs = {
   'assembly-scar': assemblyScar,
   'cds': cds,
+  'cds-stop': cdsStop,
   'chromosomal-locus': chromosomalLocus,
   'engineered-region': engineeredRegion,
   'five-prime-sticky-restriction-site': fivePrimeStickyRestrictionSite,

@@ -9,18 +9,18 @@ const defaultData =
   {
     header: 'Promoter',
     body: 'promoter text',
-    glyph: 'terminator',
+    glyph: 'cds-stop',
     left_overhang: 'CATG',
     right_overhang: 'TATG',
     left_inside:'AAAATA',
     right_inside:'AATG',
     left_codon_start: 2,
     right_codon_start: 1,
-    color: 'greenyellow'
+    color: 'greenyellow',
   }
 
 
-function AssemblyComponent( { data = defaultData } ) {
+function AssemblerPart( { data = defaultData } ) {
   const {
     left_codon_start: leftCodonStart,
     right_codon_start: rightCodonStart,
@@ -28,7 +28,7 @@ function AssemblyComponent( { data = defaultData } ) {
     right_overhang: rightOverhang,
     left_inside: leftInside,
     right_inside: rightInside,
-    glyphs
+    glyph
   } = data
   const leftOverhangRc = getComplementSequenceString(leftOverhang)
   const rightOverhangRc = getComplementSequenceString(rightOverhang)
@@ -56,7 +56,7 @@ function AssemblyComponent( { data = defaultData } ) {
   return (
 
     <div className={styles.container}>
-      <div className={`${styles.dna} ${styles.overhang}`}>
+      <div className={`${styles.dna} ${styles.overhang} ${styles.left}`}>
         <div className={styles.top}>{leftTranslationOverhang}</div>
         <div className={styles.watson}>{leftOverhang}</div>
         <div className={styles.crick}>{leftOverhangRc}</div>
@@ -70,9 +70,11 @@ function AssemblyComponent( { data = defaultData } ) {
           <div className={styles.bottom}> </div>
         </div>
       )}
-      <div className={styles.box}>
-        <div className={styles.imageContainer} style={{ backgroundColor: data.color || 'lightgray' }}>
-          <img src={getSvgByGlyph(glyphs)} alt={`${glyphs}.svg`} />
+      <div className={styles.boxContainer}>
+        <div className={styles.box}>
+          <div className={styles.imageContainer} style={{ backgroundColor: data.color || 'lightgray' }}>
+            <img src={getSvgByGlyph(glyph)} alt={`${glyph}.svg`} />
+          </div>
         </div>
       </div>
       {rightInside && (
@@ -83,7 +85,7 @@ function AssemblyComponent( { data = defaultData } ) {
           <div className={styles.bottom}> </div>
         </div>
       )}
-      <div className={`${styles.dna} ${styles.overhang}`}>
+      <div className={`${styles.dna} ${styles.overhang} ${styles.right}`}>
         <div className={styles.top}>{rightTranslationOverhang}</div>
         <div className={styles.watson}>{rightOverhang}</div>
         <div className={styles.crick}>{rightOverhangRc}</div>
@@ -94,4 +96,4 @@ function AssemblyComponent( { data = defaultData } ) {
   )
 }
 
-export default AssemblyComponent
+export default AssemblerPart
