@@ -4,6 +4,7 @@ import styles from './assembly_component.module.css'
 import { getAminoAcidFromSequenceTriplet, getComplementSequenceString } from '@teselagen/sequence-utils'
 import { getSvgByGlyph } from './sbol_visual_glyphs'
 
+
 const defaultData =
   {
     header: 'Promoter',
@@ -26,7 +27,8 @@ function AssemblyComponent( { data = defaultData } ) {
     left_overhang: leftOverhang,
     right_overhang: rightOverhang,
     left_inside: leftInside,
-    right_inside: rightInside
+    right_inside: rightInside,
+    glyphs
   } = data
   const leftOverhangRc = getComplementSequenceString(leftOverhang)
   const rightOverhangRc = getComplementSequenceString(rightOverhang)
@@ -60,23 +62,27 @@ function AssemblyComponent( { data = defaultData } ) {
         <div className={styles.crick}>{leftOverhangRc}</div>
         <div className={styles.bottom}> </div>
       </div>
-      <div className={`${styles.dna} ${styles.insideLeft}`}>
-        <div className={styles.top}>{leftTranslationInside}</div>
-        <div className={styles.watson}>{leftInside}</div>
-        <div className={styles.crick}>{leftInsideRc}</div>
-        <div className={styles.bottom}> </div>
-      </div>
+      {leftInside && (
+        <div className={`${styles.dna} ${styles.insideLeft}`}>
+          <div className={styles.top}>{leftTranslationInside}</div>
+          <div className={styles.watson}>{leftInside}</div>
+          <div className={styles.crick}>{leftInsideRc}</div>
+          <div className={styles.bottom}> </div>
+        </div>
+      )}
       <div className={styles.box}>
         <div className={styles.imageContainer} style={{ backgroundColor: data.color || 'lightgray' }}>
-          <img src={getSvgByGlyph(data.glyph)} alt={`${data.glyph}.svg`} />
+          <img src={getSvgByGlyph(glyphs)} alt={`${glyphs}.svg`} />
         </div>
       </div>
-      <div className={`${styles.dna} ${styles.insideRight}`}>
-        <div className={styles.top}>{rightTranslationInside}</div>
-        <div className={styles.watson}>{rightInside}</div>
-        <div className={styles.crick}>{rightInsideRc}</div>
-        <div className={styles.bottom}> </div>
-      </div>
+      {rightInside && (
+        <div className={`${styles.dna} ${styles.insideRight}`}>
+          <div className={styles.top}>{rightTranslationInside}</div>
+          <div className={styles.watson}>{rightInside}</div>
+          <div className={styles.crick}>{rightInsideRc}</div>
+          <div className={styles.bottom}> </div>
+        </div>
+      )}
       <div className={`${styles.dna} ${styles.overhang}`}>
         <div className={styles.top}>{rightTranslationOverhang}</div>
         <div className={styles.watson}>{rightOverhang}</div>

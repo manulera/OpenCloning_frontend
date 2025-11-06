@@ -13,12 +13,17 @@ import useHttpClient from './hooks/useHttpClient';
 import useValidateState from './hooks/useValidateState';
 import { formatTemplate } from './utils/readNwrite';
 import AssemblyComponent from './components/assembler/AssemblyComponent';
+import moclo from './components/assembler/moclo.json';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
 function App() {
 
-  return <AssemblyComponent />;
+
+  return <>
+  <AssemblyComponent/>
+  {moclo.map((item, index) => <AssemblyComponent data={item} key={index} />)}
+  </>
   const dispatch = useDispatch();
   const database = useDatabase();
   const { addAlert } = useAlerts();
