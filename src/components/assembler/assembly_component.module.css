@@ -1,0 +1,56 @@
+.dna {
+    font-family: monospace;
+}
+
+.dna div {
+    white-space: pre;
+    min-height: 1em;
+}
+
+.overhang div {
+    padding-left: 4px;
+    padding-right: 2px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: auto;
+}
+
+.box {
+    border: 3px solid black;
+    width: 5em;
+    height: 2.5em;
+    margin-left: .2em;
+    margin-right: .2em;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.box .imageContainer {
+    text-align: center;
+}
+
+.imageContainer img {
+    height: 2em;
+}
+
+.overhang .watson {
+    border-left: 2px dotted red;
+    border-bottom: 2px dotted red;
+    padding-left: 2px;
+}
+
+.overhang .crick {
+    border-right: 2px dotted red;
+}
+
+.insideLeft {
+    margin-left: .2em;
+}
+
+.insideRight {
+    margin-right: .2em;
+}

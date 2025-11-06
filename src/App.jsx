@@ -12,10 +12,13 @@ import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
 import useValidateState from './hooks/useValidateState';
 import { formatTemplate } from './utils/readNwrite';
+import AssemblyComponent from './components/assembler/AssemblyComponent';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
 function App() {
+
+  return <AssemblyComponent />;
   const dispatch = useDispatch();
   const database = useDatabase();
   const { addAlert } = useAlerts();
