@@ -165,8 +165,7 @@ const reducer = {
     };
     const newSource = {
       ...source,
-      id: sourceId,
-      output: sequenceId,
+      id: sourceId
     };
     sequences.push(newSequence);
     sources.push(newSource);

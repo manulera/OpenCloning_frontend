@@ -11,7 +11,7 @@ import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
 import useValidateState from './hooks/useValidateState';
-import { formatTemplate } from './utils/readNwrite';
+import { formatTemplate, loadHistoryFile, loadFilesToSessionStorage } from './utils/readNwrite';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 
@@ -51,7 +51,22 @@ function App() {
           }
         } else if (urlParams.source === 'example' && urlParams.example) {
           try {
-            const { data } = await httpClient.get(`${import.meta.env.BASE_URL}examples/${urlParams.example}`);
+            const url = `${import.meta.env.BASE_URL}examples/${urlParams.example}`;
+            let data;
+            if (urlParams.example.endsWith('.zip')) {
+              // For zip files, get as blob and process with loadHistoryFile
+              const { data: blob } = await httpClient.get(url, { responseType: 'blob' });
+              const fileName = urlParams.example;
+              // eslint-disable-next-line no-undef
+              const file = new File([blob], fileName);
+              const { cloningStrategy, verificationFiles } = await loadHistoryFile(file);
+              data = await validateState(cloningStrategy);
+              await loadFilesToSessionStorage(verificationFiles, 0);
+            } else {
+              // For JSON files, get as JSON
+              const { data: jsonData } = await httpClient.get(url);
+              data = await validateState(jsonData);
+            }
             dispatch(setCloningState(data));
           } catch (error) {
             addAlert({
