@@ -2,7 +2,7 @@
     {
         "header": "Assembly connector",
         "body": "",
-        "glyphs": "three-prime-sticky-restriction-site",
+        "glyph": "three-prime-sticky-restriction-site",
         "left_overhang": "CCCT",
         "right_overhang": "AACG",
         "left_inside": "",
@@ -14,7 +14,7 @@
     {
         "header": "Promoter",
         "body": "",
-        "glyphs": "promoter",
+        "glyph": "promoter",
         "left_overhang": "AACG",
         "right_overhang": "TATG",
         "left_inside": "",
@@ -26,7 +26,7 @@
     {
         "header": "Coding sequence",
         "body": "You can use the ATG from the fusion site as translation start. If possible omit STOP codon and make your protein in frame with the Ser.",
-        "glyphs": "cds",
+        "glyph": "cds",
         "left_overhang": "TATG",
         "right_overhang": "ATCC",
         "left_inside": "",
@@ -38,7 +38,7 @@
     {
         "header": "Terminator",
         "body": "",
-        "glyphs": "terminator",
+        "glyph": "terminator",
         "left_overhang": "ATCC",
         "right_overhang": "GCTG",
         "left_inside": "",
@@ -50,7 +50,7 @@
     {
         "header": "Assembly connector",
         "body": "",
-        "glyphs": "three-prime-sticky-restriction-site",
+        "glyph": "three-prime-sticky-restriction-site",
         "left_overhang": "GCTG",
         "right_overhang": "TACA",
         "left_inside": "",
@@ -62,7 +62,7 @@
     {
         "header": "Yeast marker",
         "body": "",
-        "glyphs": "engineered-region",
+        "glyph": "engineered-region",
         "left_overhang": "TACA",
         "right_overhang": "GAGT",
         "left_inside": "",
@@ -74,7 +74,7 @@
     {
         "header": "Yeast plasmid origin of replication",
         "body": "",
-        "glyphs": "origin-of-replication",
+        "glyph": "origin-of-replication",
         "left_overhang": "GAGT",
         "right_overhang": "CCGA",
         "left_inside": "",
@@ -86,7 +86,7 @@
     {
         "header": "Bacterial marker and origin",
         "body": "",
-        "glyphs": "engineered-region",
+        "glyph": "engineered-region",
         "left_overhang": "CCGA",
         "right_overhang": "CCCT",
         "left_inside": "",
@@ -94,5 +94,17 @@
         "left_codon_start": null,
         "right_codon_start": null,
         "color": "#7F7F7F"
+    },
+    {
+        "header": "Dummy",
+        "body": "promoter text",
+        "glyph": "cds-stop",
+        "left_overhang": "CATG",
+        "right_overhang": "TATG",
+        "left_inside": "AAAATA",
+        "right_inside": "AATG",
+        "left_codon_start": 2,
+        "right_codon_start": 1,
+        "color": "greenyellow"
     }
 ]
