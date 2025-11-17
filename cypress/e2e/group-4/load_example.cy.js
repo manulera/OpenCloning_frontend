@@ -1,6 +1,23 @@
+// import { mockPrimerDetails } from '../../../tests/mockPrimerDetailsData';
+import { loadExample } from '../common_functions';
+
 describe('Test load example functionality', () => {
   beforeEach(() => {
     cy.visit('/');
+    // Mock all primerDetails calls
+    cy.intercept('POST', '**/primer_details', (req) => {
+      req.reply({
+        status: 200,
+        body: {},
+      });
+    });
+    // Mock all primerHeterodimer calls
+    cy.intercept('POST', '**/primer_heterodimer', (req) => {
+      req.reply({
+        status: 200,
+        body: {},
+      });
+    });
   });
   it('Can load examples', () => {
     cy.get('.MuiToolbar-root button.MuiButtonBase-root').contains('Examples').click();
@@ -32,5 +49,14 @@ describe('Test load example functionality', () => {
     cy.get('div.description-tab-pannel button').contains('Edit description').should('exist');
     // The data model is loaded and displayed
     cy.get('div.data-model-tab-pannel code').contains('"input": [],');
+
+    // Can load zip files as well
+    loadExample('Arabidopsis');
+    // Check that files are in the session storage
+    cy.window().its('sessionStorage')
+      .invoke('getItem', 'verification-4-mock_sequencing.fasta')
+      .should('not.be.null')
+      .and('have.length.gt', 1000); // Ensure it's not just a tiny value
+
   });
 });
