@@ -11,7 +11,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
 import ButtonWithMenu from './ButtonWithMenu';
-import { downloadCloningStrategyAsSvg, formatTemplate } from '../../utils/readNwrite';
+import { downloadCloningStrategyAsSvg, formatTemplate, loadHistoryFile, loadFilesToSessionStorage } from '../../utils/readNwrite';
 import SelectExampleDialog from './SelectExampleDialog';
 import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
@@ -59,8 +59,21 @@ function MainAppBar() {
     setOpenExampleDialog(false);
     setOpenTemplateDialog(false);
     if (url) {
-      let { data } = await httpClient.get(url);
-      data = await validateState(data);
+      let data;
+      if (url.endsWith('.zip')) {
+        // For zip files, get as blob and process with loadHistoryFile
+        const { data: blob } = await httpClient.get(url, { responseType: 'blob' });
+        const fileName = url.split('/').pop();
+        // eslint-disable-next-line no-undef
+        const file = new File([blob], fileName);
+        const { cloningStrategy, verificationFiles } = await loadHistoryFile(file);
+        data = await validateState(cloningStrategy);
+        await loadFilesToSessionStorage(verificationFiles, 0);
+      } else {
+        // For JSON files, get as JSON
+        let { data: jsonData } = await httpClient.get(url);
+        data = await validateState(jsonData);
+      }
       if (isTemplate) {
         data = formatTemplate(data, url);
       }

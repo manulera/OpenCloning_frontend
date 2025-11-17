@@ -3,6 +3,10 @@ import React from 'react';
 
 const examples = [
   {
+    title: 'Arabidopsis CRISPR-HDR genome editing',
+    link: 'arabidopsis_CRISPR_HDR.zip',
+  },
+  {
     title: 'Gibson assembly',
     link: 'gibson_assembly.json',
   },
@@ -42,7 +46,7 @@ const examples = [
     title: 'Cre/Lox recombination',
     link: 'cre_lox_recombination.json',
   },
-];
+].sort((a, b) => a.title.localeCompare(b.title));
 
 function SelectExampleDialog({ onClose, open }) {
   return (

@@ -3,6 +3,14 @@ describe('Test load from URL', () => {
     cy.visit('/?source=example&example=gibson_assembly.json');
     cy.contains('Gibson assembly of fragments', { timeout: 10000 }).should('exist');
   });
+  it('can load example from zip file', () => {
+    cy.visit('/?source=example&example=arabidopsis_CRISPR_HDR.zip');
+    cy.contains('Read from file hm_repair.gb', { timeout: 10000 }).should('exist');
+    cy.window().its('sessionStorage')
+      .invoke('getItem', 'verification-4-mock_sequencing.fasta')
+      .should('not.be.null')
+      .and('have.length.gt', 1000); // Ensure it's not just a tiny value
+  });
   it('displays error if example does not exist', () => {
     cy.visit('/?source=example&example=nonexistent.json');
     cy.contains('Error loading example', { timeout: 10000 }).should('exist');
