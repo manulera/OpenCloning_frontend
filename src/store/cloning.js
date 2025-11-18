@@ -30,7 +30,6 @@ const initialState = {
   selectedRegions: [],
   knownErrors: {},
   primers: [],
-  primer2sequenceLinks: [],
   config: {
     loaded: false,
     backendUrl: null,
@@ -317,14 +316,6 @@ const reducer = {
     primers.push({ ...primer, id: nextPrimerId });
   },
 
-  addPrimerAndLinkToSequence(state, action) {
-    const { primer, sequenceId, position } = action.payload;
-    const { primers, primer2sequenceLinks } = state;
-    const nextPrimerId = getNextUniqueId(state);
-    primers.push({ ...primer, id: nextPrimerId });
-    primer2sequenceLinks.push({ primerId: nextPrimerId, sequenceId, position });
-  },
-
   setPrimers(state, action) {
     const primers = action.payload;
     // Ids are unique and all are positive integers
@@ -342,8 +333,6 @@ const reducer = {
   deletePrimer(state, action) {
     const primerId = action.payload;
     state.primers = state.primers.filter((p) => p.id !== primerId);
-    // Delete all links to this primer
-    state.primer2sequenceLinks = state.primer2sequenceLinks.filter((link) => link.primerId !== primerId);
   },
 
   editPrimer(state, action) {

@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import { downloadSequence } from '../utils/readNwrite';
 import { exportSubStateThunk } from '../utils/thunks';
-import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
+import { getPCRPrimers} from '../store/cloning_utils';
 import { substateHasFiles } from '../utils/network';
 
 // You can override the downloadSequence function by passing a downloadCallback that takes the fileName and sequence as arguments
@@ -35,9 +35,8 @@ function DownloadSequenceFileDialog({ id, dialogOpen, setDialogOpen, downloadCal
           }
           const {cloning} = store.getState();
           const seqCopy = structuredClone(cloning.teselaJsonCache[id]);
-          const linkedPrimers = getPrimerLinks(cloning, id);
           const pcrPrimers = getPCRPrimers(cloning, id);
-          seqCopy.primers = [...seqCopy.primers, ...linkedPrimers, ...pcrPrimers];
+          seqCopy.primers = [...seqCopy.primers, ...pcrPrimers];
           if (downloadCallback) {
             downloadCallback(fileName + extension, seqCopy);
           } else {
