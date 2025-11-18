@@ -85,7 +85,7 @@ describe('Tests homologous recombination and CRISPR functionality', () => {
     // Test gRNA that cuts outside
     clickMultiSelectOption('Select gRNAs', 'gRNA-cut-outside', 'li#source-3');
     cy.get('li#source-3 button.submit-backend-api').click();
-    cy.get('li#source-3 .MuiAlert-message', { timeOut: 2000 }).contains('not overlap');
+    cy.get('li#source-3 .MuiAlert-message', { timeOut: 2000 }).contains('suitable products');
 
     // Test gRNA that doesn't cut (even if one that cuts is passed as well)
     clickMultiSelectOption('Select gRNAs', 'gRNA-no-cut', 'li#source-3');

@@ -17,7 +17,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
   const [template, setTemplate] = React.useState(input.length > 0 ? input[0].sequence : null);
   const [insert, setInsert] = React.useState(input.length > 1 ? input[1].sequence : null);
   const [selectedPrimers, setSelectedPrimers] = React.useState([]);
-  const { updateSource } = cloningActions;
+  const { updateSource, setCurrentTab } = cloningActions;
   const dispatch = useDispatch();
 
   const primers = useSelector((state) => state.cloning.primers, isEqual);
@@ -56,6 +56,10 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
       setInsert(Number(event.target.value));
       dispatch(updateSource({ id: sourceId, input: [{ sequence: template }, { sequence: Number(event.target.value) }] }));
     }
+  };
+
+  const goToPrimerTab = () => {
+    dispatch(setCurrentTab(1));
   };
 
   return (
@@ -100,6 +104,7 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
             selected={selectedPrimers}
             onChange={setSelectedPrimers}
             label="Select gRNAs (from primers)"
+            goToPrimerTab={goToPrimerTab}
             multiple
           />
         )}
