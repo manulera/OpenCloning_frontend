@@ -502,6 +502,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dmsnell/diff-match-patch@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@dmsnell/diff-match-patch@npm:1.1.0"
+  checksum: 10/fe4127b57a3f972839688d8b6abf325c2633106a1ee1da900e584c3057ed543797f009749fb6b77879e3dac0096755b09a9a224f9bd97a40eefba8f4665d5ace
+  languageName: node
+  linkType: hard
+
 "@dnd-kit/accessibility@npm:^3.1.1":
   version: 3.1.1
   resolution: "@dnd-kit/accessibility@npm:3.1.1"
@@ -1571,22 +1578,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teselagen/bio-parsers@npm:0.4.28, @teselagen/bio-parsers@npm:^0.4.28":
-  version: 0.4.28
-  resolution: "@teselagen/bio-parsers@npm:0.4.28"
+"@teselagen/bio-parsers@npm:0.4.32, @teselagen/bio-parsers@npm:^0.4.32":
+  version: 0.4.32
+  resolution: "@teselagen/bio-parsers@npm:0.4.32"
   dependencies:
     "@gmod/gff": "npm:^1.2.1"
     "@teselagen/range-utils": "npm:0.3.13"
-    "@teselagen/sequence-utils": "npm:0.3.31"
-    buffer: "npm:5.7.1"
+    "@teselagen/sequence-utils": "npm:0.3.35"
     bufferpack: "npm:^0.0.6"
     color: "npm:3.2.1"
     fast-xml-parser: "npm:^4.2.5"
     fflate: "npm:^0.8.0"
     lodash-es: "npm:^4.17.21"
-    string_decoder: "npm:^1.3.0"
     validate.io-nonnegative-integer-array: "npm:^1.0.1"
-  checksum: 10/39c7d98e06d52caf90869efc23e76dddbd2b935397d34d4a14bcb4f26d2083cb74d0573b81d8d6c24b5dce40af38420c58f8408810619781fb5f5e5b9b72d2cb
+  checksum: 10/4e19c18dbc6157580bea783a6ed4574be7637ae6fc9a3df72ddab103b9da914d930e59abbc877bb2e9f5d4143d6908860d1555f641de05792f185810ce0ecba9
   languageName: node
   linkType: hard
 
@@ -1603,19 +1608,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teselagen/ove@npm:^0.7.33":
-  version: 0.7.33
-  resolution: "@teselagen/ove@npm:0.7.33"
+"@teselagen/ove@npm:^0.8.18":
+  version: 0.8.18
+  resolution: "@teselagen/ove@npm:0.8.18"
   dependencies:
     "@blueprintjs/core": "npm:3.54.0"
     "@hello-pangea/dnd": "npm:16.2.0"
     "@risingstack/react-easy-state": "npm:^6.3.0"
-    "@teselagen/bio-parsers": "npm:0.4.28"
+    "@teselagen/bio-parsers": "npm:0.4.32"
     "@teselagen/file-utils": "npm:0.3.20"
     "@teselagen/range-utils": "npm:0.3.13"
     "@teselagen/react-list": "npm:0.8.18"
-    "@teselagen/sequence-utils": "npm:0.3.32"
-    "@teselagen/ui": "npm:0.9.4"
+    "@teselagen/sequence-utils": "npm:0.3.35"
+    "@teselagen/ui": "npm:0.10.9"
     "@use-gesture/react": "npm:10.3.0"
     biomsa: "npm:^0.2.4"
     classnames: "npm:^2.3.2"
@@ -1658,7 +1663,7 @@ __metadata:
     to-regex-range: "npm:5.0.1"
     use-debounce: "npm:^8.0.4"
     validate.io-nonnegative-integer-array: "npm:^1.0.1"
-  checksum: 10/ceea15c526dd10ea7fab31e0ad732e56c33b5e905bf7d81805cebff3494a018944b4e98afdca40b633b5ffdad4ad5889620195109a92d4b91d712c11dc230215
+  checksum: 10/74942c76f700735d1894ac648a42e6b26907c6f643f06ac0bde8b7dc731c66fbfeb5d30cbbe3d841a69f281118ebbf113bfe8f8e21090bbb73a31161bd7addf8
   languageName: node
   linkType: hard
 
@@ -1696,37 +1701,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@teselagen/sequence-utils@npm:0.3.31":
-  version: 0.3.31
-  resolution: "@teselagen/sequence-utils@npm:0.3.31"
+"@teselagen/sequence-utils@npm:0.3.35, @teselagen/sequence-utils@npm:^0.3.35":
+  version: 0.3.35
+  resolution: "@teselagen/sequence-utils@npm:0.3.35"
   dependencies:
     "@teselagen/range-utils": "npm:0.3.13"
     escape-string-regexp: "npm:5.0.0"
-    jsondiffpatch: "npm:0.4.1"
+    jsondiffpatch: "npm:0.7.3"
     lodash-es: "npm:^4.17.21"
     shortid: "npm:2.2.16"
     string-splice: "npm:^1.3.0"
-  checksum: 10/53929707ba17907dfea9ad4776b949fd3ede4c3c4a0660c83457aa4d28fe4b535fe659ddc2a7a349b081b9dd0704bf88707bf646218b5591afbe765e8ef4daf2
+  checksum: 10/64a21f5745d6ed27f36ef37b55b1884a12ef5c57ded19aacdbb7bbc07ce8c65cb60341d249ba9b8ddcb91ed239a46fd8ca77bd38cd17bb0063d3babc01c3fed8
   languageName: node
   linkType: hard
 
-"@teselagen/sequence-utils@npm:0.3.32, @teselagen/sequence-utils@npm:^0.3.32":
-  version: 0.3.32
-  resolution: "@teselagen/sequence-utils@npm:0.3.32"
-  dependencies:
-    "@teselagen/range-utils": "npm:0.3.13"
-    escape-string-regexp: "npm:5.0.0"
-    jsondiffpatch: "npm:0.4.1"
-    lodash-es: "npm:^4.17.21"
-    shortid: "npm:2.2.16"
-    string-splice: "npm:^1.3.0"
-  checksum: 10/ccbcd943b243de0de13d8a616c42eaa01ef5a40f5fb836d222d8af3c6b75569fc986dff278fbef5b0759222c4b4b2c4913562f3a97d7f5d661ef9bb4e77c8ad2
-  languageName: node
-  linkType: hard
-
-"@teselagen/ui@npm:0.9.4":
-  version: 0.9.4
-  resolution: "@teselagen/ui@npm:0.9.4"
+"@teselagen/ui@npm:0.10.9":
+  version: 0.10.9
+  resolution: "@teselagen/ui@npm:0.10.9"
   dependencies:
     "@blueprintjs/core": "npm:3.54.0"
     "@blueprintjs/datetime": "npm:^3.24.1"
@@ -1772,7 +1763,7 @@ __metadata:
     url-join: "npm:^4.0.1"
     use-deep-compare-effect: "npm:^1.6.1"
     write-excel-file: "npm:^1.4.25"
-  checksum: 10/1c01897bb18f4ed2b4deebfce4bac31becf919b970763cd7ecf3ad01e8b44fca55b56efb396dcdc7c060b2fe5bd47df9439540de5b2a2247e40af5dd6a2966ed
+  checksum: 10/d92907b6fc2b77fc18b637cf05de7004e8039207088e30fbb02bcf0786293c28b9780e3717caa8ab32d47921c4faa412cd666c10413bb5b96b4aeaa2ddd7cc30
   languageName: node
   linkType: hard
 
@@ -2331,15 +2322,6 @@ __metadata:
   version: 6.1.0
   resolution: "ansi-regex@npm:6.1.0"
   checksum: 10/495834a53b0856c02acd40446f7130cb0f8284f4a39afdab20d5dc42b2e198b1196119fe887beed8f9055c4ff2055e3b2f6d4641d0be018cdfb64fedf6fc1aac
-  languageName: node
-  linkType: hard
-
-"ansi-styles@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "ansi-styles@npm:3.2.1"
-  dependencies:
-    color-convert: "npm:^1.9.0"
-  checksum: 10/d85ade01c10e5dd77b6c89f34ed7531da5830d2cb5882c645f330079975b716438cd7ebb81d0d6e6b4f9c577f19ae41ab55f07f19786b02f9dfd9e0377395665
   languageName: node
   linkType: hard
 
@@ -3013,17 +2995,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^2.3.0":
-  version: 2.4.2
-  resolution: "chalk@npm:2.4.2"
-  dependencies:
-    ansi-styles: "npm:^3.2.1"
-    escape-string-regexp: "npm:^1.0.5"
-    supports-color: "npm:^5.3.0"
-  checksum: 10/3d1d103433166f6bfe82ac75724951b33769675252d8417317363ef9d54699b7c3b2d46671b772b893a8e50c3ece70c4b933c73c01e81bc60ea4df9b55afa303
-  languageName: node
-  linkType: hard
-
 "chalk@npm:^3.0.0":
   version: 3.0.0
   resolution: "chalk@npm:3.0.0"
@@ -3186,7 +3157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-convert@npm:^1.9.0, color-convert@npm:^1.9.3":
+"color-convert@npm:^1.9.3":
   version: 1.9.3
   resolution: "color-convert@npm:1.9.3"
   dependencies:
@@ -3732,13 +3703,6 @@ __metadata:
   dependencies:
     dequal: "npm:^2.0.0"
   checksum: 10/3cc5f903d02d279d6dc4aa71ab6ed9898b9f4d1f861cc5421ce7357893c21b9520de78afb203c92bd650a6977ad0ca98195453a0707a39958cf5fea3b0a8ddd8
-  languageName: node
-  linkType: hard
-
-"diff-match-patch@npm:^1.0.0":
-  version: 1.0.5
-  resolution: "diff-match-patch@npm:1.0.5"
-  checksum: 10/fd1ab417eba9559bda752a4dfc9a8ac73fa2ca8b146d29d153964b437168e301c09d8a688fae0cd81d32dc6508a4918a94614213c85df760793f44e245173bb6
   languageName: node
   linkType: hard
 
@@ -5232,13 +5196,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-flag@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "has-flag@npm:3.0.0"
-  checksum: 10/4a15638b454bf086c8148979aae044dd6e39d63904cd452d970374fa6a87623423da485dfb814e7be882e05c096a7ccf1ebd48e7e7501d0208d8384ff4dea73b
-  languageName: node
-  linkType: hard
-
 "has-flag@npm:^4.0.0":
   version: 4.0.0
   resolution: "has-flag@npm:4.0.0"
@@ -6313,15 +6270,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsondiffpatch@npm:0.4.1":
-  version: 0.4.1
-  resolution: "jsondiffpatch@npm:0.4.1"
+"jsondiffpatch@npm:0.7.3":
+  version: 0.7.3
+  resolution: "jsondiffpatch@npm:0.7.3"
   dependencies:
-    chalk: "npm:^2.3.0"
-    diff-match-patch: "npm:^1.0.0"
+    "@dmsnell/diff-match-patch": "npm:^1.1.0"
   bin:
-    jsondiffpatch: ./bin/jsondiffpatch
-  checksum: 10/4cc4e85f091177d785364f9d56821270cbf35b03ac22129c43ac3e2af45bde6f01280e150be05cb76c08fbb32a3eb804046376c6a8255366fae970b4de21fa30
+    jsondiffpatch: bin/jsondiffpatch.js
+  checksum: 10/c7ad8f63c4d6283f79a9a1883d101544ea1ed675cf45200cd1a6fbe802f761a36c07c46caaa4071e73b7142fc7d7839ec4df7873cc878b48013252c2fc265032
   languageName: node
   linkType: hard
 
@@ -7723,10 +7679,10 @@ __metadata:
     "@mui/icons-material": "npm:^5.15.17"
     "@mui/material": "npm:^5.15.17"
     "@reduxjs/toolkit": "npm:^1.9.7"
-    "@teselagen/bio-parsers": "npm:^0.4.28"
-    "@teselagen/ove": "npm:^0.7.33"
+    "@teselagen/bio-parsers": "npm:^0.4.32"
+    "@teselagen/ove": "npm:^0.8.18"
     "@teselagen/range-utils": "npm:^0.3.13"
-    "@teselagen/sequence-utils": "npm:^0.3.32"
+    "@teselagen/sequence-utils": "npm:^0.3.35"
     "@testing-library/jest-dom": "npm:^6.1.4"
     "@testing-library/react": "npm:^14.3.1"
     "@testing-library/user-event": "npm:^14.6.1"
@@ -9626,7 +9582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string_decoder@npm:^1.1.1, string_decoder@npm:^1.3.0":
+"string_decoder@npm:^1.1.1":
   version: 1.3.0
   resolution: "string_decoder@npm:1.3.0"
   dependencies:
@@ -9747,15 +9703,6 @@ __metadata:
   version: 4.2.0
   resolution: "stylis@npm:4.2.0"
   checksum: 10/58359185275ef1f39c339ae94e598168aa6bb789f6cf0d52e726c1e7087a94e9c17f0385a28d34483dec1ffc2c75670ec714dc5603d99c3124ec83bc2b0a0f42
-  languageName: node
-  linkType: hard
-
-"supports-color@npm:^5.3.0":
-  version: 5.5.0
-  resolution: "supports-color@npm:5.5.0"
-  dependencies:
-    has-flag: "npm:^3.0.0"
-  checksum: 10/5f505c6fa3c6e05873b43af096ddeb22159831597649881aeb8572d6fe3b81e798cc10840d0c9735e0026b250368851b7f77b65e84f4e4daa820a4f69947f55b
   languageName: node
   linkType: hard
 
