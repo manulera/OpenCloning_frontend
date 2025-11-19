@@ -5,6 +5,7 @@ import { getReverseComplementSequenceString, getSequenceDataBetweenRange } from 
 import defaultMainEditorProps from '../config/defaultMainEditorProps';
 import { cloningActions } from '../store/cloning';
 import useAlerts from '../hooks/useAlerts';
+import { Alert, AlertTitle, Button } from '@mui/material';
 
 const { setMainSequenceSelection, addPrimer } = cloningActions;
 
@@ -13,6 +14,7 @@ function MainSequenceEditor() {
   const { addAlert } = useAlerts();
   const store = useStore();
   const editorName = 'mainEditor';
+  const [annotated, setAnnotated] = React.useState(false);
 
   const extraProp = {
     beforeAnnotationCreate: ({ annotationTypePlural, annotation, props, isEdit }) =>  { //also works for edits (!)
@@ -27,6 +29,7 @@ function MainSequenceEditor() {
           });
           return false;
         }
+        setAnnotated(true);
         let { sequence } = getSequenceDataBetweenRange(props.sequenceData, annotation);
         if (annotation.strand === -1) {
           sequence = getReverseComplementSequenceString(sequence);
@@ -63,6 +66,24 @@ function MainSequenceEditor() {
 
   return (
     <div style={{ textAlign: 'left' }}>
+      {annotated && 
+      <Alert
+        style={{maxWidth: '500px', margin: '10px auto'}}
+        severity="info"
+        action={
+          <>
+            <Button color="primary" onClick={() => {/* handle yes/update here */}}>
+              Save
+            </Button>
+            <Button color="secondary" onClick={() => {/* handle revert/cancel here */}}>
+              Cancel
+            </Button>
+          </>
+        }
+      >
+        Annotation Changed
+      </Alert>
+      }
       <Editor {...{ editorName, ...defaultMainEditorProps, ...extraProp, height: '800' }} />
     </div>
   );
