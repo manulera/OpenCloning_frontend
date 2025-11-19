@@ -6,7 +6,7 @@ describe('<ELabFTWFileSelect />', () => {
   it('shows the right options', () => {
     const setFileInfoSpy = cy.spy().as('setFileInfoSpy');
     // Stub the eLabFTWHttpClient similar to the pattern in eLabFTWInterface.test.js
-    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items/1', { headers: { Authorization: 'test-read-key' } }).resolves({
+    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items/1', { headers: { Authorization: 'test-read-key' }, params: {}  }).resolves({
       data: {
         uploads: [
           { id: 1, real_name: 'file1.txt' },
@@ -23,7 +23,7 @@ describe('<ELabFTWFileSelect />', () => {
   });
   it('shows empty options if no files are found', () => {
     cy.mount(<ELabFTWFileSelect fullWidth itemId={1} />);
-    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items/1', { headers: { Authorization: 'test-read-key' } }).resolves({
+    cy.stub(eLabFTWHttpClient, 'get').withArgs('/api/v2/items/1', { headers: { Authorization: 'test-read-key' }, params: {} }).resolves({
       data: {
         uploads: [],
       },
@@ -38,6 +38,6 @@ describe('<ELabFTWFileSelect />', () => {
     // Clicking the retry button makes the request again
     cy.spy(eLabFTWHttpClient, 'get').as('eLabFTWHttpClientSpy');
     cy.get('button').contains('Retry').click();
-    cy.get('@eLabFTWHttpClientSpy').should('have.been.calledWith', '/api/v2/items/1', { headers: { Authorization: 'test-read-key' } });
+    cy.get('@eLabFTWHttpClientSpy').should('have.been.calledWith', '/api/v2/items/1', { headers: { Authorization: 'test-read-key' }, params: {} });
   });
 });

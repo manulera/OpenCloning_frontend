@@ -8,7 +8,7 @@ describe('<ELabFTWResourceSelect />', () => {
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items', {
         headers: { Authorization: 'test-read-key' },
-        params: { cat: 1, extended: 'title:test' },
+        params: { cat: 1, extended: 'title:test', limit: 9999 },
       })
       .resolves({
         data: [
@@ -35,7 +35,7 @@ describe('<ELabFTWResourceSelect />', () => {
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items', {
         headers: { Authorization: 'test-read-key' },
-        params: { cat: 1, extended: 'title:nonexistent' },
+        params: { cat: 1, extended: 'title:nonexistent', limit: 9999 },
       })
       .resolves({
         data: [],
@@ -51,7 +51,7 @@ describe('<ELabFTWResourceSelect />', () => {
     cy.stub(eLabFTWHttpClient, 'get')
       .withArgs('/api/v2/items', {
         headers: { Authorization: 'test-read-key' },
-        params: { cat: 1, extended: 'title:test' },
+        params: { cat: 1, extended: 'title:test', limit: 9999 },
       })
       .callsFake(() => {
         if (firstCall) {
@@ -82,7 +82,7 @@ describe('<ELabFTWResourceSelect />', () => {
     // First category results
     getStub.withArgs('/api/v2/items', {
       headers: { Authorization: 'test-read-key' },
-      params: { cat: 1, extended: 'title:test' },
+      params: { cat: 1, extended: 'title:test', limit: 9999 },
     }).resolves({
       data: [{ id: 1, title: 'Category 1 Resource' }],
     });
@@ -90,7 +90,7 @@ describe('<ELabFTWResourceSelect />', () => {
     // Second category results
     getStub.withArgs('/api/v2/items', {
       headers: { Authorization: 'test-read-key' },
-      params: { cat: 2, extended: 'title:test' },
+      params: { cat: 2, extended: 'title:test', limit: 9999 },
     }).resolves({
       data: [{ id: 2, title: 'Category 2 Resource' }],
     });
