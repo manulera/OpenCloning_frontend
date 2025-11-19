@@ -49,7 +49,7 @@ const initialState = {
   },
 };
 
-/* eslint-disable no-param-reassign */
+ 
 const reducer = {
 
   setCurrentTab(state, action) {
@@ -227,6 +227,14 @@ const reducer = {
     const { sources } = state;
     const source = sources.find((s) => s.id === newSource.id);
     Object.assign(source, newSource);
+  },
+
+  updateSequence(state, action) {
+    const newSequence = action.payload;
+    const { sequences } = state;
+    const sequence = sequences.find((s) => s.id === newSequence.id);
+    Object.assign(sequence, newSequence);
+    state.teselaJsonCache[newSequence.id] = convertToTeselaJson(newSequence);
   },
 
   replaceSource(state, action) {
@@ -436,7 +444,7 @@ const reducer = {
   },
 };
 
-/* eslint-enable no-param-reassign */
+ 
 
 const cloningSlice = createSlice({
   name: 'cloning',
