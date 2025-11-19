@@ -8,7 +8,7 @@ function ELabFTWResourceSelect({ setResource, categoryId, ...rest }) {
   const resourcePostRequestSettings = React.useMemo(() => ({
     setValue: setResource,
     getOptions: async (userInput) => {
-      const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders, params: { cat: categoryId, extended: `title:${userInput}` } });
+      const resp = await eLabFTWHttpClient.get(url, { headers: readHeaders, params: { cat: categoryId, extended: `title:${userInput}`, limit: 9999 } });
       return resp.data;
     },
     getOptionLabel: (option) => (option ? option.title : ''),

@@ -15,6 +15,7 @@ export default function GetRequestMultiSelect({
   getOptionLabel,
   requestHeaders = {},
   noOptionsMessage = 'No options found',
+  requestParams = {},
   ...rest
 }) {
   const { loadingMessage, errorMessage } = messages;
@@ -24,7 +25,7 @@ export default function GetRequestMultiSelect({
   const [waitingMessage, setWaitingMessage] = React.useState(loadingMessage);
 
   React.useEffect(() => {
-    httpClient.get(url, { headers: requestHeaders }).then(({ data }) => {
+    httpClient.get(url, { headers: requestHeaders, params: requestParams }).then(({ data }) => {
       setWaitingMessage(null);
       const respOptions = getOptionsFromResponse(data);
       if (!Array.isArray(respOptions)) {
