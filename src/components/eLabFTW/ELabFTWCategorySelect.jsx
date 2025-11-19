@@ -28,6 +28,7 @@ function ELabFTWCategorySelect({ setCategory, label = 'Resource category', ...re
         httpClient={eLabFTWHttpClient}
         requestHeaders={readHeaders}
         url={url}
+        requestParams={{ limit: 9999 }}
         label={label}
         messages={messages}
         onChange={onChange}
