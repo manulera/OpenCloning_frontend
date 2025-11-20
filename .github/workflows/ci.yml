@@ -116,6 +116,8 @@ jobs:
         get-backend-sha,
       ]
     runs-on: ubuntu-latest
+    env:
+      NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
     strategy:
       fail-fast: false
       matrix:
@@ -161,8 +163,6 @@ jobs:
           key: python-venv-${{ runner.os }}-${{ needs.get-backend-sha.outputs.backend_sha }}
 
       - name: run python dev server in background
-        env:
-          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
           source .venv/bin/activate
           uvicorn opencloning.main:app &
