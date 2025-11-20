@@ -8,104 +8,124 @@ import useAlerts from '../hooks/useAlerts';
 import { Alert, Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import useUpdateAnnotationInMainSequence from './annotation/useUpdateAnnotationInMainSequence';
-import { isEqual } from 'lodash-es';
 import useStoreEditor from '../hooks/useStoreEditor';
 
 const { setMainSequenceSelection, addPrimer } = cloningActions;
+
+function regionRightClickedOverride(items, { annotation }, props) {
+  const items2keep = items.filter((i) => i.text === 'Copy');
+  return [
+    ...items2keep,
+    {
+      text: 'Create',
+      submenu: [
+        "newFeature",
+        "newPrimer",
+      ],
+    },
+  ];
+}
+
+function featureRightClickedOverride(items, { annotation }, props) {
+  const items2keep = items.filter((i) => i.text === 'Copy');
+  return [
+    ...items2keep,
+    "--",
+    {
+      text: 'Create',
+      submenu: [
+        "newFeature",
+        "newPrimer",
+      ],
+    },
+    "--",
+    "editFeature",
+    "deleteFeature",
+    "showRemoveDuplicatesDialogFeatures",
+    "--",
+    "selectInverse",
+    "--",
+    "toggleCdsFeatureTranslations",
+    "viewFeatureProperties",
+  ];
+}
+
 
 function MainSequenceEditor() {
   const dispatch = useDispatch();
   const { addAlert } = useAlerts();
   const { updateStoreEditor } = useStoreEditor();
   const updateAnnotationInMainSequence = useUpdateAnnotationInMainSequence();
-  const mainSequenceFeatures = useSelector((state) => state.VectorEditor.mainEditor?.sequenceData?.features, isEqual);
-  const mainSequencePrimers = useSelector((state) => state.VectorEditor.mainEditor?.sequenceData?.primers, isEqual);
 
   const annotationChanged = useSelector(
     (state) => {
       const history = state.VectorEditor.mainEditor?.sequenceDataHistory;
       if (!history) return false;
-      console.log('history', history);
       return Object.keys(history).length > 0 && history.future.length === 0;
     }
   );
-  console.log('annotationChanged', annotationChanged);
+
   const store = useStore();
   const editorName = 'mainEditor';
-  const [annotated, setAnnotated] = React.useState(false);
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
   const topDivRef = React.useRef(null);
 
   React.useEffect(() => {
-    setAnnotated(true);
-    setTimeout(() => {
-      topDivRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, 250);
-  }, [mainSequenceFeatures, mainSequencePrimers]);
+    if (annotationChanged) {
+      setTimeout(() => {
+        topDivRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 250);
+    }
+  }, [annotationChanged]);
 
-
-  React.useEffect(() => {
-    setAnnotated(false);
-  }, [mainSequenceId]);
-
-  const onAnnotationChange = () => {
-    updateAnnotationInMainSequence();
-    setAnnotated(false);
-  };
 
   const onAnnotationCancel = () => {
     const currentSequenceData = store.getState().VectorEditor.mainEditor.sequenceData;
     updateStoreEditor('mainEditor', mainSequenceId, { sequenceData: currentSequenceData });
-    setAnnotated(false);
   };
 
+  const beforeAnnotationCreate = ({ annotationTypePlural, annotation, props, isEdit }) =>  {
 
-  const extraProp = {
-    beforeAnnotationCreate: ({ annotationTypePlural, annotation, props, isEdit }) =>  { //also works for edits (!)
-      console.log('beforeAnnotationCreate', { annotationTypePlural, annotation, props, isEdit });
-
-      if (annotationTypePlural === 'primers') {
-        const existingPrimerNames = store.getState().cloning.primers.map((p) => p.name);
-        if (existingPrimerNames.includes(annotation.name)) {
-          addAlert({
-            message: `A primer with name "${annotation.name}" already exists`,
-            severity: 'error',
-          });
-          return false;
-        }
-        let { sequence } = getSequenceDataBetweenRange(props.sequenceData, annotation);
-        if (annotation.strand === -1) {
-          sequence = getReverseComplementSequenceString(sequence);
-        }
-        dispatch(addPrimer({
-          name: annotation.name,
-          sequence: sequence,
-        }));
+    if (annotationTypePlural === 'primers') {
+      const existingPrimerNames = store.getState().cloning.primers.map((p) => p.name);
+      if (existingPrimerNames.includes(annotation.name)) {
         addAlert({
-          message: `Primer "${annotation.name}" created`,
-          severity: 'success',
+          message: `A primer with name "${annotation.name}" already exists`,
+          severity: 'error',
         });
-      } else if (annotationTypePlural !== 'features') {
         return false;
       }
-    },
+      let { sequence } = getSequenceDataBetweenRange(props.sequenceData, annotation);
+      if (annotation.strand === -1) {
+        sequence = getReverseComplementSequenceString(sequence);
+      }
+      dispatch(addPrimer({
+        name: annotation.name,
+        sequence: sequence,
+      }));
+      addAlert({
+        message: `Primer "${annotation.name}" created`,
+        severity: 'success',
+      });
+    } else if (annotationTypePlural !== 'features') {
+      return false;
+    }
+  };
+
+  const extraProp = {
+    beforeAnnotationCreate,
     onSelectionOrCaretChanged: (a) => dispatch(setMainSequenceSelection(a)),
     selectionLayer: {},
     sequenceData: {},
     rightClickOverrides: {
-      selectionLayerRightClicked: (items, { annotation }, props) => {
-        const items2keep = items.filter((i) => i.text === 'Copy');
-        return [
-          ...items2keep,
-          {
-            text: 'Create',
-            submenu: [
-              "newFeature",
-              "newPrimer",
-            ],
-          },
-        ];
-      },
+      selectionLayerRightClicked: regionRightClickedOverride,
+      primerRightClicked: regionRightClickedOverride,
+      translationRightClicked: regionRightClickedOverride,
+      searchLayerRightClicked: regionRightClickedOverride,
+      featureRightClicked: featureRightClickedOverride,
+      partRightClicked: {},
+      orfRightClicked: {},
+      backgroundRightClicked: {},
     },
   };
 
@@ -115,14 +135,13 @@ function MainSequenceEditor() {
 
   return (
     <div style={{ textAlign: 'left' }} ref={topDivRef}>
-      <div>annotationChanged: {annotationChanged ? 'true' : 'false'}</div>
-      {annotated && 
+      {annotationChanged &&
       <Alert
         style={{maxWidth: '500px', margin: '10px auto'}}
         severity="info"
         action={
           <>
-            <Button color="primary" onClick={onAnnotationChange}>
+            <Button color="primary" onClick={updateAnnotationInMainSequence}>
               Save
             </Button>
             <Button color="secondary" onClick={onAnnotationCancel}>
