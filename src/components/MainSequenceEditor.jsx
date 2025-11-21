@@ -23,6 +23,11 @@ function regionRightClickedOverride(items, { annotation }, props) {
         "newPrimer",
       ],
     },
+    ...(props.sequenceData.circular === true ? [
+      "--",
+      "selectInverse",
+      "--",
+    ] : []),
   ];
 }
 function primerRightClickedOverride(items, { annotation }, props) {
@@ -37,23 +42,12 @@ function primerRightClickedOverride(items, { annotation }, props) {
 }
 
 function featureRightClickedOverride(items, { annotation }, props) {
-  const items2keep = items.filter((i) => i.text === 'Copy');
   return [
-    ...items2keep,
-    "--",
-    {
-      text: 'Create',
-      submenu: [
-        "newFeature",
-        "newPrimer",
-      ],
-    },
+    ...regionRightClickedOverride(items, { annotation }, props),
     "--",
     "editFeature",
     "deleteFeature",
     "showRemoveDuplicatesDialogFeatures",
-    "--",
-    "selectInverse",
     "--",
     "toggleCdsFeatureTranslations",
     "viewFeatureProperties",
