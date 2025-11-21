@@ -25,6 +25,16 @@ function regionRightClickedOverride(items, { annotation }, props) {
     },
   ];
 }
+function primerRightClickedOverride(items, { annotation }, props) {
+  return [
+    ...regionRightClickedOverride(items, { annotation }, props),
+    "--",
+    {
+      text: 'Delete Primer annotation',
+      cmd: 'deletePrimer',
+    }
+  ];
+}
 
 function featureRightClickedOverride(items, { annotation }, props) {
   const items2keep = items.filter((i) => i.text === 'Copy');
@@ -61,7 +71,7 @@ function MainSequenceEditor() {
     (state) => {
       const history = state.VectorEditor.mainEditor?.sequenceDataHistory;
       if (!history) return false;
-      return Object.keys(history).length > 0 && history.future.length === 0;
+      return state.cloning.mainSequenceId && Object.keys(history).length > 0 && history.future.length === 0;
     }
   );
 
@@ -119,7 +129,7 @@ function MainSequenceEditor() {
     sequenceData: {},
     rightClickOverrides: {
       selectionLayerRightClicked: regionRightClickedOverride,
-      primerRightClicked: regionRightClickedOverride,
+      primerRightClicked: primerRightClickedOverride,
       translationRightClicked: regionRightClickedOverride,
       searchLayerRightClicked: regionRightClickedOverride,
       featureRightClicked: featureRightClickedOverride,
@@ -139,6 +149,7 @@ function MainSequenceEditor() {
       <Alert
         style={{maxWidth: '500px', margin: '10px auto'}}
         severity="info"
+        data-testid="annotation-changed-alert"
         action={
           <>
             <Button color="primary" onClick={updateAnnotationInMainSequence}>
