@@ -3,6 +3,7 @@ import { useDispatch, useStore } from 'react-redux';
 import useAlerts from '../../hooks/useAlerts';
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import { cloningActions } from '../../store/cloning';
+import useStoreEditor from '../../hooks/useStoreEditor';
 
 const { updateSequence } = cloningActions;
 
@@ -10,6 +11,7 @@ export default function useUpdateAnnotationInMainSequence() {
   const store = useStore();
   const { addAlert } = useAlerts();
   const dispatch = useDispatch();
+  const { updateStoreEditor } = useStoreEditor();
 
   const updateFunction = React.useCallback(() => {
     const state = store.getState();
@@ -24,12 +26,14 @@ export default function useUpdateAnnotationInMainSequence() {
         severity: 'success',
       });
       dispatch(updateSequence(newSequence));
+      // Clear the sequenceDataHistory
+      updateStoreEditor('mainEditor', mainSequenceId, { sequenceDataHistory: {} });
     } else {
       addAlert({
         message: 'Sequences are different!',
         severity: 'error',
       });
     }
-  }, [store, addAlert, dispatch]);
+  }, [store, addAlert, dispatch, updateStoreEditor]);
   return updateFunction;
 };

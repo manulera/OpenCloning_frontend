@@ -49,6 +49,7 @@ describe('Test manual annotation', () => {
 
     // Save the history
     cy.get('[data-testid="annotation-changed-alert"] button').contains('Save').click();
+    cy.get('[data-testid="annotation-changed-alert"]').should('not.exist');
     cy.get('.veLabelText').contains('feature_name').should('exist');
     changeTab('Cloning');
     cy.get('.cloning-history .veLabelText').contains('feature_name').should('exist');
