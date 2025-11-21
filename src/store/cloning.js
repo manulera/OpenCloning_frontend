@@ -30,7 +30,6 @@ const initialState = {
   selectedRegions: [],
   knownErrors: {},
   primers: [],
-  primer2sequenceLinks: [],
   config: {
     loaded: false,
     backendUrl: null,
@@ -50,7 +49,7 @@ const initialState = {
   },
 };
 
-/* eslint-disable no-param-reassign */
+ 
 const reducer = {
 
   setCurrentTab(state, action) {
@@ -230,6 +229,14 @@ const reducer = {
     Object.assign(source, newSource);
   },
 
+  updateSequence(state, action) {
+    const newSequence = action.payload;
+    const { sequences } = state;
+    const sequence = sequences.find((s) => s.id === newSequence.id);
+    Object.assign(sequence, newSequence);
+    state.teselaJsonCache[newSequence.id] = convertToTeselaJson(newSequence);
+  },
+
   replaceSource(state, action) {
     const newSource = action.payload;
     const { sources } = state;
@@ -317,14 +324,6 @@ const reducer = {
     primers.push({ ...primer, id: nextPrimerId });
   },
 
-  addPrimerAndLinkToSequence(state, action) {
-    const { primer, sequenceId, position } = action.payload;
-    const { primers, primer2sequenceLinks } = state;
-    const nextPrimerId = getNextUniqueId(state);
-    primers.push({ ...primer, id: nextPrimerId });
-    primer2sequenceLinks.push({ primerId: nextPrimerId, sequenceId, position });
-  },
-
   setPrimers(state, action) {
     const primers = action.payload;
     // Ids are unique and all are positive integers
@@ -342,8 +341,6 @@ const reducer = {
   deletePrimer(state, action) {
     const primerId = action.payload;
     state.primers = state.primers.filter((p) => p.id !== primerId);
-    // Delete all links to this primer
-    state.primer2sequenceLinks = state.primer2sequenceLinks.filter((link) => link.primerId !== primerId);
   },
 
   editPrimer(state, action) {
@@ -447,7 +444,7 @@ const reducer = {
   },
 };
 
-/* eslint-enable no-param-reassign */
+ 
 
 const cloningSlice = createSlice({
   name: 'cloning',

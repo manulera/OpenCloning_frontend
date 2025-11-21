@@ -1,6 +1,6 @@
 import { useStore } from 'react-redux';
 import { updateEditor, addAlignment } from '@teselagen/ove';
-import { getPCRPrimers, getPrimerLinks } from '../store/cloning_utils';
+import { getPCRPrimers } from '../store/cloning_utils';
 import { getTeselaJsonFromBase64 } from '../utils/readNwrite';
 import { findRotation, syncChromatogramDataWithAlignment } from '../utils/sequenceManipulation';
 import { getReverseComplementSequenceAndAnnotations, getReverseComplementSequenceString, rotateSequenceDataToPosition } from '@teselagen/sequence-utils';
@@ -12,9 +12,9 @@ export default function useStoreEditor() {
     if (id === null) {
       // if id is null and selectionLayer is empty, clear the sequenceData
       if (Object.keys(selectionLayer).length === 0) {
-        updateEditor(store, editorName, { sequenceData: {}, selectionLayer });
+        updateEditor(store, editorName, { sequenceData: {}, selectionLayer, sequenceDataHistory: {} });
       } else {
-        updateEditor(store, editorName, { selectionLayer });
+        updateEditor(store, editorName, { selectionLayer, sequenceDataHistory: {} });
       }
     } else {
       // otherwise, update the sequenceData with the new id
@@ -24,7 +24,6 @@ export default function useStoreEditor() {
       const sequence = cloning.sequences.find((e) => e.id === id);
       const sequenceWithoutSequencingField = { ...sequence };
       delete sequenceWithoutSequencingField.sequencing;
-      const linkedPrimers = getPrimerLinks(cloning, id);
       const pcrPrimers = getPCRPrimers(cloning, id);
       const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sequencing file');
       let { panelsShown } = store.getState().VectorEditor.mainEditor;
@@ -93,9 +92,8 @@ export default function useStoreEditor() {
           },
         ]];
       }
-      linkedPrimers.forEach((p) => { p.color = 'lightblue'; });
-      sequenceData.primers = sequenceData.primers.concat([...linkedPrimers, ...pcrPrimers]);
-      updateEditor(store, editorName, { sequenceData, selectionLayer, panelsShown });
+      sequenceData.primers = sequenceData.primers.concat([...pcrPrimers]);
+      updateEditor(store, editorName, { sequenceData, selectionLayer, panelsShown, sequenceDataHistory: {} });
     }
   };
 

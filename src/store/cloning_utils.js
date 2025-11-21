@@ -111,18 +111,6 @@ const formatPrimer = (primer, position) => {
   };
 };
 
-export function getPrimerLinks({ primers, primer2sequenceLinks }, sequenceId) {
-  const relatedLinks = primer2sequenceLinks.filter((link) => link.sequenceId === sequenceId);
-  const out = relatedLinks.map(({ position, primerId }) => {
-    const primer = primers.find((p) => p.id === primerId);
-    if (primer === undefined) {
-      return null;
-    }
-    return formatPrimer(primer, position);
-  });
-  return out.filter((p) => p !== null);
-}
-
 export function pcrPrimerPositionsInInput(source, sequenceData) {
   if (source.type !== 'PCRSource') {
     throw new Error('Source is not a PCRSource');

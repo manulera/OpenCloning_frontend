@@ -4,7 +4,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Rule';
 import Tooltip from '@mui/material/Tooltip';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import { cloningActions } from '../store/cloning';
 import useStoreEditor from '../hooks/useStoreEditor';
@@ -23,6 +23,7 @@ function MainSequenceCheckBox({ id }) {
   const dispatch = useDispatch();
   const database = useDatabase();
   const { updateStoreEditor } = useStoreEditor();
+  const store = useStore();
   const { setMainSequenceId, setCurrentTab } = cloningActions;
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
   const hasVerificationFiles = useSelector((state) => state.cloning.files.some((file) => file.sequence_id === id));
@@ -30,9 +31,12 @@ function MainSequenceCheckBox({ id }) {
   const databaseId = useSelector((state) => getSourceDatabaseId(state.cloning.sources, id), isEqual);
   const hasDatabaseId = Boolean(databaseId);
   const toggleMain = () => {
-    dispatch(setMainSequenceId(id));
+    const { mainSequenceId } = store.getState().cloning;
+    if (mainSequenceId !== id) {
+      dispatch(setMainSequenceId(id));
+      updateStoreEditor('mainEditor', id);
+    }
     dispatch(setCurrentTab(3));
-    updateStoreEditor('mainEditor', id);
     // TODO: ideally this should be done with a ref
     document.getElementById('opencloning-app-tabs')?.scrollIntoView();
   };

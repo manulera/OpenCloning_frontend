@@ -6,7 +6,7 @@ import OverhangsDisplay from './OverhangsDisplay';
 import NewSourceBox from './sources/NewSourceBox';
 import { cloningActions } from '../store/cloning';
 import getTransformCoords from '../utils/transformCoords';
-import { getPCRPrimers, getPrimerLinks, isSequenceInputOfAnySource } from '../store/cloning_utils';
+import { getPCRPrimers, isSequenceInputOfAnySource } from '../store/cloning_utils';
 
 const transformToRegion = (eventOutput) => {
   if (eventOutput.selectionLayer) {
@@ -31,7 +31,6 @@ function AddSourceComponent({ sequenceId }) {
 function SequenceEditor({ sequenceId }) {
   const editorName = `editor_${sequenceId}`;
   const sequence = useSelector((state) => state.cloning.sequences.find((e) => e.id === sequenceId), isEqual);
-  const linkedPrimers = useSelector(({ cloning }) => getPrimerLinks(cloning, sequenceId), isEqual);
   const pcrPrimers = useSelector(({ cloning }) => getPCRPrimers(cloning, sequenceId), isEqual);
   const unmutableSeq = useSelector((state) => state.cloning.teselaJsonCache[sequenceId], isEqual);
   const seq = { ...unmutableSeq };
@@ -44,7 +43,7 @@ function SequenceEditor({ sequenceId }) {
   const pcrPrimers2Include = pcrPrimers.filter((p) => !seqCopy.primers.some(
     (p2) => p2.name === p.name && p2.start === p.start && p2.end === p.end,
   ));
-  seqCopy.primers = [...seqCopy.primers, ...pcrPrimers2Include, ...linkedPrimers];
+  seqCopy.primers = [...seqCopy.primers, ...pcrPrimers2Include];
   const parentSource = useSelector((state) => state.cloning.sources.find((source) => source.id === sequenceId), isEqual);
   const stateSelectedRegion = useSelector((state) => state.cloning.selectedRegions.find((r) => r.id === sequenceId)?.selectedRegion, isEqual);
   const parentSequenceData = useSelector((state) => parentSource.input.map(({sequence}) => state.cloning.teselaJsonCache[sequence]), isEqual);

@@ -51,7 +51,7 @@ export function setInputValue(label, value, parentSelector = 'body') {
     .clear('');
   cy.get(parentSelector).contains(label).siblings('div').first()
     .children('input')
-    .type(value);
+    .type(value, { delay: 0 });
 }
 
 export function setAutocompleteValue(label, value, parentSelector = 'body') {
@@ -119,7 +119,7 @@ export function manuallyTypeSequence(seq, circular = false, overhangs = []) {
         .click();
       cy.get('li[data-value="ManuallyTypedSource"]').click();
       cy.get('#tab-panel-0 #sequence').clear('');
-      cy.get('#tab-panel-0 #sequence').type(seq);
+      cy.get('#tab-panel-0 #sequence').type(seq, { delay: 0 });
       if (circular) {
         cy.get('#tab-panel-0 span').contains('Circular DNA').click();
       }

@@ -1,10 +1,13 @@
 export default {
   isFullscreen: false,
+  readOnly: false,
+  disableBpEditing: true,
   annotationVisibility: { reverseSequence: true, cutsites: false },
   ToolBarProps: {
     toolList: [
-      'saveTool',
       'downloadTool',
+      'undoTool',
+      'redoTool',
       'cutsiteTool',
       'featureTool',
       'findTool',

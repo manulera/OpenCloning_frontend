@@ -4,6 +4,8 @@ import istanbul from 'vite-plugin-istanbul';
 import { execSync } from 'child_process';
 import { ViteEjsPlugin } from 'vite-plugin-ejs';
 import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
+import react from '@vitejs/plugin-react';
+
 
 
 // Function to get git tag information
@@ -73,8 +75,15 @@ export default defineConfig({
           ViteEjsPlugin({
             umami_website_id: process.env.VITE_UMAMI_WEBSITE_ID,
           }),
+          react(),
         ],
         optimizeDeps: {
+          include: [
+            '@emotion/react', 
+            '@emotion/styled', 
+            '@mui/material/Tooltip',
+            '@mui/material/Unstable_Grid2'
+          ],
           entries: ['src/**/*.jsx', 'src/**/*.js', 'cypress/**/*.js'],
         },
         define: {
