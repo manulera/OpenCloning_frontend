@@ -204,10 +204,10 @@ describe('GenomeRegion Source', () => {
     cy.get('label').contains('Chromosome').should('exist');
     cy.get('label').contains('Chromosome').siblings('div.MuiInputBase-root ').click();
     // Should contain the 4 pombe chromosomes
-    cy.get('li[data-value="NC_003424.3"]').should('exist');
-    cy.get('li[data-value="NC_003423.3"]').should('exist');
-    cy.get('li[data-value="NC_003421.2"]').should('exist');
-    cy.get('li[data-value="NC_088682.1"]').should('exist');
+    cy.get('li[data-value="I - NC_003424.3"]').should('exist');
+    cy.get('li[data-value="II - NC_003423.3"]').should('exist');
+    cy.get('li[data-value="III - NC_003421.2"]').should('exist');
+    cy.get('li[data-value="MT - NC_088682.1"]').should('exist');
     // Click outside
     cy.get('body').click(0, 0);
     // Select chromosome 1
@@ -228,10 +228,10 @@ describe('GenomeRegion Source', () => {
     cy.get('label').contains('Chromosome').should('exist');
     cy.get('label').contains('Chromosome').siblings('div.MuiInputBase-root ').click();
     // Should contain the 4 pombe chromosomes
-    cy.get('li[data-value="NC_003424.3"]').should('exist');
-    cy.get('li[data-value="NC_003423.3"]').should('exist');
-    cy.get('li[data-value="NC_003421.2"]').should('exist');
-    cy.get('li[data-value="NC_088682.1"]').should('exist');
+    cy.get('li[data-value="I - NC_003424.3"]').should('exist');
+    cy.get('li[data-value="II - NC_003423.3"]').should('exist');
+    cy.get('li[data-value="III - NC_003421.2"]').should('exist');
+    cy.get('li[data-value="MT - NC_088682.1"]').should('exist');
     // Click outside
     cy.get('body').click(0, 0);
     // Select chromosome 1
@@ -248,7 +248,6 @@ describe('GenomeRegion Source', () => {
     clickMultiSelectOption('Type of region', 'coordinates in other assembly', 'li#source-1');
     setInputValue('Assembly ID', 'Hello', 'li#source-1');
     cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/Hello/dataset_report?filters.assembly_version=all_assemblies', {
-      statusCode: 404,
       body: {}
     }).as('getAssemblyInfo');
     cy.get('div').contains('Assembly ID does not exist').should('exist');
