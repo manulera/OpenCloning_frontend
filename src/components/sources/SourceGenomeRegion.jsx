@@ -6,9 +6,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Alert, Box, FormHelperText, FormLabel } from '@mui/material';
 import PostRequestSelect from '../form/PostRequestSelect';
-import { getReferenceAssemblyId, taxonSuggest, geneSuggest, getInfoFromAssemblyId, getInfoFromSequenceAccession, getSequenceAccessionsFromAssemblyAccession } from '../../utils/ncbiRequests';
+import { getReferenceAssemblyId, taxonSuggest, geneSuggest, getInfoFromAssemblyId, getInfoFromSequenceAccession } from '../../utils/ncbiRequests';
 import TextFieldValidate from '../form/TextFieldValidate';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
+import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
+import useHttpClient from '../../hooks/useHttpClient';
 
 function getGeneCoordsInfo(gene) {
   const { range: geneRange, accession_version: accessionVersion } = gene.annotation.genomic_regions[0].gene_range;
@@ -61,29 +63,23 @@ function SpeciesPicker({ setSpecies, setAssemblyId }) {
   return (<PostRequestSelect {...speciesPostRequestSettings} fullWidth />);
 }
 
-function SequenceAccessionPicker({ assemblyAccesion, sequenceAccession, setSequenceAccession }) {
-  const [options, setOptions] = React.useState([]);
-  React.useEffect(() => {
-    getSequenceAccessionsFromAssemblyAccession(assemblyAccesion).then((opts) => {
-      setOptions(opts);
-    }).catch((e) => { setOptions([]); console.error(e); });
-  }, [assemblyAccesion]);
+function SequenceAccessionPicker({ assemblyAccession, setSequenceAccession }) {
+  const httpClient = useHttpClient();
 
+  const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyAccession}/sequence_reports`
   return (
     <FormControl fullWidth>
-      <InputLabel id="select-sequence-accession">Chromosome</InputLabel>
-      <Select
-        labelId="select-sequence-accession"
+      <GetRequestMultiSelect
+        getOptionsFromResponse={(data) => data.reports}
+        httpClient={httpClient}
+        url={url}
         label="Chromosome"
-        value={sequenceAccession}
-        onChange={(event) => setSequenceAccession(event.target.value)}
-      >
-        {options.map(({ chr_name, refseq_accession }) => (
-          <MenuItem key={refseq_accession} value={refseq_accession}>
-            {`${chr_name} - ${refseq_accession}`}
-          </MenuItem>
-        ))}
-      </Select>
+        messages={{ loadingMessage: 'Loading chromosomes...', errorMessage: 'Could not load chromosomes' }}
+        onChange={(value, options) => { setSequenceAccession(options.find((o) => `${o.chr_name} - ${o.refseq_accession}` === value).refseq_accession)}}
+        getOptionLabel={({ chr_name, refseq_accession }) => `${chr_name} - ${refseq_accession}`}
+        multiple={false}
+        autoComplete={false}
+      />
     </FormControl>
   );
 }
@@ -187,11 +183,11 @@ function AssemblyIdSelector({ setAssemblyId, setHasAnnotation = () => {}, onAsse
     <>
       <TextFieldValidate onChange={onChange} getterFunction={getInfoFromAssemblyId} label="Assembly ID" defaultHelperText="Example ID: GCA_000002945.3" />
       {newerAssembly && (
-      <Alert severity="warning">
-        {!exactMatch ? 'Using assembly ID' : 'Newer assembly exists:'}
-        {' '}
-        <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${newerAssembly}`} target="_blank" rel="noopener noreferrer">{newerAssembly}</a>
-      </Alert>
+        <Alert severity="warning">
+          {!exactMatch ? 'Using assembly ID' : 'Newer assembly exists:'}
+          {' '}
+          <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${newerAssembly}`} target="_blank" rel="noopener noreferrer">{newerAssembly}</a>
+        </Alert>
       )}
       {pairedAccessionWithAnnotation && (
         <Alert severity="warning">
@@ -321,7 +317,7 @@ function SourceGenomeRegionCustomCoordinates({ source, requestStatus, sendPostRe
         <AssemblyIdSelector {...{ setAssemblyId, onAssemblyIdChange: () => { setFormError({ ...noError }); setSequenceAccession(''); } }} />
       )}
       {assemblyId && ['custom_reference', 'custom_other'].includes(selectionMode) && (
-      <SequenceAccessionPicker {...{ assemblyAccesion: assemblyId, sequenceAccession, setSequenceAccession }} />
+        <SequenceAccessionPicker {...{ assemblyAccession: assemblyId, setSequenceAccession }} />
       )}
       {sequenceAccession && (
         <>
@@ -412,33 +408,33 @@ function SourceGenomeRegionSelectGene({ gene, upstreamBasesRef, downstreamBasesR
       <PostRequestSelect {...genePostRequestSettings} fullWidth />
       {error && (<Alert severity="error">{error}</Alert>)}
       {gene && (
-      <>
-        <FormControl fullWidth>
-          <TextField
-            label="Gene coordinates"
-            value={formatGeneCoords(gene)}
-            disabled
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            fullWidth
-            label="Upstream bases"
-            inputRef={upstreamBasesRef}
-            type="number"
-            defaultValue={1000}
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            fullWidth
-            label="Downstream bases"
-            inputRef={downstreamBasesRef}
-            type="number"
-            defaultValue={1000}
-          />
-        </FormControl>
-      </>
+        <>
+          <FormControl fullWidth>
+            <TextField
+              label="Gene coordinates"
+              value={formatGeneCoords(gene)}
+              disabled
+            />
+          </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              fullWidth
+              label="Upstream bases"
+              inputRef={upstreamBasesRef}
+              type="number"
+              defaultValue={1000}
+            />
+          </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              fullWidth
+              label="Downstream bases"
+              inputRef={downstreamBasesRef}
+              type="number"
+              defaultValue={1000}
+            />
+          </FormControl>
+        </>
       )}
     </>
   );
@@ -476,4 +472,4 @@ function SourceGenomeRegion({ source, requestStatus, sendPostRequest }) {
   );
 }
 
-export { SourceGenomeRegion, AssemblyIdSelector };
+export { SourceGenomeRegion, AssemblyIdSelector, SpeciesPicker, SequenceAccessionPicker };

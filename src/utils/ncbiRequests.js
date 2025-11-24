@@ -2,43 +2,6 @@ import getHttpClient from './getHttpClient';
 
 const httpClient = getHttpClient();
 
-export async function querySpecies(userInput) {
-  // Get ids from search
-  const query = userInput.toLowerCase();
-  // Max number of ids that will be received
-  const retMax = 10000;
-  let retStart = 0;
-  const ids = [];
-  while (retStart >= 0) {
-    const url1 = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=taxonomy&term=*${query}*[WORD]+species[rank]&retmax=${retMax}&retmode=json&retstart=${retStart}`;
-    const resp1 = await httpClient.get(url1);
-    resp1.data.esearchresult.idlist.forEach((e) => ids.push(e));
-    if (Number(resp1.data.esearchresult.count) > ids.length) {
-      retStart += retMax;
-    } else {
-      retStart = -1;
-    }
-    if (retStart > 50000) {
-      throw Error('Too many results, narrow your search');
-    }
-  }
-
-  const maxRequestIds = 400;
-  // Make requests with maxRequestIds ids
-  const taxons = [];
-  for (let i = 0; i < ids.length; i += maxRequestIds) {
-    const requestedIds = ids.slice(i, i + maxRequestIds).join(',');
-    const url2 = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=taxonomy&id=${requestedIds}&retmode=json`;
-    const resp2Data = await httpClient.get(url2);
-    resp2Data.data.result.uids.forEach((e) => taxons.push(resp2Data.data.result[e]));
-    // NCBI is very sensitive to the number of requests, so we need to wait a bit
-    if (i + maxRequestIds < ids.length) { await setTimeout(() => {}, 2000); }
-  }
-
-  return taxons.filter((taxon) => taxon.species !== ''
-     && !taxon.species.includes(' ')
-     && taxon.rank === 'species' && taxon.scientificname.includes(query));
-}
 
 export async function taxonSuggest(userInput) {
   const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/taxonomy/taxon_suggest/${userInput}`;
@@ -73,7 +36,7 @@ export async function geneSuggest(assemblyId, userInput) {
 
 export async function getInfoFromAssemblyId(assemblyId) {
   const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyId}/dataset_report?filters.assembly_version=all_assemblies`;
-  const resp = await httpClient.get(url, { validateStatus: false });
+  const resp = await httpClient.get(url);
 
   if (resp.status === 404 || resp.data.reports === undefined) {
     return null;
@@ -136,15 +99,4 @@ export async function getInfoFromSequenceAccession(sequenceAccession) {
   const resp2 = await httpClient.get(url2);
   const { scientificname: organismName } = resp2.data.result[resp2.data.result.uids[0]];
   return { species: { tax_id: taxId, organism_name: organismName }, sequenceAccessionStandard };
-}
-
-export async function getSequenceAccessionsFromAssemblyAccession(assemblyAccession) {
-  const url = `https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/${assemblyAccession}/sequence_reports`;
-  // For example: https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_000005845.2/sequence_reports
-  try {
-    const resp = await httpClient.get(url);
-    return resp.data.reports;
-  } catch (error) {
-    return [];
-  }
 }
