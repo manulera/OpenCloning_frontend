@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssemblyIdSelector } from './SourceGenomeRegion';
+import { AssemblyIdSelector, SpeciesPicker, SequenceAccessionPicker, } from './SourceGenomeRegion';
 
 describe('<AssemblyIdSelector />', () => {
   it('can propose a paired accession if the assembly has no annotation', () => {
@@ -55,4 +55,77 @@ describe('<AssemblyIdSelector />', () => {
     cy.wait('@getPairedAssemblyInfo');
     cy.contains('Equivalent assembly GCF_000002945.3 has annotation').should('exist');
   });
+  it('handles NCBI being down displaying the right error', () => {
+    cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_000002945.3/dataset_report*', {
+      statusCode: 500,
+      body: {}
+    }).as('getAssemblyInfo');
+
+    cy.mount(
+      <AssemblyIdSelector setAssemblyId={cy.spy()} setHasAnnotation={cy.spy()} onAssemblyIdChange={cy.spy()} />
+    );
+    cy.get('input').type('GCA_000002945.3', { delay: 0});
+    cy.wait('@getAssemblyInfo');
+    cy.contains('Could not connect to server for validation.').should('exist');
+  });
 });
+
+describe('<SpeciesPicker />', () => {
+  it('handles NCBI being down displaying the right error', () => {
+    const setSpecies = cy.spy().as('setSpecies');
+    const setAssemblyId = cy.spy().as('setAssemblyId');
+
+    cy.mount(
+      <SpeciesPicker setSpecies={setSpecies} setAssemblyId={setAssemblyId} />
+    );
+    cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/taxonomy/taxon_suggest/**', {
+      statusCode: 500,
+      body: {}
+    }).as('getTaxonSuggest');
+
+    cy.get('input').type('Saccharomyces cerevisiae', { delay: 0});
+    cy.wait('@getTaxonSuggest');
+    cy.contains('Could not retrieve data').should('exist');
+    // cy.get('li').contains('Saccharomyces cerevisiae - 559292').click();
+  });
+});
+
+describe('<SequenceAccessionPicker />', () => {
+  it('handles NCBI being down displaying the right error', () => {
+    const setSequenceAccession = cy.spy().as('setSequenceAccession');
+    const assemblyAccession = 'GCA_000002945.3';
+
+    cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_000002945.3/sequence_reports*', {
+      statusCode: 500,
+      body: {}
+    }).as('getSequenceReports');
+
+    cy.mount(
+      <SequenceAccessionPicker assemblyAccession={assemblyAccession} sequenceAccession={''} setSequenceAccession={setSequenceAccession} />
+    );
+    cy.contains('Could not load chromosomes').should('exist');
+  });
+  it('displays the chromosomes', () => {
+    const setSequenceAccession = cy.spy().as('setSequenceAccession');
+    const assemblyAccession = 'GCA_000002945.3';
+
+    cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_000002945.3/sequence_reports*', {
+      statusCode: 200,
+      body: { reports: [{ chr_name: 'chr1', refseq_accession: 'NC_000001.10' }, { chr_name: 'chr2', refseq_accession: 'NC_000002.11' }] }
+    }).as('getSequenceReports');
+
+    cy.mount(
+      <SequenceAccessionPicker assemblyAccession={assemblyAccession} setSequenceAccession={setSequenceAccession} />
+    );
+    cy.wait('@getSequenceReports');
+    cy.get('label').siblings('div').first().click();
+    cy.contains('chr1 - NC_000001.10').should('exist');
+    cy.contains('chr2 - NC_000002.11').should('exist');
+    cy.get('div[role="presentation"]').contains('chr1 - NC_000001.10').click();
+    // Check that the spy was called with the expected value
+    cy.get('@setSequenceAccession').should('have.been.calledWith', 'NC_000001.10');
+
+  });
+});
+
+
