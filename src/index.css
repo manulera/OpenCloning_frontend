@@ -50,7 +50,7 @@ li.hidden-ancestors {
     /* Prevent the removal of spaces that make sequences align correctly */
     white-space: pre;
     max-width: 300px;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 div.before-node {
