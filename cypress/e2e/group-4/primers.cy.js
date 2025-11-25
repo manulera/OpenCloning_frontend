@@ -125,8 +125,8 @@ describe('Tests primer functionality', () => {
     cy.get('form.primer-row .MuiFormHelperText-root').contains('Name exists').should('not.exist');
   });
   it('Can change name of  used primer', () => {
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('Examples').click();
-    cy.get('li span').contains('Integration of cassette by homologous recombination').click();
+    loadExample('Integration of cassette by homologous recombination');
+    changeTab('Primers');
     cy.get('.primer-table-container [data-testid="EditIcon"]').first().click();
     cy.get('form.primer-row input#name').clear();
     cy.get('form.primer-row input#name').type('blah');
@@ -328,6 +328,7 @@ describe('Tests primer functionality', () => {
   });
   it('Can download primers', () => {
     loadExample('Templateless PCR');
+    changeTab('Primers');
     cy.get('button').contains('Download Primers').click();
     setInputValue('File name', 'primers-test', '.MuiDialogContent-root');
     cy.get('.MuiDialogActions-root button').contains('Save file').click();
