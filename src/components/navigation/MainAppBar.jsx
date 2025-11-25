@@ -78,6 +78,7 @@ function MainAppBar() {
         data = formatTemplate(data, url);
       }
       dispatch(setCloningState(data));
+      dispatch(setCurrentTab(0))
     }
   };
 
