@@ -42,11 +42,11 @@ describe('Test load from URL', () => {
   it('can load from locus tag', () => {
     // Without padding
     cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715');
-    cy.get('.finished-source').contains('Genome region', { timeout: 10000 }).should('exist');
+    cy.get('.finished-source', { timeout: 10000 }).contains('Genome region').should('exist');
     cy.get('.finished-source').contains('1306681:1309359').should('exist');
     // With padding
     cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715&padding=1200');
-    cy.get('.finished-source').contains('Genome region', { timeout: 10000 }).should('exist');
+    cy.get('.finished-source', { timeout: 10000 }).contains('Genome region').should('exist');
     cy.get('.finished-source').contains('1306481:1309559').should('exist');
 
     // Handles error if locus tag or assembly accession is wrong and can retry

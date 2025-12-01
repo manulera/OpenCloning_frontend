@@ -303,11 +303,10 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
     }
     if (selectedRepository === 'seva') {
       extra.repository_id = inputValue.plasmid_name;
-      extra.sequence_file_url = inputValue.data.GenBank_link;
     }
     if (selectedRepository === 'open_dna_collections') {
       extra.repository_id = inputValue.collection + '/' + inputValue.plasmid_id;
-      extra.sequence_file_url = inputValue.url.replace(/ /g, '%20');
+      extra.sequence_file_url = encodeURI(inputValue.url);
     }
     const requestData = { id: sourceId, ...extra, repository_name: selectedRepository };
     sendPostRequest({ endpoint: `repository_id/${selectedRepository}`, requestData, source });

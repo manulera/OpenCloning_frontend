@@ -168,7 +168,7 @@
   ],
   "description": "",
   "files": null,
-  "schema_version": "0.4.6",
+  "schema_version": "0.4.8",
   "backend_version": "0.2.8.3.post5.dev0+f5942fe",
   "frontend_version": "v0.2.12.8-7-g9cec8e2"
 }
