@@ -80,10 +80,13 @@ function CollectionSource({ source, requestStatus, sendPostRequest }) {
         </FormControl>
 
         {selectedOption !== null && (
-        <>
-          {selectedOptionObject.info && <ObjectTable object={selectedOptionObject.info} />}
-          <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>
-        </>
+          <>
+            {selectedOptionObject.info && <ObjectTable object={selectedOptionObject.info} />}
+            <SubmitButtonBackendAPI
+              requestStatus={requestStatus}
+              {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-collection-source" })}
+            >Submit</SubmitButtonBackendAPI>
+          </>
         )}
       </form>
     </div>

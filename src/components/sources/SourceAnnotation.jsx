@@ -33,7 +33,10 @@ function SourceAnnotation({ source, requestStatus, sendPostRequest }) {
           <MenuItem value="plannotate">pLannotate</MenuItem>
         </Select>
       </FormControl>
-      <SubmitButtonBackendAPI requestStatus={requestStatus}>Annotate</SubmitButtonBackendAPI>
+      <SubmitButtonBackendAPI
+        requestStatus={requestStatus}
+        {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-annotation" })}
+      >Annotate</SubmitButtonBackendAPI>
     </form>
   );
 }

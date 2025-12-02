@@ -19,7 +19,10 @@ function SourceReverseComplement({ source, requestStatus, sendPostRequest }) {
   return (
     <div className="ReverseComplementSource">
       <form onSubmit={onSubmit}>
-        <SubmitButtonBackendAPI requestStatus={requestStatus}>
+        <SubmitButtonBackendAPI
+          requestStatus={requestStatus}
+          {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-reverse-complement" })}
+        >
           Reverse complement
         </SubmitButtonBackendAPI>
       </form>

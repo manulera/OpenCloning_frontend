@@ -112,7 +112,12 @@ function SourceGenomeRegionLocusOnReference({ source, requestStatus, sendPostReq
         <>
           <KnownAssemblyField assemblyId={assemblyId} />
           <SourceGenomeRegionSelectGene {...{ gene, upstreamBasesRef, downstreamBasesRef, setGene, assemblyId }} />
-          {gene && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>}
+          {gene && (
+            <SubmitButtonBackendAPI
+              requestStatus={requestStatus}
+              {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-genome-region-locus-reference" })}
+            >Submit</SubmitButtonBackendAPI>
+          )}
         </>
       )}
       { (species && assemblyId === '') && (
@@ -221,7 +226,12 @@ function SourceGenomeRegionLocusOnOther({ source, requestStatus, sendPostRequest
       {assemblyId && hasAnnotation && (
         <>
           <SourceGenomeRegionSelectGene {...{ gene, upstreamBasesRef, downstreamBasesRef, setGene, assemblyId }} />
-          {gene && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>}
+          {gene && (
+            <SubmitButtonBackendAPI
+              requestStatus={requestStatus}
+              {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-genome-region-locus-other" })}
+            >Submit</SubmitButtonBackendAPI>
+          )}
         </>
       )}
       {assemblyId && !hasAnnotation && (<Alert severity="error">The selected assembly has no gene annotations</Alert>)}
@@ -360,7 +370,10 @@ function SourceGenomeRegionCustomCoordinates({ source, requestStatus, sendPostRe
               <FormHelperText error={formError.strand !== null}>{formError.strand}</FormHelperText>
             </FormControl>
           </Box>
-          <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>
+          <SubmitButtonBackendAPI
+            requestStatus={requestStatus}
+            {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-genome-region-custom-coordinates" })}
+          >Submit</SubmitButtonBackendAPI>
         </>
       )}
     </form>

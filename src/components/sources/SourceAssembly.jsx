@@ -187,7 +187,12 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
         </FormControl>
         )}
 
-        {!preventSubmit && <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>}
+        {!preventSubmit && (
+          <SubmitButtonBackendAPI
+            requestStatus={requestStatus}
+            {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": `submit-assembly-${assemblyType}` })}
+          >Submit</SubmitButtonBackendAPI>
+        )}
       </form>
     </div>
   );

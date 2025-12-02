@@ -102,7 +102,10 @@ function SourceManuallyTyped({ source, requestStatus, sendPostRequest }) {
       <FormControl fullWidth style={{ textAlign: 'left' }}>
         <FormControlLabel control={<Checkbox value={isCircular} onChange={onCircularChange} />} label="Circular DNA" />
       </FormControl>
-      <SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>
+      <SubmitButtonBackendAPI
+        requestStatus={requestStatus}
+        {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-manually-typed" })}
+      >Submit</SubmitButtonBackendAPI>
     </form>
   );
 }

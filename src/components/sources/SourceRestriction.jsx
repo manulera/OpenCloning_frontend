@@ -26,7 +26,13 @@ function SourceRestriction({ source, requestStatus, sendPostRequest }) {
     <div className="restriction">
       <form onSubmit={onSubmit}>
         <EnzymeMultiSelect setEnzymes={setEnzymes} />
-        {(enzymes.length > 0) && <SubmitButtonBackendAPI requestStatus={requestStatus} color="success">Perform restriction</SubmitButtonBackendAPI>}
+        {(enzymes.length > 0) && (
+          <SubmitButtonBackendAPI
+            requestStatus={requestStatus}
+            color="success"
+            {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-restriction" })}
+          >Perform restriction</SubmitButtonBackendAPI>
+        )}
       </form>
     </div>
   );
