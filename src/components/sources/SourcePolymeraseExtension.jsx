@@ -29,7 +29,10 @@ function SourcePolymeraseExtension({ source, requestStatus, sendPostRequest }) {
             no 5&apos; overhangs.
           </Alert>
         ) : (
-          <SubmitButtonBackendAPI requestStatus={requestStatus}>
+          <SubmitButtonBackendAPI
+            requestStatus={requestStatus}
+            {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-polymerase-extension" })}
+          >
             Extend with polymerase
           </SubmitButtonBackendAPI>
         )}

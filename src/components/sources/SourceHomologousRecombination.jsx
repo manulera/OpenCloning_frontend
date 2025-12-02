@@ -109,7 +109,11 @@ function SourceHomologousRecombination({ source, requestStatus, sendPostRequest 
           />
         )}
         { allowSubmit && (
-        <SubmitButtonBackendAPI requestStatus={requestStatus} color="primary">
+        <SubmitButtonBackendAPI
+          requestStatus={requestStatus}
+          color="primary"
+          {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": isCrispr ? "submit-crispr" : "submit-homologous-recombination" })}
+        >
           {isCrispr ? 'Perform CRISPR' : 'Recombine'}
         </SubmitButtonBackendAPI>
         )}

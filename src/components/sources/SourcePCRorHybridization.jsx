@@ -150,7 +150,10 @@ function SourcePCRorHybridization({ source, requestStatus, sendPostRequest }) {
           </>
         )}
         {forwardPrimerId && reversePrimerId && (
-          <SubmitButtonBackendAPI requestStatus={requestStatus}>
+          <SubmitButtonBackendAPI
+            requestStatus={requestStatus}
+            {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": !isPcr ? "submit-hybridization" : "submit-pcr" })}
+          >
             {!isPcr ? 'Perform hybridization' : 'Perform PCR'}
           </SubmitButtonBackendAPI>
         )}

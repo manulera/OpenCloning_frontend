@@ -171,6 +171,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
       <SubmitButtonBackendAPI
         component="label"
         requestStatus={requestStatus}
+        {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-file" })}
       >
         Select File
         <input

@@ -404,7 +404,12 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               groupField="collection"
             />
           )}
-          {inputValue && !error && (<SubmitButtonBackendAPI requestStatus={requestStatus}>Submit</SubmitButtonBackendAPI>)}
+          {inputValue && !error && (
+            <SubmitButtonBackendAPI
+              requestStatus={requestStatus}
+              {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-repository-id" })}
+            >Submit</SubmitButtonBackendAPI>
+          )}
 
         </form>
       )}
