@@ -56,13 +56,11 @@
       "output_name": null,
       "database_id": null,
       "input": [],
+      "repository_id": "CU329670.1",
+      "coordinates": "1877189..1881726",
       "assembly_accession": "GCA_000002945.3",
-      "sequence_accession": "CU329670.1",
       "locus_tag": "SPOM_SPAPB1A10.09",
-      "gene_id": null,
-      "start": 1877189,
-      "end": 1881726,
-      "strand": 1
+      "gene_id": null
     },
     {
       "id": 2,
@@ -102,7 +100,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "39296",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v2.0.0/sequences/364511/7619eb5c-60b7-4e77-8e64-5fb9c2fae131/addgene-plasmid-39296-sequence-364511.gbk",
       "addgene_sequence_type": "addgene-full"
     },
@@ -192,7 +189,7 @@
   ],
   "description": "Cloning of CDS of S. pombe gene pkl1 with an N-term Venus tag using MoClo kit from John Dueber, see:\n\nhttps://www.addgene.org/kits/moclo-ytk/#kit-contents\n\nThe plasmids used are:\n\npYTK002 - ConLS\npYTK009 - pTDH3\npYTK038 - Venus 65145\npayload - CDS of pkl1 from S. pombe\npYTK051 - tENO1 65158\npYTK067 - ConR1 65174\npYTK074 - URA3 65181\npYTK081 - CEN6/ARS4 65188\npYTK083 - AmpR-ColE1 65190\n\n\n\n\n",
   "files": null,
-  "schema_version": "0.4.8",
+  "schema_version": "0.4.9",
   "backend_version": null,
   "frontend_version": null
 }
