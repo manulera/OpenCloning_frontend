@@ -287,6 +287,8 @@ function HomologousRecombinationMessage({ source }) {
 }
 
 function GenomeCoordinatesMessage({ source }) {
+  const strand = source.coordinates.includes('complement') ? -1 : 1;
+  const coordinateString = source.coordinates.replace('complement(','').replace(')','');
   return (
     <>
       <h4 style={{ marginBottom: '5px' }}>Genome region</h4>
@@ -300,8 +302,8 @@ function GenomeCoordinatesMessage({ source }) {
       <div>
         <strong>Coords:</strong>
         {' '}
-        <a href={`https://www.ncbi.nlm.nih.gov/nuccore/${source.sequence_accession}`} target="_blank" rel="noopener noreferrer">{source.sequence_accession}</a>
-        {source.coordinates}
+        <a href={`https://www.ncbi.nlm.nih.gov/nuccore/${source.repository_id}`} target="_blank" rel="noopener noreferrer">{source.repository_id}</a>
+        {` (${coordinateString}, ${strand})`}
       </div>
       {source.locus_tag && (
         <div>
@@ -358,7 +360,7 @@ function FinishedSource({ sourceId }) {
       message = `CRISPR HDR with ${source.input[0].sequence} as template, ${source.input[1].sequence} as insert and ${guidesString} as a guide${source.input.length > 3 ? 's' : ''}`;
     }
       break;
-    case 'RepositoryIdSource': message = <RepositoryIdMessage source={source} />;
+    case 'NCBISequenceSource': message = <RepositoryIdMessage source={source} />;
       break;
     case 'AddgeneIdSource': message = <RepositoryIdMessage source={source} />;
       break;

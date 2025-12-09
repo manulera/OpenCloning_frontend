@@ -16,3 +16,9 @@ export function getUrlParameters() {
   const searchParams = new URLSearchParams(query);
   return Object.fromEntries(searchParams.entries());
 }
+
+export function formatSequenceLocationString(start, end, strand) {
+  if (strand !== -1)
+    return `${start}..${end}`;
+  return `complement(${start}..${end})`;
+}

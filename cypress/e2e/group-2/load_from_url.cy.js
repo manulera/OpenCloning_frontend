@@ -43,11 +43,11 @@ describe('Test load from URL', () => {
     // Without padding
     cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715');
     cy.get('.finished-source', { timeout: 10000 }).contains('Genome region').should('exist');
-    cy.get('.finished-source').contains('1306681:1309359').should('exist');
+    cy.get('.finished-source').contains('1306681..1309359').should('exist');
     // With padding
     cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715&padding=1200');
     cy.get('.finished-source', { timeout: 10000 }).contains('Genome region').should('exist');
-    cy.get('.finished-source').contains('1306481:1309559').should('exist');
+    cy.get('.finished-source').contains('1306481..1309559').should('exist');
 
     // Handles error if locus tag or assembly accession is wrong and can retry
     cy.intercept('GET','https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_000002945.3/annotation_report?search_text=SPNCRNA.1715', {

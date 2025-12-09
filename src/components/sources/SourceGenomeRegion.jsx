@@ -11,6 +11,7 @@ import TextFieldValidate from '../form/TextFieldValidate';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
 import useHttpClient from '../../hooks/useHttpClient';
+import { formatSequenceLocationString } from '../../utils/other';
 
 function getGeneCoordsInfo(gene) {
   const { range: geneRange, accession_version: accessionVersion } = gene.annotation.genomic_regions[0].gene_range;
@@ -24,11 +25,6 @@ function formatGeneCoords(gene) {
   return `${accessionVersion} (${start}..${end}${strand === -1 ? ', complement' : ''})`;
 }
 
-function formatSequenceLocationString(start, end, strand) {
-  if (strand !== -1)
-    return `${start}..${end}`;
-  return `complement(${start}..${end})`;
-}
 
 export function formatBackendPayloadWithGene(assemblyId, gene, shiftUpstream, shiftDownstream) {
   const { accessionVersion, start, end, strand } = getGeneCoordsInfo(gene);
@@ -292,7 +288,7 @@ function SourceGenomeRegionCustomCoordinates({ source, requestStatus, sendPostRe
       id: sourceId,
       repository_id: sequenceAccession,
       assembly_accession: assemblyId || null,
-      coordinates: formatSequenceLocationString(Number(coords.start), Number(coords.end), coords.strand === 'plus' ? 1 : -1),
+      coordinates: formatSequenceLocationString(coords.start, coords.end, coords.strand === 'plus' ? 1 : -1),
     };
     sendPostRequest({ endpoint: 'genome_coordinates', requestData, source });
   };

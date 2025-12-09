@@ -6,7 +6,7 @@ import MainAppBar from './components/navigation/MainAppBar';
 import OpenCloning from './components/OpenCloning';
 import { cloningActions } from './store/cloning';
 import useDatabase from './hooks/useDatabase';
-import { getUrlParameters } from './utils/other';
+import { formatSequenceLocationString, getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
@@ -105,10 +105,8 @@ function App() {
             id: 1,
             type: 'KnownGenomeCoordinatesSource',
             assembly_accession,
-            sequence_accession,
-            start,
-            end,
-            strand,
+            repository_id: sequence_accession,
+            coordinates: formatSequenceLocationString(start, end, strand),
           }
           dispatch(updateSource(source));
         } else if (urlParams.source === 'locus_tag') {

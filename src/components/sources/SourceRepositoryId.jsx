@@ -17,22 +17,22 @@ const httpClient = getHttpClient();
 
 function validateRepositoryId(repositoryId, repository) {
   switch (repository) {
-    case 'addgene':
+    case 'AddgeneIdSource':
       if (!repositoryId.match(/^\d+/)) {
         return 'Addgene IDs must be numbers (e.g. 39296)';
       }
       break;
-    case 'benchling':
+    case 'BenchlingUrlSource':
       if (!repositoryId.match(/^https:\/\/benchling\.com\/.+\/edit$/)) {
         return 'Use a Benchling URL like https://benchling.com/siverson/f/lib_B94YxDHhQh-cidar-moclo-library/seq_dh1FrJTc-b0015_dh/edit';
       }
       break;
-    case 'euroscarf':
+    case 'EuroscarfSource':
       if (!repositoryId.match(/^P\d+$/)) {
         return 'Euroscarf IDs must be P followed by numbers (e.g. P30174)';
       }
       break;
-    case 'wekwikgene':
+    case 'WekWikGeneIdSource':
       if (!repositoryId.match(/^\d+$/)) {
         return 'WeKwikGene IDs must be numbers (e.g. 0000304)';
       }
