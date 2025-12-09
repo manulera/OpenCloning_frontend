@@ -24,19 +24,23 @@ function formatGeneCoords(gene) {
   return `${accessionVersion} (${start}..${end}${strand === -1 ? ', complement' : ''})`;
 }
 
+function formatSequenceLocationString(start, end, strand) {
+  if (strand !== -1)
+    return `${start}..${end}`;
+  return `complement(${start}..${end})`;
+}
+
 export function formatBackendPayloadWithGene(assemblyId, gene, shiftUpstream, shiftDownstream) {
   const { accessionVersion, start, end, strand } = getGeneCoordsInfo(gene);
   const shiftedStart = start - (strand === 1 ? shiftUpstream : shiftDownstream);
   const shiftedEnd = end + (strand === 1 ? shiftDownstream : shiftUpstream);
 
   return {
-    sequence_accession: accessionVersion,
+    repository_id: accessionVersion,
     assembly_accession: assemblyId,
     locus_tag: gene.annotation.locus_tag ? gene.annotation.locus_tag : null,
     gene_id: gene.annotation.gene_id ? gene.annotation.gene_id : null,
-    start: shiftedStart,
-    end: shiftedEnd,
-    strand,
+    coordinates: formatSequenceLocationString(shiftedStart, shiftedEnd, strand),
   };
 }
 
@@ -286,11 +290,9 @@ function SourceGenomeRegionCustomCoordinates({ source, requestStatus, sendPostRe
     setFormError({ ...noError });
     const requestData = {
       id: sourceId,
-      sequence_accession: sequenceAccession,
+      repository_id: sequenceAccession,
       assembly_accession: assemblyId || null,
-      start: coords.start,
-      end: coords.end,
-      strand: coords.strand === 'plus' ? 1 : -1,
+      coordinates: formatSequenceLocationString(Number(coords.start), Number(coords.end), coords.strand === 'plus' ? 1 : -1),
     };
     sendPostRequest({ endpoint: 'genome_coordinates', requestData, source });
   };

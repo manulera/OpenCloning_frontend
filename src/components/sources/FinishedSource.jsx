@@ -286,6 +286,44 @@ function HomologousRecombinationMessage({ source }) {
   );
 }
 
+function GenomeCoordinatesMessage({ source }) {
+  return (
+    <>
+      <h4 style={{ marginBottom: '5px' }}>Genome region</h4>
+      {source.assembly_accession && (
+        <div>
+          <strong>Assembly:</strong>
+          {' '}
+          <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${source.assembly_accession}`} target="_blank" rel="noopener noreferrer">{source.assembly_accession}</a>
+        </div>
+      )}
+      <div>
+        <strong>Coords:</strong>
+        {' '}
+        <a href={`https://www.ncbi.nlm.nih.gov/nuccore/${source.sequence_accession}`} target="_blank" rel="noopener noreferrer">{source.sequence_accession}</a>
+        {source.coordinates}
+      </div>
+      {source.locus_tag && (
+        <div>
+          <strong>Locus tag:</strong>
+          {' '}
+          {source.locus_tag}
+        </div>
+      )}
+      {source.gene_id && (
+        <div>
+          <strong>Gene ID:</strong>
+          {' '}
+          <a href={`https://www.ncbi.nlm.nih.gov/gene/${source.gene_id}`} target="_blank" rel="noopener noreferrer">
+            {source.gene_id}
+          </a>
+        </div>
+      )}
+
+    </>
+  );
+}
+
 function FinishedSource({ sourceId }) {
   const source = useSelector((state) => state.cloning.sources.find((s) => s.id === sourceId), isEqual);
   const primers = useSelector((state) => state.cloning.primers, isEqual);
@@ -336,42 +374,7 @@ function FinishedSource({ sourceId }) {
       break;
     case 'OpenDNACollectionsSource': message = <OpenDNACollectionsMessage source={source} />;
       break;
-    case 'GenomeCoordinatesSource':
-      message = (
-        <>
-          <h4 style={{ marginBottom: '5px' }}>Genome region</h4>
-          {source.assembly_accession && (
-            <div>
-              <strong>Assembly:</strong>
-              {' '}
-              <a href={`https://www.ncbi.nlm.nih.gov/datasets/genome/${source.assembly_accession}`} target="_blank" rel="noopener noreferrer">{source.assembly_accession}</a>
-            </div>
-          )}
-          <div>
-            <strong>Coords:</strong>
-            {' '}
-            <a href={`https://www.ncbi.nlm.nih.gov/nuccore/${source.sequence_accession}`} target="_blank" rel="noopener noreferrer">{source.sequence_accession}</a>
-            {`(${source.start}:${source.end}, ${source.strand})`}
-          </div>
-          {source.locus_tag && (
-            <div>
-              <strong>Locus tag:</strong>
-              {' '}
-              {source.locus_tag}
-            </div>
-          )}
-          {source.gene_id && (
-            <div>
-              <strong>Gene ID:</strong>
-              {' '}
-              <a href={`https://www.ncbi.nlm.nih.gov/gene/${source.gene_id}`} target="_blank" rel="noopener noreferrer">
-                {source.gene_id}
-              </a>
-            </div>
-          )}
-
-        </>
-      );
+    case 'GenomeCoordinatesSource': message = <GenomeCoordinatesMessage source={source} />;
       break;
     case 'PolymeraseExtensionSource': message = 'Polymerase extension'; break;
     case 'AnnotationSource': message = <PlannotateAnnotationMessage source={source} />; break;
