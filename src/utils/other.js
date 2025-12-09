@@ -18,7 +18,9 @@ export function getUrlParameters() {
 }
 
 export function formatSequenceLocationString(start, end, strand) {
+  const startNumber = Number(start);
+  const endNumber = Number(end);
   if (strand !== -1)
-    return `${start}..${end}`;
-  return `complement(${start}..${end})`;
+    return `${startNumber}..${endNumber}`;
+  return `complement(${startNumber}..${endNumber})`;
 }
