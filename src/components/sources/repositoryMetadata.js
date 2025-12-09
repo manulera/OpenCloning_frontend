@@ -1,4 +1,4 @@
-export default {
+const repositoryMetadata = {
   AddgeneIdSource: { slug: 'addgene', label: 'Addgene', inputLabel: 'Addgene ID', example: '39296' },
   BenchlingUrlSource: { slug: 'benchling', label: 'Benchling', inputLabel: 'Benchling URL' },
   EuroscarfSource: { slug: 'euroscarf', label: 'Euroscarf', inputLabel: 'Euroscarf ID', example: 'P30174' },
@@ -9,4 +9,6 @@ export default {
   SnapGenePlasmidSource: { slug: 'snapgene', label: 'SnapGene' },
   WekWikGeneIdSource: { slug: 'wekwikgene', label: 'WeKwikGene', inputLabel: 'WeKwikGene ID', example: '0000304' },
 };
+
+export default repositoryMetadata;
 
