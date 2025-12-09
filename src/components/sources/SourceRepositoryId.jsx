@@ -11,6 +11,7 @@ import { Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import getHttpClient from '../../utils/getHttpClient';
+import repositoryMetadata from './repositoryMetadata';
 
 const httpClient = getHttpClient();
 
@@ -42,21 +43,7 @@ function validateRepositoryId(repositoryId, repository) {
   return '';
 }
 
-const exampleIds = {
-  addgene: '39296',
-  genbank: 'NM_001018957.2',
-  benchling: '',
-  euroscarf: 'P30174',
-  wekwikgene: '0000304',
-};
 
-const inputLabels = {
-  addgene: 'Addgene ID',
-  genbank: 'GenBank ID',
-  benchling: 'Benchling URL',
-  euroscarf: 'Euroscarf ID',
-  wekwikgene: 'WeKwikGene ID',
-};
 
 const snapgeneCheckOption = (option, inputValue) => option.name.toLowerCase().includes(inputValue.toLowerCase());
 const snapgeneFormatOption = (option, plasmidSet, plasmidSetName) => ({ name: option.name, path: `${plasmidSet}/${option.subpath}`, plasmidSetName, plasmidSet });
@@ -267,79 +254,81 @@ function IndexJsonSelector({
 function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
   const { id: sourceId } = source;
   const [inputValue, setInputValue] = React.useState('');
-  const [selectedRepository, setSelectedRepository] = React.useState(source.repository_name || '');
+  const [repositoryType, setRepositoryType] = React.useState(source.type || '');
   const [error, setError] = React.useState('');
 
+  const repositoryMeta = repositoryMetadata[repositoryType] || {};
+
   React.useEffect(() => {
-    setSelectedRepository(source.repository_name || '');
-  }, [source.repository_name]);
+    setRepositoryType(source.type || '');
+  }, [source.type]);
 
   React.useEffect(() => {
     setInputValue('');
     setError('');
-  }, [selectedRepository]);
+  }, [repositoryType]);
 
   React.useEffect(() => {
     if (inputValue) {
-      setError(validateRepositoryId(inputValue, selectedRepository));
+      setError(validateRepositoryId(inputValue, repositoryType));
     } else {
       setError('');
     }
-  }, [inputValue]);
+  }, [inputValue, repositoryType]);
 
   const onSubmit = (event) => {
     event.preventDefault();
     const extra = { repository_id: inputValue };
-    if (selectedRepository === 'benchling') {
+    if (repositoryType === 'BenchlingUrlSource') {
       // Remove /edit from the end of the URL and add .gb
       extra.repository_id = inputValue.replace(/\/edit$/, '.gb');
     }
-    if (selectedRepository === 'snapgene') {
+    if (repositoryType === 'SnapGenePlasmidSource') {
       extra.repository_id = inputValue.path;
     }
-    if (selectedRepository === 'igem') {
+    if (repositoryType === 'IGEMSource') {
       extra.repository_id = `${inputValue.part_name}-${inputValue.backbone}`;
       extra.sequence_file_url = inputValue.url;
     }
-    if (selectedRepository === 'seva') {
+    if (repositoryType === 'SEVASource') {
       extra.repository_id = inputValue.plasmid_name;
     }
-    if (selectedRepository === 'open_dna_collections') {
+    if (repositoryType === 'OpenDNACollectionsSource') {
       extra.repository_id = inputValue.collection + '/' + inputValue.plasmid_id;
       extra.sequence_file_url = encodeURI(inputValue.url);
     }
-    const requestData = { id: sourceId, ...extra, repository_name: selectedRepository };
-    sendPostRequest({ endpoint: `repository_id/${selectedRepository}`, requestData, source });
+    const requestData = { id: sourceId, ...extra, type: repositoryType };
+    sendPostRequest({ endpoint: `repository_id/${repositoryMeta.slug}`, requestData, source });
   };
-  const helperText = error || (exampleIds[selectedRepository] && `Example: ${exampleIds[selectedRepository]}`);
+  const helperText = error || (repositoryMeta?.example && `Example: ${repositoryMeta.example}`);
   return (
     <>
       <FormControl fullWidth>
         <InputLabel id={`select-repository-${sourceId}-label`}>Select repository</InputLabel>
         <Select
-          value={selectedRepository}
-          onChange={(event) => setSelectedRepository(event.target.value)}
+          value={repositoryType}
+          onChange={(event) => setRepositoryType(event.target.value)}
           labelId={`select-repository-${sourceId}-label`}
           label="Select repository"
         >
-          <MenuItem value="addgene">Addgene</MenuItem>
-          <MenuItem value="benchling">Benchling</MenuItem>
-          <MenuItem value="euroscarf">Euroscarf</MenuItem>
-          <MenuItem value="genbank">GenBank</MenuItem>
-          <MenuItem value="igem">iGEM</MenuItem>
-          <MenuItem value="open_dna_collections">Open DNA Collections</MenuItem>
-          <MenuItem value="seva">SEVA Plasmids</MenuItem>
-          <MenuItem value="snapgene">SnapGene</MenuItem>
-          <MenuItem value="wekwikgene">WeKwikGene</MenuItem>
+          <MenuItem value="AddgeneIdSource">Addgene</MenuItem>
+          <MenuItem value="BenchlingUrlSource">Benchling</MenuItem>
+          <MenuItem value="EuroscarfSource">Euroscarf</MenuItem>
+          <MenuItem value="NCBISequenceSource">GenBank</MenuItem>
+          <MenuItem value="IGEMSource">iGEM</MenuItem>
+          <MenuItem value="OpenDNACollectionsSource">Open DNA Collections</MenuItem>
+          <MenuItem value="SEVASource">SEVA Plasmids</MenuItem>
+          <MenuItem value="SnapGenePlasmidSource">SnapGene</MenuItem>
+          <MenuItem value="WekWikGeneIdSource">WeKwikGene</MenuItem>
         </Select>
       </FormControl>
-      {selectedRepository !== '' && (
+      {repositoryType && repositoryType !== 'RepositoryIdSource' && (
         <form onSubmit={onSubmit}>
-          {selectedRepository !== 'snapgene' && selectedRepository !== 'igem' && selectedRepository !== 'seva' && selectedRepository !== 'open_dna_collections' && (
+          {!['SnapGenePlasmidSource', 'IGEMSource', 'SEVASource', 'OpenDNACollectionsSource'].includes(repositoryType) && (
             <>
               <FormControl fullWidth>
                 <TextField
-                  label={inputLabels[selectedRepository]}
+                  label={repositoryMeta.inputLabel}
                   id={`repository-id-${sourceId}`}
                   value={inputValue}
                   onChange={(event) => setInputValue(event.target.value)}
@@ -348,7 +337,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
                 />
               </FormControl>
               {/* Extra info for benchling case */}
-              {selectedRepository === 'benchling' && (
+              {repositoryType === 'BenchlingUrlSource' && (
                 <Alert severity="info" sx={{ mb: 1 }}>
                   The sequence must be publicly accessible. Use the URL from a sequence editor page (ending in &quot;/edit&quot;), like
                   {' '}
@@ -358,7 +347,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               )}
             </>
           )}
-          {selectedRepository === 'snapgene'
+          {repositoryType === 'SnapGenePlasmidSource'
             && (
               <IndexJsonSelector
                 url="https://assets.opencloning.org/SnapGene_crawler/index.json"
@@ -370,7 +359,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
                 requiredInput={3}
               />
             )}
-          {selectedRepository === 'igem' && (
+          {repositoryType === 'IGEMSource' && (
             <IndexJsonSelector
               url="https://assets.opencloning.org/annotated-igem-distribution/results/index.json"
               setInputValue={setInputValue}
@@ -381,7 +370,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               requiredInput={0}
             />
           )}
-          {selectedRepository === 'seva' && (
+          {repositoryType === 'SEVASource' && (
             <IndexJsonSelector
               url="https://assets.opencloning.org/seva_plasmids_index/index.json"
               setInputValue={setInputValue}
@@ -392,7 +381,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
               requiredInput={3}
             />
           )}
-          {selectedRepository === 'open_dna_collections' && (
+          {repositoryType === 'OpenDNACollectionsSource' && (
             <IndexJsonSelector
               url="https://assets.opencloning.org/open-dna-collections/scripts/index.json"
               setInputValue={setInputValue}
@@ -407,7 +396,7 @@ function SourceRepositoryId({ source, requestStatus, sendPostRequest }) {
           {inputValue && !error && (
             <SubmitButtonBackendAPI
               requestStatus={requestStatus}
-              {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-repository-id", "data-umami-event-repository": `${selectedRepository}` })}
+              {...(import.meta.env.VITE_UMAMI_WEBSITE_ID && { "data-umami-event": "submit-repository-id", "data-umami-event-repository": `${repositoryMeta.slug}` })}
             >Submit</SubmitButtonBackendAPI>
           )}
 

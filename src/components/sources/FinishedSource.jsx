@@ -9,6 +9,7 @@ import useLoadDatabaseFile from '../../hooks/useLoadDatabaseFile';
 import { usePCRDetails } from '../primers/primer_details/usePCRDetails';
 import PCRTable from '../primers/primer_details/PCRTable';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
+import repositoryMetadata from './repositoryMetadata';
 
 function DatabaseMessage({ source }) {
   const [loadingHistory, setLoadingHistory] = React.useState(false);
@@ -139,16 +140,16 @@ function OpenDNACollectionsMessage({ source }) {
 }
 
 function RepositoryIdMessage({ source }) {
-  const { repository_name: repositoryName } = source;
+  const repositorySlug = repositoryMetadata[source.type].slug;
   let url = '';
-  if (repositoryName === 'genbank') {
+  if (repositorySlug === 'genbank') {
     url = `https://www.ncbi.nlm.nih.gov/nuccore/${source.repository_id}`;
-  } else if (repositoryName === 'addgene') {
+  } else if (repositorySlug === 'addgene') {
     url = `https://www.addgene.org/${source.repository_id}/sequences/`;
   }
   return (
     <>
-      {`Request to ${repositoryName} with ID `}
+      {`Request to ${repositorySlug || source.type} with ID `}
       <strong>
         <a href={url} target="_blank" rel="noopener noreferrer">
           {source.repository_id}
