@@ -49,14 +49,14 @@
     {
       "id": 1,
       "type": "GenomeCoordinatesSource",
+      "output_name": null,
+      "database_id": null,
       "input": [],
+      "repository_id": "CU329670.1",
+      "coordinates": "1877189..1881726",
       "assembly_accession": "GCA_000002945.3",
-      "sequence_accession": "CU329670.1",
       "locus_tag": "SPOM_SPAPB1A10.09",
-      "gene_id": null,
-      "start": 1877189,
-      "end": 1881726,
-      "strand": 1
+      "gene_id": null
     },
     {
       "id": 2,
@@ -65,6 +65,7 @@
       "database_id": null,
       "input": [
         {
+          "type": "SourceInput",
           "sequence": 1
         }
       ],
@@ -78,6 +79,7 @@
       "database_id": null,
       "input": [
         {
+          "type": "SourceInput",
           "sequence": 1
         }
       ],
@@ -115,15 +117,19 @@
       "database_id": null,
       "input": [
         {
+          "type": "SourceInput",
           "sequence": 2
         },
         {
+          "type": "SourceInput",
           "sequence": 3
         },
         {
+          "type": "SourceInput",
           "sequence": 4
         },
         {
+          "type": "SourceInput",
           "sequence": 5
         }
       ],
@@ -139,9 +145,11 @@
       "database_id": null,
       "input": [
         {
+          "type": "SourceInput",
           "sequence": 1
         },
         {
+          "type": "SourceInput",
           "sequence": 6
         }
       ],
@@ -151,7 +159,7 @@
   "primers": [],
   "description": "EBIC cloning strategy",
   "files": null,
-  "schema_version": "0.4.8",
+  "schema_version": "0.4.9",
   "backend_version": null,
   "frontend_version": null
 }

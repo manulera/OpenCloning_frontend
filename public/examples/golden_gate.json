@@ -97,7 +97,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65109",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110162/c1c98803-c8ba-44a6-95b8-d6a94097e36f/addgene-plasmid-65109-sequence-110162.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -108,7 +107,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65116",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110169/9ee8c8ed-5a57-43f9-99dd-79e66631ad89/addgene-plasmid-65116-sequence-110169.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -119,7 +117,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65145",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110198/117464a2-bab4-4fd2-8157-4ac89cf7ab6d/addgene-plasmid-65145-sequence-110198.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -130,7 +127,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65158",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110211/a0b9a8c0-9498-4100-8260-5346cffa1979/addgene-plasmid-65158-sequence-110211.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -141,7 +137,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65174",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/193065/ddf46d89-9718-435c-b5bb-3002a17065ab/addgene-plasmid-65174-sequence-193065.gbk",
       "addgene_sequence_type": "addgene-full"
     },
@@ -152,7 +147,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65181",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110234/113eb058-6e21-40b5-be0b-2e9c986e72bb/addgene-plasmid-65181-sequence-110234.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -163,7 +157,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65188",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110241/a6c1b84f-64cb-4675-9318-7aa00279074f/addgene-plasmid-65188-sequence-110241.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -174,7 +167,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "65190",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/110243/32100717-608c-4d8d-8cc1-800ede3d637b/addgene-plasmid-65190-sequence-110243.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -184,13 +176,11 @@
       "output_name": null,
       "database_id": null,
       "input": [],
+      "repository_id": "CU329670.1",
+      "coordinates": "3437890..3443117",
       "assembly_accession": "GCA_000002945.3",
-      "sequence_accession": "CU329670.1",
       "locus_tag": "SPOM_SPAC3A11.14C",
-      "gene_id": null,
-      "start": 3437890,
-      "end": 3443117,
-      "strand": 1
+      "gene_id": null
     },
     {
       "id": 10,
@@ -317,7 +307,7 @@
   ],
   "description": "Cloning of CDS of S. pombe gene pkl1 with an N-term Venus tag using MoClo kit from John Dueber, see:\n\nhttps://www.addgene.org/kits/moclo-ytk/#kit-contents\n\nThe plasmids used are:\n\npYTK002 - ConLS\npYTK009 - pTDH3\npYTK038 - Venus 65145\npayload - CDS of pkl1 from S. pombe\npYTK051 - tENO1 65158\npYTK067 - ConR1 65174\npYTK074 - URA3 65181\npYTK081 - CEN6/ARS4 65188\npYTK083 - AmpR-ColE1 65190\n\n\n\n\n",
   "files": null,
-  "schema_version": "0.4.8",
+  "schema_version": "0.4.9",
   "backend_version": null,
   "frontend_version": null
 }

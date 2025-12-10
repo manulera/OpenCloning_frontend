@@ -40,13 +40,11 @@
       "output_name": null,
       "database_id": null,
       "input": [],
+      "repository_id": "NC_003424.3",
+      "coordinates": "1877009..1881726",
       "assembly_accession": "GCF_000002945.1",
-      "sequence_accession": "NC_003424.3",
       "locus_tag": "SPAPB1A10.09",
-      "gene_id": 2543372,
-      "start": 1877009,
-      "end": 1881726,
-      "strand": 1
+      "gene_id": 2543372
     },
     {
       "id": 2,
@@ -55,7 +53,6 @@
       "database_id": null,
       "input": [],
       "repository_id": "39295",
-      "repository_name": "addgene",
       "sequence_file_url": "https://media.addgene.org/snapgene-media/v1.7.9-0-g88a3305/sequences/49547/50886467-8250-49c3-8987-07dbd5627b8e/addgene-plasmid-39295-sequence-49547.gbk",
       "addgene_sequence_type": "depositor-full"
     },
@@ -150,7 +147,7 @@
   ],
   "description": "Replacing a fragment in the ase1 ORF by a 3xHA tag, using CRISPR-HDR",
   "files": null,
-  "schema_version": "0.4.8",
+  "schema_version": "0.4.9",
   "backend_version": null,
   "frontend_version": null
 }

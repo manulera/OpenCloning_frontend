@@ -6,7 +6,7 @@ import MainAppBar from './components/navigation/MainAppBar';
 import OpenCloning from './components/OpenCloning';
 import { cloningActions } from './store/cloning';
 import useDatabase from './hooks/useDatabase';
-import { getUrlParameters } from './utils/other';
+import { formatSequenceLocationString, getUrlParameters } from './utils/other';
 import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
 import useAlerts from './hooks/useAlerts';
 import useHttpClient from './hooks/useHttpClient';
@@ -100,15 +100,33 @@ function App() {
             });
             return;
           }
+          const startNum = Number(start);
+          const endNum = Number(end);
+          const strandNum = Number(strand);
+          let error = '';
+          if (isNaN(startNum) || isNaN(endNum)) {
+            error = 'Start and end must be numbers';
+          }
+          else if (![1, -1].includes(strandNum)) {
+            error = 'Strand must be 1 or -1';
+          }
+          else if (startNum < 1) {
+            error = 'Start must be greater than zero';
+          }
+          else if (startNum >= endNum) {
+            error = 'End must be greater than start';
+          }
+          if (error) {
+            addAlert({ message: `Error loading genome coordinates from URL parameters: ${error}`, severity: 'error' });
+            return;
+          }
 
           const source = {
             id: 1,
             type: 'KnownGenomeCoordinatesSource',
             assembly_accession,
-            sequence_accession,
-            start,
-            end,
-            strand,
+            repository_id: sequence_accession,
+            coordinates: formatSequenceLocationString(start, end, strand),
           }
           dispatch(updateSource(source));
         } else if (urlParams.source === 'locus_tag') {

@@ -39,7 +39,7 @@ describe('Test download history file', () => {
     cy.contains('Read from file final_product.gb', { timeout: 20000 }).should('exist');
     // Alerts can cover the app bar
     cy.get('body').then(($body) => {
-      if ($body.find('.MuiAlert-message').length > 0) {
+      if ($body.find('div#global-error-message-wrapper .MuiAlert-message').length > 0) {
         closeAlerts();
       }
     });

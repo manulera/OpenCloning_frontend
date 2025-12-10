@@ -39,11 +39,14 @@ function SourceManuallyTyped({ source, requestStatus, sendPostRequest }) {
     setSubmissionAttempted(true);
     if (submissionAllowed) {
       const requestData = {
-        id: sourceId,
-        user_input: userInput,
-        circular: isCircular,
-        overhang_crick_3prime: overhangCrick3prime,
-        overhang_watson_3prime: overhangWatson3prime,
+        source: { id: sourceId },
+        sequence: {
+          id: sourceId,
+          sequence: userInput,
+          circular: isCircular,
+          overhang_crick_3prime: overhangCrick3prime,
+          overhang_watson_3prime: overhangWatson3prime,
+        },
       };
       sendPostRequest({ endpoint: 'manually_typed', requestData, source });
     }
