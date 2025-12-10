@@ -39,6 +39,34 @@ describe('Test load from URL', () => {
     cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1168936');
     cy.contains('Error loading genome sequence from URL parameters', { timeout: 10000 }).should('exist');
   });
+  it('Error if start and end are not numbers', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=abc&end=xyz&strand=1&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: Start and end must be numbers', { timeout: 10000 }).should('exist');
+  });
+  it('Error if strand is not 1 or -1', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1168936&end=1173209&strand=0&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: Strand must be 1 or -1', { timeout: 10000 }).should('exist');
+  });
+  it('Error if strand is invalid (e.g., 2)', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1168936&end=1173209&strand=2&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: Strand must be 1 or -1', { timeout: 10000 }).should('exist');
+  });
+  it('Error if start is zero', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=0&end=1173209&strand=1&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: Start must be greater than zero', { timeout: 10000 }).should('exist');
+  });
+  it('Error if start is negative', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=-1&end=1173209&strand=1&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: Start must be greater than zero', { timeout: 10000 }).should('exist');
+  });
+  it('Error if end is less than or equal to start', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1173209&end=1168936&strand=1&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: End must be greater than start', { timeout: 10000 }).should('exist');
+  });
+  it('Error if end equals start', () => {
+    cy.visit('/?source=genome_coordinates&sequence_accession=NC_003424.3&start=1168936&end=1168936&strand=1&assembly_accession=GCA_000002945.3');
+    cy.contains('Error loading genome coordinates from URL parameters: End must be greater than start', { timeout: 10000 }).should('exist');
+  });
   it('can load from locus tag', () => {
     // Without padding
     cy.visit('/?source=locus_tag&assembly_accession=GCA_000002945.3&locus_tag=SPNCRNA.1715');

@@ -100,6 +100,26 @@ function App() {
             });
             return;
           }
+          const startNum = Number(start);
+          const endNum = Number(end);
+          const strandNum = Number(strand);
+          let error = '';
+          if (isNaN(startNum) || isNaN(endNum)) {
+            error = 'Start and end must be numbers';
+          }
+          else if (![1, -1].includes(strandNum)) {
+            error = 'Strand must be 1 or -1';
+          }
+          else if (startNum < 1) {
+            error = 'Start must be greater than zero';
+          }
+          else if (startNum >= endNum) {
+            error = 'End must be greater than start';
+          }
+          if (error) {
+            addAlert({ message: `Error loading genome coordinates from URL parameters: ${error}`, severity: 'error' });
+            return;
+          }
 
           const source = {
             id: 1,
