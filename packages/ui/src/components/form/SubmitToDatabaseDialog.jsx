@@ -2,8 +2,8 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from
 import React from 'react';
 import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import useDatabase from '../../hooks/useDatabase';
-import { cloningActions } from '../../store/cloning';
-import { getSubState } from '../../utils/network';
+import { cloningActions } from '@opencloning/store/cloning';
+import { getSubState } from '@opencloning/utils/network';
 import IntermediatesDisclaimer from './intermediates_disclaimer.svg';
 
 function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType }) {

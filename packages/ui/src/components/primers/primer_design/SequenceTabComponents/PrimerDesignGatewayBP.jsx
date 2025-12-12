@@ -3,7 +3,7 @@ import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 
 import useGatewayPrimerDesignSettings from './useGatewayPrimerDesignSettings';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 function PrimerDesignGatewayBP({ donorVectorId, pcrSource }) {
   const templateSequenceId = getPcrTemplateSequenceId(pcrSource);

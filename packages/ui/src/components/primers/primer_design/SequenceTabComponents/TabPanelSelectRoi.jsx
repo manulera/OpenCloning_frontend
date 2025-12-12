@@ -3,7 +3,7 @@ import { Alert, FormControl, TextField } from '@mui/material';
 import { useSelector, useStore } from 'react-redux';
 
 import StepNavigation from './StepNavigation';
-import { selectedRegion2String } from '../../../../utils/selectedRegionUtils';
+import { selectedRegion2String } from '@opencloning/utils/selectedRegionUtils';
 import GatewayRoiSelect from './GatewayRoiSelect';
 import TabPanel from '../../../navigation/TabPanel';
 import { usePrimerDesign } from './PrimerDesignContext';

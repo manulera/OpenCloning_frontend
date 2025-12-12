@@ -2,9 +2,9 @@ import { Alert, Button, FormControl } from '@mui/material';
 import React from 'react';
 import { batch, useDispatch } from 'react-redux';
 import SingleInputSelector from '../../../sources/SingleInputSelector';
-import { cloningActions } from '../../../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
   const [target, setTarget] = React.useState('');

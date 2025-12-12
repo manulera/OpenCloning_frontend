@@ -10,7 +10,7 @@ import Select from '@mui/material/Select';
 import { Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
-import getHttpClient from '../../utils/getHttpClient';
+import getHttpClient from '@opencloning/utils/getHttpClient';
 import repositoryMetadata from './repositoryMetadata';
 
 const httpClient = getHttpClient();

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { reversePositionInRange } from '@teselagen/range-utils';
 import { isEqual } from 'lodash-es';
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
-import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 
 function getCutParameters(seq, cut, isLeft) {
   if (cut === null) {

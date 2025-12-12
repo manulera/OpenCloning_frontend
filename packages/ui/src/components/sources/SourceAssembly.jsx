@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { Checkbox, FormControlLabel, InputLabel, MenuItem, Select, TextField, FormControl, InputAdornment } from '@mui/material';
 import MultipleInputsSelector from './MultipleInputsSelector';
-import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 import EnzymeMultiSelect from '../form/EnzymeMultiSelect';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
-import { classNameToEndPointMap } from '../../utils/sourceFunctions';
-import { cloningActions } from '../../store/cloning';
+import { classNameToEndPointMap } from '@opencloning/utils/sourceFunctions';
+import { cloningActions } from '@opencloning/store/cloning';
 import LabelWithTooltip from '../form/LabelWithTooltip';
 
 const helpSingleSite = 'Even if input sequences contain multiple att sites '

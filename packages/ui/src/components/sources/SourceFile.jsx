@@ -4,10 +4,10 @@ import { Alert, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, S
 import { useDispatch, batch, useStore, useSelector } from 'react-redux';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import LabelWithTooltip from '../form/LabelWithTooltip';
-import { cloningActions } from '../../store/cloning';
-import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '../../utils/readNwrite';
+import { cloningActions } from '@opencloning/store/cloning';
+import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '@opencloning/utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
-import { mergeStates, getGraftSequenceId, graftState } from '../../utils/network';
+import { mergeStates, getGraftSequenceId, graftState } from '@opencloning/utils/network';
 
 const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 

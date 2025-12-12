@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useDispatch, useStore } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import './SourceBox.css';
 import VerifyDeleteDialog from './VerifyDeleteDialog';
 import useStoreEditor from '../../hooks/useStoreEditor';
-import { isSequenceInputOfAnySource } from '../../store/cloning_utils';
+import { isSequenceInputOfAnySource } from '@opencloning/store/cloning_utils';
 
 const { deleteSourceAndItsChildren, setMainSequenceId } = cloningActions;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel } from '@mui/material';
 import useDatabase from '../../hooks/useDatabase';
-import { sequencingFileExtensions } from './utils';
+import { sequencingFileExtensions } from '@opencloning/utils/sequencingFileExtensions';
 
 function LoadFromDatabaseButton({ databaseId, onFileChange, setError, existingFileNames }) {
   const database = useDatabase();

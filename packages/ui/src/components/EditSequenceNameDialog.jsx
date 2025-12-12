@@ -2,8 +2,8 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormC
 import React from 'react';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import { cloningActions } from '../store/cloning';
-import error2String from '../utils/error2String';
+import { cloningActions } from '@opencloning/store/cloning';
+import error2String from '@opencloning/utils/error2String';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useHttpClient from '../hooks/useHttpClient';
 

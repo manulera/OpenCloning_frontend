@@ -6,7 +6,7 @@ import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { useDispatch, useSelector } from 'react-redux';
 import useGatewaySites from '../../../../hooks/useGatewaySites';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
-import { cloningActions } from '../../../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import { usePrimerDesign } from './PrimerDesignContext';
 import RequestStatusWrapper from '../../../form/RequestStatusWrapper';
 

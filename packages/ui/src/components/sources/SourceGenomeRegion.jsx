@@ -6,12 +6,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Alert, Box, FormHelperText, FormLabel } from '@mui/material';
 import PostRequestSelect from '../form/PostRequestSelect';
-import { getReferenceAssemblyId, taxonSuggest, geneSuggest, getInfoFromAssemblyId, getInfoFromSequenceAccession } from '../../utils/ncbiRequests';
+import { getReferenceAssemblyId, taxonSuggest, geneSuggest, getInfoFromAssemblyId, getInfoFromSequenceAccession } from '@opencloning/utils/ncbiRequests';
 import TextFieldValidate from '../form/TextFieldValidate';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
 import useHttpClient from '../../hooks/useHttpClient';
-import { formatSequenceLocationString } from '../../utils/other';
+import { formatSequenceLocationString } from '@opencloning/utils/other';
 
 function getGeneCoordsInfo(gene) {
   const { range: geneRange, accession_version: accessionVersion } = gene.annotation.genomic_regions[0].gene_range;

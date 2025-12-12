@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useStore } from 'react-redux';
-import error2String from '../utils/error2String';
-import { formatGatewaySites } from '../store/cloning_utils';
+import error2String from '@opencloning/utils/error2String';
+import { formatGatewaySites } from '@opencloning/store/cloning_utils';
 import useBackendRoute from './useBackendRoute';
 import useHttpClient from './useHttpClient';
 

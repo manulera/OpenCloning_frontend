@@ -4,11 +4,11 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl,
 import { useSelector } from 'react-redux';
 import primersToTabularFile from './primersToTabularFile';
 
-import { downloadTextFile } from '../../utils/readNwrite';
+import { downloadTextFile } from '@opencloning/utils/readNwrite';
 import { usePCRDetails } from './primer_details/usePCRDetails';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import useMultiplePrimerDetails from './primer_details/useMultiplePrimerDetails';
-import { isCompleteOligoHybridizationSource, isCompletePCRSource } from '../../store/cloning_utils';
+import { isCompleteOligoHybridizationSource, isCompletePCRSource } from '@opencloning/store/cloning_utils';
 
 function DownloadPrimersDialog({ primers, open, onClose }) {
   const pcrSourceIds = useSelector((state) => state.cloning.sources

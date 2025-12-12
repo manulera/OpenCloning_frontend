@@ -4,9 +4,9 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useStore } from 'react-redux';
 import { updateEditor } from '@teselagen/ove';
 import EnzymeMultiSelect from '../../../form/EnzymeMultiSelect';
-import { stringIsNotDNA } from '../../../../store/cloning_utils';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import { usePrimerDesign } from './PrimerDesignContext';
-import { isEnzymePalyndromic } from '../../../../utils/enzyme_utils';
+import { isEnzymePalyndromic } from '@opencloning/utils/enzyme_utils';
 
 function RestrictionSpacerForm() {
   const { primerDesignSettings } = usePrimerDesign();

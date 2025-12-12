@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Alert } from '@mui/material';
-import { getSubState } from '../../utils/network';
+import { getSubState } from '@opencloning/utils/network';
 import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 
 function PrimersNotInDatabaseComponent({ id, submissionData, setSubmissionData }) {

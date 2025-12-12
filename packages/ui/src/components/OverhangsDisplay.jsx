@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatSequenceForOverhangDisplay } from '../utils/sequenceDisplay';
+import { formatSequenceForOverhangDisplay } from '@opencloning/utils/sequenceDisplay';
 
 function OverhangsDisplay({ sequence, sequenceData }) {
   if (sequence === undefined

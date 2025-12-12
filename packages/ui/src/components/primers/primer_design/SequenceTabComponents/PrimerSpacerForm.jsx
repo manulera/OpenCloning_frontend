@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormControl, TextField, Box } from '@mui/material';
-import { stringIsNotDNA } from '../../../../store/cloning_utils';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import CollapsableLabel from './CollapsableLabel';
 import { usePrimerDesign } from './PrimerDesignContext';
 

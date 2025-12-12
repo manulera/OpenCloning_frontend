@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useStore } from 'react-redux';
 import useAlerts from '../../hooks/useAlerts';
 import { jsonToGenbank } from '@teselagen/bio-parsers';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../hooks/useStoreEditor';
 
 const { updateSequence } = cloningActions;

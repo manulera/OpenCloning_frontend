@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import TextField from '@mui/material/TextField';
 import { Button, FormControl } from '@mui/material';
-import { cloningActions } from '../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 
 function DescriptionEditor() {
   const description = useSelector((state) => state.cloning.description, shallowEqual);

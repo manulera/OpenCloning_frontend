@@ -2,7 +2,7 @@ import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { isEqual } from 'lodash-es';
-import { getIdsOfSequencesWithoutChildSource } from '../../store/cloning_utils';
+import { getIdsOfSequencesWithoutChildSource } from '@opencloning/store/cloning_utils';
 
 function SingleInputSelector({ selectedId, onChange, label, inputSequenceIds, allowUnset = false, helperText = '', disabled = false }) {
   const idsWithoutChild = useSelector(({ cloning }) => getIdsOfSequencesWithoutChildSource(cloning.sources, cloning.sequences), shallowEqual);

@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import OverhangsDisplay from './OverhangsDisplay';
 import NewSourceBox from './sources/NewSourceBox';
-import { cloningActions } from '../store/cloning';
-import getTransformCoords from '../utils/transformCoords';
-import { getPCRPrimers, isSequenceInputOfAnySource } from '../store/cloning_utils';
+import { cloningActions } from '@opencloning/store/cloning';
+import getTransformCoords from '@opencloning/utils/transformCoords';
+import { getPCRPrimers, isSequenceInputOfAnySource } from '@opencloning/store/cloning_utils';
 
 const transformToRegion = (eventOutput) => {
   if (eventOutput.selectionLayer) {

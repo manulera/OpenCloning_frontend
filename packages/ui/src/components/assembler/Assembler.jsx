@@ -6,7 +6,7 @@ import { useAssembler } from './useAssembler';
 import { arrayCombinations } from '../eLabFTW/utils';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useDispatch } from 'react-redux';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import useHttpClient from '../../hooks/useHttpClient';
 import AssemblerPart from './AssemblerPart';

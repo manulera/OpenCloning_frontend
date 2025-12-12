@@ -1,7 +1,7 @@
 import React from 'react';
 import EnzymeMultiSelect from './EnzymeMultiSelect';
-import store from '../../store';
-import { cloningActions } from '../../store/cloning';
+import store from '@opencloning/store';
+import { cloningActions } from '@opencloning/store/cloning';
 
 const { setConfig } = cloningActions;
 describe('<EnzymeMultiSelect />', () => {

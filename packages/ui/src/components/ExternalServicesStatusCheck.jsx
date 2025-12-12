@@ -3,7 +3,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useHttpClient from '../hooks/useHttpClient';
-import { cloningActions } from '../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 
 const { updateAppInfo } = cloningActions;
 

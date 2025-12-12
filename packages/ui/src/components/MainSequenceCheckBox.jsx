@@ -6,13 +6,13 @@ import CheckIcon from '@mui/icons-material/Rule';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import { cloningActions } from '../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../hooks/useStoreEditor';
 import DownloadSequenceFileDialog from './DownloadSequenceFileDialog';
 import EditSequenceNameDialog from './EditSequenceNameDialog';
 import VerificationFileDialog from './verification/VerificationFileDialog';
 import SubmitToDatabaseDialog from './form/SubmitToDatabaseDialog';
-import { getSourceDatabaseId } from '../store/cloning_utils';
+import { getSourceDatabaseId } from '@opencloning/store/cloning_utils';
 import useDatabase from '../hooks/useDatabase';
 
 function MainSequenceCheckBox({ id }) {

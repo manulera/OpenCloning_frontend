@@ -1,7 +1,7 @@
 import React from 'react';
 import { isEqual } from 'lodash-es';
 import { useSelector } from 'react-redux';
-import { getPrimerBindingInfoFromSource } from '../../../store/cloning_utils';
+import { getPrimerBindingInfoFromSource } from '@opencloning/store/cloning_utils';
 import { usePrimerDetailsEndpoints } from './usePrimerDetailsEndpoints';
 
 export function usePCRDetails(sourceIds) {

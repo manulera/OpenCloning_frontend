@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import isEqual from 'lodash-es/isEqual';
-import { getSortedSourceIds } from '../utils/network';
+import { getSortedSourceIds } from '@opencloning/utils/network';
 import NetWorkNode from './NetworkNode';
 import NewSourceBox from './sources/NewSourceBox';
 import DragAndDropCloningHistoryWrapper from './DragAndDropCloningHistoryWrapper';

@@ -5,7 +5,7 @@ import { isEqual } from 'lodash-es';
 import DescriptionEditor from './DescriptionEditor';
 import PrimerList from './primers/PrimerList';
 import SettingsTab from './settings/SettingsTab';
-import { cloningActions } from '../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import TabPanel from './navigation/TabPanel';
 import CustomTab from './navigation/CustomTab';
 import DataModelDisplayer from './DataModelDisplayer';

@@ -6,7 +6,7 @@ import { IconButton } from '@mui/material';
 import ValidatedTextField from '../form/ValidatedTextField';
 
 import './PrimerForm.css';
-import { stringIsNotDNA } from '../../store/cloning_utils';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 
 function PrimerForm({
   primer = { name: '', sequence: '', id: null }, submitPrimer, cancelForm, existingNames, disabledSequenceText = '',

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import error2String from '../utils/error2String';
+import error2String from '@opencloning/utils/error2String';
 import useBackendRoute from './useBackendRoute';
 import useAlerts from './useAlerts';
 import useHttpClient from './useHttpClient';

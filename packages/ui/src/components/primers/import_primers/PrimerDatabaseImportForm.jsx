@@ -4,7 +4,7 @@ import Alert from '@mui/material/Alert';
 import { Button, TextField } from '@mui/material';
 
 import useDatabase from '../../../hooks/useDatabase';
-import { stringIsNotDNA } from '../../../store/cloning_utils';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 
 function PrimerDatabaseImportForm({ submitPrimer, cancelForm }) {
   const existingNames = useSelector((state) => state.cloning.primers.map((p) => p.name), shallowEqual);

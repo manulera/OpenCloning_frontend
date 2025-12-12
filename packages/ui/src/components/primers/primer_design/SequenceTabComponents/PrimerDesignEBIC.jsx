@@ -2,7 +2,7 @@ import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 import useEBICPrimerDesignSettings from './useEBICPrimerDesignSettings';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 function PrimerDesignEBIC({ pcrSources }) {
   const templateSequenceId = getPcrTemplateSequenceId(pcrSources[0]);

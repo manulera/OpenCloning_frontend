@@ -1,7 +1,7 @@
 import React from 'react';
 import PrimerList from './PrimerList';
-import store from '../../store';
-import { cloningActions } from '../../store/cloning';
+import store from '@opencloning/store';
+import { cloningActions } from '@opencloning/store/cloning';
 import { Provider } from 'react-redux';
 
 const { setConfig, setPrimers, setGlobalPrimerSettings } = cloningActions;

@@ -3,12 +3,12 @@ import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import { updateEditor } from '@teselagen/ove';
 import { isEqual } from 'lodash-es';
 import useBackendRoute from '../../../../hooks/useBackendRoute';
-import { selectedRegion2SequenceLocation } from '../../../../utils/selectedRegionUtils';
-import error2String from '../../../../utils/error2String';
+import { selectedRegion2SequenceLocation } from '@opencloning/utils/selectedRegionUtils';
+import error2String from '@opencloning/utils/error2String';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
-import { cloningActions } from '../../../../store/cloning';
-import { stringIsNotDNA } from '../../../../store/cloning_utils';
-import { ebicTemplateAnnotation, joinSequencesIntoSingleSequence, simulateHomologousRecombination } from '../../../../utils/sequenceManipulation';
+import { cloningActions } from '@opencloning/store/cloning';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
+import { ebicTemplateAnnotation, joinSequencesIntoSingleSequence, simulateHomologousRecombination } from '@opencloning/utils/sequenceManipulation';
 import useHttpClient from '../../../../hooks/useHttpClient';
 
 function changeValueAtIndex(current, index, newValue) {

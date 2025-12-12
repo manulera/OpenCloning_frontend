@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getReverseComplementSequenceString as reverseComplement } from '@teselagen/sequence-utils';
-import { getEnzymeRecognitionSequence } from '../../../../utils/enzyme_utils';
-import { stringIsNotDNA } from '../../../../store/cloning_utils';
+import { getEnzymeRecognitionSequence } from '@opencloning/utils/enzyme_utils';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import usePrimerDesignSettings from './usePrimerDesignSettings';
 
 function getError(enzymePrimerDesignSettings) {
