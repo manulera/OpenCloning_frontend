@@ -32,6 +32,13 @@ export default ({ mode }) => {
 
   return {
     logLevel: env.VITE_LOG_LEVEL,
+    resolve: {
+      alias: {
+        '@opencloning/ui': resolve(__dirname, '../../packages/ui/src'),
+        '@opencloning/store': resolve(__dirname, '../../packages/store/src'),
+        '@opencloning/utils': resolve(__dirname, '../../packages/utils/src/utils'),
+      },
+    },
     plugins: [
       react(),
       (env.VITE_COVERAGE) && istanbul({

@@ -1,6 +1,6 @@
 import React from 'react'
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
-import { geneSuggest } from '../../utils/ncbiRequests';
+import { geneSuggest } from '@opencloning/utils/ncbiRequests';
 import { formatBackendPayloadWithGene } from './SourceGenomeRegion';
 import { Box, CircularProgress } from '@mui/material';
 

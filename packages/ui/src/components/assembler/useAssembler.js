@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { classNameToEndPointMap } from '../../utils/sourceFunctions'
+import { classNameToEndPointMap } from '@opencloning/utils/sourceFunctions'
 import useBackendRoute from '../../hooks/useBackendRoute'
 import useHttpClient from '../../hooks/useHttpClient'
 import { arrayCombinations } from '../eLabFTW/utils'

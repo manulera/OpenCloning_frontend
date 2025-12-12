@@ -2,16 +2,16 @@ import React from 'react';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import MainAppBar from './components/navigation/MainAppBar';
-import OpenCloning from './components/OpenCloning';
-import { cloningActions } from './store/cloning';
-import useDatabase from './hooks/useDatabase';
-import { formatSequenceLocationString, getUrlParameters } from './utils/other';
-import useLoadDatabaseFile from './hooks/useLoadDatabaseFile';
-import useAlerts from './hooks/useAlerts';
-import useHttpClient from './hooks/useHttpClient';
-import useValidateState from './hooks/useValidateState';
-import { formatTemplate, loadHistoryFile, loadFilesToSessionStorage } from './utils/readNwrite';
+import MainAppBar from '@opencloning/ui/components/navigation/MainAppBar';
+import OpenCloning from '@opencloning/ui/components/OpenCloning';
+import { cloningActions } from '@opencloning/store/cloning';
+import useDatabase from '@opencloning/ui/hooks/useDatabase';
+import { formatSequenceLocationString, getUrlParameters } from '@opencloning/utils/other';
+import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
+import useAlerts from '@opencloning/ui/hooks/useAlerts';
+import useHttpClient from '@opencloning/ui/hooks/useHttpClient';
+import useValidateState from '@opencloning/ui/hooks/useValidateState';
+import { formatTemplate, loadHistoryFile, loadFilesToSessionStorage } from '@opencloning/utils/readNwrite';
 
 const { setConfig, setKnownErrors, setState: setCloningState, updateSource } = cloningActions;
 

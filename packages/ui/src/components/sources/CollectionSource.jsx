@@ -3,9 +3,9 @@ import React from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useDispatch, useStore } from 'react-redux';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
-import { classNameToEndPointMap } from '../../utils/sourceFunctions';
+import { classNameToEndPointMap } from '@opencloning/utils/sourceFunctions';
 import ObjectTable from '../ObjectTable';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 
 function CollectionSource({ source, requestStatus, sendPostRequest }) {
   const { id: sourceId, options, image: imageInfo, title, description } = source;

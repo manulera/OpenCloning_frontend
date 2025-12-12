@@ -18,15 +18,15 @@ import {
 } from '@mui/material';
 import { batch, shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import { getTeselaJsonFromBase64, file2base64 } from '../../utils/readNwrite';
+import { getTeselaJsonFromBase64, file2base64 } from '@opencloning/utils/readNwrite';
 import SequencingFileRow from './SequencingFileRow';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useStoreEditor from '../../hooks/useStoreEditor';
 import LoadFromDatabaseButton from './LoadFromDatabaseButton';
-import { sequencingFileExtensions } from './utils';
+import { sequencingFileExtensions } from '@opencloning/utils/sequencingFileExtensions';
 import useHttpClient from '../../hooks/useHttpClient';
-import { getVerificationFileName } from '../../utils/readNwrite';
+import { getVerificationFileName } from '@opencloning/utils/readNwrite';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 

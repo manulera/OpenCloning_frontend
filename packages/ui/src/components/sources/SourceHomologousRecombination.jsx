@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FormControl, InputAdornment, TextField } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import SingleInputSelector from './SingleInputSelector';
-import { cloningActions } from '../../store/cloning';
-import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
+import { cloningActions } from '@opencloning/store/cloning';
+import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import SelectPrimerForm from '../primers/SelectPrimerForm';
 

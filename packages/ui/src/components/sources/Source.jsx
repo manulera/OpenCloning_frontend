@@ -17,11 +17,11 @@ import CollectionSource from './CollectionSource';
 import KnownSourceErrors from './KnownSourceErrors';
 import useBackendAPI from '../../hooks/useBackendAPI';
 import MultipleOutputsSelector from './MultipleOutputsSelector';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import SourceCopySequence from './SourceCopySequence';
 import SourceReverseComplement from './SourceReverseComplement';
 import SourceKnownGenomeRegion from './SourceKnownGenomeRegion';
-import { doesSourceHaveOutput } from '../../store/cloning_utils';
+import { doesSourceHaveOutput } from '@opencloning/store/cloning_utils';
 
 // There are several types of source, this components holds the common part,
 // which for now is a select element to pick which kind of source is created

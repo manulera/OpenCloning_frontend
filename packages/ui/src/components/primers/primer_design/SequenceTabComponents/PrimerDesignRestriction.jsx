@@ -2,7 +2,7 @@ import React from 'react';
 import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 import useEnzymePrimerDesignSettings from './useEnzymePrimerDesignSettings';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 function PrimerDesignRestriction({ pcrSource }) {
   const templateSequenceId = getPcrTemplateSequenceId(pcrSource);

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { doesSourceHaveOutput, getNextUniqueId } from './cloning_utils';
-import { convertToTeselaJson } from '../../utils/src/utils/readNwrite';
+import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 
 function deleteFilesFromSessionStorage(sequenceId, fileName = null) {
   Object.keys(sessionStorage)

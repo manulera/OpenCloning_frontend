@@ -2,7 +2,7 @@ import React from 'react';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
+import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 
 function SourceAnnotation({ source, requestStatus, sendPostRequest }) {

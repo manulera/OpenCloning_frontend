@@ -1,9 +1,9 @@
 import React from 'react';
 import VerificationFileDialog from './VerificationFileDialog';
-import store from '../../store';
-import { cloningActions } from '../../store/cloning';
+import store from '@opencloning/store';
+import { cloningActions } from '@opencloning/store/cloning';
 import { loadDataAndMount } from '../../../cypress/e2e/common_funcions_store';
-import { getVerificationFileName } from '../../utils/readNwrite';
+import { getVerificationFileName } from '@opencloning/utils/readNwrite';
 
 const { setFiles, setConfig } = cloningActions;
 

@@ -2,8 +2,8 @@ import { Button, FormControl } from '@mui/material';
 import React from 'react';
 import { batch, shallowEqual, useDispatch, useSelector } from 'react-redux';
 import SingleInputSelector from './SingleInputSelector';
-import { CopySequenceThunk } from '../../utils/thunks';
-import { cloningActions } from '../../store/cloning';
+import { CopySequenceThunk } from '@opencloning/utils/thunks';
+import { cloningActions } from '@opencloning/store/cloning';
 
 const { deleteSourceAndItsChildren } = cloningActions;
 

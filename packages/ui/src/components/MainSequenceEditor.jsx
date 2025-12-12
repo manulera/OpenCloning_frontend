@@ -3,7 +3,7 @@ import { Editor, updateEditor } from '@teselagen/ove';
 import { useDispatch, useStore } from 'react-redux';
 import { getReverseComplementSequenceString, getSequenceDataBetweenRange } from '@teselagen/sequence-utils';
 import defaultMainEditorProps from '../config/defaultMainEditorProps';
-import { cloningActions } from '../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useAlerts from '../hooks/useAlerts';
 import { Alert, Button } from '@mui/material';
 import { useSelector } from 'react-redux';

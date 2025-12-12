@@ -2,11 +2,11 @@ import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Button, Checkbox, FormControl, FormControlLabel, InputAdornment, TextField } from '@mui/material';
 
-import { doesSourceHaveOutput, getInputSequencesFromSourceId, getPcrTemplateSequenceId } from '../../store/cloning_utils';
+import { doesSourceHaveOutput, getInputSequencesFromSourceId, getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import PCRUnitForm from './PCRUnitForm';
 import PrimerDesignSourceForm from '../primers/primer_design/SourceComponents/PrimerDesignSourceForm';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../hooks/useStoreEditor';
 import LabelWithTooltip from '../form/LabelWithTooltip';
 

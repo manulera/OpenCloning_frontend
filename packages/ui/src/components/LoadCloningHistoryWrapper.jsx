@@ -3,12 +3,12 @@ import { batch, useDispatch, useStore } from 'react-redux';
 import useAlerts from '../hooks/useAlerts';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useValidateState from '../hooks/useValidateState';
-import { cloningActions } from '../store/cloning';
-import { mergeStates } from '../utils/network';
-import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '../utils/readNwrite';
+import { cloningActions } from '@opencloning/store/cloning';
+import { mergeStates } from '@opencloning/utils/network';
+import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '@opencloning/utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
-import { getVerificationFileName } from '../utils/readNwrite';
+import { getVerificationFileName } from '@opencloning/utils/readNwrite';
 import { isEqual } from 'lodash-es';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;

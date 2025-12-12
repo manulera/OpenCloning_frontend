@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { cloningActions } from '../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import SingleInputSelector from './SingleInputSelector';
 import SelectPrimerForm from '../primers/SelectPrimerForm';
 

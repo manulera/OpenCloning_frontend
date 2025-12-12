@@ -3,7 +3,7 @@ import React from 'react';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 import { Button, IconButton } from '@mui/material';
-import { convertToTeselaJson } from '../../utils/readNwrite';
+import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 import OverhangsDisplay from '../OverhangsDisplay';
 import SubSequenceDisplayer from './SubSequenceDisplayer';
 import AssemblyPlanDisplayer from './AssemblyPlanDisplayer';

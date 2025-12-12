@@ -1,10 +1,10 @@
 import { batch, useDispatch, useStore } from 'react-redux';
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useValidateState from './useValidateState';
-import { convertToTeselaJson, loadHistoryFile } from '../utils/readNwrite';
-import { getIdsOfSequencesWithoutChildSource } from '../store/cloning_utils';
-import { mergeStates, graftState } from '../utils/network';
-import { cloningActions } from '../store/cloning';
+import { convertToTeselaJson, loadHistoryFile } from '@opencloning/utils/readNwrite';
+import { getIdsOfSequencesWithoutChildSource } from '@opencloning/store/cloning_utils';
+import { mergeStates, graftState } from '@opencloning/utils/network';
+import { cloningActions } from '@opencloning/store/cloning';
 import useDatabase from './useDatabase';
 
 const { deleteSourceAndItsChildren, setState: setCloningState } = cloningActions;

@@ -11,10 +11,10 @@ import SequenceEditor from './SequenceEditor';
 import FinishedSource from './sources/FinishedSource';
 import MainSequenceCheckBox from './MainSequenceCheckBox';
 import TemplateSequence from './TemplateSequence';
-import { getSourceDatabaseId, isSourceATemplate } from '../store/cloning_utils';
-import { cloningActions } from '../store/cloning';
+import { getSourceDatabaseId, isSourceATemplate } from '@opencloning/store/cloning_utils';
+import { cloningActions } from '@opencloning/store/cloning';
 import SourceBox from './sources/SourceBox';
-import { getSortedSourceIds } from '../utils/network';
+import { getSortedSourceIds } from '@opencloning/utils/network';
 import useDatabase from '../hooks/useDatabase';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;

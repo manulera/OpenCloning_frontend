@@ -4,8 +4,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { getInputSequencesFromSourceId } from '../../store/cloning_utils';
-import { cloningActions } from '../../store/cloning';
+import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
+import { cloningActions } from '@opencloning/store/cloning';
 import useDatabase from '../../hooks/useDatabase';
 
 const { replaceSource } = cloningActions;

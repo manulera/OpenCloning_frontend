@@ -1,8 +1,8 @@
 import { useStore } from 'react-redux';
 import { updateEditor, addAlignment } from '@teselagen/ove';
-import { getPCRPrimers } from '../store/cloning_utils';
-import { getTeselaJsonFromBase64 } from '../utils/readNwrite';
-import { findRotation, syncChromatogramDataWithAlignment } from '../utils/sequenceManipulation';
+import { getPCRPrimers } from '@opencloning/store/cloning_utils';
+import { getTeselaJsonFromBase64 } from '@opencloning/utils/readNwrite';
+import { findRotation, syncChromatogramDataWithAlignment } from '@opencloning/utils/sequenceManipulation';
 import { getReverseComplementSequenceAndAnnotations, getReverseComplementSequenceString, rotateSequenceDataToPosition } from '@teselagen/sequence-utils';
 
 export default function useStoreEditor() {

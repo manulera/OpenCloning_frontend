@@ -4,10 +4,10 @@ import React from 'react';
 import { batch, useDispatch } from 'react-redux';
 import PrimerDesignHomologousRecombination from './PrimerDesignHomologousRecombination';
 import PrimerDesignGibsonAssembly from './PrimerDesignGibsonAssembly';
-import { cloningActions } from '../../../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import PrimerDesignGatewayBP from './PrimerDesignGatewayBP';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 function PrimerDesignSourceForm({ source }) {
   const [primerDesignType, setPrimerDesignType] = React.useState('');

@@ -2,13 +2,13 @@ import { Button, Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import React from 'react';
 import { batch, useDispatch } from 'react-redux';
 import SingleInputSelector from '../../../sources/SingleInputSelector';
-import { cloningActions } from '../../../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import LabelWithTooltip from '../../../form/LabelWithTooltip';
 import useGatewaySites from '../../../../hooks/useGatewaySites';
 import NoAttPSitesError from '../common/NoAttPSitesError';
 import RetryAlert from '../../../form/RetryAlert';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 const { addTemplateChildAndSubsequentSource, setCurrentTab, setMainSequenceId } = cloningActions;
 

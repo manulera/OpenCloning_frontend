@@ -2,10 +2,10 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl,
 import React from 'react';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { isEqual } from 'lodash-es';
-import { downloadSequence } from '../utils/readNwrite';
-import { exportSubStateThunk } from '../utils/thunks';
-import { getPCRPrimers} from '../store/cloning_utils';
-import { substateHasFiles } from '../utils/network';
+import { downloadSequence } from '@opencloning/utils/readNwrite';
+import { exportSubStateThunk } from '@opencloning/utils/thunks';
+import { getPCRPrimers} from '@opencloning/store/cloning_utils';
+import { substateHasFiles } from '@opencloning/utils/network';
 
 // You can override the downloadSequence function by passing a downloadCallback that takes the fileName and sequence as arguments
 function DownloadSequenceFileDialog({ id, dialogOpen, setDialogOpen, downloadCallback }) {

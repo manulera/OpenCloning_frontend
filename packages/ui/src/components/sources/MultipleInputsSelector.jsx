@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Chip, InputLabel, MenuItem, Select } from '@mui/material';
 import { isEqual } from 'lodash-es';
-import { getIdsOfSequencesWithoutChildSource } from '../../store/cloning_utils';
+import { getIdsOfSequencesWithoutChildSource } from '@opencloning/store/cloning_utils';
 
 function MultipleInputsSelector({ inputSequenceIds, onChange, label }) {
   const sequenceNotChildSourceIds = useSelector(({ cloning }) => getIdsOfSequencesWithoutChildSource(cloning.sources, cloning.sequences), isEqual);

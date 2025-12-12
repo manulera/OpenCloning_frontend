@@ -2,7 +2,8 @@
 /node_modules
 /.pnp
 .pnp.js
-apps/opencloning/node_modules/
+apps/*/node_modules/
+apps/*/build/
 
 # testing
 /coverage

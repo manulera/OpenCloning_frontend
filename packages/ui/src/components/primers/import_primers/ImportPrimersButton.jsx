@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import useAlerts from '../../../hooks/useAlerts';
 import './styles.css';
 
-import { primersFromTextFile } from '../../../utils/fileParsers';
+import { primersFromTextFile } from '@opencloning/utils/fileParsers';
 import PrimersImportTable from './ImportPrimersTable';
 
 function ImportPrimersButton({ addPrimer }) {

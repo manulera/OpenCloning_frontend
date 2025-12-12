@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Alert, Button, Dialog, DialogContent } from '@mui/material';
 import { isEqual } from 'lodash-es';
-import { enzymesInRestrictionEnzymeDigestionSource } from '../../utils/sourceFunctions';
+import { enzymesInRestrictionEnzymeDigestionSource } from '@opencloning/utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
 import useDatabase from '../../hooks/useDatabase';
 import useLoadDatabaseFile from '../../hooks/useLoadDatabaseFile';

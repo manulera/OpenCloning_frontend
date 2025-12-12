@@ -2,9 +2,9 @@ import { Button, FormControl } from '@mui/material';
 import React from 'react';
 import { batch, useDispatch } from 'react-redux';
 import MultipleInputsSelector from '../../../sources/MultipleInputsSelector';
-import { cloningActions } from '../../../../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
-import { getPcrTemplateSequenceId } from '../../../../store/cloning_utils';
+import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
 function PrimerDesignGibsonAssembly({ source, assemblyType }) {
   const [targets, setTargets] = React.useState(source.input.map(({ sequence }) => sequence));

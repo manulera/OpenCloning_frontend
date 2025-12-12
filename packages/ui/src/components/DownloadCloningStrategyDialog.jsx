@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import React from 'react';
 import { useSelector, useStore } from 'react-redux';
-import { downloadStateAsJson, downloadStateAsZip } from '../utils/readNwrite';
+import { downloadStateAsJson, downloadStateAsZip } from '@opencloning/utils/readNwrite';
 import useAlerts from '../hooks/useAlerts';
 
 
