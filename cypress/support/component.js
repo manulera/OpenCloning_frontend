@@ -21,7 +21,7 @@ import './commands';
 import React from 'react';
 import { mount } from '@cypress/react';
 import { Provider } from 'react-redux';
-import store from '../../src/store';
+import store from '@opencloning/store';
 import '@cypress/code-coverage/support';
 
 Cypress.Commands.add('mount', (component, options = {}) => {

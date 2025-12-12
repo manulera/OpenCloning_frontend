@@ -1,5 +1,5 @@
 import { syncChromatogramDataWithAlignment } from './sequenceManipulation';
-import teselaJson from '../../cypress/test_files/example_chromatogram.json';
+import teselaJson from '../../../../cypress/test_files/example_chromatogram.json';
 import { getReverseComplementSequenceString } from '@teselagen/sequence-utils';
 
 const exampleChromatogramData = teselaJson.chromatogramData;

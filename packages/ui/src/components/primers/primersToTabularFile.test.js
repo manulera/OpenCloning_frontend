@@ -1,5 +1,5 @@
 import primersToTabularFile from './primersToTabularFile';
-import { mockPCRDetails } from '../../../tests/mockPrimerDetailsData';
+import { mockPCRDetails } from '../../../../../tests/mockPrimerDetailsData';
 
 const headers = [
   'id',
