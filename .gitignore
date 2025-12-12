@@ -2,6 +2,7 @@
 /node_modules
 /.pnp
 .pnp.js
+apps/opencloning/node_modules/
 
 # testing
 /coverage
@@ -39,3 +40,4 @@ cypress/screenshots
 
 # config
 public/config.json
+

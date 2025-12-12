@@ -9,7 +9,7 @@ import {
   configure,
 } from '@zip.js/zip.js';
 import { tidyUpSequenceData } from '@teselagen/sequence-utils';
-import { getVerificationFileName } from '../store/cloning_utils';
+import { getVerificationFileName } from '@opencloning/store/cloning_utils';
 import { isEqual } from 'lodash-es';
 
 configure({

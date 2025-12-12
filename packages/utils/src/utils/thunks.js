@@ -1,8 +1,8 @@
 import { cloneDeep } from 'lodash-es';
 import { base64ToBlob, downloadStateAsJson, downloadStateAsZip, loadFilesToSessionStorage } from './readNwrite';
-import { cloningActions } from '../store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 import { collectParentSequencesAndSources, getSubState, mergeStates } from './network';
-import { getVerificationFileName } from '../store/cloning_utils';
+import { getVerificationFileName } from '@opencloning/store/cloning_utils';
 
 const { setState: setCloningState } = cloningActions;
 
