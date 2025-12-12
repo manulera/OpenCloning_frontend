@@ -1,10 +1,10 @@
 import getTransformCoords from './transformCoords';
 
-const testData = require('../../cypress/test_files/unittests/test_data_transformCoords.json');
+const testData = require('../../../../cypress/test_files/unittests/test_data_transformCoords.json');
 
 const pcrSource = testData.sources.find((s) => s.type === 'PCRSource');
 
-const creLoxData = require('../../public/examples/cre_lox_recombination.json');
+const creLoxData = require('../../../../public/examples/cre_lox_recombination.json');
 
 const plasmidExcisionSource = creLoxData.sources.find((s) => s.id === 3);
 const plasmidInsertionSource = creLoxData.sources.find((s) => s.id === 5);

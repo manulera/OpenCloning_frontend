@@ -9,7 +9,7 @@
     "scripts": {
         "start": "yarn workspace opencloning start",
         "build": "yarn workspace opencloning build",
-        "test": "yarn workspace opencloning test",
+        "test": "vitest run",
         "postinstall": "husky",
         "prepack": "pinst --disable",
         "postpack": "pinst --enable"

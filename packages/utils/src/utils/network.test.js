@@ -1,4 +1,4 @@
-import { mockSources, mockSequences, mockPrimers, mockFiles } from '../../tests/mockNetworkData';
+import { mockSources, mockSequences, mockPrimers, mockFiles } from '../../../../tests/mockNetworkData';
 import { collectParentSequencesAndSources, getSubState } from './network';
 
 describe('collectParentSequencesAndSources', () => {

@@ -108,14 +108,6 @@ export default ({ mode }) => {
     // Create an env variable with the git tag
       __APP_VERSION__: JSON.stringify(getGitTag(env.VITE_GIT_TAG)),
     },
-    test: {
-      globals: true,
-      environment: 'jsdom',
-      setupFiles: './tests/setup.js',
-      coverage: {
-        provider: 'v8',
-      },
-    },
     build: {
       outDir: 'build',
     },
