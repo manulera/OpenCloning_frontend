@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash-es';
-import { getUsedPrimerIds, mergePrimersInSource, shiftStateIds } from '@opencloning/store/cloning_utils';
+import { getUsedPrimerIds, mergePrimersInSource, shiftStateIds, getSourcesTakingSequenceAsInput } from '@opencloning/store/cloning_utils';
 
 export function getParentNodes(node, sequences, sources) {
   const parentSequences = sequences.filter((sequence) => node.source.input.includes(sequence.id));
@@ -27,10 +27,6 @@ function parentNodeSorter(a, b) {
   const aValue = getAllSourceIdsInParentNodes(a).concat(a.source.id);
   const bValue = getAllSourceIdsInParentNodes(b).concat(b.source.id);
   return Math.min(...aValue) - Math.min(...bValue);
-}
-
-export function getSourcesTakingSequenceAsInput(sources, sequenceId) {
-  return sources.filter((s) => s.input.some(({sequence}) => sequence === sequenceId));
 }
 
 export function getImmediateParentSources(sources, source) {

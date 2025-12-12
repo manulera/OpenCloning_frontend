@@ -3,7 +3,7 @@ import VerificationFileDialog from './VerificationFileDialog';
 import store from '../../store';
 import { cloningActions } from '../../store/cloning';
 import { loadDataAndMount } from '../../../cypress/e2e/common_funcions_store';
-import { getVerificationFileName } from '../../store/cloning_utils';
+import { getVerificationFileName } from '../../utils/readNwrite';
 
 const { setFiles, setConfig } = cloningActions;
 

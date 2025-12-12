@@ -9,7 +9,6 @@ import {
   configure,
 } from '@zip.js/zip.js';
 import { tidyUpSequenceData } from '@teselagen/sequence-utils';
-import { getVerificationFileName } from '@opencloning/store/cloning_utils';
 import { isEqual } from 'lodash-es';
 
 configure({
@@ -233,6 +232,10 @@ export const loadFilesToSessionStorage = async (files, idShift = 0) => {
     sessionStorage.setItem(filename, fileContent);
   }));
 };
+
+export function getVerificationFileName({ sequence_id, file_name }) {
+  return `verification-${sequence_id}-${file_name}`;
+}
 
 export function convertToTeselaJson(sequence) {
   // TODO: This might have been fixed in more recent versions of the library
