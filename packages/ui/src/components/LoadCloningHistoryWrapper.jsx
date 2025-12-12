@@ -8,7 +8,7 @@ import { mergeStates } from '../utils/network';
 import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '../utils/readNwrite';
 import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
-import { getVerificationFileName } from '../store/cloning_utils';
+import { getVerificationFileName } from '../utils/readNwrite';
 import { isEqual } from 'lodash-es';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;

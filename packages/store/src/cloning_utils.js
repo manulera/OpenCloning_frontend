@@ -1,11 +1,10 @@
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange, getRangeLength } from '@teselagen/range-utils';
-import { getSourcesTakingSequenceAsInput } from '../utils/network';
 
 export const isSequenceInputOfAnySource = (id, sources) => (sources.find((source) => source.input.some(({sequence}) => sequence === id))) !== undefined;
 
-export function getVerificationFileName({ sequence_id, file_name }) {
-  return `verification-${sequence_id}-${file_name}`;
+export function getSourcesTakingSequenceAsInput(sources, sequenceId) {
+  return sources.filter((s) => s.input.some(({sequence}) => sequence === sequenceId));
 }
 
 export function isCompletePCRSource(source) {

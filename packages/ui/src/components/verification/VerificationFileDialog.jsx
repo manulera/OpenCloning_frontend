@@ -26,7 +26,7 @@ import useStoreEditor from '../../hooks/useStoreEditor';
 import LoadFromDatabaseButton from './LoadFromDatabaseButton';
 import { sequencingFileExtensions } from './utils';
 import useHttpClient from '../../hooks/useHttpClient';
-import { getVerificationFileName } from '../../store/cloning_utils';
+import { getVerificationFileName } from '../../utils/readNwrite';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
