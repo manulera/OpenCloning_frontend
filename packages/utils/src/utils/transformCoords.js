@@ -1,7 +1,7 @@
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { flipContainedRange, getRangeLength, isRangeWithinRange, translateRange } from '@teselagen/range-utils';
 import { isEqual } from 'lodash-es';
-import { isAssemblyComplete } from '../store/cloning_utils';
+import { isAssemblyComplete } from '@opencloning/store/cloning_utils';
 
 export default function getTransformCoords(source, parentSequenceData, productLength) {
   if (!isAssemblyComplete(source)) {

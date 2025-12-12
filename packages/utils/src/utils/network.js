@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash-es';
-import { getUsedPrimerIds, mergePrimersInSource, shiftStateIds } from '../store/cloning_utils';
+import { getUsedPrimerIds, mergePrimersInSource, shiftStateIds } from '@opencloning/store/cloning_utils';
 
 export function getParentNodes(node, sequences, sources) {
   const parentSequences = sequences.filter((sequence) => node.source.input.includes(sequence.id));

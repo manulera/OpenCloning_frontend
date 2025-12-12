@@ -1,4 +1,4 @@
-import { stringIsNotDNA } from '../store/cloning_utils';
+import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import { readSubmittedTextFile } from './readNwrite';
 
 export const primersFromTextFile = async (fileUploaded, existingNames) => {
