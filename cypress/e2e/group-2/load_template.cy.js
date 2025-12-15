@@ -32,7 +32,7 @@ describe('Test load template functionality', () => {
   });
   it('Change source type is disabled for PCRs in template sources', () => {
     // Load EBIC template
-    cy.get('div.cloning-history').selectFile('public/examples/ebic_template.json', { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile('apps/opencloning/public/examples/ebic_template.json', { action: 'drag-drop' });
 
     cy.get('div.cloning-history').contains('common_plasmid').should('exist');
     // The PCR source type should be disabled

@@ -35,7 +35,7 @@ describe('Test download history file', () => {
   });
   it('Can download zip files', () => {
     // Load the zip example
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/cloning_strategy_with_sequencing.zip', { force: true });
     cy.contains('Read from file final_product.gb', { timeout: 20000 }).should('exist');
     // Alerts can cover the app bar
     cy.get('body').then(($body) => {

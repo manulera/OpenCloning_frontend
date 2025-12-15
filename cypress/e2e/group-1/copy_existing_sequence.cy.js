@@ -21,7 +21,7 @@ describe('Test copy existing sequence functionality', () => {
     cy.get('li#sequence-1').should('not.exist');
   });
   it('Copies linked files', () => {
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/cloning_strategy_with_sequencing.zip', { force: true });
     cy.get('div.cloning-tab-pannel').contains('final_product.gb');
     addLane();
     addSource('CopySequence', true);

@@ -1,4 +1,4 @@
-import { cloningActions } from '../../src/store/cloning';
+import { cloningActions } from '@opencloning/store/cloning';
 
 const { setState: setCloningState } = cloningActions;
 

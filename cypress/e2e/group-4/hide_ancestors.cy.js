@@ -41,7 +41,7 @@ describe('Tests primer functionality', () => {
     // Now hide everything, and make sure that it remains hidden when loading another json file on top
     cy.contains('li', 'Gateway LR reaction').find('[aria-label="Hide ancestors"] svg').first().click();
 
-    loadHistory('public/examples/templateless_PCR.json');
+    loadHistory('apps/opencloning/public/examples/templateless_PCR.json');
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
     cy.contains('li', 'Polymerase extension').should('be.visible');
