@@ -3,11 +3,21 @@ node_modules/
 .github/
 .vscode/
 .yarn/
+.nyc_output/
+.husky/
+coverage/
+cypress/
+.changeset/
 build/
 Dockerfile
 .git
 OpenCloning_backend
+tests/
 
 .env.local
 .env.development
 .env.production
+.env.test
+
+apps/*/node_modules/
+apps/*/build/
