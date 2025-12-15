@@ -1,12 +1,17 @@
 {
     "name": "@opencloning/store",
-    "version": "0.1.0",
+    "version": "0.4.26",
     "type": "module",
     "main": "./src/index.js",
     "exports": {
         ".": "./src/index.js",
         "./cloning": "./src/cloning.js",
         "./cloning-utils": "./src/cloning_utils.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/manulera/OpenCloning_frontend.git",
+        "directory": "packages/store"
     },
     "dependencies": {
         "@reduxjs/toolkit": "^1.9.7",
