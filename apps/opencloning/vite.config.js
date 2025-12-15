@@ -42,10 +42,12 @@ export default ({ mode }) => {
     plugins: [
       react(),
       (env.VITE_COVERAGE) && istanbul({
-        include: 'src/*',
-        exclude: ['node_modules', 'tests/'],
+        include: [
+          'packages/*/src/**/*',
+          'apps/*/src/**/*'
+        ],
         extension: ['.js', '.jsx'],
-        requireEnv: true,
+        cwd: resolve(__dirname, '../..'),
       }),
       ViteEjsPlugin({
         umami_website_id: env.VITE_UMAMI_WEBSITE_ID,
