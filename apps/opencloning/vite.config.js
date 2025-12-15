@@ -5,17 +5,8 @@ import { loadEnv } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 import istanbul from 'vite-plugin-istanbul';
-import { execSync } from 'child_process';
 
-// Function to get git tag information
-function getGitTag(backup) {
-  try {
-    // This works locally and in CI, but not in docker
-    return execSync('git describe --tags').toString().trim();
-  } catch (error) {
-    return backup || 'unknown';
-  }
-}
+import { baseDefine } from '../../base.config.js';
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd());
@@ -100,16 +91,7 @@ export default ({ mode }) => {
         },
       },
     },
-    define: {
-    // used to be global: {}
-    // changed it because it was giving problems with yarn build, it would
-    // replace global as an object field in a file by {}, creating a syntax error.
-    // Some people in stackoverflow said to use global: 'window', but that replaced
-    // the word window in the scripts, creating other problems.
-    // global: {},
-    // Create an env variable with the git tag
-      __APP_VERSION__: JSON.stringify(getGitTag(env.VITE_GIT_TAG)),
-    },
+    define: baseDefine,
     build: {
       outDir: 'build',
     },

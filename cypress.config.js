@@ -1,21 +1,12 @@
 import { defineConfig } from 'cypress';
 import fs from 'fs';
-import { execSync } from 'child_process';
 import { ViteEjsPlugin } from 'vite-plugin-ejs';
 import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { baseDefine } from './base.config.js';
 
 
-
-// Function to get git tag information
-function getGitTag() {
-  try {
-    return execSync('git describe --tags').toString().trim();
-  } catch (error) {
-    return 'unknown';
-  }
-}
 
 export default defineConfig({
   e2e: {
@@ -52,10 +43,7 @@ export default defineConfig({
     },
     baseUrl: 'http://localhost:3000',
     experimentalStudio: true,
-    numTestsKeptInMemory: 2,
-    env: {
-      GIT_TAG: getGitTag(),
-    },
+    numTestsKeptInMemory: 2
   },
 
   component: {
@@ -101,7 +89,7 @@ export default defineConfig({
             noExternal: ['fsevents'],
           },
           define: {
-            __APP_VERSION__: JSON.stringify(getGitTag()),
+            ...baseDefine,
           },
         };
       },

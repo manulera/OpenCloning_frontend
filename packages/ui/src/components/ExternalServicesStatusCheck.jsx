@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useHttpClient from '../hooks/useHttpClient';
 import { cloningActions } from '@opencloning/store/cloning';
+import { version } from '../index';
 
 const { updateAppInfo } = cloningActions;
 
@@ -16,7 +17,7 @@ function ExternalServicesStatusCheck() {
   const backendRoute = useBackendRoute();
   const httpClient = useHttpClient();
   React.useEffect(() => {
-    dispatch(updateAppInfo({ frontendVersion: __APP_VERSION__ }));
+    dispatch(updateAppInfo({ frontendVersion: version }));
     setLoading(true);
     const checkServices = async () => {
       const services = [

@@ -7,6 +7,11 @@
         "apps/*",
         "packages/*"
     ],
+    "resolutions": {
+        "@opencloning/store": "workspace:*",
+        "@opencloning/ui": "workspace:*",
+        "@opencloning/utils": "workspace:*"
+    },
     "scripts": {
         "start": "yarn workspace opencloning start",
         "build": "yarn workspace opencloning build",
