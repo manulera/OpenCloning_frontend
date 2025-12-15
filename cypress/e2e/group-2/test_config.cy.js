@@ -1,5 +1,5 @@
 import { manuallyTypeSequence } from "../common_functions";
-import defaultConfig from '../../../public/config.dev.json';
+import defaultConfig from '../../../apps/opencloning/public/config.dev.json';
 
 
 describe('test that configuration works', () => {

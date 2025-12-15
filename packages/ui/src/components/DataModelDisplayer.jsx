@@ -1,8 +1,6 @@
 import { isEqual } from 'lodash-es';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import moclo from './assembler/moclo.json';
-import AssemblerPart from './assembler/AssemblerPart';
 
 function DataModelDisplayer() {
   const { sources,  sequences, primers } = useSelector((state) => state.cloning, isEqual);
@@ -11,17 +9,7 @@ function DataModelDisplayer() {
     seqOut.file_content = '[...]';
     return seqOut;
   });
-  return <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-    {moclo.map((item) => (
-      <div key={item.header}>
-        <h2>{item.header}</h2>
-        <p style={{ display: 'flex', justifyContent: 'center' }}>
-          <AssemblerPart data={item} />
-        </p>
-      </div>
-    ))
-    }
-  </div>;
+
   // TODO: proper json syntax highlighting here
   return (
     <div className="data-model-displayer">

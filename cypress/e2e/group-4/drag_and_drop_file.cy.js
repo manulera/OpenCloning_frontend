@@ -46,11 +46,11 @@ describe('Test drag and drop functionality', () => {
     cy.get('div.MuiAlert-message').contains('should contain at least');
 
     // Files which are not sequences
-    cy.get('div.cloning-history').selectFile('public/favicon.ico', { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile('apps/opencloning/public/favicon.ico', { action: 'drag-drop' });
     cy.get('div.MuiAlert-message').contains('Could not read the file favicon.ico');
 
     // Files which are not sequences mixed with sequences
-    cy.get('div.cloning-history').selectFile(['apps/opencloning/public/examples/ase1.gb', 'public/favicon.ico'], { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile(['apps/opencloning/public/examples/ase1.gb', 'apps/opencloning/public/favicon.ico'], { action: 'drag-drop' });
     cy.get('div.MuiAlert-message').contains('Could not read the file favicon.ico');
   });
   it('Can merge with existing history', () => {
