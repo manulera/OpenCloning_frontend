@@ -1,6 +1,6 @@
 {
     "name": "@opencloning/ui",
-    "version": "0.4.26",
+    "version": "1.0.0",
     "type": "module",
     "main": "./src/index.js",
     "exports": {
