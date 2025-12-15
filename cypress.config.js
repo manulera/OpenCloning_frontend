@@ -1,6 +1,5 @@
 import { defineConfig } from 'cypress';
 import fs from 'fs';
-// import istanbul from 'vite-plugin-istanbul';
 import { execSync } from 'child_process';
 import { ViteEjsPlugin } from 'vite-plugin-ejs';
 import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
@@ -64,43 +63,47 @@ export default defineConfig({
     devServer: {
       framework: 'react',
       bundler: 'vite',
-      viteConfig: {
-        mode: 'test',
-        resolve: {
-          alias: {
-            '@opencloning/ui': resolve(__dirname, 'packages/ui/src'),
-            '@opencloning/store': resolve(__dirname, 'packages/store/src'),
-            '@opencloning/utils': resolve(__dirname, 'packages/utils/src/utils'),
+      viteConfig: async () => {
+        const istanbul = (await import('vite-plugin-istanbul')).default;
+        return {
+          mode: 'test',
+          resolve: {
+            alias: {
+              '@opencloning/ui': resolve(__dirname, 'packages/ui/src'),
+              '@opencloning/store': resolve(__dirname, 'packages/store/src'),
+              '@opencloning/utils': resolve(__dirname, 'packages/utils/src/utils'),
+            },
           },
-        },
-        plugins: [
-          (process.env.VITE_COVERAGE) && istanbul({
-            include: 'packages/**/*',
-            exclude: ['node_modules', 'tests/'],
-            extension: ['.js', '.jsx'],
-            requireEnv: true,
-          }),
-          ViteEjsPlugin({
-            umami_website_id: process.env.VITE_UMAMI_WEBSITE_ID,
-          }),
-          react(),
-        ],
-        optimizeDeps: {
-          include: [
-            '@emotion/react', 
-            '@emotion/styled', 
-            '@mui/material/Tooltip',
-            '@mui/material/Unstable_Grid2'
+          plugins: [
+            (process.env.VITE_COVERAGE) && istanbul({
+              include: [
+                'packages/*/src/*',
+                'apps/*/src/*'
+              ],
+              extension: ['.js', '.jsx'],
+            }),
+            ViteEjsPlugin({
+              umami_website_id: process.env.VITE_UMAMI_WEBSITE_ID,
+            }),
+            react(),
           ],
-          entries: ['packages/**/*.jsx', 'packages/**/*.js', 'cypress/**/*.js'],
-          exclude: ['fsevents'],
-        },
-        ssr: {
-          noExternal: ['fsevents'],
-        },
-        define: {
-          __APP_VERSION__: JSON.stringify(getGitTag()),
-        },
+          optimizeDeps: {
+            include: [
+              '@emotion/react', 
+              '@emotion/styled', 
+              '@mui/material/Tooltip',
+              '@mui/material/Unstable_Grid2'
+            ],
+            entries: ['packages/**/*.jsx', 'packages/**/*.js', 'cypress/**/*.js'],
+            exclude: ['fsevents'],
+          },
+          ssr: {
+            noExternal: ['fsevents'],
+          },
+          define: {
+            __APP_VERSION__: JSON.stringify(getGitTag()),
+          },
+        };
       },
     },
     setupNodeEvents(on, config) {
