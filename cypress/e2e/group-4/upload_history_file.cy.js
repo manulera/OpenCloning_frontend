@@ -5,7 +5,7 @@ describe('Test upload history from file', () => {
     cy.visit('/');
   });
   it('JSON: Can upload a correct json file', () => {
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/restriction_then_ligation.json', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/restriction_then_ligation.json', { force: true });
     cy.get('div.cloning-tab-pannel').contains('PCR with primers fwd and rvs');
     cy.get('div.cloning-tab-pannel').should('be.visible');
     cy.get('div.description-tab-pannel').should('not.be.visible');
@@ -23,7 +23,7 @@ describe('Test upload history from file', () => {
   });
   it('JSON: Can merge with existing history', () => {
     loadExample('CRISPR HDR');
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/restriction_then_ligation.json', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/restriction_then_ligation.json', { force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
     // Previous
@@ -41,7 +41,7 @@ describe('Test upload history from file', () => {
     cy.get('div.cloning-tab-pannel').filter(':contains("CRISPR HDR with")').should('have.length', 1);
 
     // Can replace the history
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/crispr_hdr.json', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/crispr_hdr.json', { force: true });
     cy.get('.history-loaded-dialog').contains('Replace existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
@@ -49,13 +49,13 @@ describe('Test upload history from file', () => {
     cy.get('div.cloning-tab-pannel').contains('CRISPR HDR with').should('exist');
   });
   it('Gives an error message for an incorrect type of file', () => {
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/ase1.gb', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/ase1.gb', { force: true });
     cy.get('.MuiAlert-message').contains('Only JSON and zip files are accepted');
     cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('cypress/test_files/wrong_history.json', { force: true });
     cy.get('.MuiAlert-message').contains('should contain at least');
   });
   it('Zip: Can upload a correct zip file', () => {
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/cloning_strategy_with_sequencing.zip', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/cloning_strategy_with_sequencing.zip', { force: true });
     cy.get('div.cloning-tab-pannel').contains('final_product.gb').then(() => {
     // Check that the files are in the session storage
       cy.window().its('sessionStorage')

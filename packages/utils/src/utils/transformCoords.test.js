@@ -4,7 +4,7 @@ const testData = require('../../../../cypress/test_files/unittests/test_data_tra
 
 const pcrSource = testData.sources.find((s) => s.type === 'PCRSource');
 
-const creLoxData = require('../../../../public/examples/cre_lox_recombination.json');
+const creLoxData = require('../../../../apps/opencloning/public/examples/cre_lox_recombination.json');
 
 const plasmidExcisionSource = creLoxData.sources.find((s) => s.id === 3);
 const plasmidInsertionSource = creLoxData.sources.find((s) => s.id === 5);

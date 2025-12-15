@@ -20,25 +20,25 @@ describe('Test drag and drop functionality', () => {
     cy.get('div.cloning-history').should('not.have.class', 'dragging-file');
   });
   it('Can load single sequence file', () => {
-    cy.get('div.cloning-history').selectFile('public/examples/ase1.gb', { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile('apps/opencloning/public/examples/ase1.gb', { action: 'drag-drop' });
     // This also checks that the empty source was replaced
     cy.get('li#sequence-1', { timeout: 20000 }).contains('CU329670');
     cy.get('li#sequence-1 li#source-1').contains('Read from file ase1.gb');
   });
   it('Can load multiple sequence files, with multiple sequences in them', () => {
-    cy.get('div.cloning-history').selectFile(['public/examples/ase1.gb', 'public/examples/dummy_multi_fasta.fasta'], { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile(['apps/opencloning/public/examples/ase1.gb', 'apps/opencloning/public/examples/dummy_multi_fasta.fasta'], { action: 'drag-drop' });
     // There should be three sources displayed, and three sequences (7 because of the Add Source button)
     cy.get('div.tf-tree.tf-ancestor-tree ul li').should('have.length', 7);
   });
   it('Can load a history file', () => {
-    cy.get('div.cloning-history').selectFile('public/examples/homologous_recombination.json', { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile('apps/opencloning/public/examples/homologous_recombination.json', { action: 'drag-drop' });
     // No error message should be displayed
     cy.get('div#global-error-message-wrapper div.MuiAlert-message').should('not.exist');
     cy.get('div.tf-tree.tf-ancestor-tree').contains('Homologous recombination with').should('exist');
   });
   it('Shows the right errors when dropping wrong files', () => {
     // JSON file + something else
-    cy.get('div.cloning-history').selectFile(['public/examples/homologous_recombination.json', 'public/examples/ase1.gb'], { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile(['apps/opencloning/public/examples/homologous_recombination.json', 'apps/opencloning/public/examples/ase1.gb'], { action: 'drag-drop' });
     cy.get('div.MuiAlert-message').contains('Drop either');
 
     // JSON file with wrong content
@@ -50,13 +50,13 @@ describe('Test drag and drop functionality', () => {
     cy.get('div.MuiAlert-message').contains('Could not read the file favicon.ico');
 
     // Files which are not sequences mixed with sequences
-    cy.get('div.cloning-history').selectFile(['public/examples/ase1.gb', 'public/favicon.ico'], { action: 'drag-drop' });
+    cy.get('div.cloning-history').selectFile(['apps/opencloning/public/examples/ase1.gb', 'public/favicon.ico'], { action: 'drag-drop' });
     cy.get('div.MuiAlert-message').contains('Could not read the file favicon.ico');
   });
   it('Can merge with existing history', () => {
     loadExample('Gibson assembly');
 
-    cy.get('div.cloning-history').selectFile('public/examples/homologous_recombination.json', { action: 'drag-drop', force: true });
+    cy.get('div.cloning-history').selectFile('apps/opencloning/public/examples/homologous_recombination.json', { action: 'drag-drop', force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
@@ -66,7 +66,7 @@ describe('Test drag and drop functionality', () => {
     cy.get('div.cloning-tab-pannel').contains('Homologous recombination');
 
     // Can load one with the same primer names again as long as they have the same sequence as well
-    cy.get('div.cloning-history').selectFile('public/examples/homologous_recombination.json', { action: 'drag-drop', force: true });
+    cy.get('div.cloning-history').selectFile('apps/opencloning/public/examples/homologous_recombination.json', { action: 'drag-drop', force: true });
     cy.get('.history-loaded-dialog').contains('Add to existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
@@ -82,7 +82,7 @@ describe('Test drag and drop functionality', () => {
     cy.get('div.cloning-tab-pannel div.finished-source').filter(':contains("Homologous recombination")').should('have.length', 2);
 
     // Can replace the history
-    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('public/examples/crispr_hdr.json', { force: true });
+    cy.get('.MuiToolbar-root .MuiButtonBase-root').contains('File').siblings('input').selectFile('apps/opencloning/public/examples/crispr_hdr.json', { force: true });
     cy.get('.history-loaded-dialog').contains('Replace existing').click();
     cy.get('.history-loaded-dialog button').contains('Select').click();
 
