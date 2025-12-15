@@ -1,0 +1,110 @@
+[
+    {
+        "header": "Assembly connector",
+        "body": "",
+        "glyph": "three-prime-sticky-restriction-site",
+        "left_overhang": "CCCT",
+        "right_overhang": "AACG",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#92C3DC"
+    },
+    {
+        "header": "Promoter",
+        "body": "",
+        "glyph": "promoter",
+        "left_overhang": "AACG",
+        "right_overhang": "TATG",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#B2D06E"
+    },
+    {
+        "header": "Coding sequence",
+        "body": "You can use the ATG from the fusion site as translation start. If possible omit STOP codon and make your protein in frame with the Ser.",
+        "glyph": "cds",
+        "left_overhang": "TATG",
+        "right_overhang": "ATCC",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": 2,
+        "right_codon_start": 2,
+        "color": "#F1EC9B"
+    },
+    {
+        "header": "Terminator",
+        "body": "",
+        "glyph": "terminator",
+        "left_overhang": "ATCC",
+        "right_overhang": "GCTG",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#E2929E"
+    },
+    {
+        "header": "Assembly connector",
+        "body": "",
+        "glyph": "three-prime-sticky-restriction-site",
+        "left_overhang": "GCTG",
+        "right_overhang": "TACA",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#7C6AA9"
+    },
+    {
+        "header": "Yeast marker",
+        "body": "",
+        "glyph": "engineered-region",
+        "left_overhang": "TACA",
+        "right_overhang": "GAGT",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#EFD198"
+    },
+    {
+        "header": "Yeast plasmid origin of replication",
+        "body": "",
+        "glyph": "origin-of-replication",
+        "left_overhang": "GAGT",
+        "right_overhang": "CCGA",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#85643E"
+    },
+    {
+        "header": "Bacterial marker and origin",
+        "body": "",
+        "glyph": "engineered-region",
+        "left_overhang": "CCGA",
+        "right_overhang": "CCCT",
+        "left_inside": "",
+        "right_inside": "",
+        "left_codon_start": null,
+        "right_codon_start": null,
+        "color": "#7F7F7F"
+    },
+    {
+        "header": "Dummy",
+        "body": "promoter text",
+        "glyph": "cds-stop",
+        "left_overhang": "CATG",
+        "right_overhang": "TATG",
+        "left_inside": "AAAATA",
+        "right_inside": "AATG",
+        "left_codon_start": 2,
+        "right_codon_start": 1,
+        "color": "greenyellow"
+    }
+]

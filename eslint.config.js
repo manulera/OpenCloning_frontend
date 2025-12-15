@@ -46,7 +46,8 @@ export default [
       'import/prefer-default-export': 0,
       'indent': ['error', 2],
       'no-unused-vars': 'warn',
-      'no-console': 'warn'
+      'no-console': 'warn',
+      'camelcase': ['warn', { properties: 'always' }]
     },
     settings: {
       react: {

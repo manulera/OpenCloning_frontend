@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { cloningActions } from '../../store/cloning';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import useHttpClient from '../../hooks/useHttpClient';
+import AssemblerPart from './AssemblerPart';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
@@ -129,14 +130,16 @@ function AssemblerComponent({ data, categories }) {
           const allowedCategories = item.category ? [item.category] : categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category))
           const isCompleted = item.category !== '' && item.id.length > 0
           const borderColor = isCompleted ? 'success.main' : 'primary.main'
+          const leftOverhang = data.find((d) => d.category === item.category)?.left_overhang
+          const rightOverhang = data.find((d) => d.category === item.category)?.right_overhang
 
           return (
             <React.Fragment key={index}>
               {/* Link before first box */}
               {index === 0 && item.category !== '' && (
-                <AssemblerLink overhang={data.find((d) => d.category === item.category).left_overhang} />
+                <AssemblerLink overhang={leftOverhang} />
               )}
-
+              <AssemblerPart />
               <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Category</InputLabel>
@@ -163,16 +166,21 @@ function AssemblerComponent({ data, categories }) {
                     renderInput={(params) => <TextField {...params} label="ID" />}
                   />
                 </FormControl>
+                {leftOverhang && rightOverhang && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <AssemblerPart data={ { left_overhang: leftOverhang, right_overhang: rightOverhang }}/>
+                  </Box>
+                )}
               </Box>
 
               {/* Link between boxes */}
               {index < assembly.length - 1 && item.category !== '' && (
-                <AssemblerLink overhang={data.find((d) => d.category === item.category).right_overhang} />
+                <AssemblerLink overhang={rightOverhang} />
               )}
 
               {/* Link after last box */}
               {index === assembly.length - 1 && item.category !== '' && (
-                <AssemblerLink overhang={data.find((d) => d.category === item.category).right_overhang} />
+                <AssemblerLink overhang={rightOverhang} />
               )}
             </React.Fragment>
           )
