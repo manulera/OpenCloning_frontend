@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react';
 import PCRTable from './PCRTable';
-import { mockPCRDetails } from '../../../../tests/mockPrimerDetailsData';
+import { mockPCRDetails } from '../../../../../../tests/mockPrimerDetailsData';
 
 describe('PCRTable', () => {
   it('renders PCR details correctly', () => {

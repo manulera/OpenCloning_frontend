@@ -3,7 +3,7 @@ import SettingsTab from './SettingsTab';
 import store from '@opencloning/store';
 import { cloningActions } from '@opencloning/store/cloning';
 import { Provider } from 'react-redux';
-import { setInputValue, checkInputValue } from '../../../cypress/e2e/common_functions';
+import { setInputValue, checkInputValue } from '../../../../../cypress/e2e/common_functions';
 
 const { setGlobalPrimerSettings } = cloningActions;
 

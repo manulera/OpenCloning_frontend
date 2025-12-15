@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react';
 import PrimerInfoIcon, { PrimerInfoDialog } from './PrimerInfoIcon';
-import { mockPCRDetails, mockPrimerDetails, mockPrimer } from '../../../../tests/mockPrimerDetailsData';
+import { mockPCRDetails, mockPrimerDetails, mockPrimer } from '../../../../../../tests/mockPrimerDetailsData';
 
 const emptyPCRDetails = [];
 

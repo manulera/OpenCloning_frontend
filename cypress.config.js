@@ -1,10 +1,11 @@
 import { defineConfig } from 'cypress';
 import fs from 'fs';
-import istanbul from 'vite-plugin-istanbul';
+// import istanbul from 'vite-plugin-istanbul';
 import { execSync } from 'child_process';
 import { ViteEjsPlugin } from 'vite-plugin-ejs';
 import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 
 
@@ -59,16 +60,23 @@ export default defineConfig({
   },
 
   component: {
+    specPattern: 'packages/**/*.cy.{js,jsx}',
     devServer: {
       framework: 'react',
       bundler: 'vite',
       viteConfig: {
         mode: 'test',
+        resolve: {
+          alias: {
+            '@opencloning/ui': resolve(__dirname, 'packages/ui/src'),
+            '@opencloning/store': resolve(__dirname, 'packages/store/src'),
+            '@opencloning/utils': resolve(__dirname, 'packages/utils/src/utils'),
+          },
+        },
         plugins: [
           (process.env.VITE_COVERAGE) && istanbul({
-            include: 'src/*',
-            exclude: ['node_modules',
-              'tests/'],
+            include: 'packages/**/*',
+            exclude: ['node_modules', 'tests/'],
             extension: ['.js', '.jsx'],
             requireEnv: true,
           }),
@@ -84,7 +92,11 @@ export default defineConfig({
             '@mui/material/Tooltip',
             '@mui/material/Unstable_Grid2'
           ],
-          entries: ['src/**/*.jsx', 'src/**/*.js', 'cypress/**/*.js'],
+          entries: ['packages/**/*.jsx', 'packages/**/*.js', 'cypress/**/*.js'],
+          exclude: ['fsevents'],
+        },
+        ssr: {
+          noExternal: ['fsevents'],
         },
         define: {
           __APP_VERSION__: JSON.stringify(getGitTag()),
