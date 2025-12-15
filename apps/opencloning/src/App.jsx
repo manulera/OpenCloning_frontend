@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import MainAppBar from '@opencloning/ui/components/navigation/MainAppBar';
