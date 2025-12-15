@@ -112,6 +112,7 @@ describe('GenomeRegion Source', () => {
     // Works with accessions not linked to an assembly
     clearInputValue('Sequence accession', 'li#source-1');
     setInputValue('Sequence accession', 'DQ208311.2', 'li#source-1');
+    cy.get('li#source-1 label').contains('Start', { timeout: 20000 }).should('be.visible');
     setInputValue('Start', '1', 'li#source-1');
     setInputValue('End', '20', 'li#source-1');
     clickMultiSelectOption('Strand', 'plus', 'li#source-1');
