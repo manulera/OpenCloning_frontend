@@ -1661,8 +1661,6 @@ __metadata:
     "@reduxjs/toolkit": "npm:^1.9.7"
     "@teselagen/bio-parsers": "npm:^0.4.32"
     "@teselagen/range-utils": "npm:^0.3.13"
-    react: "npm:^18.3.1"
-    react-redux: "npm:^8.1.3"
     redux: "npm:^4.2.1"
     redux-form: "npm:^8.3.10"
     redux-thunk: "npm:^2.4.2"
@@ -1690,10 +1688,8 @@ __metadata:
     axios: "npm:^1.12.2"
     lodash-es: "npm:^4.17.21"
     react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
     react-draggable: "npm:^4.4.6"
     react-redux: "npm:^8.1.3"
-    redux: "npm:^4.2.1"
   peerDependencies:
     react: ^18.3.1
     react-dom: ^18.3.1
@@ -1711,8 +1707,6 @@ __metadata:
     "@zip.js/zip.js": "npm:^2.7.62"
     dom-to-svg: "npm:^0.12.2"
     lodash-es: "npm:^4.17.21"
-    react: "npm:^18.3.1"
-    react-redux: "npm:^8.1.3"
   peerDependencies:
     react: ^18.3.1
     react-redux: ^8.1.3
@@ -8154,29 +8148,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "opencloning@workspace:apps/opencloning"
   dependencies:
-    "@emotion/react": "npm:^11.14.0"
-    "@emotion/styled": "npm:^11.14.0"
-    "@mui/icons-material": "npm:^5.15.17"
-    "@mui/material": "npm:^5.15.17"
     "@opencloning/store": "workspace:*"
     "@opencloning/ui": "workspace:*"
     "@opencloning/utils": "workspace:*"
-    "@reduxjs/toolkit": "npm:^1.9.7"
-    "@teselagen/bio-parsers": "npm:^0.4.32"
-    "@teselagen/ove": "npm:^0.8.18"
-    "@teselagen/range-utils": "npm:^0.3.13"
-    "@teselagen/sequence-utils": "npm:^0.3.35"
-    "@zip.js/zip.js": "npm:^2.7.62"
-    axios: "npm:^1.12.2"
-    dom-to-svg: "npm:^0.12.2"
     lodash-es: "npm:^4.17.21"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-draggable: "npm:^4.4.6"
     react-redux: "npm:^8.1.3"
-    redux: "npm:^4.2.1"
-    redux-form: "npm:^8.3.10"
-    redux-thunk: "npm:^2.4.2"
   languageName: unknown
   linkType: soft
 
