@@ -1,7 +1,7 @@
 import React from 'react';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import { eLabFTWHttpClient } from './common';
-import { clearAutocompleteValue, clickMultiSelectOption, setAutocompleteValue } from '../../../cypress/e2e/common_functions';
+import { clearAutocompleteValue, clickMultiSelectOption, setAutocompleteValue } from '../../../../../cypress/e2e/common_functions';
 
 let uniqueId = 1;
 const newUniqueId = () => uniqueId++;

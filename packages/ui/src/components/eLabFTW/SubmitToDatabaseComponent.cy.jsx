@@ -3,8 +3,8 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import { eLabFTWHttpClient } from './common';
-import { mockSequences, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../tests/mockNetworkData';
-import { clearAutocompleteValue } from '../../../cypress/e2e/common_functions';
+import { mockSequences, mockPrimers, mockSources, mockTeselaJsonCache } from '../../../../../tests/mockNetworkData';
+import { clearAutocompleteValue } from '../../../../../cypress/e2e/common_functions';
 
 const PRIMER_CATEGORY_ID = 3;
 

@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
 import { eLabFTWHttpClient } from './common';
-import { mockSequences, mockSources, mockPrimers } from '../../../tests/mockNetworkData';
+import { mockSequences, mockSources, mockPrimers } from '../../../../../tests/mockNetworkData';
 
 const PRIMER_CATEGORY_ID = 3;
 

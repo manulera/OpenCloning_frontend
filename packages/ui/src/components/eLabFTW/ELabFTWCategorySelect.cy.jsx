@@ -68,10 +68,19 @@ describe('<ELabFTWCategorySelect />', () => {
 
   it('shows an error message if the request fails and can retry', () => {
     cy.mount(<ELabFTWCategorySelect fullWidth />);
+    cy.stub(eLabFTWHttpClient, 'get')
+      .withArgs('/api/v2/info', { headers: { Authorization: 'test-read-key' } })
+      .resolves({
+        data: {
+          elabftw_version_int: 50300,
+        },
+      }).as('eLabFTWHttpClientSpyInfo')
+      .withArgs('/api/v2/teams/current/resources_categories', { headers: { Authorization: 'test-read-key' }, params: { limit: 9999 } })
+      .rejects(new Error('Connection error')).as('eLabFTWHttpClientSpy');
     cy.get('.MuiAlert-message').should('contain', 'Could not retrieve categories');
     // Clicking the retry button makes the request again
-    cy.spy(eLabFTWHttpClient, 'get').as('eLabFTWHttpClientSpy');
     cy.get('button').contains('Retry').click();
-    cy.get('@eLabFTWHttpClientSpy').should('have.been.calledWith', '/api/v2/items_types', { headers: { Authorization: 'test-read-key' }, params: { limit: 9999 } });
+    cy.get('@eLabFTWHttpClientSpy').should('have.callCount', 2);
+    cy.get('@eLabFTWHttpClientSpyInfo').should('have.callCount', 1);
   });
 });
