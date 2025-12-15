@@ -1,5 +1,17 @@
 # opencloning
 
+## 1.0.2-test.0
+
+### Patch Changes
+
+- testing a test release to npm
+- e0fb5ee: Releases work on npm now through `YARN_NPM_AUTH_TOKEN=<> yarn changeset publish`, this is enabled by patch, see Readme. This properly handles workspaces (in package.json in each of the packages, `"@opencloning/store": "workspace:*",` is replaced by the actual version).
+- Updated dependencies
+- Updated dependencies [e0fb5ee]
+  - @opencloning/store@1.0.2-test.0
+  - @opencloning/utils@1.0.2-test.0
+  - @opencloning/ui@1.0.2-test.0
+
 ## 1.0.1
 
 ### Patch Changes

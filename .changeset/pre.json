@@ -1,0 +1,14 @@
+{
+  "mode": "pre",
+  "tag": "test",
+  "initialVersions": {
+    "opencloning": "1.0.1",
+    "@opencloning/store": "1.0.1",
+    "@opencloning/ui": "1.0.1",
+    "@opencloning/utils": "1.0.1"
+  },
+  "changesets": [
+    "hungry-ducks-grin",
+    "tasty-seas-switch"
+  ]
+}

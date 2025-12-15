@@ -16,8 +16,6 @@
         "release": "changeset publish",
         "pre:enter": "changeset pre enter",
         "pre:exit": "changeset pre exit",
-        "pre:version": "changeset version",
-        "pre:publish": "changeset publish --tag",
         "pack:all": "yarn workspace @opencloning/store pack --filename /tmp/@opencloning-store.tgz && yarn workspace @opencloning/utils pack --filename /tmp/@opencloning-utils.tgz && yarn workspace @opencloning/ui pack --filename /tmp/@opencloning-ui.tgz",
         "postinstall": "husky",
         "prepack": "pinst --disable",

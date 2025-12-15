@@ -216,3 +216,13 @@ Currently relies on the patch in `.yarn/patches/@changesets-cli-npm-2.29.8-52df4
 ```
 YARN_NPM_AUTH_TOKEN=<> yarn changeset publish
 ```
+
+### Releasing a pre-release
+
+```
+yarn pre:enter
+# make changes
+# Create changeset
+yarn release
+```
+
