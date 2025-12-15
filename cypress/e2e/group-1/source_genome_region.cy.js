@@ -111,6 +111,8 @@ describe('GenomeRegion Source', () => {
       .should('have.value', 'Saccharomyces cerevisiae S288C - 559292');
     // Works with accessions not linked to an assembly
     clearInputValue('Sequence accession', 'li#source-1');
+    // Wait to not get rate-limited by NCBI API
+    cy.wait(2000);
     setInputValue('Sequence accession', 'DQ208311.2', 'li#source-1');
     cy.get('li#source-1 label').contains('Start', { timeout: 20000 }).should('be.visible');
     setInputValue('Start', '1', 'li#source-1');
