@@ -1,5 +1,14 @@
 # @opencloning/ui
 
+## 1.0.1
+
+### Patch Changes
+
+- a072fee: Dummy change to test releasing
+- Updated dependencies [a072fee]
+  - @opencloning/store@1.0.1
+  - @opencloning/utils@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

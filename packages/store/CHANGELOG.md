@@ -1,5 +1,11 @@
 # @opencloning/store
 
+## 1.0.1
+
+### Patch Changes
+
+- a072fee: Dummy change to test releasing
+
 ## 1.0.0
 
 ### Major Changes

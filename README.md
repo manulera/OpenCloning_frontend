@@ -208,3 +208,11 @@ describe('ab1ToJson', () => {
 ```
 npx -y yarn-update-indirect form-data
 ```
+
+## Publishing to npm
+
+Currently relies on the patch in `.yarn/patches/@changesets-cli-npm-2.29.8-52df46efd2.patch` to publish to npm, coming from this [PR](https://github.com/adobe/spectrum-web-components/pull/5821/files). It's pending on the resolution of this [other PR](https://github.com/changesets/changesets/pull/674).
+
+```
+YARN_NPM_AUTH_TOKEN=<> yarn changeset publish
+```

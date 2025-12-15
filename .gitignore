@@ -5,6 +5,11 @@
 apps/*/node_modules/
 apps/*/build/
 
+# packages
+packages/*/package.tgz
+packages/*/package
+
+
 # testing
 /coverage
 .nyc_output
