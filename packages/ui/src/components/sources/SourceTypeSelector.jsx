@@ -1,9 +1,6 @@
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import { InputLabel, MenuItem, FormControl, Select } from '@mui/material';
 import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 import { cloningActions } from '@opencloning/store/cloning';
 import useDatabase from '../../hooks/useDatabase';

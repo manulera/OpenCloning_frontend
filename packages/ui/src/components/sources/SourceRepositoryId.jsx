@@ -1,13 +1,6 @@
 import React from 'react';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import ClearIcon from '@mui/icons-material/Clear';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { IconButton, InputAdornment, InputLabel, MenuItem, TextField, FormControl, Select, Alert, Autocomplete, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { Clear as ClearIcon } from '@mui/icons-material';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import getHttpClient from '@opencloning/utils/getHttpClient';

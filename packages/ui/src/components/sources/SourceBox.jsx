@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useStore } from 'react-redux';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Tooltip } from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import { cloningActions } from '@opencloning/store/cloning';
 import './SourceBox.css';
 import VerifyDeleteDialog from './VerifyDeleteDialog';

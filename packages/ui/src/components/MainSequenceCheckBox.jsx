@@ -1,10 +1,7 @@
 import React from 'react';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import DownloadIcon from '@mui/icons-material/Download';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Rule';
-import Tooltip from '@mui/material/Tooltip';
+import { Visibility as VisibilityIcon, Download as DownloadIcon, Edit as EditIcon, Rule as CheckIcon } from '@mui/icons-material';
 import { useDispatch, useSelector, useStore } from 'react-redux';
+import { Tooltip } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../hooks/useStoreEditor';

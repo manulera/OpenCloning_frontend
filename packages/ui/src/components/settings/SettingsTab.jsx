@@ -1,9 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Card, CardContent, CardHeader, Stack, TextField, InputAdornment, Typography, IconButton, Box } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Stack, TextField, InputAdornment, IconButton, Box, Tooltip } from '@mui/material';
 import { cloningActions } from '@opencloning/store/cloning';
-import Tooltip from '@mui/material/Tooltip';
-import InfoIcon from '@mui/icons-material/Info';
+import { Info as InfoIcon } from '@mui/icons-material';
 
 const { setGlobalPrimerSettings } = cloningActions;
 

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Tabs from '@mui/material/Tabs';
+import { Tabs } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import DescriptionEditor from './DescriptionEditor';
 import PrimerList from './primers/PrimerList';

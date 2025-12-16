@@ -1,6 +1,5 @@
 import React from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Delete as DeleteIcon, Download as DownloadIcon } from '@mui/icons-material';
 import {
   TableCell,
   TableRow,

@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import PrimerDesignStepper from './PrimerDesignStepper';
 import TabPanelSelectRoi from './TabPanelSelectRoi';
 import TabPannelSettings from './TabPannelSettings';

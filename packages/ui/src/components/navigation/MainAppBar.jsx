@@ -1,15 +1,8 @@
 import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Container from '@mui/material/Container';
-import { Button, Tooltip } from '@mui/material';
+import { AppBar, Box, Toolbar, Container, Button, Tooltip, IconButton, Menu, MenuItem } from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import './MainAppBar.css';
 import { useDispatch } from 'react-redux';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MenuIcon from '@mui/icons-material/Menu';
 import ButtonWithMenu from './ButtonWithMenu';
 import { downloadCloningStrategyAsSvg, formatTemplate, loadHistoryFile, loadFilesToSessionStorage } from '@opencloning/utils/readNwrite';
 import SelectExampleDialog from './SelectExampleDialog';
