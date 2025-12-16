@@ -1,6 +1,6 @@
 {
     "name": "@opencloning/store",
-    "version": "1.0.2-test.0",
+    "version": "1.1.0-test.1",
     "type": "module",
     "main": "./src/index.js",
     "exports": {

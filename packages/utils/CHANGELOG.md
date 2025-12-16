@@ -1,5 +1,12 @@
 # @opencloning/utils
 
+## 1.1.0-test.1
+
+### Patch Changes
+
+- Updated dependencies [02dbc55]
+  - @opencloning/store@1.1.0-test.1
+
 ## 1.0.2-test.0
 
 ### Patch Changes

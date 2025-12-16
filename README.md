@@ -223,6 +223,8 @@ YARN_NPM_AUTH_TOKEN=<> yarn changeset publish
 yarn pre:enter
 # make changes
 # Create changeset
+
+yarn changeset version
 yarn release
 ```
 
