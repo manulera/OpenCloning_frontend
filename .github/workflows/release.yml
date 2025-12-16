@@ -35,13 +35,8 @@ jobs:
 
       - name: Ensure pre-release mode is active
         run: |
-          # Enter pre-release mode if not already active
-          # This ensures master branch always operates in pre-release mode
-          if [ ! -f ".changeset/pre.json" ]; then
-            yarn pre:enter dev
-          else
-            echo "Pre-release mode already active"
-          fi
+          yarn pre:exit
+          yarn pre:enter dev
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

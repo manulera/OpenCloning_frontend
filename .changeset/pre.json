@@ -1,12 +1,12 @@
 {
-  "mode": "pre",
-  "tag": "test",
+  "mode": "exit",
+  "tag": "dev",
   "initialVersions": {
-    "opencloning": "1.0.1",
-    "@opencloning/store": "1.0.1",
-    "@opencloning/ui": "1.0.1",
-    "@opencloning/utils": "1.0.1",
-    "test-app": "1.0.0"
+    "opencloning": "1.1.0-test.3",
+    "test-app": "1.1.0-test.2",
+    "@opencloning/store": "1.1.0-test.3",
+    "@opencloning/ui": "1.1.0-test.3",
+    "@opencloning/utils": "1.1.0-test.3"
   },
   "changesets": [
     "fifty-ads-trade",
