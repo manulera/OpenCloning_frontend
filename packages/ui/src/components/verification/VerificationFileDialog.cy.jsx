@@ -4,8 +4,14 @@ import store from '@opencloning/store';
 import { cloningActions } from '@opencloning/store/cloning';
 import { loadDataAndMount } from '../../../../../cypress/e2e/common_funcions_store';
 import { getVerificationFileName } from '@opencloning/utils/readNwrite';
+import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
+import { Provider } from 'react-redux';
 
-const { setFiles, setConfig } = cloningActions;
+const { setFiles } = cloningActions;
+
+const config = {
+  backendUrl: 'http://127.0.0.1:8000',
+};
 
 const dummyFiles = [
   { file_name: 'file1.txt', sequence_id: 1, file_type: 'Sequencing file' },
@@ -22,7 +28,13 @@ describe('<VerificationFileDialog />', () => {
   it('renders and calls setDialogOpen with false when clicking close button', () => {
     // see: https://on.cypress.io/mounting-react
     const setDialogOpenSpy = cy.spy().as('setDialogOpenSpy');
-    cy.mount(<VerificationFileDialog id={1} dialogOpen setDialogOpen={setDialogOpenSpy} />);
+    cy.mount(
+      <Provider store={store}>
+        <ConfigProvider config={config}>
+          <VerificationFileDialog id={1} dialogOpen setDialogOpen={setDialogOpenSpy} />
+        </ConfigProvider>
+      </Provider>
+    );
 
     // Click close button
     cy.get('button').contains('Close').click();
@@ -41,7 +53,13 @@ describe('<VerificationFileDialog />', () => {
     dummyFiles.forEach((file) => {
       sessionStorage.setItem(getVerificationFileName(file), base64str);
     });
-    cy.mount(<VerificationFileDialog id={1} dialogOpen setDialogOpen={() => {}} />);
+    cy.mount(
+      <Provider store={store}>
+        <ConfigProvider config={config}>
+          <VerificationFileDialog id={1} dialogOpen setDialogOpen={() => {}} />
+        </ConfigProvider>
+      </Provider>
+    );
     // Even though there are two files with the same name, only one should be displayed
     cy.get('table td').filter(':contains("file1.txt")').should('have.length', 1);
     cy.get('table').contains('file2.txt');
@@ -64,13 +82,17 @@ describe('<VerificationFileDialog />', () => {
   });
 
   it('can submit files and aligns them', () => {
-    store.dispatch(setConfig({ backendUrl: 'http://127.0.0.1:8000' }));
-
     loadDataAndMount(
       'cypress/test_files/sequencing/cloning_strategy_linear.json',
       store,
       () => {
-        cy.mount(<VerificationFileDialog id={2} dialogOpen setDialogOpen={() => {}} />);
+        cy.mount(
+          <Provider store={store}>
+            <ConfigProvider config={config}>
+              <VerificationFileDialog id={2} dialogOpen setDialogOpen={() => {}} />
+            </ConfigProvider>
+          </Provider>
+        );
       },
     ).then(() => {
       cy.get('button').contains('Submit files').click();
@@ -118,12 +140,17 @@ describe('<VerificationFileDialog />', () => {
       });
   });
   it('handles errors', () => {
-    store.dispatch(setConfig({ backendUrl: 'http://127.0.0.1:8000' }));
     loadDataAndMount(
       'cypress/test_files/sequencing/cloning_strategy_linear.json',
       store,
       () => {
-        cy.mount(<VerificationFileDialog id={2} dialogOpen setDialogOpen={() => {}} />);
+        cy.mount(
+          <Provider store={store}>
+            <ConfigProvider config={config}>
+              <VerificationFileDialog id={2} dialogOpen setDialogOpen={() => {}} />
+            </ConfigProvider>
+          </Provider>
+        );
       },
     ).then(() => {
       // Error if submitting non-allowed files
