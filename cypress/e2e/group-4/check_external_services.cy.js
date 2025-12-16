@@ -23,7 +23,7 @@ describe('Test external services status check', () => {
     cy.get('.MuiButtonBase-root').contains('App version').click();
     cy.get('.MuiDialogContent-root span').contains('Backend').siblings('p').should('contain', '1.2.3');
     cy.get('.MuiDialogContent-root span').contains('Schema').siblings('p').should('contain', '4.5.6');
-    cy.get('.MuiDialogContent-root span').contains('Frontend').siblings('p').should('contain', Cypress.env('GIT_TAG'));
+    cy.get('.MuiDialogContent-root span').contains('Frontend').siblings('p').should('contain', '__VERSION__');
     // Click outside the dialog
     cy.get('body').click(0, 0);
 
