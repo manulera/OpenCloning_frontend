@@ -12,8 +12,10 @@ jobs:
   check-changeset:
     name: Check for Changeset
     runs-on: ubuntu-latest
+    # Only check PRs targeting master branch
     # Skip check for version PRs and other automated PRs
     if: |
+      github.event.pull_request.base.ref == 'master' &&
       !contains(github.event.pull_request.title, 'Version Packages') &&
       !contains(github.event.pull_request.title, 'chore: version packages')
     steps:
@@ -21,16 +23,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Checkout the PR branch
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Fetch master branch
+        run: |
+          # Fetch master so changeset can find where HEAD diverged
+          git fetch origin master:master
 
       - name: Check changeset status
         id: changeset-status
         continue-on-error: true
         run: |
-          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
-          
-          # Run changeset status and capture output
+          # Run changeset status comparing against master
           # Exit code 1 means no changesets, but we continue anyway
-          STATUS_OUTPUT=$(npx @changesets/cli status --since=$BASE_BRANCH 2>&1) || STATUS_CODE=$?
+          STATUS_OUTPUT=$(npx @changesets/cli status --since=master 2>&1) || STATUS_CODE=$?
           
           # Store the output for the comment
           {
