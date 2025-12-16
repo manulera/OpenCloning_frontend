@@ -1,5 +1,11 @@
 # @opencloning/store
 
+## 1.1.0-test.2
+
+### Minor Changes
+
+- d46f09d: Handle version display with scripts
+
 ## 1.1.0-test.1
 
 ### Minor Changes
