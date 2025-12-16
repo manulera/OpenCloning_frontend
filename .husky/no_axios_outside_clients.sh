@@ -6,7 +6,7 @@ ALL_FILES=$(find src -name "*.js" -o -name "*.jsx" | grep -v "test.js")
 
 FILES_WITH_AXIOS=$(grep -l "import.*axios\|axios.*import" $ALL_FILES)
 
-ACCEPTED_FILES="src/components/eLabFTW/common.js src/utils/getHttpClient.js"
+ACCEPTED_FILES="packages/ui/src/components/eLabFTW/common.js packages/utils/src/utils/getHttpClient.js"
 
 for file in $FILES_WITH_AXIOS; do
   if ! echo "$ACCEPTED_FILES" | grep -q "$file"; then
