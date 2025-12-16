@@ -14,7 +14,6 @@ import SourceAnnotation from './SourceAnnotation';
 import SourceDatabase from './SourceDatabase';
 import SourcePolymeraseExtension from './SourcePolymeraseExtension';
 import CollectionSource from './CollectionSource';
-import KnownSourceErrors from './KnownSourceErrors';
 import useBackendAPI from '../../hooks/useBackendAPI';
 import MultipleOutputsSelector from './MultipleOutputsSelector';
 import { cloningActions } from '@opencloning/store/cloning';
@@ -31,7 +30,6 @@ function Source({ sourceId }) {
   const { type: sourceType } = source;
   let specificSource = null;
   const templateOnlySources = ['CollectionSource', 'KnownGenomeCoordinatesSource'];
-  const knownErrors = useSelector((state) => state.cloning.knownErrors, isEqual);
   const { requestStatus, sendPostRequest, sources, sequences } = useBackendAPI();
   const { addSequenceAndUpdateItsSource, updateSequenceAndItsSource } = cloningActions;
   const [chosenFragment, setChosenFragment] = React.useState(null);
@@ -115,7 +113,6 @@ function Source({ sourceId }) {
   return (
     <>
       {!templateOnlySources.includes(sourceType) && (<SourceTypeSelector {...{ source }} />)}
-      {sourceType && knownErrors[sourceType] && <KnownSourceErrors errors={knownErrors[sourceType]} />}
       {specificSource}
       {sources.length > 1 && (<MultipleOutputsSelector {...{ sources, sequences, sourceId, onFragmentChosen: setChosenFragment }} />)}
     </>
