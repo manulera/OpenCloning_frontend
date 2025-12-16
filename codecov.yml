@@ -1,0 +1,3 @@
+ignore:
+  - "apps/test-app/**"
+  - "packages/*/src/**/index.js"
