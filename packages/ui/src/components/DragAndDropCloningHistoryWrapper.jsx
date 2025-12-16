@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip } from '@mui/material';
 import { UploadFile } from '@mui/icons-material';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { Cancel as CancelIcon } from '@mui/icons-material';
 import useDragAndDropFile from '../hooks/useDragAndDropFile';
 import LoadCloningHistoryWrapper from './LoadCloningHistoryWrapper';
 

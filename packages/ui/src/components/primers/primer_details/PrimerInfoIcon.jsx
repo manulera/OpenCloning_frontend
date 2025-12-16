@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, IconButton, Tooltip, Table, TableBody } from '@mui/material';
 import React from 'react';
-import InfoIcon from '@mui/icons-material/Info';
-import WarningIcon from '@mui/icons-material/Warning';
+import { Info as InfoIcon, Warning as WarningIcon } from '@mui/icons-material';
 import { formatGcContent, formatMeltingTemperature, formatDeltaG } from './primerDetailsFormatting';
 import Primer3Figure from './Primer3Figure';
 import TableSection from './TableSection';

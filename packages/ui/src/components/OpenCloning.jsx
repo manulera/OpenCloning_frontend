@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Tabs from '@mui/material/Tabs';
+import { Tabs } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import DescriptionEditor from './DescriptionEditor';
 import PrimerList from './primers/PrimerList';
@@ -13,6 +13,7 @@ import CloningHistory from './CloningHistory';
 import SequenceTab from './SequenceTab';
 import AppAlerts from './AppAlerts';
 import Assembler from './assembler/Assembler';
+import { useConfig } from '../hooks/useConfig';
 
 const { setCurrentTab } = cloningActions;
 
@@ -21,8 +22,7 @@ function OpenCloning() {
   const currentTab = useSelector((state) => state.cloning.currentTab);
   const tabPanelsRef = useRef(null);
   const [smallDevice, setSmallDevice] = useState(window.innerWidth < 600);
-  const hasAppBar = useSelector((state) => state.cloning.config.showAppBar, isEqual);
-  const enableAssembler = useSelector((state) => state.cloning.config.enableAssembler);
+  const { showAppBar: hasAppBar, enableAssembler } = useConfig();
 
   React.useEffect(() => {
     const handleResize = () => {

@@ -1,5 +1,10 @@
 import React from 'react';
 import { AssemblyIdSelector, SpeciesPicker, SequenceAccessionPicker, } from './SourceGenomeRegion';
+import { ConfigProvider } from '../../providers/ConfigProvider';
+
+const config = {
+  backendUrl: 'http://127.0.0.1:8000',
+};
 
 describe('<AssemblyIdSelector />', () => {
   it('can propose a paired accession if the assembly has no annotation', () => {
@@ -43,11 +48,13 @@ describe('<AssemblyIdSelector />', () => {
     }).as('getPairedAssemblyInfo');
 
     cy.mount(
-      <AssemblyIdSelector 
-        setAssemblyId={setAssemblyId}
-        setHasAnnotation={setHasAnnotation}
-        onAssemblyIdChange={onAssemblyIdChange}
-      />
+      <ConfigProvider config={config}>
+        <AssemblyIdSelector 
+          setAssemblyId={setAssemblyId}
+          setHasAnnotation={setHasAnnotation}
+          onAssemblyIdChange={onAssemblyIdChange}
+        />
+      </ConfigProvider>
     );
     cy.get('input').type('GCA_000002945.3');
     cy.wait('@getAssemblyInfo');
@@ -62,7 +69,9 @@ describe('<AssemblyIdSelector />', () => {
     }).as('getAssemblyInfo');
 
     cy.mount(
-      <AssemblyIdSelector setAssemblyId={cy.spy()} setHasAnnotation={cy.spy()} onAssemblyIdChange={cy.spy()} />
+      <ConfigProvider config={config}>
+        <AssemblyIdSelector setAssemblyId={cy.spy()} setHasAnnotation={cy.spy()} onAssemblyIdChange={cy.spy()} />
+      </ConfigProvider>
     );
     cy.get('input').type('GCA_000002945.3', { delay: 0});
     cy.wait('@getAssemblyInfo');
@@ -76,7 +85,9 @@ describe('<SpeciesPicker />', () => {
     const setAssemblyId = cy.spy().as('setAssemblyId');
 
     cy.mount(
-      <SpeciesPicker setSpecies={setSpecies} setAssemblyId={setAssemblyId} />
+      <ConfigProvider config={config}>
+        <SpeciesPicker setSpecies={setSpecies} setAssemblyId={setAssemblyId} />
+      </ConfigProvider>
     );
     cy.intercept('GET', 'https://api.ncbi.nlm.nih.gov/datasets/v2alpha/taxonomy/taxon_suggest/**', {
       statusCode: 500,
@@ -101,7 +112,9 @@ describe('<SequenceAccessionPicker />', () => {
     }).as('getSequenceReports');
 
     cy.mount(
-      <SequenceAccessionPicker assemblyAccession={assemblyAccession} sequenceAccession={''} setSequenceAccession={setSequenceAccession} />
+      <ConfigProvider config={config}>
+        <SequenceAccessionPicker assemblyAccession={assemblyAccession} sequenceAccession={''} setSequenceAccession={setSequenceAccession} />
+      </ConfigProvider>
     );
     cy.contains('Could not load chromosomes').should('exist');
   });
@@ -115,7 +128,9 @@ describe('<SequenceAccessionPicker />', () => {
     }).as('getSequenceReports');
 
     cy.mount(
-      <SequenceAccessionPicker assemblyAccession={assemblyAccession} setSequenceAccession={setSequenceAccession} />
+      <ConfigProvider config={config}>
+        <SequenceAccessionPicker assemblyAccession={assemblyAccession} setSequenceAccession={setSequenceAccession} />
+      </ConfigProvider>
     );
     cy.wait('@getSequenceReports');
     cy.get('label').siblings('div').first().click();

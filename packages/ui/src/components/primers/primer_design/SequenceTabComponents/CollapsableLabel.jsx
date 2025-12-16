@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, FormLabel, IconButton, Collapse } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 function CollapsableLabel({ label, className, children, open = false }) {
   const [show, setShow] = React.useState(open);

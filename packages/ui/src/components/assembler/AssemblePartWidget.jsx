@@ -1,6 +1,6 @@
 import React from 'react'
 import { TextField, FormControl, InputLabel, Select, MenuItem, Box, Grid, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button } from '@mui/material'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { ContentCopy as ContentCopyIcon } from '@mui/icons-material'
 import AssemblerPart from './AssemblerPart'
 
 /* eslint-disable camelcase */

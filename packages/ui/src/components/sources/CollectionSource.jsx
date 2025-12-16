@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 import { useDispatch, useStore } from 'react-redux';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import { classNameToEndPointMap } from '@opencloning/utils/sourceFunctions';

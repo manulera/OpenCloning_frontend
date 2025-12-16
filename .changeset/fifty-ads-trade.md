@@ -1,8 +1,8 @@
 ---
 "opencloning": minor
 "@opencloning/store": minor
-"@opencloning/utils": minor
+"test-app": minor
 "@opencloning/ui": minor
 ---
 
-Rearrange dependencies
+Switch to using provider for configuration rather than state

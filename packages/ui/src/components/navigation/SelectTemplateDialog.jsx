@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Alert, Button, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 
 import React from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import useHttpClient from '../../hooks/useHttpClient';
 
 function SelectTemplateDialog({ onClose, open }) {

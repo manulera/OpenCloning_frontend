@@ -1,17 +1,20 @@
 import React from 'react';
 import EnzymeMultiSelect from './EnzymeMultiSelect';
-import store from '@opencloning/store';
-import { cloningActions } from '@opencloning/store/cloning';
+import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 
-const { setConfig } = cloningActions;
+const config = {
+  backendUrl: 'http://127.0.0.1:8000',
+};
+
 describe('<EnzymeMultiSelect />', () => {
-  beforeEach(() => {
-    store.dispatch(setConfig({ backendUrl: 'http://127.0.0.1:8000' }));
-  });
   it('can add and remove enzymes, sets enzymes', () => {
     // see: https://on.cypress.io/mounting-react
     const setEnzymesSpy = cy.spy().as('setEnzymesSpy');
-    cy.mount(<EnzymeMultiSelect setEnzymes={setEnzymesSpy} />);
+    cy.mount(
+      <ConfigProvider config={config}>
+        <EnzymeMultiSelect setEnzymes={setEnzymesSpy} />
+      </ConfigProvider>
+    );
     cy.get('.MuiInputBase-root').click();
     // All enzymes shown
     cy.get('div[role="presentation"]', { timeout: 20000 }).contains('AanI');
@@ -46,7 +49,11 @@ describe('<EnzymeMultiSelect />', () => {
       statusCode: 500,
       body: 'Server down',
     });
-    cy.mount(<EnzymeMultiSelect setEnzymes={() => {}} />);
+    cy.mount(
+      <ConfigProvider config={config}>
+        <EnzymeMultiSelect setEnzymes={() => {}} />
+      </ConfigProvider>
+    );
     cy.get('.MuiAlert-message').contains('Could not retrieve enzymes from server');
   });
   it('shows loading message', () => {
@@ -54,7 +61,11 @@ describe('<EnzymeMultiSelect />', () => {
       delayMs: 1000,
       body: { enzyme_names: ['EcoRI', 'SalI'] },
     });
-    cy.mount(<EnzymeMultiSelect setEnzymes={() => {}} />);
+    cy.mount(
+      <ConfigProvider config={config}>
+        <EnzymeMultiSelect setEnzymes={() => {}} />
+      </ConfigProvider>
+    );
     cy.get('.MuiCircularProgress-svg');
     cy.contains('retrieving enzymes...').should('exist');
   });

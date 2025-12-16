@@ -1,7 +1,8 @@
-import { useSelector } from 'react-redux';
+import { useConfig } from './useConfig';
 
 export default function useBackendRoute() {
-  const configBackendUrl = useSelector((state) => state.cloning.config.backendUrl);
+  const { backendUrl: configBackendUrl } = useConfig();
+  
   if (!configBackendUrl) {
     return () => {};
   }

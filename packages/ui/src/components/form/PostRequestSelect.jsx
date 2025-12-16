@@ -1,7 +1,5 @@
 import * as React from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import { Alert, Button, FormControl } from '@mui/material';
+import { Autocomplete, TextField, Alert, Button, FormControl } from '@mui/material';
 
 export default function PostRequestSelect({ setValue, getOptions, getOptionLabel, isOptionEqualToValue, textLabel, disableFiltering = true, ...rest }) {
   // The reason for disableFiltering is that we allow the server to filter the options,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormLabel, Box, FormControl, TextField, Tooltip, FormControlLabel, Checkbox } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
+import { Info as InfoIcon } from '@mui/icons-material';
 import { useStore } from 'react-redux';
 import { updateEditor } from '@teselagen/ove';
 import EnzymeMultiSelect from '../../../form/EnzymeMultiSelect';

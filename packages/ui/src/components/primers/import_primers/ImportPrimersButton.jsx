@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
+import { Button, Tooltip, Modal, Box } from '@mui/material';
 import useAlerts from '../../../hooks/useAlerts';
 import './styles.css';
 

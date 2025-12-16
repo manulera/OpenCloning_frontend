@@ -1,7 +1,6 @@
 import { SimpleCircularOrLinearView } from '@teselagen/ove';
 import React from 'react';
-import ArrowForward from '@mui/icons-material/ArrowForward';
-import ArrowBack from '@mui/icons-material/ArrowBack';
+import { ArrowForward, ArrowBack } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
 import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 import OverhangsDisplay from '../OverhangsDisplay';

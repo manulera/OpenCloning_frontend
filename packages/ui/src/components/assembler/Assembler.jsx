@@ -1,10 +1,9 @@
 import React from 'react'
 import data2 from './assembler_data2.json'
 import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
-import ClearIcon from '@mui/icons-material/Clear';
+import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useAssembler } from './useAssembler';
 import { arrayCombinations } from '../eLabFTW/utils';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useDispatch } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';

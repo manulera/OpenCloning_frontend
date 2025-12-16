@@ -1,10 +1,5 @@
 import React from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { Alert, Box, FormHelperText, FormLabel } from '@mui/material';
+import { InputLabel, MenuItem, TextField, FormControl, Select, Alert, Box, FormHelperText, FormLabel } from '@mui/material';
 import PostRequestSelect from '../form/PostRequestSelect';
 import { getReferenceAssemblyId, taxonSuggest, geneSuggest, getInfoFromAssemblyId, getInfoFromSequenceAccession } from '@opencloning/utils/ncbiRequests';
 import TextFieldValidate from '../form/TextFieldValidate';

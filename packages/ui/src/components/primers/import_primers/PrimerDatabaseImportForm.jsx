@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import Alert from '@mui/material/Alert';
-import { Button, TextField } from '@mui/material';
+import { Alert, Button, TextField } from '@mui/material';
 
 import useDatabase from '../../../hooks/useDatabase';
 import { stringIsNotDNA } from '@opencloning/store/cloning_utils';

@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Tooltip } from '@mui/material';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { VisibilityOff as VisibilityOffIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon } from '@mui/icons-material';
 import { isEqual } from 'lodash-es';
 import Source from './sources/Source';
 import './NetworkTree.css';

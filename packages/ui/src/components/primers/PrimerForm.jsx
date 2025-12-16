@@ -1,8 +1,6 @@
 import React from 'react';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import Tooltip from '@mui/material/Tooltip';
-import { IconButton } from '@mui/material';
+import { CheckCircle as CheckCircleIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 import ValidatedTextField from '../form/ValidatedTextField';
 
 import './PrimerForm.css';

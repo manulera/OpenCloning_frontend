@@ -1,8 +1,7 @@
 import React from 'react';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Tooltip from '@mui/material/Tooltip';
+import { AddCircle as AddCircleIcon } from '@mui/icons-material';
+import { Tooltip, IconButton } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { IconButton } from '@mui/material';
 import { cloningActions } from '@opencloning/store/cloning';
 
 // A component that is rendered on the side of the tree to add a new source

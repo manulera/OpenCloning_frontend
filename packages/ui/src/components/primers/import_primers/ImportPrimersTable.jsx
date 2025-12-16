@@ -1,9 +1,6 @@
 import React from 'react';
-import { Table, TableCell, TableRow, TableHead, TableBody } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import CancelIcon from '@mui/icons-material/Cancel';
-import WarningIcon from '@mui/icons-material/Warning';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Table, TableCell, TableRow, TableHead, TableBody, Tooltip } from '@mui/material';
+import { Cancel as CancelIcon, Warning as WarningIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 
 function CustomTableRow({ primer }) {
   const { name, sequence, error } = primer;

@@ -1,5 +1,4 @@
-import SaveIcon from '@mui/icons-material/Save';
-import LinkIcon from '@mui/icons-material/Link';
+import { Save as SaveIcon, Link as LinkIcon } from '@mui/icons-material';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';

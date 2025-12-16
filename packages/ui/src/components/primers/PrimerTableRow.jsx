@@ -1,9 +1,6 @@
 import { IconButton, Tooltip } from '@mui/material';
 import React, { useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import ClearIcon from '@mui/icons-material/Clear';
+import { Delete as DeleteIcon, Edit as EditIcon, Clear as ClearIcon } from '@mui/icons-material';
 import SubmitToDatabaseDialog from '../form/SubmitToDatabaseDialog';
 import useDatabase from '../../hooks/useDatabase';
 import PrimerDetailsTds from './primer_details/PrimerDetailsTds';
