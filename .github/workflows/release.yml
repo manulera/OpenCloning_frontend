@@ -33,30 +33,71 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Ensure pre-release mode is active
+      - name: Exit pre-release mode if active
+        run: yarn pre:exit
+
+      - name: Check for changesets, stop if none
+        id: check-changesets
         run: |
-          yarn pre:exit
+          npx @changesets/cli status
+          if [ $? -ne 0 ]; then
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "has_changesets=true" >> $GITHUB_OUTPUT
+
+      - name: Ensure pre-release mode is active
+        if: steps.check-changesets.outputs.has_changesets == 'true'
+        run: |
           yarn pre:enter dev
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
+      - name: Version packages
+        if: steps.check-changesets.outputs.has_changesets == 'true'
+        run: |
+          yarn changeset version
+
+      - name: Check for version changes
+        if: steps.check-changesets.outputs.has_changesets == 'true'
+        id: check-version-changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure Git
+        if: steps.check-changesets.outputs.has_changesets == 'true' && steps.check-version-changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create Pull Request
+        if: steps.check-changesets.outputs.has_changesets == 'true' && steps.check-version-changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v5
         with:
-          # This will publish when the version PR is merged (no changesets remain)
-          # Master branch always operates in pre-release mode
-          publish: yarn release
-          version: yarn changeset version
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: chore/version-packages
+          title: "chore: version packages"
+          body: |
+            This PR was automatically created to version packages for pre-release.
+            
+            **Pre-release tag:** dev
+            
+            After merging this PR, packages will be automatically published to npm.
+          commit-message: "chore: version packages [skip ci]"
+          labels: |
+            dependencies
+            automated
+          delete-branch: true
+
+      - name: Publish to npm (after PR merge)
+        if: steps.check-changesets.outputs.has_changesets == 'false'
+        run: |
+          # This runs when there are no changesets (meaning version PR was merged)
+          yarn pre:exit
+          yarn pre:enter dev
+          yarn changeset publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # Note: changeset publish handles "nothing to publish" gracefully (exits successfully)
-      # But we can add explicit handling if needed
-      - name: Check if publish was attempted
-        if: steps.changesets.outputs.published == 'false' && steps.changesets.outputs.hasChangesets == 'false'
-        run: |
-          echo "No changesets found and nothing to publish. This is expected if:"
-          echo "1. No changesets were added to this commit"
-          echo "2. The version PR hasn't been merged yet"
-          echo "Workflow completed successfully."
