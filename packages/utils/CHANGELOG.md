@@ -1,5 +1,11 @@
 # @opencloning/utils
 
+## 1.1.0-test.3
+
+### Patch Changes
+
+- @opencloning/store@1.1.0-test.3
+
 ## 1.1.0-test.2
 
 ### Minor Changes

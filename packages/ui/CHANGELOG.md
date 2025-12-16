@@ -1,5 +1,13 @@
 # @opencloning/ui
 
+## 1.1.0-test.3
+
+### Patch Changes
+
+- a870a5e: Fix imports from mui and icons library, and add husky hook to validate that it does not happen again
+  - @opencloning/store@1.1.0-test.3
+  - @opencloning/utils@1.1.0-test.3
+
 ## 1.1.0-test.2
 
 ### Minor Changes
