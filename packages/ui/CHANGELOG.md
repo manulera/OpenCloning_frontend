@@ -1,5 +1,13 @@
 # @opencloning/ui
 
+## 1.1.0-dev.4
+
+### Patch Changes
+
+- 07106ac: Dummy change to test that new action works
+  - @opencloning/store@1.1.0-dev.4
+  - @opencloning/utils@1.1.0-dev.4
+
 ## 1.1.0-test.3
 
 ### Patch Changes
