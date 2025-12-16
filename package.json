@@ -14,7 +14,7 @@
     },
     "scripts": {
         "start": "yarn workspace opencloning start",
-        "build": "yarn workspace opencloning build",
+        "build": "./scripts/build_opencloning_app.sh",
         "test": "vitest run",
         "changeset": "changeset",
         "version": "changeset version",
