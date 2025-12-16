@@ -7,6 +7,7 @@ import Select from '@mui/material/Select';
 import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 import { cloningActions } from '@opencloning/store/cloning';
 import useDatabase from '../../hooks/useDatabase';
+import { useConfig } from '../../hooks/useConfig';
 
 const { replaceSource } = cloningActions;
 
@@ -15,8 +16,7 @@ function SourceTypeSelector({ source }) {
   const dispatch = useDispatch();
   const database = useDatabase();
   const sourceIsPrimerDesign = useSelector((state) => Boolean(state.cloning.sequences.find((e) => e.id === source.id)?.primer_design));
-  const noExternalRequests = useSelector((state) => state.cloning.config.noExternalRequests);
-  const enablePlannotate = useSelector((state) => state.cloning.config.enablePlannotate);
+  const { noExternalRequests, enablePlannotate } = useConfig();
 
   const onChange = (event) => {
     // Clear the source other than these fields

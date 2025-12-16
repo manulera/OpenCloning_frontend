@@ -5,7 +5,9 @@
     "main": "./src/index.js",
     "exports": {
         ".": "./src/index.js",
-        "./components": "./src/components/index.js"
+        "./components": "./src/components/index.js",
+        "./providers/ConfigProvider": "./src/providers/ConfigProvider.jsx",
+        "./hooks/useConfig": "./src/hooks/useConfig.js"
     },
     "repository": {
         "type": "git",

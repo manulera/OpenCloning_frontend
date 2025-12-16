@@ -1,10 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useConfig } from './useConfig';
 import eLabFTWInterface from '../components/eLabFTW/eLabFTWInterface';
 import dummyInterface from '../components/dummy/DummyInterface';
 
 export default function useDatabase() {
-  const databaseName = useSelector((state) => state.cloning.config.database);
+  const { database: databaseName } = useConfig();
 
   return React.useMemo(() => {
     if (databaseName === 'elabftw') {

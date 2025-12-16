@@ -30,12 +30,6 @@ const initialState = {
   selectedRegions: [],
   knownErrors: {},
   primers: [],
-  config: {
-    loaded: false,
-    backendUrl: null,
-    enableAssembler: false,
-    enablePlannotate: false,
-  },
   sourcesWithHiddenAncestors: [],
   teselaJsonCache: {},
   alerts: [],
@@ -49,7 +43,7 @@ const initialState = {
   },
 };
 
- 
+
 const reducer = {
 
   setCurrentTab(state, action) {
@@ -310,11 +304,6 @@ const reducer = {
 
   setKnownErrors(state, action) {
     state.knownErrors = action.payload;
-  },
-
-  setConfig(state, action) {
-    Object.assign(state.config, action.payload);
-    state.config.loaded = true;
   },
 
   addPrimer(state, action) {
