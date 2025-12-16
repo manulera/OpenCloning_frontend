@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.17"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Ensure pre-release mode is active
+        run: |
+          # Enter pre-release mode if not already active
+          # This ensures master branch always operates in pre-release mode
+          if [ ! -f ".changeset/pre.json" ]; then
+            yarn pre:enter dev
+          else
+            echo "Pre-release mode already active"
+          fi
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # This will publish when the version PR is merged (no changesets remain)
+          # Master branch always operates in pre-release mode
+          publish: yarn release
+          version: yarn changeset version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Note: changeset publish handles "nothing to publish" gracefully (exits successfully)
+      # But we can add explicit handling if needed
+      - name: Check if publish was attempted
+        if: steps.changesets.outputs.published == 'false' && steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          echo "No changesets found and nothing to publish. This is expected if:"
+          echo "1. No changesets were added to this commit"
+          echo "2. The version PR hasn't been merged yet"
+          echo "Workflow completed successfully."

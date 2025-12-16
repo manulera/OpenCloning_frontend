@@ -219,6 +219,8 @@ YARN_NPM_AUTH_TOKEN=<> yarn changeset publish
 
 ### Releasing a pre-release
 
+For manual releases or when not using the automated workflow:
+
 ```
 yarn pre:enter
 # make changes
