@@ -1,5 +1,4 @@
 import react from '@vitejs/plugin-react';
-import { baseDefine } from '../../base.config.js';
 
 export default () => {
   return {
@@ -7,6 +6,5 @@ export default () => {
     server: {
       port: 3001,
     },
-    define: baseDefine,
   };
 };

@@ -4,7 +4,6 @@ import { ViteEjsPlugin } from 'vite-plugin-ejs';
 import registerCodeCoverageTasks from '@cypress/code-coverage/task.js';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-import { baseDefine } from './base.config.js';
 
 
 
@@ -87,9 +86,6 @@ export default defineConfig({
           },
           ssr: {
             noExternal: ['fsevents'],
-          },
-          define: {
-            ...baseDefine,
           },
         };
       },

@@ -12,7 +12,6 @@ export default [
       sourceType: 'module',
       globals: {
         browser: true,
-        __UI_VERSION__: 'readonly',
         window: 'readonly',
         document: 'readonly',
         console: 'readonly',

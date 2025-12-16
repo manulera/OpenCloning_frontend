@@ -6,7 +6,6 @@ import { resolve } from 'path';
 import fs from 'fs';
 import istanbul from 'vite-plugin-istanbul';
 
-import { baseDefine } from '../../base.config.js';
 
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd());
@@ -91,7 +90,6 @@ export default ({ mode }) => {
         },
       },
     },
-    define: baseDefine,
     build: {
       outDir: 'build',
     },
