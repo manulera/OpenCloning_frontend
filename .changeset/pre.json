@@ -1,5 +1,5 @@
 {
-  "mode": "exit",
+  "mode": "pre",
   "tag": "dev",
   "initialVersions": {
     "opencloning": "1.1.0-test.3",
@@ -9,6 +9,7 @@
     "@opencloning/utils": "1.1.0-test.3"
   },
   "changesets": [
+    "eleven-files-float",
     "fifty-ads-trade",
     "hungry-ducks-grin",
     "many-paws-jump",

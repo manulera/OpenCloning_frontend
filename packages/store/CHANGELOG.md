@@ -1,5 +1,7 @@
 # @opencloning/store
 
+## 1.1.0-dev.4
+
 ## 1.1.0-test.3
 
 ## 1.1.0-test.2

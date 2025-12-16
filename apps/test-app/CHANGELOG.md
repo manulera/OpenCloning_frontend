@@ -1,5 +1,14 @@
 # test-app
 
+## 1.1.0-dev.3
+
+### Patch Changes
+
+- Updated dependencies [07106ac]
+  - @opencloning/ui@1.1.0-dev.4
+  - @opencloning/store@1.1.0-dev.4
+  - @opencloning/utils@1.1.0-dev.4
+
 ## 1.1.0-test.2
 
 ### Patch Changes
