@@ -13,7 +13,7 @@ const configHttpClient = getHttpClient([]);
 function AppContent() {
   const { showAppBar } = useConfig();
 
-  // Initialize app-level concerns (known errors, session storage)
+  // Initialize app-level concerns (session storage)
   useInitializeApp();
 
   // Load sequences from URL parameters if present

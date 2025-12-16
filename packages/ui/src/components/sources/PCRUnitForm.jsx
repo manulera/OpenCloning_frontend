@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, FormControl, InputLabel, ListItemText, MenuItem, Select, Tooltip } from '@mui/material';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { AddCircle as AddCircleIcon, ExpandMore as ExpandMoreIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { ExpandMore as ExpandMoreIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { cloningActions } from '@opencloning/store/cloning';
 import SingleInputSelector from './SingleInputSelector';
 import SelectPrimerForm from '../primers/SelectPrimerForm';
