@@ -1,4 +1,4 @@
-name: App Release Build
+name: App Post Release (Docker and Netlify)
 
 on:
   push:

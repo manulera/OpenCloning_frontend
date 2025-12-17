@@ -91,5 +91,5 @@ jobs:
           tag_name: ${{ inputs.app_name }}-v${{ steps.app_version.outputs.version }}
           release_name: Release ${{ inputs.app_name }} v${{ steps.app_version.outputs.version }}
           body: ${{ steps.changelog.outputs.body }}
-          draft: false
+          draft: true
           prerelease: false
