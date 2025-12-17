@@ -1,5 +1,5 @@
 {
-  "mode": "pre",
+  "mode": "exit",
   "tag": "dev",
   "initialVersions": {
     "opencloning": "1.1.0-dev.4",
