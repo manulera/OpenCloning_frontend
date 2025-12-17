@@ -1,5 +1,15 @@
 # opencloning
 
+## 1.1.0-dev.5
+
+### Patch Changes
+
+- 6df1c20: Last dummy test to check if auto pre-release works
+- Updated dependencies [6df1c20]
+  - @opencloning/store@1.1.0-dev.5
+  - @opencloning/ui@1.1.0-dev.5
+  - @opencloning/utils@1.1.0-dev.5
+
 ## 1.1.0-dev.4
 
 ### Patch Changes
