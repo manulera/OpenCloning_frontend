@@ -4,9 +4,18 @@
 
 # OpenCloning frontend
 
-This frontend React application is part of a bigger application, before going further, please go to the [main project README](https://github.com/manulera/OpenCloning?tab=readme-ov-file#readme), where you can find an introduction.
+This repository contains the OpenCloning frontend monorepo, which includes the main React application and shared packages. Before going further, please go to the [main project README](https://github.com/manulera/OpenCloning?tab=readme-ov-file#readme), where you can find an introduction.
 
 A hosted version of this application can be found at [https://opencloning.org/](https://opencloning.org/).
+
+## Repository structure
+
+This is a monorepo managed with Yarn workspaces:
+- `apps/opencloning/` - The main OpenCloning application
+- `packages/` - Shared packages:
+  - `@opencloning/store` - Redux store and cloning logic
+  - `@opencloning/ui` - UI components
+  - `@opencloning/utils` - Utility functions
 
 ## Getting started
 
@@ -34,7 +43,7 @@ yarn install
 
 # If you want to serve the development site locally at http://localhost:3000/
 yarn start
-# If you want to build the statics assets of the production site in the folder ./build
+# If you want to build the static assets of the production site in apps/opencloning/build
 yarn build
 ```
 
@@ -50,14 +59,14 @@ See also [connecting to the frontend section](https://github.com/manulera/OpenCl
 
 ## Configuration
 
-The configuration of the frontend is done in the file that will be served from `/config.json`. In the dev server, this file is served from `public/config.json`. That file is not included in the repository, and is generated from `public/config.dev.json` when you run `yarn start`. For the production site, `config.prod.json` is used. The things you can configure are:
+The configuration of the frontend is done in the file that will be served from `/config.json`. In the dev server, this file is served from `apps/opencloning/public/config.json`. That file is not included in the repository, and is generated from `apps/opencloning/public/config.dev.json` when you run `yarn start`. For the production site, `config.prod.json` is used. The things you can configure are:
 
 * `backendUrl`: The URL of the backend. By default, it is `http://localhost:8000/`.
 * `showAppBar`: Whether to show the top app bar (blue with buttons for examples, etc.). By default, it is `true`.
 * `noExternalRequests`: Whether to block requests to external services. By default, it is `false`.
-* `database`: For integrations, provide the database name. This is not documented, but for an example see `src/components/eLabFTW`.
+* `database`: For integrations, provide the database name. This is not documented, but for an example see `packages/ui/src/components/eLabFTW`.
 
-For production: when building the site with `yarn build`, simply replace `build/config.json` with your settings. This is what is done in [this docker-compose file](https://github.com/manulera/OpenCloning).
+For production: when building the site with `yarn build`, simply replace `apps/opencloning/build/config.json` with your settings. This is what is done in [this docker-compose file](https://github.com/manulera/OpenCloning).
 
 ## Running with docker 🐳
 
@@ -143,7 +152,7 @@ To update which files are excluded from coverage, edit the `.nycrc.json` file.
 
 ### Web analytics
 
-You can configure website analytics using umami by setting the env var `VITE_UMAMI_WEBSITE_ID` to the website id. When building the site, the analytics script will be included in the build. See `index.html` and `vite.config.js` to see how this is done (using ejs templating).
+You can configure website analytics using umami by setting the env var `VITE_UMAMI_WEBSITE_ID` to the website id. When building the site, the analytics script will be included in the build. See `apps/opencloning/index.html` and `apps/opencloning/vite.config.js` to see how this is done (using ejs templating).
 
 ### Recording video with cypress
 
@@ -209,13 +218,44 @@ describe('ab1ToJson', () => {
 npx -y yarn-update-indirect form-data
 ```
 
-## Publishing to npm
+## Versioning and publishing to npm
+
+### Creating changesets
+
+When making changes that affect packages or apps, you need to create a changeset. This documents what changed and helps determine version bumps.
+
+To create a changeset:
+
+```bash
+yarn changeset
+```
+
+This will prompt you to:
+1. Select which packages are affected (`@opencloning/store`, `@opencloning/ui`, `@opencloning/utils`, or apps)
+2. Choose the type of change (patch, minor, or major)
+3. Write a description of the changes
+
+The changeset file will be created in `.changeset/` directory. Commit this file along with your changes.
+
+**Note:** When creating a PR, you will be warned if no changeset is included for changes that affect packages or apps. This helps ensure all changes are properly documented and versioned.
+
+### Package releases
+
+Packages (`@opencloning/store`, `@opencloning/ui`, `@opencloning/utils`) are automatically released to npm on every commit to master. The release workflow creates a PR with version bumps and changelog updates, and once merged, publishes the packages to npm.
 
 Currently relies on the patch in `.yarn/patches/@changesets-cli-npm-2.29.8-52df46efd2.patch` to publish to npm, coming from this [PR](https://github.com/adobe/spectrum-web-components/pull/5821/files). It's pending on the resolution of this [other PR](https://github.com/changesets/changesets/pull/674).
+
+For manual publishing:
 
 ```
 YARN_NPM_AUTH_TOKEN=<> yarn changeset publish
 ```
+
+### App releases
+
+Apps (like `opencloning`) are not automatically deployed. They need to be manually released by calling the [App Release workflow](https://github.com/manulera/OpenCloning_frontend/actions/workflows/app_release.yml) with the app name (e.g., `opencloning`). This creates a GitHub release and tag for the app. When you publish the release, the action [App Post Release](https://github.com/manulera/OpenCloning_frontend/actions/workflows/post_release.yml) is triggered to build the Docker image and deploy the app to Netlify.
+
+Note that app version numbers will automatically increase when their dependencies (packages) are updated, even if the app itself is not deployed. This ensures version consistency across the monorepo.
 
 ### Releasing a pre-release
 
