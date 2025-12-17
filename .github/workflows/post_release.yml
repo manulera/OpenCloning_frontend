@@ -99,7 +99,7 @@ jobs:
 
       - name: Publish to Netlify
         run: |
-          npx netlify-cli deploy --json --prod --dir ./build --message "production [${{ github.sha }}]"
+          npx netlify-cli deploy --json --prod --dir ./apps/opencloning/build --message "production [${{ github.sha }}]"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
