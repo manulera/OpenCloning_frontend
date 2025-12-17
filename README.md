@@ -220,11 +220,23 @@ npx -y yarn-update-indirect form-data
 
 ## Publishing to npm
 
+### Package releases
+
+Packages (`@opencloning/store`, `@opencloning/ui`, `@opencloning/utils`) are automatically released to npm on every commit to master. The release workflow creates a PR with version bumps and changelog updates, and once merged, publishes the packages to npm.
+
 Currently relies on the patch in `.yarn/patches/@changesets-cli-npm-2.29.8-52df46efd2.patch` to publish to npm, coming from this [PR](https://github.com/adobe/spectrum-web-components/pull/5821/files). It's pending on the resolution of this [other PR](https://github.com/changesets/changesets/pull/674).
+
+For manual publishing:
 
 ```
 YARN_NPM_AUTH_TOKEN=<> yarn changeset publish
 ```
+
+### App releases
+
+Apps (like `opencloning`) are not automatically deployed. They need to be manually released by calling the [App Release workflow](https://github.com/manulera/OpenCloning_frontend/actions/workflows/app_release.yml) with the app name (e.g., `opencloning`). This creates a GitHub release and tag for the app. When you publish the release, the action [App Post Release](https://github.com/manulera/OpenCloning_frontend/actions/workflows/post_release.yml) is triggered to build the Docker image and deploy the app to Netlify.
+
+Note that app version numbers will automatically increase when their dependencies (packages) are updated, even if the app itself is not deployed. This ensures version consistency across the monorepo.
 
 ### Releasing a pre-release
 
