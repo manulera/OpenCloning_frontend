@@ -42,6 +42,18 @@ jobs:
         run: |
           yarn pre:enter dev
 
+      - name: Configure npm authentication for Yarn
+        run: |
+          # Configure yarn to use npm token
+          yarn config set npmAuthToken "${{ secrets.NPM_TOKEN }}" --home
+          yarn config set npmPublishRegistry "https://registry.npmjs.org" --home
+          
+          # Also create .npmrc as fallback
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish to npm
         run: |
           # Publish packages (pre-release)
