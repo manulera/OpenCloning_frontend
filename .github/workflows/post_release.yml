@@ -1,21 +1,12 @@
-name: App Post Release (Docker and Netlify)
+name: App Post Release - Opencloning (Docker and Netlify)
 
 on:
   push:
     tags:
-      - '*-v*'  # Matches tags like opencloning-v1.2.3, test-app-v2.0.0
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Tag name to use (e.g., opencloning-v1.2.3)'
-        required: true
-        type: string
+      - 'opencloning-v*'
 
 jobs:
   build_and_push_docker_image:
-    if: |
-      (github.event_name == 'workflow_dispatch' && startsWith(inputs.tag_name, 'opencloning-')) ||
-      (github.event_name == 'push' && startsWith(github.ref_name, 'opencloning-'))
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -26,12 +17,11 @@ jobs:
       - name: Extract app name and version from tag
         id: tag_info
         run: |
-          # Use input tag if workflow_dispatch, otherwise use ref_name
-          TAG="${{ github.event_name == 'workflow_dispatch' && inputs.tag_name || github.ref_name }}"
+          TAG="${{ github.ref_name }}"
           # Extract app name (everything before -v)
           APP_NAME="${TAG%-v*}"
           # Extract version (everything after -v)
-          VERSION="${TAG#*-v}"
+          VERSION="v${TAG#*-v}"
           echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
@@ -41,88 +31,76 @@ jobs:
         run: |
           echo "App: ${{ steps.tag_info.outputs.app_name }}, Version: ${{ steps.tag_info.outputs.version }}, Tag: ${{ steps.tag_info.outputs.tag }}"
 
-  #     - name: Print git tag
-  #       run: |
-  #         git describe --tags
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-  #     - name: Log in to Docker Hub
-  #       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-  #       with:
-  #         username: ${{ secrets.DOCKER_USERNAME }}
-  #         password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: manulera/opencloningfrontend
 
-  #     - name: Extract metadata (tags, labels) for Docker
-  #       id: meta
-  #       uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-  #       with:
-  #         images: manulera/opencloningfrontend
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6.9.0
+        with:
+          context: .
+          push: true
+          tags: |
+            manulera/opencloningfrontend:latest
+            manulera/opencloningfrontend:prod
+            manulera/opencloningfrontend:${{ steps.tag_info.outputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-  #     - name: Build and push Docker image
-  #       uses: docker/build-push-action@v6.9.0
-  #       with:
-  #         context: .
-  #         push: true
-  #         tags: |
-  #           manulera/opencloningfrontend:latest
-  #           manulera/opencloningfrontend:prod
-  #           manulera/opencloningfrontend:${{ steps.tag_info.outputs.version }}
-  #           manulera/opencloningfrontend:${{ steps.tag_info.outputs.tag }}
-  #         labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push Docker image (with baseurl)
+        uses: docker/build-push-action@v6.9.0
+        with:
+          context: .
+          push: true
+          tags: |
+            manulera/opencloningfrontend:latest-baseurl-opencloning
+            manulera/opencloningfrontend:prod-baseurl-opencloning
+            manulera/opencloningfrontend:${{ steps.tag_info.outputs.version }}-baseurl-opencloning
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BASE_URL=/opencloning/
 
-  #     - name: Build and push Docker image (with baseurl)
-  #       uses: docker/build-push-action@v6.9.0
-  #       with:
-  #         context: .
-  #         push: true
-  #         tags: |
-  #           manulera/opencloningfrontend:latest-baseurl-opencloning
-  #           manulera/opencloningfrontend:prod-baseurl-opencloning
-  #           manulera/opencloningfrontend:${{ steps.tag_info.outputs.version }}-baseurl-opencloning
-  #           manulera/opencloningfrontend:${{ steps.tag_info.outputs.tag }}-baseurl-opencloning
-  #         labels: ${{ steps.meta.outputs.labels }}
-  #         build-args: |
-  #           BASE_URL=/opencloning/
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: manulera/opencloningfrontend:prod
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
-  #     - name: Run Trivy vulnerability scanner
-  #       uses: aquasecurity/trivy-action@master
-  #       with:
-  #         image-ref: manulera/opencloningfrontend:prod
-  #         format: 'table'
-  #         exit-code: '0'
-  #         ignore-unfixed: true
-  #         vuln-type: 'os,library'
-  #         severity: 'CRITICAL,HIGH'
+  deploy_to_netlify:
+    if: (github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  # deploy_to_netlify:
-  #   if: |
-  #     (github.event_name == 'workflow_dispatch' && startsWith(inputs.tag_name, 'opencloning-')) ||
-  #     (github.event_name == 'push' && startsWith(github.ref_name, 'opencloning-'))
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+      - name: install dependencies
+        run: |
+          corepack enable
+          yarn install
 
-  #     - name: Print git tag
-  #       run: |
-  #         git describe --tags
+      - name: build
+        run: yarn build
+        env:
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
-  #     - name: install dependencies
-  #       run: |
-  #         corepack enable
-  #         yarn install
-
-  #     - name: build
-  #       run: yarn build
-  #       env:
-  #         VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
-
-  #     - name: Publish to Netlify
-  #       run: |
-  #         npx netlify-cli deploy --json --prod --dir ./build --message "production [${{ github.sha }}]"
-  #       env:
-  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-  #         VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
+      - name: Publish to Netlify
+        run: |
+          npx netlify-cli deploy --json --prod --dir ./build --message "production [${{ github.sha }}]"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.VITE_UMAMI_WEBSITE_ID }}
 
