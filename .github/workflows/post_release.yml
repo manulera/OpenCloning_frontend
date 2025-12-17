@@ -1,23 +1,24 @@
 name: App Post Release - Opencloning (Docker and Netlify)
 
 on:
-  push:
-    tags:
-      - 'opencloning-v*'
+  release:
+    types: [published]
 
 jobs:
   build_and_push_docker_image:
+    if: startsWith(github.event.release.tag_name, 'opencloning-v')
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.release.tag_name }}
           fetch-depth: 0
 
       - name: Extract app name and version from tag
         id: tag_info
         run: |
-          TAG="${{ github.ref_name }}"
+          TAG="${{ github.event.release.tag_name }}"
           # Extract app name (everything before -v)
           APP_NAME="${TAG%-v*}"
           # Extract version (everything after -v)
@@ -78,7 +79,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
   deploy_to_netlify:
-    if: (github.event_name == 'push')
+    if: startsWith(github.event.release.tag_name, 'opencloning-v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
