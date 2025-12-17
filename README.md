@@ -218,7 +218,26 @@ describe('ab1ToJson', () => {
 npx -y yarn-update-indirect form-data
 ```
 
-## Publishing to npm
+## Versioning and publishing to npm
+
+### Creating changesets
+
+When making changes that affect packages or apps, you need to create a changeset. This documents what changed and helps determine version bumps.
+
+To create a changeset:
+
+```bash
+yarn changeset
+```
+
+This will prompt you to:
+1. Select which packages are affected (`@opencloning/store`, `@opencloning/ui`, `@opencloning/utils`, or apps)
+2. Choose the type of change (patch, minor, or major)
+3. Write a description of the changes
+
+The changeset file will be created in `.changeset/` directory. Commit this file along with your changes.
+
+**Note:** When creating a PR, you will be warned if no changeset is included for changes that affect packages or apps. This helps ensure all changes are properly documented and versioned.
 
 ### Package releases
 
