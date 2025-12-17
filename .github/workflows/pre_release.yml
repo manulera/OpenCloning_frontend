@@ -1,34 +1,31 @@
-name: Trigger Release
+name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to run release on'
-        required: true
-        default: 'master'
-        type: string
+  push:
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  id-token: write
 
 jobs:
   release:
-    name: Manual Release
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.branch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22.17"
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Enable Corepack
         run: corepack enable
@@ -43,14 +40,19 @@ jobs:
         run: |
           yarn pre:enter dev
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Publish
         id: changesets
         uses: changesets/action@v1
         with:
           publish: yarn release
+          version: yarn version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
