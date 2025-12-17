@@ -10954,6 +10954,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"syntax-builder@workspace:apps/syntax-builder":
+  version: 0.0.0-use.local
+  resolution: "syntax-builder@workspace:apps/syntax-builder"
+  dependencies:
+    "@opencloning/ui": "workspace:*"
+    "@opencloning/utils": "workspace:*"
+    "@vitejs/plugin-react": "npm:^4.6.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    vite: "npm:^7.0.8"
+  languageName: unknown
+  linkType: soft
+
 "systeminformation@npm:5.27.7":
   version: 5.27.7
   resolution: "systeminformation@npm:5.27.7"
