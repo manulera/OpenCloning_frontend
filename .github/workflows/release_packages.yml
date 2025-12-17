@@ -1,9 +1,10 @@
-name: Release
+name: Release Packages
 
 on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -33,20 +34,12 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Exit pre-release mode if active
-        run: yarn pre:exit
-
-      - name: Ensure pre-release mode is active
-        run: |
-          yarn pre:enter dev
-
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Publish
-        id: changesets
+      - name: Release packages and create PR
         uses: changesets/action@v1
         with:
           publish: yarn release
