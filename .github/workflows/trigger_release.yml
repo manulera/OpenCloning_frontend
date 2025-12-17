@@ -1,0 +1,51 @@
+name: Trigger Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run release on'
+        required: true
+        default: 'master'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Manual Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.17"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Exit pre-release mode if active
+        run: yarn pre:exit
+
+      - name: Ensure pre-release mode is active
+        run: |
+          yarn pre:enter dev
+
+      - name: Publish to npm
+        run: |
+          # Publish packages (pre-release)
+          yarn changeset publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
