@@ -1,6 +1,6 @@
 {
   "mode": "pre",
-  "tag": "action",
+  "tag": "dev",
   "initialVersions": {
     "opencloning": "1.1.0-dev.4",
     "test-app": "1.1.0-dev.3",
@@ -9,6 +9,7 @@
     "@opencloning/utils": "1.1.0-dev.4"
   },
   "changesets": [
+    "breezy-tools-shave",
     "eleven-files-float",
     "fifty-ads-trade",
     "hungry-ducks-grin",
