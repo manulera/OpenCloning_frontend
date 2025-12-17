@@ -1,12 +1,12 @@
 {
   "mode": "pre",
-  "tag": "dev",
+  "tag": "action",
   "initialVersions": {
-    "opencloning": "1.1.0-test.3",
-    "test-app": "1.1.0-test.2",
-    "@opencloning/store": "1.1.0-test.3",
-    "@opencloning/ui": "1.1.0-test.3",
-    "@opencloning/utils": "1.1.0-test.3"
+    "opencloning": "1.1.0-dev.4",
+    "test-app": "1.1.0-dev.3",
+    "@opencloning/store": "1.1.0-dev.4",
+    "@opencloning/ui": "1.1.0-dev.4",
+    "@opencloning/utils": "1.1.0-dev.4"
   },
   "changesets": [
     "eleven-files-float",
