@@ -1,6 +1,6 @@
 import React from 'react'
-import { TextField, FormControl, InputLabel, Select, MenuItem, Box, Grid, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button } from '@mui/material'
-import { ContentCopy as ContentCopyIcon } from '@mui/icons-material'
+import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton } from '@mui/material'
+import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import AssemblerPart from './AssemblerPart'
 
 /* eslint-disable camelcase */
@@ -34,23 +34,51 @@ const glyphOptions = [
   'three-prime-sticky-restriction-site',
 ]
 
-function AssemblePartWidget() {
-  const [formData, setFormData] = React.useState(defaultData)
+/* eslint-disable camelcase */
+const fieldConfig = {
+  header: { type: 'text', label: 'Header' },
+  body: { type: 'text', label: 'Body' },
+  glyph: { type: 'select', label: 'Glyph', options: glyphOptions },
+  left_overhang: { type: 'text', label: 'Left Overhang' },
+  right_overhang: { type: 'text', label: 'Right Overhang' },
+  left_inside: { type: 'text', label: 'Left Inside' },
+  right_inside: { type: 'text', label: 'Right Inside' },
+  left_codon_start: { type: 'number', label: 'Left Codon Start' },
+  right_codon_start: { type: 'number', label: 'Right Codon Start' },
+  color: { type: 'text', label: 'Color' },
+}
+/* eslint-enable camelcase */
 
-  const handleChange = (field) => (event) => {
+function AssemblePartWidget() {
+  const [parts, setParts] = React.useState([{ ...defaultData }])
+
+  const handleChange = (rowIndex, field) => (event) => {
     const value = event.target.value
-    setFormData((prev) => ({
-      ...prev,
-      [field]: field === 'left_codon_start' || field === 'right_codon_start' 
-        ? (value === '' ? '' : parseInt(value, 10) || 0)
-        : value,
-    }))
+    setParts((prev) => {
+      const newParts = [...prev]
+      newParts[rowIndex] = {
+        ...newParts[rowIndex],
+        [field]: field === 'left_codon_start' || field === 'right_codon_start' 
+          ? (value === '' ? '' : parseInt(value, 10) || 0)
+          : value,
+      }
+      return newParts
+    })
   }
 
-  const handleCopyRow = async () => {
-    const keys = Object.keys(formData)
+  const handleAddRow = () => {
+    setParts((prev) => [...prev, { ...defaultData }])
+  }
+
+  const handleRemoveRow = (index) => {
+    setParts((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleCopyRow = async (rowIndex) => {
+    const part = parts[rowIndex]
+    const keys = Object.keys(part)
     const headers = keys.join('\t')
-    const values = keys.map((key) => String(formData[key])).join('\t')
+    const values = keys.map((key) => String(part[key])).join('\t')
     const tsvData = `${headers}\n${values}`
     
     try {
@@ -63,6 +91,52 @@ function AssemblePartWidget() {
     }
   }
 
+  const renderEditableCell = (rowIndex, field, value) => {
+    const config = fieldConfig[field]
+    
+    if (config.type === 'select') {
+      return (
+        <FormControl size="small" fullWidth>
+          <Select
+            value={value}
+            onChange={handleChange(rowIndex, field)}
+            sx={{ fontSize: '0.875rem' }}
+          >
+            {config.options.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )
+    }
+    
+    if (config.type === 'number') {
+      return (
+        <TextField
+          size="small"
+          type="number"
+          value={value}
+          onChange={handleChange(rowIndex, field)}
+          inputProps={{ min: 0, style: { fontSize: '0.875rem' } }}
+          sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+        />
+      )
+    }
+    
+    return (
+      <TextField
+        size="small"
+        value={value}
+        onChange={handleChange(rowIndex, field)}
+        error={field === 'left_overhang' && value.length !== 4 && value.length > 0}
+        inputProps={{ style: { fontSize: '0.875rem' } }}
+        sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+      />
+    )
+  }
+
   return (
     <Box sx={{ 
       p: 1.5, 
@@ -70,181 +144,104 @@ function AssemblePartWidget() {
       overflowY: 'auto',
       overflowX: 'hidden'
     }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 1.5 }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
-              Part Configuration
-            </Typography>
-            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <TextField
-                size="small"
-                label="Header"
-                value={formData.header}
-                onChange={handleChange('header')}
-                fullWidth
-              />
-              <TextField
-                size="small"
-                label="Body"
-                value={formData.body}
-                onChange={handleChange('body')}
-                fullWidth
-                multiline
-                rows={2}
-              />
-              <FormControl fullWidth size="small">
-                <InputLabel id="glyph-select-label">Glyph</InputLabel>
-                <Select
-                  labelId="glyph-select-label"
-                  value={formData.glyph}
-                  label="Glyph"
-                  onChange={handleChange('glyph')}
-                >
-                  {glyphOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                size="small"
-                label="Color"
-                value={formData.color}
-                onChange={handleChange('color')}
-                fullWidth
-                helperText="CSS color name or hex code"
-              />
-              <Typography variant="subtitle2" sx={{ mt: 0.5, mb: 0.5 }}>
-                Left Side
-              </Typography>
-              <TextField
-                size="small"
-                label="Left Overhang"
-                value={formData.left_overhang}
-                onChange={handleChange('left_overhang')}
-                error={formData.left_overhang.length !== 4}
-                helperText={formData.left_overhang.length !== 4 ? 'Must be 4 bases' : ''}
-                fullWidth
-              />
-              <TextField
-                size="small"
-                label="Left Inside"
-                value={formData.left_inside}
-                onChange={handleChange('left_inside')}
-                fullWidth
-              />
-              <TextField
-                size="small"
-                label="Left Codon Start"
-                type="number"
-                value={formData.left_codon_start}
-                onChange={handleChange('left_codon_start')}
-                fullWidth
-                inputProps={{ min: 0 }}
-                helperText="If the left side is translated, where the codon starts"
-              />
-              <Typography variant="subtitle2" sx={{ mt: 0.5, mb: 0.5 }}>
-                Right Side
-              </Typography>
-              <TextField
-                size="small"
-                label="Right Overhang"
-                value={formData.right_overhang}
-                onChange={handleChange('right_overhang')}
-                fullWidth
-              />
-              <TextField
-                size="small"
-                label="Right Inside"
-                value={formData.right_inside}
-                onChange={handleChange('right_inside')}
-                fullWidth
-              />
-              <TextField
-                size="small"
-                label="Right Codon Start"
-                type="number"
-                value={formData.right_codon_start}
-                onChange={handleChange('right_codon_start')}
-                fullWidth
-                inputProps={{ min: 0 }}
-                helperText="If the right side is translated, where the codon starts"
-              />
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
+      {/* Preview Section */}
+      {parts.length > 0 && (
+        <Box sx={{ mb: 2 }}>
           <Paper sx={{ p: 1.5 }}>
             <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
               Preview
             </Typography>
-            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {(formData.header || formData.body) && (
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  mb: 1.5,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 0.5
-                }}>
-                  {formData.header && (
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      {formData.header}
-                    </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {parts.map((part, index) => (
+                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  {(part.header || part.body) && (
+                    <Box sx={{ 
+                      textAlign: 'center', 
+                      mb: 1.5,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 0.5
+                    }}>
+                      {part.header && (
+                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                          {part.header}
+                        </Typography>
+                      )}
+                      {part.body && (
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          {part.body}
+                        </Typography>
+                      )}
+                    </Box>
                   )}
-                  {formData.body && (
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {formData.body}
-                    </Typography>
-                  )}
+                  <AssemblerPart data={part} />
                 </Box>
-              )}
-              <AssemblerPart data={formData} />
+              ))}
             </Box>
           </Paper>
-        </Grid>
-      </Grid>
-      <Box sx={{ mt: 2 }}>
-        <Paper sx={{ p: 1.5 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-            <Typography variant="h6">
-              JSON Data
-            </Typography>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<ContentCopyIcon />}
-              onClick={handleCopyRow}
-            >
-              Copy Row
-            </Button>
-          </Box>
-          <TableContainer>
-            <Table size="small" sx={{ '& .MuiTableCell-root': { py: 0.5, px: 1 } }}>
-              <TableHead>
-                <TableRow>
-                  {Object.keys(formData).map((key) => (
-                    <TableCell key={key} sx={{ fontWeight: 'bold' }}>
-                      {key}
+        </Box>
+      )}
+
+      {/* Editable Table Section */}
+      <Paper sx={{ p: 1.5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+          <Typography variant="h6">
+            Parts Configuration
+          </Typography>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<AddCircleIcon />}
+            onClick={handleAddRow}
+          >
+            Add Row
+          </Button>
+        </Box>
+        <TableContainer>
+          <Table size="small" sx={{ '& .MuiTableCell-root': { py: 0.5, px: 1 } }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', width: '50px' }}>Actions</TableCell>
+                {Object.keys(fieldConfig).map((key) => (
+                  <TableCell key={key} sx={{ fontWeight: 'bold' }}>
+                    {fieldConfig[key].label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {parts.map((part, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleRemoveRow(rowIndex)}
+                        disabled={parts.length === 1}
+                        color="error"
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleCopyRow(rowIndex)}
+                        color="primary"
+                      >
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                  {Object.keys(fieldConfig).map((field) => (
+                    <TableCell key={field}>
+                      {renderEditableCell(rowIndex, field, part[field])}
                     </TableCell>
                   ))}
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  {Object.keys(formData).map((key) => (
-                    <TableCell key={key}>
-                      {String(formData[key])}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   )
 }
