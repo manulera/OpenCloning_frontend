@@ -80,23 +80,21 @@ jobs:
           branch: chore/version-packages
           title: "chore: version packages"
           body: |
-            This PR was automatically created to version packages for pre-release.
-            
+            This PR was automatically created to sync version bumps after publishing pre-release packages to npm.
+
             **Pre-release tag:** dev
-            
-            After merging this PR, packages will be automatically published to npm.
+
+            Packages have already been published to npm. This PR updates the repository with the version bumps.
           commit-message: "chore: version packages [skip ci]"
           labels: |
             dependencies
             automated
           delete-branch: true
 
-      - name: Publish to npm (after PR merge)
-        if: steps.check-changesets.outputs.has_changesets == 'false'
+      - name: Publish to npm
+        if: steps.check-changesets.outputs.has_changesets == 'true' && steps.check-version-changes.outputs.has_changes == 'true'
         run: |
-          # This runs when there are no changesets (meaning version PR was merged)
-          yarn pre:exit
-          yarn pre:enter dev
+          # Publish packages immediately (pre-release)
           yarn changeset publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
