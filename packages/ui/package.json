@@ -11,7 +11,8 @@
         ".": "./src/index.js",
         "./components": "./src/components/index.js",
         "./providers/ConfigProvider": "./src/providers/index.js",
-        "./hooks/useConfig": "./src/hooks/useConfig.js"
+        "./hooks/useConfig": "./src/hooks/useConfig.js",
+        "./standalone": "./src/StandAloneOpenCloning.js"
     },
     "repository": {
         "type": "git",
