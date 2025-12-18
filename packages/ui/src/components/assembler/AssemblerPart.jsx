@@ -19,6 +19,13 @@ const defaultData =
     color: 'greenyellow',
   }
 
+function tripletsToTranslation(triplets) {
+  if (!triplets) return ''
+  return triplets.map(triplet =>
+    /[^ACGT]/i.test(triplet) ? ' - ' :
+      getAminoAcidFromSequenceTriplet(triplet).threeLettersName.replace('Stop', '***')
+  ).join('')
+}
 
 function AssemblerPart( { data = defaultData } ) {
   const {
@@ -39,10 +46,7 @@ function AssemblerPart( { data = defaultData } ) {
   if (leftCodonStart) {
     const triplets = (leftOverhang + leftInside).slice(leftCodonStart - 1).match(/.{3}/g)
     const padding = ' '.repeat(leftCodonStart - 1)
-    const translationLeft = padding + triplets.map(triplet =>
-      /[^ACGT]/i.test(triplet) ? ' - ' :
-        getAminoAcidFromSequenceTriplet(triplet).threeLettersName.replace('Stop', '***')
-    ).join('')
+    const translationLeft = padding + tripletsToTranslation(triplets)
     leftTranslationOverhang = translationLeft.slice(0, leftOverhang.length)
     leftTranslationInside = translationLeft.slice(leftOverhang.length)
   }
@@ -51,7 +55,7 @@ function AssemblerPart( { data = defaultData } ) {
   if (rightCodonStart) {
     const triplets = (rightInside + rightOverhang).slice(rightCodonStart - 1).match(/.{3}/g)
     const padding = ' '.repeat(rightCodonStart - 1)
-    const translationRight = padding + triplets.map(triplet => getAminoAcidFromSequenceTriplet(triplet).threeLettersName.replace('Stop', '***')).join('')
+    const translationRight = padding + tripletsToTranslation(triplets)
     rightTranslationInside = translationRight.slice(0, rightInside.length)
     rightTranslationOverhang = translationRight.slice(rightInside.length)
   }
