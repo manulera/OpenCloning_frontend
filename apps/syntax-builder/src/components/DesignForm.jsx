@@ -1,7 +1,8 @@
 import React from 'react'
-import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton } from '@mui/material'
+import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
 import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import { AssemblerPart } from '@opencloning/ui/components/assembler'
+import { AssemblerPart, getSvgByGlyph } from '@opencloning/ui/components/assembler'
+import { useFormData, validatePart, validateField } from '../context/FormDataContext'
 
 /* eslint-disable camelcase */
 const defaultData = {
@@ -49,49 +50,12 @@ const fieldConfig = {
 }
 /* eslint-enable camelcase */
 
-// Validation functions
-const isValidColor = (color) => {
-  if (!color || color.trim() === '') return false
-  // Create a temporary element to test CSS color validity
-  if (typeof document !== 'undefined') {
-    const s = document.createElement('div').style
-    s.color = color
-    return s.color !== ''
-  }
-  // Fallback: basic validation if document is not available
-  return /^#[0-9A-Fa-f]{3,6}$|^[a-zA-Z]+$|^rgb\(|^rgba\(|^hsl\(|^hsla\(/.test(color)
-}
-
-const isValidOverhang = (overhang) => {
-  if (!overhang) return false
-  return /^[ACGTacgt]+$/.test(overhang)
-}
-
-const isValidInside = (inside) => {
-  if (!inside) return false
-  return /^[ACGTNacgtn]+$/.test(inside)
-}
-
-const isValidCodonStart = (value) => {
-  if (value === '' || value === null || value === undefined) return false
-  const num = typeof value === 'number' ? value : parseInt(value, 10)
-  return !isNaN(num) && num > 0
-}
-
-const validatePart = (part) => {
-  return (
-    isValidColor(part.color) &&
-    isValidOverhang(part.left_overhang) &&
-    isValidOverhang(part.right_overhang) &&
-    isValidInside(part.left_inside) &&
-    isValidInside(part.right_inside) &&
-    isValidCodonStart(part.left_codon_start) &&
-    isValidCodonStart(part.right_codon_start)
-  )
-}
-
 function AssemblePartWidget() {
-  const [parts, setParts] = React.useState([{ ...defaultData }])
+  const { formData, updateDesignParts } = useFormData()
+  const parts = formData.design.parts
+  const [bodyDialogOpen, setBodyDialogOpen] = React.useState(false)
+  const [editingRowIndex, setEditingRowIndex] = React.useState(null)
+  const [tempBodyValue, setTempBodyValue] = React.useState('')
 
   const handleChange = (rowIndex, field) => (event) => {
     let value = event.target.value
@@ -113,22 +77,20 @@ function AssemblePartWidget() {
       value = value === '' ? '' : parseInt(value, 10) || 0
     }
     
-    setParts((prev) => {
-      const newParts = [...prev]
-      newParts[rowIndex] = {
-        ...newParts[rowIndex],
-        [field]: value,
-      }
-      return newParts
-    })
+    const newParts = [...parts]
+    newParts[rowIndex] = {
+      ...newParts[rowIndex],
+      [field]: value,
+    }
+    updateDesignParts(newParts)
   }
 
   const handleAddRow = () => {
-    setParts((prev) => [...prev, { ...defaultData }])
+    updateDesignParts([...parts, { ...defaultData }])
   }
 
   const handleRemoveRow = (index) => {
-    setParts((prev) => prev.filter((_, i) => i !== index))
+    updateDesignParts(parts.filter((_, i) => i !== index))
   }
 
   const handleCopyRow = async (rowIndex) => {
@@ -148,22 +110,73 @@ function AssemblePartWidget() {
     }
   }
 
+  const handleOpenBodyDialog = (rowIndex) => {
+    setEditingRowIndex(rowIndex)
+    setTempBodyValue(parts[rowIndex].body || '')
+    setBodyDialogOpen(true)
+  }
+
+  const handleCloseBodyDialog = () => {
+    setBodyDialogOpen(false)
+    setEditingRowIndex(null)
+    setTempBodyValue('')
+  }
+
+  const handleSaveBodyDialog = () => {
+    if (editingRowIndex !== null) {
+      const newParts = [...parts]
+      newParts[editingRowIndex] = {
+        ...newParts[editingRowIndex],
+        body: tempBodyValue,
+      }
+      updateDesignParts(newParts)
+    }
+    handleCloseBodyDialog()
+  }
+
   const renderEditableCell = (rowIndex, field, value) => {
     const config = fieldConfig[field]
-    let hasError = false
-    
-    // Determine if field has validation error
-    if (field === 'color') {
-      hasError = !isValidColor(value)
-    } else if (field === 'left_overhang' || field === 'right_overhang') {
-      hasError = !isValidOverhang(value)
-    } else if (field === 'left_inside' || field === 'right_inside') {
-      hasError = !isValidInside(value)
-    } else if (field === 'left_codon_start' || field === 'right_codon_start') {
-      hasError = !isValidCodonStart(value)
-    }
+    const errorMessage = validateField(field, value)
+    const hasError = errorMessage !== ''
     
     if (config.type === 'select') {
+      // Special handling for glyph field - show images
+      if (field === 'glyph') {
+        return (
+          <FormControl size="small" sx={{ width: '100px' }}>
+            <Select
+              value={value}
+              onChange={handleChange(rowIndex, field)}
+              sx={{ fontSize: '0.875rem' }}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <img 
+                    src={getSvgByGlyph(selected)} 
+                    alt={selected}
+                    style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                  />
+                  <span>{selected}</span>
+                </Box>
+              )}
+            >
+              {config.options.map((option) => (
+                <MenuItem key={option} value={option}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <img 
+                      src={getSvgByGlyph(option)} 
+                      alt={option}
+                      style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                    />
+                    <span>{option}</span>
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )
+      }
+      
+      // Default select for other fields
       return (
         <FormControl size="small" fullWidth>
           <Select
@@ -189,29 +202,47 @@ function AssemblePartWidget() {
           value={value}
           onChange={handleChange(rowIndex, field)}
           error={hasError}
-          inputProps={{ min: 1, style: { fontSize: '0.875rem' } }}
+          inputProps={{ min: 0, style: { fontSize: '0.875rem' } }}
           sx={{ '& .MuiInputBase-root': { height: '32px' } }}
-          helperText={hasError ? 'Must be > 0' : ''}
+          helperText={errorMessage}
+        />
+      )
+    }
+    
+    // Special handling for body field - open dialog on click
+    if (field === 'body') {
+      const displayValue = value || ''
+      const truncatedValue = displayValue.length > 50 
+        ? `${displayValue.substring(0, 50)}...` 
+        : displayValue
+      
+      return (
+        <TextField
+          size="small"
+          value={truncatedValue}
+          onClick={() => handleOpenBodyDialog(rowIndex)}
+          readOnly
+          inputProps={{ 
+            style: { 
+              fontSize: '0.875rem',
+              cursor: 'pointer'
+            } 
+          }}
+          sx={{ 
+            '& .MuiInputBase-root': { 
+              height: '32px',
+              cursor: 'pointer'
+            },
+            '& .MuiInputBase-input': {
+              cursor: 'pointer'
+            }
+          }}
+          placeholder="Click to edit..."
         />
       )
     }
     
     // Text fields (overhangs, insides, and color)
-    let helperText = ''
-    if (field === 'left_overhang' || field === 'right_overhang') {
-      if (hasError && value) {
-        helperText = 'Only ACGT allowed'
-      }
-    } else if (field === 'left_inside' || field === 'right_inside') {
-      if (hasError && value) {
-        helperText = 'Only ACGTN allowed'
-      }
-    } else if (field === 'color') {
-      if (hasError) {
-        helperText = 'Invalid color'
-      }
-    }
-    
     return (
       <TextField
         size="small"
@@ -220,7 +251,7 @@ function AssemblePartWidget() {
         error={hasError}
         inputProps={{ style: { fontSize: '0.875rem' } }}
         sx={{ '& .MuiInputBase-root': { height: '32px' } }}
-        helperText={helperText}
+        helperText={errorMessage}
       />
     )
   }
@@ -248,7 +279,8 @@ function AssemblePartWidget() {
               pb: 1
             }}>
               {parts.map((part, index) => {
-                const isValid = validatePart(part)
+                const partError = validatePart(part)
+                const isValid = partError === ''
                 return (
                   <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
                     {(part.header || part.body) && (
@@ -353,6 +385,32 @@ function AssemblePartWidget() {
           </Table>
         </TableContainer>
       </Paper>
+
+      {/* Body Edit Dialog */}
+      <Dialog 
+        open={bodyDialogOpen} 
+        onClose={handleCloseBodyDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Edit Body Text</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            multiline
+            rows={6}
+            fullWidth
+            value={tempBodyValue}
+            onChange={(e) => setTempBodyValue(e.target.value)}
+            placeholder="Enter body text..."
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseBodyDialog}>Cancel</Button>
+          <Button onClick={handleSaveBodyDialog} variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
