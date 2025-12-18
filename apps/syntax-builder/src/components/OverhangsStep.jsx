@@ -103,9 +103,13 @@ function OverhangsStep() {
     if (!areAllOverhangsValid || currentPaths.length === 0 || currentNodeOrder.length === 0) return [];
 
     // Build a map of overhang to column index
+    // Use first occurrence to handle circular paths where start/end overlap
     const overhangToColumn = new Map();
     currentNodeOrder.forEach((overhang, index) => {
-      overhangToColumn.set(overhang, index);
+      // Only set if not already in map (use first occurrence)
+      if (!overhangToColumn.has(overhang)) {
+        overhangToColumn.set(overhang, index);
+      }
     });
 
     // Convert each path to an array of parts with column positions
@@ -119,7 +123,7 @@ function OverhangsStep() {
         
         /* eslint-disable camelcase */
         parts.push({
-          header: `Part ${parts.length + 1}`,
+          header: `Part ${leftColumn + 1}`,
           body: '',
           glyph: 'engineered-region',
           left_overhang: leftOverhang,
@@ -219,11 +223,11 @@ function OverhangsStep() {
       {areAllOverhangsValid && paths.length > 0 && paths.some(path => path.length >= 2) && (
         <>
           <Mermaid string={pathsToMermaidString(paths)} />
-          <Paper sx={{ p: 2, mt: 2 }}>
+          <Paper sx={{ p: 2, mt: 2, maxHeight: '70vh', overflowY: 'auto', overflowX: 'auto' }}>
             <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
               Parts Preview
             </Typography>
-            <Box sx={{ overflowX: 'auto' }}>
+            <Box>
               <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
                 <TableBody>
                   {displayPaths.map((pathParts, pathIndex) => {
@@ -235,9 +239,17 @@ function OverhangsStep() {
                       ? Math.max(...pathParts.map(p => p.rightColumn ?? p.leftColumn ?? -1))
                       : -1;
                     
-                    // Place each part in the correct column
-                    pathParts.forEach((part) => {
-                      if (part.leftColumn !== undefined && part.leftColumn < cells.length) {
+                    // Place each part in the correct column, maintaining path order
+                    // Sort parts by leftColumn to ensure correct visual order
+                    const sortedParts = [...pathParts].sort((a, b) => {
+                      const aCol = a.leftColumn ?? Infinity;
+                      const bCol = b.leftColumn ?? Infinity;
+                      return aCol - bCol;
+                    });
+                    
+                    // Place parts in sorted order
+                    sortedParts.forEach((part) => {
+                      if (part.leftColumn !== undefined && part.leftColumn >= 0 && part.leftColumn < cells.length) {
                         cells[part.leftColumn] = part;
                       }
                     });

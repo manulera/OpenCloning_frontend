@@ -4,6 +4,11 @@ import { createRoot } from 'react-dom/client';
 import '@opencloning/ui';
 import App from './App';
 
+// Ensure body and html can scroll
+document.documentElement.style.overflowY = 'auto';
+document.body.style.overflowY = 'auto';
+document.body.style.height = 'auto';
+
 const container = document.getElementById('root');
 const root = createRoot(container);
 
