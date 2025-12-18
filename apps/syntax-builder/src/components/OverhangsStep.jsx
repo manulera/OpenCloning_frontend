@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box, Typography, TextField, Paper } from '@mui/material';
-import { useFormData } from '../context/FormDataContext';
+import { Box, Typography, TextField, Paper, Button, Alert } from '@mui/material';
+import { useFormData, validateOverhang } from '../context/FormDataContext';
 
 function OverhangsStep() {
-  const { formData, updateOverhangs } = useFormData();
+  const { formData, updateOverhangs, updateDesignParts } = useFormData();
   const overhangs = formData.overhangs.list || [];
 
   // Convert array to multiline string
@@ -39,15 +39,68 @@ function OverhangsStep() {
     updateOverhangs(validOverhangs);
   };
 
+  // Check if all overhangs are valid
+  const areAllOverhangsValid = overhangs.length > 0 && 
+    overhangs.every(overhang => validateOverhang(overhang) === '');
+
+  // Check for duplicate overhangs
+  const hasDuplicateOverhangs = overhangs.length !== new Set(overhangs).size;
+  const duplicateOverhangs = overhangs.filter((overhang, index) => overhangs.indexOf(overhang) !== index);
+
+  console.log('hasDuplicateOverhangs', hasDuplicateOverhangs);
+  console.log('areAllOverhangsValid', areAllOverhangsValid);
+
+  const handleGenerateParts = () => {
+    if (!areAllOverhangsValid) return;
+
+    // Pair subsequent overhangs
+    const parts = [];
+    for (let i = 0; i < overhangs.length; i += 1) {
+      const leftOverhang = overhangs[i];
+      const rightOverhang = overhangs[i + 1] || overhangs[0]; // Circular iteration
+      
+      /* eslint-disable camelcase */
+      parts.push({
+        header: `Part ${parts.length + 1}`,
+        body: '',
+        glyph: 'engineered-region',
+        left_overhang: leftOverhang,
+        right_overhang: rightOverhang,
+        left_inside: '',
+        right_inside: '',
+        left_codon_start: 0,
+        right_codon_start: 0,
+        color: '',
+      });
+      /* eslint-enable camelcase */
+    }
+    
+    updateDesignParts(parts);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Paper sx={{ p: 1.5 }}>
         <Typography variant="h6" gutterBottom>
           Overhangs
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Enter overhangs, one per line. Each overhang must be exactly 4 DNA bases (ACGT).
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Enter overhangs, one per line. Each overhang must be exactly 4 DNA bases (ACGT).
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleGenerateParts}
+            disabled={!areAllOverhangsValid || hasDuplicateOverhangs}
+          >
+            Generate Parts
+          </Button>
+        </Box>
+        {hasDuplicateOverhangs && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Duplicate overhangs found: {[...new Set(duplicateOverhangs)].join(', ')}
+          </Alert>
+        )}
         <TextField
           multiline
           rows={10}
