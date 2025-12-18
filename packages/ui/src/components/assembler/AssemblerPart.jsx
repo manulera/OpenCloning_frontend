@@ -39,7 +39,10 @@ function AssemblerPart( { data = defaultData } ) {
   if (leftCodonStart) {
     const triplets = (leftOverhang + leftInside).slice(leftCodonStart - 1).match(/.{3}/g)
     const padding = ' '.repeat(leftCodonStart - 1)
-    const translationLeft = padding + triplets.map(triplet => getAminoAcidFromSequenceTriplet(triplet).threeLettersName.replace('Stop', '***')).join('')
+    const translationLeft = padding + triplets.map(triplet =>
+      /[^ACGT]/i.test(triplet) ? ' - ' :
+        getAminoAcidFromSequenceTriplet(triplet).threeLettersName.replace('Stop', '***')
+    ).join('')
     leftTranslationOverhang = translationLeft.slice(0, leftOverhang.length)
     leftTranslationInside = translationLeft.slice(leftOverhang.length)
   }

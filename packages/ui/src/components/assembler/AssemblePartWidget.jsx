@@ -49,18 +49,75 @@ const fieldConfig = {
 }
 /* eslint-enable camelcase */
 
+// Validation functions
+const isValidColor = (color) => {
+  if (!color || color.trim() === '') return false
+  // Create a temporary element to test CSS color validity
+  if (typeof document !== 'undefined') {
+    const s = document.createElement('div').style
+    s.color = color
+    return s.color !== ''
+  }
+  // Fallback: basic validation if document is not available
+  return /^#[0-9A-Fa-f]{3,6}$|^[a-zA-Z]+$|^rgb\(|^rgba\(|^hsl\(|^hsla\(/.test(color)
+}
+
+const isValidOverhang = (overhang) => {
+  if (!overhang) return false
+  return /^[ACGTacgt]+$/.test(overhang)
+}
+
+const isValidInside = (inside) => {
+  if (!inside) return false
+  return /^[ACGTNacgtn]+$/.test(inside)
+}
+
+const isValidCodonStart = (value) => {
+  if (value === '' || value === null || value === undefined) return false
+  const num = typeof value === 'number' ? value : parseInt(value, 10)
+  return !isNaN(num) && num > 0
+}
+
+const validatePart = (part) => {
+  return (
+    isValidColor(part.color) &&
+    isValidOverhang(part.left_overhang) &&
+    isValidOverhang(part.right_overhang) &&
+    isValidInside(part.left_inside) &&
+    isValidInside(part.right_inside) &&
+    isValidCodonStart(part.left_codon_start) &&
+    isValidCodonStart(part.right_codon_start)
+  )
+}
+
 function AssemblePartWidget() {
   const [parts, setParts] = React.useState([{ ...defaultData }])
 
   const handleChange = (rowIndex, field) => (event) => {
-    const value = event.target.value
+    let value = event.target.value
+    
+    // Convert overhangs to uppercase immediately and only allow ACGT
+    if (field === 'left_overhang' || field === 'right_overhang') {
+      value = value.toUpperCase()
+      value = value.replace(/[^ACGT]/g, '')
+    }
+    
+    // Convert insides to uppercase immediately and allow ACGTN
+    if (field === 'left_inside' || field === 'right_inside') {
+      value = value.toUpperCase()
+      value = value.replace(/[^ACGTN]/g, '')
+    }
+    
+    // Handle number fields
+    if (field === 'left_codon_start' || field === 'right_codon_start') {
+      value = value === '' ? '' : parseInt(value, 10) || 0
+    }
+    
     setParts((prev) => {
       const newParts = [...prev]
       newParts[rowIndex] = {
         ...newParts[rowIndex],
-        [field]: field === 'left_codon_start' || field === 'right_codon_start' 
-          ? (value === '' ? '' : parseInt(value, 10) || 0)
-          : value,
+        [field]: value,
       }
       return newParts
     })
@@ -93,6 +150,18 @@ function AssemblePartWidget() {
 
   const renderEditableCell = (rowIndex, field, value) => {
     const config = fieldConfig[field]
+    let hasError = false
+    
+    // Determine if field has validation error
+    if (field === 'color') {
+      hasError = !isValidColor(value)
+    } else if (field === 'left_overhang' || field === 'right_overhang') {
+      hasError = !isValidOverhang(value)
+    } else if (field === 'left_inside' || field === 'right_inside') {
+      hasError = !isValidInside(value)
+    } else if (field === 'left_codon_start' || field === 'right_codon_start') {
+      hasError = !isValidCodonStart(value)
+    }
     
     if (config.type === 'select') {
       return (
@@ -119,10 +188,28 @@ function AssemblePartWidget() {
           type="number"
           value={value}
           onChange={handleChange(rowIndex, field)}
-          inputProps={{ min: 0, style: { fontSize: '0.875rem' } }}
+          error={hasError}
+          inputProps={{ min: 1, style: { fontSize: '0.875rem' } }}
           sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+          helperText={hasError ? 'Must be > 0' : ''}
         />
       )
+    }
+    
+    // Text fields (overhangs, insides, and color)
+    let helperText = ''
+    if (field === 'left_overhang' || field === 'right_overhang') {
+      if (hasError && value) {
+        helperText = 'Only ACGT allowed'
+      }
+    } else if (field === 'left_inside' || field === 'right_inside') {
+      if (hasError && value) {
+        helperText = 'Only ACGTN allowed'
+      }
+    } else if (field === 'color') {
+      if (hasError) {
+        helperText = 'Invalid color'
+      }
     }
     
     return (
@@ -130,9 +217,10 @@ function AssemblePartWidget() {
         size="small"
         value={value}
         onChange={handleChange(rowIndex, field)}
-        error={field === 'left_overhang' && value.length !== 4 && value.length > 0}
+        error={hasError}
         inputProps={{ style: { fontSize: '0.875rem' } }}
         sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+        helperText={helperText}
       />
     )
   }
@@ -151,32 +239,55 @@ function AssemblePartWidget() {
             <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
               Preview
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {parts.map((part, index) => (
-                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  {(part.header || part.body) && (
-                    <Box sx={{ 
-                      textAlign: 'center', 
-                      mb: 1.5,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 0.5
-                    }}>
-                      {part.header && (
-                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          {part.header}
-                        </Typography>
-                      )}
-                      {part.body && (
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                          {part.body}
-                        </Typography>
-                      )}
-                    </Box>
-                  )}
-                  <AssemblerPart data={part} />
-                </Box>
-              ))}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              gap: 2,
+              alignItems: 'flex-start',
+              overflowX: 'auto',
+              pb: 1
+            }}>
+              {parts.map((part, index) => {
+                const isValid = validatePart(part)
+                return (
+                  <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
+                    {(part.header || part.body) && (
+                      <Box sx={{ 
+                        textAlign: 'center', 
+                        mb: 1.5,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.5
+                      }}>
+                        {part.header && (
+                          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                            {part.header}
+                          </Typography>
+                        )}
+                        {part.body && (
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            {part.body}
+                          </Typography>
+                        )}
+                      </Box>
+                    )}
+                    {isValid ? (
+                      <AssemblerPart data={part} />
+                    ) : (
+                      <Box sx={{ 
+                        p: 2, 
+                        border: '2px dashed', 
+                        borderColor: 'error.main',
+                        borderRadius: 1,
+                        color: 'error.main',
+                        fontWeight: 'bold'
+                      }}>
+                        Invalid
+                      </Box>
+                    )}
+                  </Box>
+                )
+              })}
             </Box>
           </Paper>
         </Box>
