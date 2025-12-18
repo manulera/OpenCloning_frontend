@@ -14,6 +14,7 @@ export default [
         browser: true,
         window: 'readonly',
         document: 'readonly',
+        HTMLElement: 'readonly',
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
