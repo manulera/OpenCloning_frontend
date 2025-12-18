@@ -52,8 +52,12 @@ function AppContent() {
   };
 
   return (
-    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Box sx={{ 
+      width: '100%', 
+      minHeight: '100vh', 
+      bgcolor: 'background.default'
+    }}>
+      <Container maxWidth="xl" sx={{ py: 3, pb: 5, minHeight: 'auto' }}>
         <Paper sx={{ p: 3, mb: 3 }}>
           <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
             {steps.map((label) => (
