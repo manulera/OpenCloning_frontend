@@ -81,6 +81,78 @@ export const validateField = (field, value) => {
   return undefined // No validation for other fields
 }
 
+// Validate overhang paths structure and ordering
+export const validateOverhangPaths = (paths) => {
+  if (!paths || paths.length === 0) {
+    return { isValid: true, error: '' }
+  }
+
+  // Validate all overhangs are valid
+  for (const path of paths) {
+    if (!Array.isArray(path) || path.length < 2) {
+      return { isValid: false, error: 'Each path must contain at least 2 overhangs' }
+    }
+    for (const overhang of path) {
+      const error = validateOverhang(overhang)
+      if (error) {
+        return { isValid: false, error: `Invalid overhang "${overhang}": ${error}` }
+      }
+    }
+  }
+
+  // Build ordering from first path
+  const nodeOrder = [...paths[0]]
+  const nodePositions = new Map()
+  paths[0].forEach((node, index) => {
+    nodePositions.set(node, index)
+  })
+
+  // Validate subsequent paths respect ordering
+  for (let pathIndex = 1; pathIndex < paths.length; pathIndex++) {
+    const path = paths[pathIndex]
+    
+    // First node must exist in previous paths
+    const firstNode = path[0]
+    if (!nodePositions.has(firstNode)) {
+      return { 
+        isValid: false, 
+        error: `Path ${pathIndex + 1} starts with "${firstNode}" which doesn't exist in previous paths` 
+      }
+    }
+
+    let lastPosition = nodePositions.get(firstNode)
+
+    // Process remaining nodes in path
+    for (let i = 1; i < path.length; i++) {
+      const node = path[i]
+      
+      if (nodePositions.has(node)) {
+        // Node exists - check ordering
+        const nodePosition = nodePositions.get(node)
+        if (nodePosition < lastPosition) {
+          return { 
+            isValid: false, 
+            error: `Path ${pathIndex + 1} violates ordering: "${node}" appears before "${path[i - 1]}"` 
+          }
+        }
+        lastPosition = nodePosition
+      } else {
+        // New node - add to ordering after last position
+        const insertPosition = lastPosition + 1
+        nodeOrder.splice(insertPosition, 0, node)
+        // Update all positions after insertion
+        nodePositions.clear()
+        nodeOrder.forEach((n, idx) => {
+          nodePositions.set(n, idx)
+        })
+        lastPosition = insertPosition
+      }
+    }
+  }
+
+  return { isValid: true, error: '', nodeOrder }
+}
+
 const FormDataContext = React.createContext();
 
 export function FormDataProvider({ children }) {
@@ -91,7 +163,7 @@ export function FormDataProvider({ children }) {
       doi: '',
     },
     overhangs: {
-      list: [],
+      paths: [], // Array of paths, where each path is an array of overhang strings
     },
     design: {
       parts: [{ ...defaultPartData }],
@@ -105,10 +177,10 @@ export function FormDataProvider({ children }) {
     }));
   };
 
-  const updateOverhangs = (overhangs) => {
+  const updateOverhangs = (paths) => {
     setFormData((prev) => ({
       ...prev,
-      overhangs: { ...prev.overhangs, list: overhangs },
+      overhangs: { ...prev.overhangs, paths },
     }));
   };
 
@@ -127,7 +199,7 @@ export function FormDataProvider({ children }) {
         doi: '',
       },
       overhangs: {
-        list: [],
+        paths: [],
       },
       design: {
         parts: [{ ...defaultPartData }],

@@ -27,7 +27,7 @@ function tripletsToTranslation(triplets) {
   ).join('')
 }
 
-function AssemblerPart( { data = defaultData } ) {
+function AssemblerPart( { data = defaultData, showRight = true } ) {
   const {
     left_codon_start: leftCodonStart,
     right_codon_start: rightCodonStart,
@@ -92,12 +92,14 @@ function AssemblerPart( { data = defaultData } ) {
           <div className={styles.bottom}> </div>
         </div>
       )}
-      <div className={`${styles.dna} ${styles.overhang} ${styles.right}`}>
-        <div className={styles.top}>{rightTranslationOverhang}</div>
-        <div className={styles.watson}>{rightOverhang}</div>
-        <div className={styles.crick}>{rightOverhangRc}</div>
-        <div className={styles.bottom}> </div>
-      </div>
+      { showRight && (
+        <div className={`${styles.dna} ${styles.overhang} ${styles.right}`}>
+          <div className={styles.top}>{rightTranslationOverhang}</div>
+          <div className={styles.watson}>{rightOverhang}</div>
+          <div className={styles.crick}>{rightOverhangRc}</div>
+          <div className={styles.bottom}> </div>
+        </div>
+      )}
     </div>
 
   )
