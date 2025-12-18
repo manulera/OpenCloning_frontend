@@ -137,7 +137,7 @@ function AssemblePartWidget() {
   const renderEditableCell = (rowIndex, field, value) => {
     const config = fieldConfig[field]
     const errorMessage = validateField(field, value)
-    const hasError = errorMessage !== ''
+    const hasError = Boolean(errorMessage)
     
     if (config.type === 'select') {
       // Special handling for glyph field - show images
@@ -279,8 +279,8 @@ function AssemblePartWidget() {
               pb: 1
             }}>
               {parts.map((part, index) => {
-                const partError = validatePart(part)
-                const isValid = partError === ''
+                const partErrors = validatePart(part)
+                const isValid = Object.values(partErrors).every(error => error === '')
                 return (
                   <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
                     {(part.header || part.body) && (

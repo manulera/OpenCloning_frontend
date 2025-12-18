@@ -17,7 +17,8 @@ const defaultPartData = {
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
-  if (!color || color.trim() === '') return 'Color is required'
+  // Color can be empty
+  if (!color || color.trim() === '') return ''
   // Create a temporary element to test CSS color validity
   if (typeof document !== 'undefined') {
     const s = document.createElement('div').style
@@ -47,38 +48,24 @@ const validateInside = (inside) => {
 
 const validateCodonStart = (value) => {
   // Codon start can be zero, but not negative
-  if (value === '' || value === null || value === undefined) return ''
+  if (value === '' || value === null || value === '') return ''
   const num = typeof value === 'number' ? value : parseInt(value, 10)
   if (isNaN(num) || num < 0) return 'Must be >= 0'
   return ''
 }
 
-export const validatePart = (part) => {
-  const errors = []
-  
-  const colorError = validateColor(part.color)
-  if (colorError) errors.push(`Color: ${colorError}`)
-  
-  const leftOverhangError = validateOverhang(part.left_overhang)
-  if (leftOverhangError) errors.push(`Left Overhang: ${leftOverhangError}`)
-  
-  const rightOverhangError = validateOverhang(part.right_overhang)
-  if (rightOverhangError) errors.push(`Right Overhang: ${rightOverhangError}`)
-  
-  const leftInsideError = validateInside(part.left_inside)
-  if (leftInsideError) errors.push(`Left Inside: ${leftInsideError}`)
-  
-  const rightInsideError = validateInside(part.right_inside)
-  if (rightInsideError) errors.push(`Right Inside: ${rightInsideError}`)
-  
-  const leftCodonError = validateCodonStart(part.left_codon_start)
-  if (leftCodonError) errors.push(`Left Codon Start: ${leftCodonError}`)
-  
-  const rightCodonError = validateCodonStart(part.right_codon_start)
-  if (rightCodonError) errors.push(`Right Codon Start: ${rightCodonError}`)
-  
-  return errors.length > 0 ? errors.join('; ') : ''
-}
+export const validatePart = (part) => ({
+
+  /* eslint-disable camelcase */
+  color: validateColor(part.color),
+  left_overhang: validateOverhang(part.left_overhang),
+  right_overhang: validateOverhang(part.right_overhang),
+  left_inside: validateInside(part.left_inside),
+  right_inside: validateInside(part.right_inside),
+  left_codon_start: validateCodonStart(part.left_codon_start),
+  right_codon_start: validateCodonStart(part.right_codon_start),
+  /* eslint-enable camelcase */
+})
 
 export const validateField = (field, value) => {
   if (field === 'color') {
@@ -90,7 +77,7 @@ export const validateField = (field, value) => {
   } else if (field === 'left_codon_start' || field === 'right_codon_start') {
     return validateCodonStart(value)
   }
-  return '' // No validation for other fields
+  return undefined // No validation for other fields
 }
 
 const FormDataContext = React.createContext();
