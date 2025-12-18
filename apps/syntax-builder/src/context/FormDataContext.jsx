@@ -33,9 +33,10 @@ const validateColor = (color) => {
   return ''
 }
 
-const validateOverhang = (overhang) => {
+export const validateOverhang = (overhang) => {
   if (!overhang) return 'Overhang is required'
   if (!/^[ACGTacgt]+$/.test(overhang)) return 'Only ACGT allowed'
+  if (overhang.length !== 4) return 'Must be exactly 4 bases'
   return ''
 }
 
@@ -89,7 +90,9 @@ export function FormDataProvider({ children }) {
       orcid: '',
       doi: '',
     },
-    overhangs: {},
+    overhangs: {
+      list: [],
+    },
     design: {
       parts: [{ ...defaultPartData }],
     },
@@ -102,10 +105,10 @@ export function FormDataProvider({ children }) {
     }));
   };
 
-  const updateOverhangs = (data) => {
+  const updateOverhangs = (overhangs) => {
     setFormData((prev) => ({
       ...prev,
-      overhangs: { ...prev.overhangs, ...data },
+      overhangs: { ...prev.overhangs, list: overhangs },
     }));
   };
 
@@ -123,7 +126,9 @@ export function FormDataProvider({ children }) {
         orcid: '',
         doi: '',
       },
-      overhangs: {},
+      overhangs: {
+        list: [],
+      },
       design: {
         parts: [{ ...defaultPartData }],
       },
