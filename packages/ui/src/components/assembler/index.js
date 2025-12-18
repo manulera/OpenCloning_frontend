@@ -1,1 +1,1 @@
-export { default as AssemblePartWidget } from './AssemblePartWidget';
+export { default as AssemblerPart } from './AssemblerPart';
