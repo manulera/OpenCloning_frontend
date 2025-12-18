@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Paper, Button, Alert } from '@mui/material';
+import { Box, Typography, TextField, Paper, Button, Alert, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
 import { AssemblerPart } from '@opencloning/ui/components/assembler';
 import Mermaid from './Mermaid';
@@ -94,18 +94,28 @@ function OverhangsStep() {
   const pathsValidation = validateOverhangPaths(paths);
   const areAllOverhangsValid = pathsValidation.isValid;
   const orderingError = pathsValidation.error || '';
+  const nodeOrder = React.useMemo(() => pathsValidation.nodeOrder || [], [pathsValidation.nodeOrder]);
 
-  // Generate parts for display grouped by path
+  // Generate parts for display grouped by path with column positions
   const displayPaths = React.useMemo(() => {
     const currentPaths = formData.overhangs.paths || [];
-    if (!areAllOverhangsValid || currentPaths.length === 0) return [];
+    const currentNodeOrder = pathsValidation.nodeOrder || [];
+    if (!areAllOverhangsValid || currentPaths.length === 0 || currentNodeOrder.length === 0) return [];
 
-    // Convert each path to an array of parts
+    // Build a map of overhang to column index
+    const overhangToColumn = new Map();
+    currentNodeOrder.forEach((overhang, index) => {
+      overhangToColumn.set(overhang, index);
+    });
+
+    // Convert each path to an array of parts with column positions
     return currentPaths.map((path) => {
       const parts = [];
       for (let i = 0; i < path.length - 1; i++) {
         const leftOverhang = path[i];
         const rightOverhang = path[i + 1];
+        const leftColumn = overhangToColumn.get(leftOverhang);
+        const rightColumn = overhangToColumn.get(rightOverhang);
         
         /* eslint-disable camelcase */
         parts.push({
@@ -119,12 +129,14 @@ function OverhangsStep() {
           left_codon_start: 0,
           right_codon_start: 0,
           color: '',
+          leftColumn,
+          rightColumn,
         });
         /* eslint-enable camelcase */
       }
       return parts;
     });
-  }, [formData.overhangs.paths, areAllOverhangsValid]);
+  }, [formData.overhangs.paths, areAllOverhangsValid, pathsValidation.nodeOrder]);
 
   const handleGenerateParts = () => {
     if (!areAllOverhangsValid) return;
@@ -211,32 +223,67 @@ function OverhangsStep() {
             <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
               Parts Preview
             </Typography>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: 3
-            }}>
-              {displayPaths.map((pathParts, pathIndex) => (
-                <Box key={pathIndex} sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'row', 
-                  gap: 2,
-                  alignItems: 'flex-start',
-                  overflowX: 'auto',
-                  pb: 1
-                }}>
-                  {pathParts.map((part, partIndex) => (
-                    <Box key={partIndex} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
-                      {part.header && (
-                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                          {part.header}
-                        </Typography>
-                      )}
-                      <AssemblerPart data={part} showRight={partIndex === pathParts.length - 1} />
-                    </Box>
-                  ))}
-                </Box>
-              ))}
+            <Box sx={{ overflowX: 'auto' }}>
+              <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+                <TableBody>
+                  {displayPaths.map((pathParts, pathIndex) => {
+                    // Create an array to represent cells in this row
+                    const cells = new Array(nodeOrder.length).fill(null);
+                    
+                    // Find the maximum column index for this path (last part's right column)
+                    const maxColumn = pathParts.length > 0 
+                      ? Math.max(...pathParts.map(p => p.rightColumn ?? p.leftColumn ?? -1))
+                      : -1;
+                    
+                    // Place each part in the correct column
+                    pathParts.forEach((part) => {
+                      if (part.leftColumn !== undefined && part.leftColumn < cells.length) {
+                        cells[part.leftColumn] = part;
+                      }
+                    });
+
+                    return (
+                      <TableRow key={pathIndex}>
+                        {cells.map((part, colIndex) => {
+                          // Show right overhang if:
+                          // 1. It's the last part in the path (at maxColumn), OR
+                          // 2. The next cell is empty (there's a gap after it)
+                          const isLastInPath = colIndex === maxColumn;
+                          const isBeforeGap = part && (colIndex + 1 >= cells.length || cells[colIndex + 1] === null);
+                          const showRight = isLastInPath || isBeforeGap;
+                          
+                          return (
+                            <TableCell
+                              key={colIndex}
+                              sx={{
+                                border: 'none',
+                                padding: part ? '8px' : '0px',
+                                verticalAlign: 'bottom',
+                                width: part ? 'auto' : '60px',
+                                minWidth: part ? 'fit-content' : '60px',
+                              }}
+                            >
+                              {part && (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                  {part.header && (
+                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                      {part.header}
+                                    </Typography>
+                                  )}
+                                  <AssemblerPart 
+                                    data={part} 
+                                    showRight={showRight} 
+                                  />
+                                </Box>
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </Box>
           </Paper>
         </>
