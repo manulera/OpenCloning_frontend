@@ -1,7 +1,7 @@
 import React from 'react'
 import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton } from '@mui/material'
 import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import AssemblerPart from './AssemblerPart'
+import { AssemblerPart } from '@opencloning/ui/components/assembler'
 
 /* eslint-disable camelcase */
 const defaultData = {

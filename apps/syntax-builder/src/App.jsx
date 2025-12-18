@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssemblePartWidget } from '@opencloning/ui/components/assembler';
+import AssemblePartWidget from './components/AssemblePartWidget';
 
 function App() {
   return (
