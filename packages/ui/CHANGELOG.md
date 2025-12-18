@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.1.1
+
+### Patch Changes
+
+- [#590](https://github.com/manulera/OpenCloning_frontend/pull/590) [`81bcca3`](https://github.com/manulera/OpenCloning_frontend/commit/81bcca3c4a38e32793dab1cc60862f8ae61b3bb9) Thanks [@manulera](https://github.com/manulera)! - Now it exports a standalone OpenCloning component that can be used without manually setting up React providers, Redux store, or ConfigProvider.
+
+- Updated dependencies []:
+  - @opencloning/store@1.1.1
+  - @opencloning/utils@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes
