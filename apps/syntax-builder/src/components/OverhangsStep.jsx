@@ -1,6 +1,16 @@
 import React from 'react';
 import { Box, Typography, TextField, Paper, Button, Alert } from '@mui/material';
 import { useFormData, validateOverhang } from '../context/FormDataContext';
+import Mermaid from './Mermaid';
+
+function overhangsToMermaidString(overhangs) {
+  let outString = 'graph LR\n';
+  for (let i = 0; i < overhangs.length; i += 1) {
+    outString += `  ${overhangs[i]} --> ${overhangs[(i + 1) % overhangs.length]}\n`;
+  }
+  outString += '\n';
+  return outString;
+}
 
 function OverhangsStep() {
   const { formData, updateOverhangs, updateDesignParts } = useFormData();
@@ -40,15 +50,12 @@ function OverhangsStep() {
   };
 
   // Check if all overhangs are valid
-  const areAllOverhangsValid = overhangs.length > 0 && 
+  const areAllOverhangsValid = overhangs.length > 0 &&
     overhangs.every(overhang => validateOverhang(overhang) === '');
 
   // Check for duplicate overhangs
   const hasDuplicateOverhangs = overhangs.length !== new Set(overhangs).size;
   const duplicateOverhangs = overhangs.filter((overhang, index) => overhangs.indexOf(overhang) !== index);
-
-  console.log('hasDuplicateOverhangs', hasDuplicateOverhangs);
-  console.log('areAllOverhangsValid', areAllOverhangsValid);
 
   const handleGenerateParts = () => {
     if (!areAllOverhangsValid) return;
@@ -78,6 +85,7 @@ function OverhangsStep() {
     updateDesignParts(parts);
   };
 
+  console.log('overhangs', overhangs);
   return (
     <Box sx={{ p: 3 }}>
       <Paper sx={{ p: 1.5 }}>
@@ -122,6 +130,9 @@ function OverhangsStep() {
           }}
         />
       </Paper>
+      {!hasDuplicateOverhangs && areAllOverhangsValid && overhangs.length >= 2 && (
+        <Mermaid string={overhangsToMermaidString(overhangs)} />
+      )}
     </Box>
   );
 }
