@@ -80,7 +80,6 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       if (enzymes.length === 0) { return; }
       requestData.source.restriction_enzymes = enzymes;
       const config = { params: {
-        allow_partial_overlap: allowPartialOverlap,
         circular_only: circularOnly,
       } };
       sendPostRequest({ endpoint: 'restriction_and_ligation', requestData, config, source });
@@ -176,7 +175,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
             <FormControlLabel control={<Checkbox checked={circularOnly} onChange={() => setCircularOnly(!circularOnly)} />} label="Circular assemblies only" />
           </FormControl>
         )}
-        { ['RestrictionAndLigationSource', 'LigationSource'].includes(assemblyType) && (
+        { ['LigationSource'].includes(assemblyType) && (
           <FormControl fullWidth style={{ textAlign: 'left' }}>
             <FormControlLabel control={<Checkbox checked={allowPartialOverlap} onChange={flipAllowPartialOverlap} />} label="Allow partial overlaps" />
           </FormControl>
