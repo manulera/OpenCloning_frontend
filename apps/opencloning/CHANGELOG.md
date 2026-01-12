@@ -1,5 +1,16 @@
 # opencloning
 
+## 1.1.2
+
+### Patch Changes
+
+- [#592](https://github.com/manulera/OpenCloning_frontend/pull/592) [`57092ae`](https://github.com/manulera/OpenCloning_frontend/commit/57092ae54d96485e84191d6c20ade9e9a6838a65) Thanks [@manulera](https://github.com/manulera)! - Remove partial overlap option from restriction and ligation overlap, related to https://github.com/manulera/OpenCloning_backend/pull/389
+
+- Updated dependencies [[`57092ae`](https://github.com/manulera/OpenCloning_frontend/commit/57092ae54d96485e84191d6c20ade9e9a6838a65)]:
+  - @opencloning/ui@1.1.2
+  - @opencloning/store@1.1.2
+  - @opencloning/utils@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes
