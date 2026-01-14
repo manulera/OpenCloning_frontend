@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Paper, Button, Alert, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { Box, Typography, TextField, Paper, Button, Alert, Table, TableBody, TableRow, TableCell, Switch, FormControlLabel } from '@mui/material';
 import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
 import { AssemblerPart, AssemblerPartContainer, AssemblerPartCore, DisplayInside, DisplayOverhang } from '@opencloning/ui/components/assembler';
 import { GRAPH_SPACER, pathToMSA } from '../graph_utils';
@@ -12,7 +12,7 @@ function OverhangRow({ row, mode = 'detailed' }) {
   const actualRows =[];
 
   let currentCell = [rows2iterate.shift(), 1];
-  while (rows2iterate.length > 0) {
+  while (currentCell[0] !== undefined) {
     if (rows2iterate[0] === GRAPH_SPACER) {
       currentCell[1]++;
       rows2iterate.shift();
@@ -23,7 +23,6 @@ function OverhangRow({ row, mode = 'detailed' }) {
   }
   actualRows.forEach(cell => {
     const [leftOverhang, rightOverhang] = cell[0].split('-');
-    console.log(formData.design?.parts)
     const data = formData.design?.parts?.find(part => part.left_overhang === leftOverhang && part.right_overhang === rightOverhang) ||
      {
        left_overhang: leftOverhang,
@@ -85,23 +84,76 @@ function OverhangRow({ row, mode = 'detailed' }) {
   );
 }
 
-function OverhangsStep() {
-  const { formData, updateOverhangs, updateDesignParts } = useFormData();
+function GeneratePartsButton() {
+  const { formData, updateDesignParts } = useFormData();
+  const paths = formData.overhangs.paths;
 
+  const pathsValidation = validateOverhangPaths(paths);
+  const areAllOverhangsValid = pathsValidation.isValid;
+  const handleGenerateParts = () => {
+    if (!areAllOverhangsValid) return;
+
+    // Extract all edges from all paths
+    const edges = new Set();
+    for (const path of paths) {
+      for (let i = 0; i < path.length - 1; i++) {
+        edges.add(`${path[i]}|${path[i + 1]}`);
+      }
+    }
+
+    // Convert edges to parts
+    const parts = [];
+    edges.forEach(edge => {
+      const [leftOverhang, rightOverhang] = edge.split('|');
+      
+      /* eslint-disable camelcase */
+      parts.push({
+        header: `${parts.length + 1}`,
+        body: '',
+        glyph: 'engineered-region',
+        left_overhang: leftOverhang,
+        right_overhang: rightOverhang,
+        left_inside: '',
+        right_inside: '',
+        left_codon_start: 0,
+        right_codon_start: 0,
+        color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
+      });
+      /* eslint-enable camelcase */
+    });
+    
+    updateDesignParts(parts);
+  };
+  return (
+    <Button
+      variant="contained"
+      onClick={handleGenerateParts}
+      disabled={!areAllOverhangsValid}
+    >
+      Generate Parts
+    </Button>
+  )
+}
+
+function OverhangsField() {
+  const { formData, updateOverhangs } = useFormData();
   const paths = React.useMemo(() => formData.overhangs.paths || [], [formData.overhangs.paths]);
 
   // Convert paths to multiline string (empty lines separate paths)
   const textValue = paths.map(path => path.join('\n')).join('\n\n');
-  
+
   // Local state to preserve linebreaks in the text field
   const [localValue, setLocalValue] = React.useState(textValue);
-
-  const msa = React.useMemo(() => pathToMSA(paths), [paths]);
 
   // Sync local state when paths change externally
   React.useEffect(() => {
     setLocalValue(textValue);
   }, [textValue]);
+
+
+  // Validate paths structure and ordering
+  const pathsValidation = validateOverhangPaths(paths);
+  const orderingError = pathsValidation.error || '';
 
   const handleChange = (event) => {
     let value = event.target.value;
@@ -146,108 +198,98 @@ function OverhangsStep() {
     updateOverhangs(parsedPaths);
   };
 
-  // Validate paths structure and ordering
-  const pathsValidation = validateOverhangPaths(paths);
-  const areAllOverhangsValid = pathsValidation.isValid;
-  const orderingError = pathsValidation.error || '';
-  const nodeOrder = React.useMemo(() => pathsValidation.nodeOrder || [], [pathsValidation.nodeOrder]);
 
-  const handleGenerateParts = () => {
-    if (!areAllOverhangsValid) return;
+  
+  return (
 
-    // Extract all edges from all paths
-    const edges = new Set();
-    for (const path of paths) {
-      for (let i = 0; i < path.length - 1; i++) {
-        edges.add(`${path[i]}|${path[i + 1]}`);
-      }
-    }
+    <Paper sx={{ p: 1.5 }}>
+      <Typography variant="h6" gutterBottom>
+          Overhangs
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+            Enter overhangs, one per line. Use empty lines to separate paths. Each overhang must be exactly 4 DNA bases (ACGT).
+        </Typography>
+        <GeneratePartsButton />
+      </Box>
+      {orderingError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {orderingError}
+        </Alert>
+      )}
+      <TextField
+        multiline
+        rows={10}
+        fullWidth
+        value={localValue}
+        onChange={handleChange}
+        placeholder="ACGT&#10;TATG&#10;CATG&#10;&#10;TATG&#10;TTCT&#10;ATCC"
+        inputProps={{
+          style: { 
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+            textTransform: 'uppercase'
+          }
+        }}
+        sx={{
+          '& .MuiInputBase-input': {
+            fontFamily: 'monospace',
+          }
+        }}
+      />
+    </Paper>
+  )
+}
 
-    // Convert edges to parts
-    const parts = [];
-    edges.forEach(edge => {
-      const [leftOverhang, rightOverhang] = edge.split('|');
-      
-      /* eslint-disable camelcase */
-      parts.push({
-        header: `${parts.length + 1}`,
-        body: '',
-        glyph: 'engineered-region',
-        left_overhang: leftOverhang,
-        right_overhang: rightOverhang,
-        left_inside: '',
-        right_inside: '',
-        left_codon_start: 0,
-        right_codon_start: 0,
-        color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
-      });
-      /* eslint-enable camelcase */
-    });
-    
-    updateDesignParts(parts);
-  };
+function OverhangsPreview() {
+
+  const { formData } = useFormData();
+  const [mode, setMode] = React.useState('compact');
+
+  const paths = React.useMemo(() => formData.overhangs.paths || [], [formData.overhangs.paths]);
+  const areAllOverhangsValid = React.useMemo(() => validateOverhangPaths(paths).isValid, [paths]);
+
+  const msa = React.useMemo(() => pathToMSA(paths), [paths]);
+
+  console.log(msa)
+
+  if (areAllOverhangsValid && paths.length > 0 && paths.some(path => path.length >= 2)) {
+    return (
+      <Paper sx={{ p: 2, mt: 2}}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
+            Parts Preview
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={mode === 'detailed'}
+                onChange={(e) => setMode(e.target.checked ? 'detailed' : 'compact')}
+              />
+            }
+            label={mode === 'compact' ? 'Compact' : 'Detailed'}
+          />
+        </Box>
+        <Box sx={{ overflowY: 'auto', overflowX: 'auto' }}>
+          <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+            <TableBody>
+              {msa.map((row, index) => (
+                <OverhangRow key={index} row={row} mode={mode} />
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      </Paper>
+    )}
+}
+
+function OverhangsStep() {
+
+
   return (
     <Box sx={{ p: 3 }}>
-      <Paper sx={{ p: 1.5 }}>
-        <Typography variant="h6" gutterBottom>
-          Overhangs
-        </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            Enter overhangs, one per line. Use empty lines to separate paths. Each overhang must be exactly 4 DNA bases (ACGT).
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={handleGenerateParts}
-            disabled={!areAllOverhangsValid}
-          >
-            Generate Parts
-          </Button>
-        </Box>
-        {orderingError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {orderingError}
-          </Alert>
-        )}
-        <TextField
-          multiline
-          rows={10}
-          fullWidth
-          value={localValue}
-          onChange={handleChange}
-          placeholder="ACGT&#10;TATG&#10;CATG&#10;&#10;TATG&#10;TTCT&#10;ATCC"
-          inputProps={{
-            style: { 
-              fontFamily: 'monospace',
-              fontSize: '0.875rem',
-              textTransform: 'uppercase'
-            }
-          }}
-          sx={{
-            '& .MuiInputBase-input': {
-              fontFamily: 'monospace',
-            }
-          }}
-        />
-      </Paper>
-      {areAllOverhangsValid && paths.length > 0 && paths.some(path => path.length >= 2) && (
-        <>
-          <Paper sx={{ p: 2, mt: 2, maxHeight: '70vh', overflowY: 'auto', overflowX: 'auto' }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
-              Parts Preview
-            </Typography>
-            <Box>
-              <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
-                <TableBody>
-                  {msa.map((row, index) => (
-                    <OverhangRow key={index} row={row} />
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Paper>
-        </>
-      )}
+      <OverhangsField />
+      <OverhangsPreview />
     </Box>
   );
 }
