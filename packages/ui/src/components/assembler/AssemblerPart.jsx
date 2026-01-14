@@ -1,8 +1,8 @@
 import React from 'react'
 import styles from './assembly_component.module.css'
 
-import { getAminoAcidFromSequenceTriplet, getComplementSequenceString } from '@teselagen/sequence-utils'
 import { getSvgByGlyph } from './sbol_visual_glyphs'
+import { partDataToDisplayData } from './assembler_utils'
 
 
 const defaultData =
@@ -10,8 +10,8 @@ const defaultData =
     header: 'Promoter',
     body: 'promoter text',
     glyph: 'cds-stop',
-    left_overhang: 'CATG',
-    right_overhang: 'TATG',
+    left_overhang: 'CCCT',
+    right_overhang: 'AACG',
     left_inside:'AAAATA',
     right_inside:'AATG',
     left_codon_start: 2,
@@ -19,13 +19,7 @@ const defaultData =
     color: 'greenyellow',
   }
 
-function tripletsToTranslation(triplets) {
-  if (!triplets) return ''
-  return triplets.map(triplet =>
-    /[^ACGT]/i.test(triplet) ? ' - ' :
-      getAminoAcidFromSequenceTriplet(triplet).threeLettersName.replace('Stop', '***')
-  ).join('')
-}
+
 
 export function AssemblerPartCore({ color = 'lightgray', glyph = 'engineered-region' }) {
   return (
@@ -39,74 +33,54 @@ export function AssemblerPartCore({ color = 'lightgray', glyph = 'engineered-reg
   )
 }
 
+export function DisplayOverhang( { overhang, overhangRc, translation, isRight = false } ) {
+  return (
+    <div className={`${styles.dna} ${styles.overhang} ${isRight ? styles.right : styles.left}`}>
+      <div className={styles.top}>{translation}</div>
+      <div className={styles.watson}>{overhang}</div>
+      <div className={styles.crick}>{overhangRc}</div>
+      <div className={styles.bottom}> </div>
+    </div>
+  )
+}
+export function DisplayInside( { inside, insideRc, translation, isRight = false } ) {
+  return (
+    <div className={`${styles.dna} ${styles.inside} ${isRight ? styles.right : styles.left}`}>
+      <div className={styles.top}>{translation}</div>
+      <div className={styles.watson}>{inside}</div>
+      <div className={styles.crick}>{insideRc}</div>
+      <div className={styles.bottom}> </div>
+    </div>
+  )
+}
+
+export function AssemblerPartContainer({ children }) {
+  return (
+    <div className={styles.container}>
+      {children}
+    </div>
+  )
+}
+
 function AssemblerPart( { data = defaultData, showRight = true } ) {
-  const {
-    left_codon_start: leftCodonStart,
-    right_codon_start: rightCodonStart,
-    left_overhang: leftOverhang,
-    right_overhang: rightOverhang,
-    left_inside: leftInside,
-    right_inside: rightInside,
-    glyph
-  } = data
-  const leftOverhangRc = getComplementSequenceString(leftOverhang)
-  const rightOverhangRc = getComplementSequenceString(rightOverhang)
-  const leftInsideRc = getComplementSequenceString(leftInside)
-  const rightInsideRc = getComplementSequenceString(rightInside)
-  let leftTranslationOverhang = ''
-  let leftTranslationInside = ''
-  if (leftCodonStart) {
-    const triplets = (leftOverhang + leftInside).slice(leftCodonStart - 1).match(/.{3}/g)
-    const padding = ' '.repeat(leftCodonStart - 1)
-    const translationLeft = padding + tripletsToTranslation(triplets)
-    leftTranslationOverhang = translationLeft.slice(0, leftOverhang.length)
-    leftTranslationInside = translationLeft.slice(leftOverhang.length)
-  }
-  let rightTranslationOverhang = ''
-  let rightTranslationInside = ''
-  if (rightCodonStart) {
-    const triplets = (rightInside + rightOverhang).slice(rightCodonStart - 1).match(/.{3}/g)
-    const padding = ' '.repeat(rightCodonStart - 1)
-    const translationRight = padding + tripletsToTranslation(triplets)
-    rightTranslationInside = translationRight.slice(0, rightInside.length)
-    rightTranslationOverhang = translationRight.slice(rightInside.length)
-  }
+  const { left_overhang: leftOverhang, right_overhang: rightOverhang, left_inside: leftInside, right_inside: rightInside, glyph } = data
+  const { leftTranslationOverhang, leftTranslationInside, rightTranslationOverhang, rightTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc, rightInsideRc } = partDataToDisplayData(data)
 
   return (
 
-    <div className={styles.container}>
-      <div className={`${styles.dna} ${styles.overhang} ${styles.left}`}>
-        <div className={styles.top}>{leftTranslationOverhang}</div>
-        <div className={styles.watson}>{leftOverhang}</div>
-        <div className={styles.crick}>{leftOverhangRc}</div>
-        <div className={styles.bottom}> </div>
-      </div>
+    <AssemblerPartContainer>
+      <DisplayOverhang overhang={leftOverhang} overhangRc={leftOverhangRc} translation={leftTranslationOverhang} isRight={false} />
       {leftInside && (
-        <div className={`${styles.dna} ${styles.insideLeft}`}>
-          <div className={styles.top}>{leftTranslationInside}</div>
-          <div className={styles.watson}>{leftInside}</div>
-          <div className={styles.crick}>{leftInsideRc}</div>
-          <div className={styles.bottom}> </div>
-        </div>
+        <DisplayInside inside={leftInside} insideRc={leftInsideRc} translation={leftTranslationInside} isRight={false} />
       )}
       <AssemblerPartCore color={data.color || 'lightgray'} glyph={glyph} />
       {rightInside && (
-        <div className={`${styles.dna} ${styles.insideRight}`}>
-          <div className={styles.top}>{rightTranslationInside}</div>
-          <div className={styles.watson}>{rightInside}</div>
-          <div className={styles.crick}>{rightInsideRc}</div>
-          <div className={styles.bottom}> </div>
-        </div>
+        <DisplayInside inside={rightInside} insideRc={rightInsideRc} translation={rightTranslationInside} isRight={true} />
       )}
       { showRight && (
-        <div className={`${styles.dna} ${styles.overhang} ${styles.right}`}>
-          <div className={styles.top}>{rightTranslationOverhang}</div>
-          <div className={styles.watson}>{rightOverhang}</div>
-          <div className={styles.crick}>{rightOverhangRc}</div>
-          <div className={styles.bottom}> </div>
-        </div>
+        <DisplayOverhang overhang={rightOverhang} overhangRc={rightOverhangRc} translation={rightTranslationOverhang} isRight={true} />
       )}
-    </div>
+    </AssemblerPartContainer>
 
   )
 }
