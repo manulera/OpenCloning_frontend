@@ -3,6 +3,7 @@ import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table
 import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import { AssemblerPart, getSvgByGlyph } from '@opencloning/ui/components/assembler'
 import { useFormData, validatePart, validateField } from '../context/FormDataContext'
+import OverhangsPreview from './OverhangsPreview'
 
 /* eslint-disable camelcase */
 const defaultData = {
@@ -260,73 +261,11 @@ function AssemblePartWidget() {
     <Box sx={{ 
       p: 1.5, 
       maxHeight: '100vh',
-      overflowY: 'auto',
-      overflowX: 'hidden'
     }}>
-      {/* Preview Section */}
-      {parts.length > 0 && (
-        <Box sx={{ mb: 2 }}>
-          <Paper sx={{ p: 1.5 }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
-              Preview
-            </Typography>
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'row', 
-              gap: 2,
-              alignItems: 'flex-start',
-              overflowX: 'auto',
-              pb: 1
-            }}>
-              {parts.map((part, index) => {
-                const partErrors = validatePart(part)
-                const isValid = Object.values(partErrors).every(error => error === '')
-                return (
-                  <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'fit-content' }}>
-                    {(part.header || part.body) && (
-                      <Box sx={{ 
-                        textAlign: 'center', 
-                        mb: 1.5,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 0.5
-                      }}>
-                        {part.header && (
-                          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                            {part.header}
-                          </Typography>
-                        )}
-                        {part.body && (
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            {part.body}
-                          </Typography>
-                        )}
-                      </Box>
-                    )}
-                    {isValid ? (
-                      <AssemblerPart data={part} />
-                    ) : (
-                      <Box sx={{ 
-                        p: 2, 
-                        border: '2px dashed', 
-                        borderColor: 'error.main',
-                        borderRadius: 1,
-                        color: 'error.main',
-                        fontWeight: 'bold'
-                      }}>
-                        Invalid
-                      </Box>
-                    )}
-                  </Box>
-                )
-              })}
-            </Box>
-          </Paper>
-        </Box>
-      )}
+      <OverhangsPreview />
 
       {/* Editable Table Section */}
-      <Paper sx={{ p: 1.5 }}>
+      <Paper sx={{ p: 1.5, mt: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
           <Typography variant="h6">
             Parts Configuration
