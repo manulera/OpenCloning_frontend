@@ -1,31 +1,19 @@
 import React from 'react';
 import { Box, Typography, TextField, Paper, Button, Alert, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
-import { AssemblerPartCore } from '@opencloning/ui/components/assembler';
-import { pathToMSA } from '../graph_utils';
-import { assemblyComponentStyles as styles } from '@opencloning/ui/components/assembler';
-import { getComplementSequenceString } from '@teselagen/sequence-utils';
+import { AssemblerPart, AssemblerPartContainer, AssemblerPartCore, DisplayInside, DisplayOverhang } from '@opencloning/ui/components/assembler';
+import { GRAPH_SPACER, pathToMSA } from '../graph_utils';
+import { partDataToDisplayData } from '../../../../packages/ui/src/components/assembler/assembler_utils';
 
 
-function OverhangDisplay( { overhang } ) {
-  const overhangRc = getComplementSequenceString(overhang)
-  return (
-    <div className={`${styles.dna} ${styles.overhang} ${styles.left}`}>
-      <div className={styles.top}></div>
-      <div className={styles.watson}>{overhang}</div>
-      <div className={styles.crick}>{overhangRc}</div>
-      <div className={styles.bottom}> </div>
-    </div>
-  )
-}
-
-function overhangRow(row) {
+function OverhangRow({ row, mode = 'detailed' }) {
+  const {formData} = useFormData();
   const rows2iterate = [...row];
   const actualRows =[];
 
   let currentCell = [rows2iterate.shift(), 1];
   while (rows2iterate.length > 0) {
-    if (rows2iterate[0] === '---------') {
+    if (rows2iterate[0] === GRAPH_SPACER) {
       currentCell[1]++;
       rows2iterate.shift();
     } else {
@@ -35,10 +23,18 @@ function overhangRow(row) {
   }
   actualRows.forEach(cell => {
     const [leftOverhang, rightOverhang] = cell[0].split('-');
-    const data = {
-      left_overhang: leftOverhang,
-      right_overhang: rightOverhang,
-    }
+    console.log(formData.design?.parts)
+    const data = formData.design?.parts?.find(part => part.left_overhang === leftOverhang && part.right_overhang === rightOverhang) ||
+     {
+       left_overhang: leftOverhang,
+       right_overhang: rightOverhang,
+       left_inside: '',
+       right_inside: '',
+       left_codon_start: 0,
+       right_codon_start: 0,
+       color: 'lightgray',
+       glyph: 'engineered-region',
+     }
     cell.push(data);
   });
   return (
@@ -48,24 +44,40 @@ function overhangRow(row) {
           const showRight = index === actualRows.length - 1;
 
           const colSpan = (cell[1]-1)*2 + 1;
-          console.log('colSpan', cell[1], colSpan);
-          return <>
-            <TableCell sx={{padding: 0}} >
-              <OverhangDisplay overhang={cell[2].left_overhang} />
-            </TableCell>
-            <TableCell sx={{ padding: 0, textAlign: "center" }} colSpan={colSpan}>
-              <AssemblerPartCore color="lightgray" glyph="engineered-region" />
-            </TableCell>
-            {showRight && (
-              <TableCell 
-                key={index}
-                sx={{ padding: 0 }}
-              >
-                <OverhangDisplay overhang={cell[2].right_overhang} />
+          const { left_overhang, right_overhang, left_inside, right_inside, left_codon_start, right_codon_start, color, glyph } = cell[2];
+          const { leftTranslationOverhang, leftTranslationInside, rightTranslationOverhang, rightTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc, rightInsideRc } = partDataToDisplayData(cell[2]);
+          if (mode === 'compact') {
+            return <>
+              <TableCell sx={{padding: 0}} >
+                <AssemblerPartContainer>
+                  <DisplayOverhang overhang={left_overhang} overhangRc={leftOverhangRc} translation={leftTranslationOverhang} isRight={false} />
+                  {left_inside && <DisplayInside inside={left_inside} insideRc={leftInsideRc} translation={leftTranslationInside} isRight={false} />}
+                </AssemblerPartContainer>
               </TableCell>
-            )}
+              <TableCell sx={{ padding: 0, textAlign: "center" }} colSpan={colSpan}>
+                <AssemblerPartContainer>
+                  <AssemblerPartCore color={color} glyph={glyph} />
+                </AssemblerPartContainer>
+              </TableCell>
+              {showRight && (
+                <TableCell 
+                  key={index}
+                  sx={{ padding: 0 }}
+                >
+                  <DisplayOverhang overhang={right_overhang} overhangRc={rightOverhangRc} isRight={true} />
+                </TableCell>
+              )}
             </>
-         
+          }
+          if (mode === 'detailed') {
+            return (
+              <TableCell colSpan={cell[1]} key={index} sx={{ border: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', }}>
+                  <AssemblerPart data={cell[2]} />
+                </Box>
+              </TableCell>
+            )
+          }
         }
       )}
       
@@ -75,6 +87,7 @@ function overhangRow(row) {
 
 function OverhangsStep() {
   const { formData, updateOverhangs, updateDesignParts } = useFormData();
+
   const paths = React.useMemo(() => formData.overhangs.paths || [], [formData.overhangs.paths]);
 
   // Convert paths to multiline string (empty lines separate paths)
@@ -84,8 +97,7 @@ function OverhangsStep() {
   const [localValue, setLocalValue] = React.useState(textValue);
 
   const msa = React.useMemo(() => pathToMSA(paths), [paths]);
-  
-  console.log('msa', msa);
+
   // Sync local state when paths change externally
   React.useEffect(() => {
     setLocalValue(textValue);
@@ -158,7 +170,7 @@ function OverhangsStep() {
       
       /* eslint-disable camelcase */
       parts.push({
-        header: `Part ${parts.length + 1}`,
+        header: `${parts.length + 1}`,
         body: '',
         glyph: 'engineered-region',
         left_overhang: leftOverhang,
@@ -167,7 +179,7 @@ function OverhangsStep() {
         right_inside: '',
         left_codon_start: 0,
         right_codon_start: 0,
-        color: '',
+        color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
       });
       /* eslint-enable camelcase */
     });
@@ -228,7 +240,7 @@ function OverhangsStep() {
               <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
                 <TableBody>
                   {msa.map((row, index) => (
-                    overhangRow(row)
+                    <OverhangRow key={index} row={row} />
                   ))}
                 </TableBody>
               </Table>
