@@ -65,9 +65,12 @@ function overhangRow(row) {
               colSpan={cell[1]} 
               key={index}
               align="center"
-              sx={{ textAlign: 'center', verticalAlign: 'middle', border: '1px solid #000' }}
+              sx={{padding: 0}}
+              
             >
-              <AssemblerPart data={cell[2]} showRight={showRight} />
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <AssemblerPart data={cell[2]} showRight={showRight} />
+              </Box>
             </TableCell>)}
       )}
       
