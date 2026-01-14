@@ -57,21 +57,31 @@ function overhangRow(row) {
   });
   return (
     <TableRow >
-      {actualRows.map(
+      {actualRows.flatMap(
         (cell, index) => {
-          const showRight = index === actualRows.length - 1 || cell[1] !== 1;
-          return (
-            <TableCell 
-              colSpan={cell[1]} 
-              key={index}
-              align="center"
-              sx={{padding: 0}}
-              
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <AssemblerPart data={cell[2]} showRight={showRight} />
-              </Box>
-            </TableCell>)}
+          const showRight = index === actualRows.length - 1;
+
+          const colSpan = (cell[1]-1)*2 + 1;
+          console.log('colSpan', cell[1], colSpan);
+          return <>
+            <TableCell >
+              {cell[2].left_overhang}
+            </TableCell>
+            <TableCell sx={{ textAlign: "center" }} colSpan={colSpan}>
+              ---
+              </TableCell>
+            {showRight && (
+              <TableCell 
+                key={index}
+                align="center"
+                sx={{padding: 0}}
+              >
+                {cell[2].right_overhang}
+              </TableCell>
+            )}
+            </>
+         
+        }
       )}
       
     </TableRow>
