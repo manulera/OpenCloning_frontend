@@ -166,7 +166,6 @@ export function FormDataProvider({ children }) {
       paths: [
         ["CCCT", "AACG", "TATG", "ATCC", "GCTG", "TACA", "GAGT", "CCGA", "CGCT", "CCCT"],
         ["TATG","TTCT","ATCC"],
-        ["TATG","AAAA","CCCC","ATCC"],
         ["ATCC","TGGC","GCTG","CCGA","CAAT","CCCT"],
       ], // Array of paths, where each path is an array of overhang strings
     },

@@ -1,36 +1,22 @@
 import React from 'react';
 import { Box, Typography, TextField, Paper, Button, Alert, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
-import { AssemblerPart } from '@opencloning/ui/components/assembler';
-import Mermaid from './Mermaid';
+import { AssemblerPartCore } from '@opencloning/ui/components/assembler';
 import { pathToMSA } from '../graph_utils';
+import { assemblyComponentStyles as styles } from '@opencloning/ui/components/assembler';
+import { getComplementSequenceString } from '@teselagen/sequence-utils';
 
-function pathsToMermaidString(paths) {
-  let outString = 'flowchart LR\n';
-  const edges = new Set();
-  const uniqueOverhangs = new Set();
-  for (const path of paths) {
-    for (const overhang of path) {
-      uniqueOverhangs.add(overhang);
-    }
-  }
-  const uniqueOverhangsArray = Array.from(uniqueOverhangs);
-  // Extract all edges from all paths
-  for (const path of paths) {
-    for (let i = 0; i < path.length - 1; i++) {
-      const leftNode = uniqueOverhangsArray.indexOf(path[i]) + 1;
-      const rightNode = uniqueOverhangsArray.indexOf(path[i + 1]) + 1;
-      const edge = `${leftNode} --[${path[i+1]}]--> ${rightNode}`;
-      edges.add(edge);
-    }
-  }
-  
-  // Add all unique edges
-  edges.forEach(edge => {
-    outString += `  ${edge}\n`;
-  });
-  
-  return outString;
+
+function OverhangDisplay( { overhang } ) {
+  const overhangRc = getComplementSequenceString(overhang)
+  return (
+    <div className={`${styles.dna} ${styles.overhang} ${styles.left}`}>
+      <div className={styles.top}></div>
+      <div className={styles.watson}>{overhang}</div>
+      <div className={styles.crick}>{overhangRc}</div>
+      <div className={styles.bottom}> </div>
+    </div>
+  )
 }
 
 function overhangRow(row) {
@@ -64,19 +50,18 @@ function overhangRow(row) {
           const colSpan = (cell[1]-1)*2 + 1;
           console.log('colSpan', cell[1], colSpan);
           return <>
-            <TableCell >
-              {cell[2].left_overhang}
+            <TableCell sx={{padding: 0}} >
+              <OverhangDisplay overhang={cell[2].left_overhang} />
             </TableCell>
-            <TableCell sx={{ textAlign: "center" }} colSpan={colSpan}>
-              ---
-              </TableCell>
+            <TableCell sx={{ padding: 0, textAlign: "center" }} colSpan={colSpan}>
+              <AssemblerPartCore color="lightgray" glyph="engineered-region" />
+            </TableCell>
             {showRight && (
               <TableCell 
                 key={index}
-                align="center"
-                sx={{padding: 0}}
+                sx={{ padding: 0 }}
               >
-                {cell[2].right_overhang}
+                <OverhangDisplay overhang={cell[2].right_overhang} />
               </TableCell>
             )}
             </>
@@ -235,7 +220,6 @@ function OverhangsStep() {
       </Paper>
       {areAllOverhangsValid && paths.length > 0 && paths.some(path => path.length >= 2) && (
         <>
-          <Mermaid string={pathsToMermaidString(paths)} />
           <Paper sx={{ p: 2, mt: 2, maxHeight: '70vh', overflowY: 'auto', overflowX: 'auto' }}>
             <Typography variant="h6" gutterBottom sx={{ mb: 1.5 }}>
               Parts Preview

@@ -27,6 +27,18 @@ function tripletsToTranslation(triplets) {
   ).join('')
 }
 
+export function AssemblerPartCore({ color = 'lightgray', glyph = 'engineered-region' }) {
+  return (
+    <div className={styles.boxContainer}>
+      <div className={styles.box}>
+        <div className={styles.imageContainer} style={{ backgroundColor: color }}>
+          <img src={getSvgByGlyph(glyph)} alt={`${glyph}.svg`} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function AssemblerPart( { data = defaultData, showRight = true } ) {
   const {
     left_codon_start: leftCodonStart,
@@ -77,13 +89,7 @@ function AssemblerPart( { data = defaultData, showRight = true } ) {
           <div className={styles.bottom}> </div>
         </div>
       )}
-      <div className={styles.boxContainer}>
-        <div className={styles.box}>
-          <div className={styles.imageContainer} style={{ backgroundColor: data.color || 'lightgray' }}>
-            <img src={getSvgByGlyph(glyph)} alt={`${glyph}.svg`} />
-          </div>
-        </div>
-      </div>
+      <AssemblerPartCore color={data.color || 'lightgray'} glyph={glyph} />
       {rightInside && (
         <div className={`${styles.dna} ${styles.insideRight}`}>
           <div className={styles.top}>{rightTranslationInside}</div>
