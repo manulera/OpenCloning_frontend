@@ -6,6 +6,7 @@ export default defineConfig({
       'packages/store',
       'packages/utils',
       'packages/ui',
+      'apps/syntax-builder',
     ],
   },
 });

@@ -1,0 +1,9 @@
+/* Ensure body and html can scroll */
+html {
+  overflow-y: auto;
+}
+
+body {
+  overflow-y: auto;
+  height: auto;
+}
