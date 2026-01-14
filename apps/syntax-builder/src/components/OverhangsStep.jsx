@@ -3,6 +3,7 @@ import { Box, Typography, TextField, Paper, Button, Alert, Table, TableBody, Tab
 import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
 import { AssemblerPart } from '@opencloning/ui/components/assembler';
 import Mermaid from './Mermaid';
+import { pathToMSA } from '../graph_utils';
 
 function pathsToMermaidString(paths) {
   let outString = 'flowchart LR\n';
@@ -32,6 +33,48 @@ function pathsToMermaidString(paths) {
   return outString;
 }
 
+function overhangRow(row) {
+  const rows2iterate = [...row];
+  const actualRows =[];
+
+  let currentCell = [rows2iterate.shift(), 1];
+  while (rows2iterate.length > 0) {
+    if (rows2iterate[0] === '---------') {
+      currentCell[1]++;
+      rows2iterate.shift();
+    } else {
+      actualRows.push(currentCell);
+      currentCell = [rows2iterate.shift(), 1];
+    }
+  }
+  actualRows.forEach(cell => {
+    const [leftOverhang, rightOverhang] = cell[0].split('-');
+    const data = {
+      left_overhang: leftOverhang,
+      right_overhang: rightOverhang,
+    }
+    cell.push(data);
+  });
+  return (
+    <TableRow >
+      {actualRows.map(
+        (cell, index) => {
+          const showRight = index === actualRows.length - 1 || cell[1] !== 1;
+          return (
+            <TableCell 
+              colSpan={cell[1]} 
+              key={index}
+              align="center"
+              sx={{ textAlign: 'center', verticalAlign: 'middle', border: '1px solid #000' }}
+            >
+              <AssemblerPart data={cell[2]} showRight={showRight} />
+            </TableCell>)}
+      )}
+      
+    </TableRow>
+  );
+}
+
 function OverhangsStep() {
   const { formData, updateOverhangs, updateDesignParts } = useFormData();
   const paths = React.useMemo(() => formData.overhangs.paths || [], [formData.overhangs.paths]);
@@ -41,7 +84,10 @@ function OverhangsStep() {
   
   // Local state to preserve linebreaks in the text field
   const [localValue, setLocalValue] = React.useState(textValue);
+
+  const msa = React.useMemo(() => pathToMSA(paths), [paths]);
   
+  console.log('msa', msa);
   // Sync local state when paths change externally
   React.useEffect(() => {
     setLocalValue(textValue);
@@ -95,52 +141,6 @@ function OverhangsStep() {
   const areAllOverhangsValid = pathsValidation.isValid;
   const orderingError = pathsValidation.error || '';
   const nodeOrder = React.useMemo(() => pathsValidation.nodeOrder || [], [pathsValidation.nodeOrder]);
-
-  // Generate parts for display grouped by path with column positions
-  const displayPaths = React.useMemo(() => {
-    const currentPaths = formData.overhangs.paths || [];
-    const currentNodeOrder = pathsValidation.nodeOrder || [];
-    if (!areAllOverhangsValid || currentPaths.length === 0 || currentNodeOrder.length === 0) return [];
-
-    // Build a map of overhang to column index
-    // Use first occurrence to handle circular paths where start/end overlap
-    const overhangToColumn = new Map();
-    currentNodeOrder.forEach((overhang, index) => {
-      // Only set if not already in map (use first occurrence)
-      if (!overhangToColumn.has(overhang)) {
-        overhangToColumn.set(overhang, index);
-      }
-    });
-
-    // Convert each path to an array of parts with column positions
-    return currentPaths.map((path) => {
-      const parts = [];
-      for (let i = 0; i < path.length - 1; i++) {
-        const leftOverhang = path[i];
-        const rightOverhang = path[i + 1];
-        const leftColumn = overhangToColumn.get(leftOverhang);
-        const rightColumn = overhangToColumn.get(rightOverhang);
-        
-        /* eslint-disable camelcase */
-        parts.push({
-          header: `Part ${leftColumn + 1}`,
-          body: '',
-          glyph: 'engineered-region',
-          left_overhang: leftOverhang,
-          right_overhang: rightOverhang,
-          left_inside: '',
-          right_inside: '',
-          left_codon_start: 0,
-          right_codon_start: 0,
-          color: '',
-          leftColumn,
-          rightColumn,
-        });
-        /* eslint-enable camelcase */
-      }
-      return parts;
-    });
-  }, [formData.overhangs.paths, areAllOverhangsValid, pathsValidation.nodeOrder]);
 
   const handleGenerateParts = () => {
     if (!areAllOverhangsValid) return;
@@ -230,70 +230,9 @@ function OverhangsStep() {
             <Box>
               <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
                 <TableBody>
-                  {displayPaths.map((pathParts, pathIndex) => {
-                    // Create an array to represent cells in this row
-                    const cells = new Array(nodeOrder.length).fill(null);
-                    
-                    // Find the maximum column index for this path (last part's right column)
-                    const maxColumn = pathParts.length > 0 
-                      ? Math.max(...pathParts.map(p => p.rightColumn ?? p.leftColumn ?? -1))
-                      : -1;
-                    
-                    // Place each part in the correct column, maintaining path order
-                    // Sort parts by leftColumn to ensure correct visual order
-                    const sortedParts = [...pathParts].sort((a, b) => {
-                      const aCol = a.leftColumn ?? Infinity;
-                      const bCol = b.leftColumn ?? Infinity;
-                      return aCol - bCol;
-                    });
-                    
-                    // Place parts in sorted order
-                    sortedParts.forEach((part) => {
-                      if (part.leftColumn !== undefined && part.leftColumn >= 0 && part.leftColumn < cells.length) {
-                        cells[part.leftColumn] = part;
-                      }
-                    });
-
-                    return (
-                      <TableRow key={pathIndex}>
-                        {cells.map((part, colIndex) => {
-                          // Show right overhang if:
-                          // 1. It's the last part in the path (at maxColumn), OR
-                          // 2. The next cell is empty (there's a gap after it)
-                          const isLastInPath = colIndex === maxColumn;
-                          const isBeforeGap = part && (colIndex + 1 >= cells.length || cells[colIndex + 1] === null);
-                          const showRight = isLastInPath || isBeforeGap;
-                          
-                          return (
-                            <TableCell
-                              key={colIndex}
-                              sx={{
-                                border: 'none',
-                                padding: part ? '8px' : '0px',
-                                verticalAlign: 'bottom',
-                                width: part ? 'auto' : '60px',
-                                minWidth: part ? 'fit-content' : '60px',
-                              }}
-                            >
-                              {part && (
-                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                  {part.header && (
-                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
-                                      {part.header}
-                                    </Typography>
-                                  )}
-                                  <AssemblerPart 
-                                    data={part} 
-                                    showRight={showRight} 
-                                  />
-                                </Box>
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
+                  {msa.map((row, index) => (
+                    overhangRow(row)
+                  ))}
                 </TableBody>
               </Table>
             </Box>
