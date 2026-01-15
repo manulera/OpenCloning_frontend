@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mui/x-data-grid": "^8.25.0",
     "@opencloning/ui": "workspace:*",
     "@opencloning/utils": "workspace:*",
     "graphology": "^0.26.0",
