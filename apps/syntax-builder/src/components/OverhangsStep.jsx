@@ -142,10 +142,11 @@ function OverhangsField() {
 
     // Convert edges to parts
     const parts = [];
-    edges.forEach(edge => {
+    edges.forEach((edge) => {
       const [leftOverhang, rightOverhang] = edge.split('|');
       /* eslint-disable camelcase */
       parts.push({
+        id: `${parts.length + 1}`,
         header: `${parts.length + 1}`,
         body: '',
         glyph: 'engineered-region',
