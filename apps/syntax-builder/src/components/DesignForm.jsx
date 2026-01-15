@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import isEqual from 'lodash/isEqual'
 import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
-import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import { AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
 import { useFormData, validateField } from '../context/FormDataContext'
 import OverhangsPreview from './OverhangsPreview'
@@ -223,7 +223,6 @@ const PartRow = React.memo(function PartRow({
   rowIndex, 
   partsLength,
   onRemove, 
-  onCopy, 
   onFieldChange,
   onBodyChange
 }) {
@@ -242,13 +241,6 @@ const PartRow = React.memo(function PartRow({
             color="error"
           >
             <DeleteIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => onCopy(rowIndex)}
-            color="primary"
-          >
-            <ContentCopyIcon fontSize="small" />
           </IconButton>
         </Box>
       </TableCell>
@@ -313,21 +305,6 @@ function AssemblePartWidget() {
     setParts(prevParts => prevParts.filter((_, i) => i !== index))
   }, [setParts])
 
-  const handleCopyRow = useCallback(async (rowIndex) => {
-    setParts(prevParts => {
-      const part = prevParts[rowIndex]
-      const keys = Object.keys(part)
-      const headers = keys.join('\t')
-      const values = keys.map((key) => String(part[key])).join('\t')
-      const tsvData = `${headers}\n${values}`
-      
-      // Copy to clipboard (fire and forget)
-      if (window.navigator && window.navigator.clipboard) {
-        window.navigator.clipboard.writeText(tsvData).catch(() => {})
-      }
-      return prevParts // No change to state
-    })
-  }, [setParts])
 
   const handleBodyChange = useCallback((rowIndex, bodyValue) => {
     setParts(prevParts => {
@@ -368,7 +345,7 @@ function AssemblePartWidget() {
           <Table size="small" sx={{ '& .MuiTableCell-root': { py: 0.5, px: 1 } }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 'bold', width: '50px' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', width: '50px' }}></TableCell>
                 {Object.keys(fieldConfig).map((key) => (
                   <TableCell key={key} sx={{ fontWeight: 'bold' }}>
                     {fieldConfig[key].label}
@@ -384,7 +361,6 @@ function AssemblePartWidget() {
                   rowIndex={rowIndex}
                   partsLength={parts.length}
                   onRemove={handleRemoveRow}
-                  onCopy={handleCopyRow}
                   onFieldChange={handleChange}
                   onBodyChange={handleBodyChange}
                 />
