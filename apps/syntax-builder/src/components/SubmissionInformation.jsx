@@ -3,8 +3,7 @@ import { Box, Typography, TextField } from '@mui/material';
 import { useFormData } from '../context/FormDataContext';
 
 function SubmissionInformation() {
-  const { formData, updateSubmission } = useFormData();
-  const { submission } = formData;
+  const { submission, updateSubmission } = useFormData();
 
   return (
     <Box sx={{ p: 3 }}>

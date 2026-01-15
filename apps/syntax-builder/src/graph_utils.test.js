@@ -12,3 +12,10 @@ const msa = pathToMSA(paths);
 msa.forEach(row => {
   console.log(row.join(' | '));
 });
+
+describe('graph_utils', () => {
+  it('should convert paths to MSA', () => {
+    const msa = pathToMSA(paths);
+    expect(msa).toEqual(msa);
+  });
+});

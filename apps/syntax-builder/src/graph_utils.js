@@ -4,12 +4,13 @@ import { allSimplePaths } from 'graphology-simple-path';
 
 export const GRAPH_SPACER = '---------';
 
-// Convert overhang paths to a directed graph where nodes are "edges" (e.g., "CCCT-AACG")
-export function pathsToGraph(paths) {
+// Convert parts to a directed graph where nodes are "edges" (e.g., "CCCT-AACG")
+export function partsToGraph(parts) {
   const graph = new DirectedGraph();
-  for (const path of paths) {
-    for (let i = 0; i < path.length - 1; i++) {
-      graph.addNode(`${path[i]}-${path[i + 1]}`);
+  for (const part of parts) {
+    const node = `${part.left_overhang}-${part.right_overhang}`;
+    if (!graph.hasNode(node)) {
+      graph.addNode(node);
     }
   }
   // Connect nodes that share an overhang (right of one = left of another)
@@ -126,8 +127,8 @@ export function minimumCoveringRows(msa) {
   return selected.sort((a, b) => countElements(b) - countElements(a));
 }
 
-export function pathToMSA(path) {
-  const graph = pathsToGraph(path);
-  openCycleAtNode(graph, `${path[0][0]}-${path[0][1]}`);
-  return minimumCoveringRows(dagToMSA(graph));
+export function graphToMSA(graph) {
+  const newGraph = graph.copy();
+  openCycleAtNode(newGraph, newGraph.nodes()[0]);
+  return minimumCoveringRows(dagToMSA(newGraph));
 }
