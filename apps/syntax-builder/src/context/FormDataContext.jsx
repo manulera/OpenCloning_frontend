@@ -1,19 +1,5 @@
 import React from 'react';
-
-/* eslint-disable camelcase */
-const defaultPartData = {
-  header: 'Header',
-  body: 'helper text / body text',
-  glyph: 'cds-stop',
-  left_overhang: 'CATG',
-  right_overhang: 'TATG',
-  left_inside: 'AAAATA',
-  right_inside: 'AATG',
-  left_codon_start: 2,
-  right_codon_start: 1,
-  color: 'greenyellow',
-};
-/* eslint-enable camelcase */
+import { partsToGraph } from '../graph_utils';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
@@ -55,19 +41,6 @@ const validateCodonStart = (value) => {
   return ''
 }
 
-export const validatePart = (part) => ({
-
-  /* eslint-disable camelcase */
-  color: validateColor(part.color),
-  left_overhang: validateOverhang(part.left_overhang),
-  right_overhang: validateOverhang(part.right_overhang),
-  left_inside: validateInside(part.left_inside),
-  right_inside: validateInside(part.right_inside),
-  left_codon_start: validateCodonStart(part.left_codon_start),
-  right_codon_start: validateCodonStart(part.right_codon_start),
-  /* eslint-enable camelcase */
-})
-
 export const validateField = (field, value) => {
   if (field === 'color') {
     return validateColor(value)
@@ -81,143 +54,54 @@ export const validateField = (field, value) => {
   return undefined // No validation for other fields
 }
 
-// Validate overhang paths structure and ordering
-export const validateOverhangPaths = (paths) => {
-  if (!paths || paths.length === 0) {
-    return { isValid: true, error: '' }
-  }
-
-  // Validate all overhangs are valid
-  for (const path of paths) {
-    if (!Array.isArray(path) || path.length < 2) {
-      return { isValid: false, error: 'Each path must contain at least 2 overhangs' }
-    }
-    for (const overhang of path) {
-      const error = validateOverhang(overhang)
-      if (error) {
-        return { isValid: false, error: `Invalid overhang "${overhang}": ${error}` }
-      }
-    }
-  }
-
-  // Build ordering from first path
-  const nodeOrder = [...paths[0]]
-  const nodePositions = new Map()
-  paths[0].forEach((node, index) => {
-    nodePositions.set(node, index)
-  })
-
-  // Validate subsequent paths respect ordering
-  for (let pathIndex = 1; pathIndex < paths.length; pathIndex++) {
-    const path = paths[pathIndex]
-    
-    // First node must exist in previous paths
-    const firstNode = path[0]
-    if (!nodePositions.has(firstNode)) {
-      return { 
-        isValid: false, 
-        error: `Path ${pathIndex + 1} starts with "${firstNode}" which doesn't exist in previous paths` 
-      }
-    }
-
-    let lastPosition = nodePositions.get(firstNode)
-
-    // Process remaining nodes in path
-    for (let i = 1; i < path.length; i++) {
-      const node = path[i]
-      
-      if (nodePositions.has(node)) {
-        // Node exists - check ordering
-        const nodePosition = nodePositions.get(node)
-        if (nodePosition < lastPosition) {
-          return { 
-            isValid: false, 
-            error: `Path ${pathIndex + 1} violates ordering: "${node}" appears before "${path[i - 1]}"` 
-          }
-        }
-        lastPosition = nodePosition
-      } else {
-        // New node - add to ordering after last position
-        const insertPosition = lastPosition + 1
-        nodeOrder.splice(insertPosition, 0, node)
-        // Update all positions after insertion
-        nodePositions.clear()
-        nodeOrder.forEach((n, idx) => {
-          nodePositions.set(n, idx)
-        })
-        lastPosition = insertPosition
-      }
-    }
-  }
-
-  return { isValid: true, error: '', nodeOrder }
-}
 
 const FormDataContext = React.createContext();
 
+function isSamePart(part1, part2) {
+  return part1.left_overhang === part2.left_overhang &&
+    part1.right_overhang === part2.right_overhang
+}
+
 export function FormDataProvider({ children }) {
-  const [formData, setFormData] = React.useState({
-    submission: {
+
+  const [submission, setSubmission] = React.useState({
+    name: '',
+    orcid: '',
+    doi: '',
+  });
+  const [parts, setParts] = React.useState([]);
+  const [graph, setGraph] = React.useState(null);
+
+  React.useEffect(() => {
+    if (parts.length > 0) {
+      setGraph(partsToGraph(parts));
+    } else {
+      setGraph(null);
+    }
+  }, [parts]);
+
+  const updateSubmission = React.useCallback((data) => {
+    setSubmission((prev) => ({ ...prev, ...data }));
+  }, [setSubmission]);
+
+  const resetFormData = React.useCallback(() => {
+    setSubmission({
       name: '',
       orcid: '',
       doi: '',
-    },
-    overhangs: {
-      paths: [
-        ["CCCT", "AACG", "TATG", "ATCC", "GCTG", "TACA", "GAGT", "CCGA", "CGCT", "CCCT"],
-        ["TATG","TTCT","ATCC"],
-        ["ATCC","TGGC","GCTG","CCGA","CAAT","CCCT"],
-      ], // Array of paths, where each path is an array of overhang strings
-    },
-    design: {
-      parts: [{ ...defaultPartData }],
-    },
-  });
-
-  const updateSubmission = (data) => {
-    setFormData((prev) => ({
-      ...prev,
-      submission: { ...prev.submission, ...data },
-    }));
-  };
-
-  const updateOverhangs = (paths) => {
-    setFormData((prev) => ({
-      ...prev,
-      overhangs: { ...prev.overhangs, paths },
-    }));
-  };
-
-  const updateDesignParts = (parts) => {
-    setFormData((prev) => ({
-      ...prev,
-      design: { ...prev.design, parts },
-    }));
-  };
-
-  const resetFormData = () => {
-    setFormData({
-      submission: {
-        name: '',
-        orcid: '',
-        doi: '',
-      },
-      overhangs: {
-        paths: [],
-      },
-      design: {
-        parts: [{ ...defaultPartData }],
-      },
     });
-  };
+    setParts([]);
+  }, [setSubmission, setParts]);
 
-  const value = {
-    formData,
+
+  const value = React.useMemo(() => ({
+    submission,
+    parts,
     updateSubmission,
-    updateOverhangs,
-    updateDesignParts,
+    setParts,
     resetFormData,
-  };
+    graph,
+  }), [submission, parts, updateSubmission, setParts, resetFormData, graph]);
 
   return (
     <FormDataContext.Provider value={value}>

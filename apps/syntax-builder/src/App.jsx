@@ -17,7 +17,7 @@ const steps = ['Submission Information', 'Overhangs', 'Design'];
 
 function AppContent() {
   const [activeStep, setActiveStep] = React.useState(0);
-  const { formData, resetFormData } = useFormData();
+  const { submission, parts, resetFormData } = useFormData();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -35,7 +35,7 @@ function AppContent() {
   const handleSave = () => {
     // TODO: Implement save functionality
     // formData contains all form data: submission, overhangs, and design.parts
-    console.log('Saving form data:', formData);
+    console.log('Saving form data:', { submission, parts });
   };
 
   const renderStepContent = (step) => {

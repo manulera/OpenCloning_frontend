@@ -1,82 +1,92 @@
 import React from 'react';
-import { Box, Typography, TextField, Paper, Button, Alert } from '@mui/material';
-import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
+import { Box, Typography, TextField, Paper, Alert } from '@mui/material';
+import { useFormData, validateOverhang } from '../context/FormDataContext';
 import OverhangsPreview from './OverhangsPreview';
 
+export function validateOverhangPaths(paths) {
+  if (!paths || paths.length === 0) {
+    return { isValid: true, error: '' }
+  }
 
+  // Validate all overhangs are valid
+  for (const path of paths) {
+    if (!Array.isArray(path) || path.length < 2) {
+      return { isValid: false, error: 'Each path must contain at least 2 overhangs' }
+    }
+    for (const overhang of path) {
+      const error = validateOverhang(overhang)
+      if (error) {
+        return { isValid: false, error: `Invalid overhang "${overhang}": ${error}` }
+      }
+    }
+  }
 
-function GeneratePartsButton() {
-  const { formData, updateDesignParts } = useFormData();
-  const paths = formData.overhangs.paths;
+  // Build ordering from first path
+  const nodeOrder = [...paths[0]]
+  const nodePositions = new Map()
+  paths[0].forEach((node, index) => {
+    nodePositions.set(node, index)
+  })
 
-  const pathsValidation = validateOverhangPaths(paths);
-  const areAllOverhangsValid = pathsValidation.isValid;
-  const handleGenerateParts = () => {
-    if (!areAllOverhangsValid) return;
-
-    // Extract all edges from all paths
-    const edges = new Set();
-    for (const path of paths) {
-      for (let i = 0; i < path.length - 1; i++) {
-        edges.add(`${path[i]}|${path[i + 1]}`);
+  // Validate subsequent paths respect ordering
+  for (let pathIndex = 1; pathIndex < paths.length; pathIndex++) {
+    const path = paths[pathIndex]
+    
+    // First node must exist in previous paths
+    const firstNode = path[0]
+    if (!nodePositions.has(firstNode)) {
+      return { 
+        isValid: false, 
+        error: `Path ${pathIndex + 1} starts with "${firstNode}" which doesn't exist in previous paths` 
       }
     }
 
-    // Convert edges to parts
-    const parts = [];
-    edges.forEach(edge => {
-      const [leftOverhang, rightOverhang] = edge.split('|');
+    let lastPosition = nodePositions.get(firstNode)
+
+    // Process remaining nodes in path
+    for (let i = 1; i < path.length; i++) {
+      const node = path[i]
       
-      /* eslint-disable camelcase */
-      parts.push({
-        header: `${parts.length + 1}`,
-        body: '',
-        glyph: 'engineered-region',
-        left_overhang: leftOverhang,
-        right_overhang: rightOverhang,
-        left_inside: '',
-        right_inside: '',
-        left_codon_start: 0,
-        right_codon_start: 0,
-        color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
-      });
-      /* eslint-enable camelcase */
-    });
-    
-    updateDesignParts(parts);
-  };
-  return (
-    <Button
-      variant="contained"
-      onClick={handleGenerateParts}
-      disabled={!areAllOverhangsValid}
-    >
-      Generate Parts
-    </Button>
-  )
+      if (nodePositions.has(node)) {
+        // Node exists - check ordering
+        const nodePosition = nodePositions.get(node)
+        if (nodePosition < lastPosition) {
+          return { 
+            isValid: false, 
+            error: `Path ${pathIndex + 1} violates ordering: "${node}" appears before "${path[i - 1]}"` 
+          }
+        }
+        lastPosition = nodePosition
+      } else {
+        // New node - add to ordering after last position
+        const insertPosition = lastPosition + 1
+        nodeOrder.splice(insertPosition, 0, node)
+        // Update all positions after insertion
+        nodePositions.clear()
+        nodeOrder.forEach((n, idx) => {
+          nodePositions.set(n, idx)
+        })
+        lastPosition = insertPosition
+      }
+    }
+  }
+
+  return { isValid: true, error: '', nodeOrder }
 }
 
-function OverhangsField() {
-  const { formData, updateOverhangs } = useFormData();
-  const paths = React.useMemo(() => formData.overhangs.paths || [], [formData.overhangs.paths]);
+const exampleText = "CCCT\nAACG\nTATG\nATCC\nGCTG\nTACA\nGAGT\nCCGA\nCGCT\nCCCT\n\nTATG\nTTCT\nATCC\n\nATCC\nTGGC\nGCTG\nCCGA\nCAAT\nCCCT";
 
-  // Convert paths to multiline string (empty lines separate paths)
-  const textValue = paths.map(path => path.join('\n')).join('\n\n');
+
+function OverhangsField() {
+
+  const { setParts } = useFormData();
 
   // Local state to preserve linebreaks in the text field
-  const [localValue, setLocalValue] = React.useState(textValue);
-
-  // Sync local state when paths change externally
-  React.useEffect(() => {
-    setLocalValue(textValue);
-  }, [textValue]);
-
-
-  // Validate paths structure and ordering
-  const pathsValidation = validateOverhangPaths(paths);
-  const orderingError = pathsValidation.error || '';
+  const [localValue, setLocalValue] = React.useState(exampleText);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const handleChange = (event) => {
+    setErrorMessage('');
     let value = event.target.value;
 
     // Only allow ACGT characters and linebreaks
@@ -95,14 +105,14 @@ function OverhangsField() {
 
     // Parse paths: group consecutive non-empty lines into paths
     const lines = processedLines;
-    const parsedPaths = [];
+    const paths = [];
     let currentPath = [];
     
     for (const line of lines) {
       if (line.length === 0) {
         // Empty line - end current path if it has content
         if (currentPath.length > 0) {
-          parsedPaths.push(currentPath);
+          paths.push(currentPath);
           currentPath = [];
         }
       } else {
@@ -110,15 +120,51 @@ function OverhangsField() {
         currentPath.push(line);
       }
     }
-    
+
     // Add final path if it has content
     if (currentPath.length > 0) {
-      parsedPaths.push(currentPath);
+      paths.push(currentPath);
     }
 
-    updateOverhangs(parsedPaths);
+    const validation = validateOverhangPaths(paths);
+    if (!validation.isValid) {
+      setErrorMessage(validation.error);
+      setParts([]);
+      return;
+    }
+    // Extract all edges from all paths
+    const edges = new Set();
+    for (const path of paths) {
+      for (let i = 0; i < path.length - 1; i++) {
+        edges.add(`${path[i]}|${path[i + 1]}`);
+      }
+    }
+
+    // Convert edges to parts
+    const parts = [];
+    edges.forEach(edge => {
+      const [leftOverhang, rightOverhang] = edge.split('|');
+      /* eslint-disable camelcase */
+      parts.push({
+        header: `${parts.length + 1}`,
+        body: '',
+        glyph: 'engineered-region',
+        left_overhang: leftOverhang,
+        right_overhang: rightOverhang,
+        left_inside: '',
+        right_inside: '',
+        left_codon_start: 0,
+        right_codon_start: 0,
+        color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
+      });
+    /* eslint-enable camelcase */
+    });
+    setParts(parts);
   };
 
+  React.useEffect(() => {
+    handleChange({ target: { value: exampleText } });
+  }, []);
 
   
   return (
@@ -131,11 +177,10 @@ function OverhangsField() {
         <Typography variant="body2" color="text.secondary">
             Enter overhangs, one per line. Use empty lines to separate paths. Each overhang must be exactly 4 DNA bases (ACGT).
         </Typography>
-        <GeneratePartsButton />
       </Box>
-      {orderingError && (
+      {errorMessage && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {orderingError}
+          {errorMessage}
         </Alert>
       )}
       <TextField

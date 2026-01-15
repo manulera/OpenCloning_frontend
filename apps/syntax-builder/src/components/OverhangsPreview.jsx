@@ -1,12 +1,12 @@
 import React from 'react';
-import { useFormData, validateOverhangPaths } from '../context/FormDataContext';
+import { useFormData } from '../context/FormDataContext';
 import { Paper, Box, Typography, FormControlLabel, Switch, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { AssemblerPart, AssemblerPartContainer, AssemblerPartCore, DisplayInside, DisplayOverhang } from '@opencloning/ui/components/assembler';
-import { GRAPH_SPACER, pathToMSA } from '../graph_utils';
+import { GRAPH_SPACER, graphToMSA, partsToGraph } from '../graph_utils';
 import { partDataToDisplayData } from '@opencloning/ui/components/assembler';
 
 function OverhangRow({ row, mode = 'detailed' }) {
-  const {formData} = useFormData();
+  const {parts} = useFormData();
   const rows2iterate = [...row];
   const actualRows =[];
   
@@ -22,7 +22,7 @@ function OverhangRow({ row, mode = 'detailed' }) {
   }
   actualRows.forEach(cell => {
     const [leftOverhang, rightOverhang] = cell[0].split('-');
-    const data = formData.design?.parts?.find(part => part.left_overhang === leftOverhang && part.right_overhang === rightOverhang) ||
+    const data = parts.find(part => part.left_overhang === leftOverhang && part.right_overhang === rightOverhang) ||
        {
          left_overhang: leftOverhang,
          right_overhang: rightOverhang,
@@ -45,7 +45,7 @@ function OverhangRow({ row, mode = 'detailed' }) {
           const { left_overhang, right_overhang, left_inside, right_inside, left_codon_start, right_codon_start, color, glyph } = cell[2];
           const { leftTranslationOverhang, leftTranslationInside, rightTranslationOverhang, rightTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc, rightInsideRc } = partDataToDisplayData(cell[2]);
           if (mode === 'compact') {
-            return <>
+            return <React.Fragment key={`row-${index}-compact`}>
               <TableCell sx={{padding: 0}} >
                 <AssemblerPartContainer>
                   <DisplayOverhang overhang={left_overhang} overhangRc={leftOverhangRc} translation={leftTranslationOverhang} isRight={false} />
@@ -65,11 +65,11 @@ function OverhangRow({ row, mode = 'detailed' }) {
                   <DisplayOverhang overhang={right_overhang} overhangRc={rightOverhangRc} isRight={true} />
                 </TableCell>
               )}
-            </>
+            </React.Fragment>
           }
           if (mode === 'detailed') {
             return (
-              <TableCell colSpan={cell[1]} key={index} sx={{ border: 1 }}>
+              <TableCell colSpan={cell[1]} key={`row-${index}-detailed`} sx={{ border: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', }}>
                   <AssemblerPart data={cell[2]} />
                 </Box>
@@ -85,15 +85,12 @@ function OverhangRow({ row, mode = 'detailed' }) {
 
 function OverhangsPreview() {
 
-  const { formData } = useFormData();
+  const { graph } = useFormData();
+
   const [mode, setMode] = React.useState('compact');
-  
-  const paths = React.useMemo(() => formData.overhangs.paths || [], [formData.overhangs.paths]);
-  const areAllOverhangsValid = React.useMemo(() => validateOverhangPaths(paths).isValid, [paths]);
-  
-  const msa = React.useMemo(() => pathToMSA(paths), [paths]);
-  
-  if (areAllOverhangsValid && paths.length > 0 && paths.some(path => path.length >= 2)) {
+  const msa = React.useMemo(() => graph ? graphToMSA(graph) : [], [graph])
+
+  if (graph) {
     return (
       <Paper sx={{ p: 2, mt: 2}}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>

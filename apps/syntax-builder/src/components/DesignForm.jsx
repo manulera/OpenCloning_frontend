@@ -1,22 +1,19 @@
 import React from 'react'
 import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
 import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import { AssemblerPart, getSvgByGlyph } from '@opencloning/ui/components/assembler'
-import { useFormData, validatePart, validateField } from '../context/FormDataContext'
+import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
+import { useFormData, validateField } from '../context/FormDataContext'
 import OverhangsPreview from './OverhangsPreview'
 
 /* eslint-disable camelcase */
 const defaultData = {
-  header: 'Header',
-  body: 'helper text / body text',
-  glyph: 'cds-stop',
-  left_overhang: 'CCCT',
-  right_overhang: 'AACG',
-  left_inside: 'AAAATA',
-  right_inside: 'AATG',
-  left_codon_start: 2,
-  right_codon_start: 1,
-  color: 'greenyellow',
+  left_overhang: '',
+  right_overhang: '',
+  left_inside: '',
+  right_inside: '',
+  left_codon_start: 0,
+  right_codon_start: 0,
+  color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
 }
 /* eslint-enable camelcase */
 
@@ -51,9 +48,133 @@ const fieldConfig = {
 }
 /* eslint-enable camelcase */
 
+
+function EditableCell({ rowIndex, field, value, handleChange, handleOpenBodyDialog }) {
+  
+  const config = fieldConfig[field]
+  const errorMessage = validateField(field, value)
+  const hasError = Boolean(errorMessage)
+    
+  if (config.type === 'select') {
+    // Special handling for glyph field - show images
+    if (field === 'glyph') {
+      return (
+        <FormControl size="small" sx={{ width: '100px' }}>
+          <Select
+            value={value}
+            onChange={handleChange(rowIndex, field)}
+            sx={{ fontSize: '0.875rem' }}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <img 
+                  src={getSvgByGlyph(selected)} 
+                  alt={selected}
+                  style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                />
+                <span>{selected}</span>
+              </Box>
+            )}
+          >
+            {config.options.map((option) => (
+              <MenuItem key={option} value={option}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <img 
+                    src={getSvgByGlyph(option)} 
+                    alt={option}
+                    style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                  />
+                  <span>{option}</span>
+                </Box>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )
+    }
+      
+    // Default select for other fields
+    return (
+      <FormControl size="small" fullWidth>
+        <Select
+          value={value}
+          onChange={handleChange(rowIndex, field)}
+          sx={{ fontSize: '0.875rem' }}
+        >
+          {config.options.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    )
+  }
+    
+  if (config.type === 'number') {
+    return (
+      <TextField
+        size="small"
+        type="number"
+        value={value}
+        onChange={handleChange(rowIndex, field)}
+        error={hasError}
+        inputProps={{ min: 0, style: { fontSize: '0.875rem' } }}
+        sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+        helperText={errorMessage}
+      />
+    )
+  }
+    
+  // Special handling for body field - open dialog on click
+  if (field === 'body') {
+    const displayValue = value || ''
+    const truncatedValue = displayValue.length > 50 
+      ? `${displayValue.substring(0, 50)}...` 
+      : displayValue
+      
+    return (
+      <TextField
+        size="small"
+        value={truncatedValue}
+        onClick={() => handleOpenBodyDialog(rowIndex)}
+        readOnly
+        inputProps={{ 
+          style: { 
+            fontSize: '0.875rem',
+            cursor: 'pointer'
+          } 
+        }}
+        sx={{ 
+          '& .MuiInputBase-root': { 
+            height: '32px',
+            cursor: 'pointer'
+          },
+          '& .MuiInputBase-input': {
+            cursor: 'pointer'
+          }
+        }}
+        placeholder="Click to edit..."
+      />
+    )
+  }
+    
+  // Text fields (overhangs, insides, and color)
+  return (
+    <TextField
+      size="small"
+      value={value}
+      onChange={handleChange(rowIndex, field)}
+      error={hasError}
+      inputProps={{ style: { fontSize: '0.875rem' } }}
+      sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+      helperText={errorMessage}
+    />
+  )
+}
+
+
 function AssemblePartWidget() {
-  const { formData, updateDesignParts } = useFormData()
-  const parts = formData.design.parts
+  const { parts, setParts } = useFormData()
   const [bodyDialogOpen, setBodyDialogOpen] = React.useState(false)
   const [editingRowIndex, setEditingRowIndex] = React.useState(null)
   const [tempBodyValue, setTempBodyValue] = React.useState('')
@@ -77,21 +198,21 @@ function AssemblePartWidget() {
     if (field === 'left_codon_start' || field === 'right_codon_start') {
       value = value === '' ? '' : parseInt(value, 10) || 0
     }
-    
+
     const newParts = [...parts]
     newParts[rowIndex] = {
       ...newParts[rowIndex],
       [field]: value,
     }
-    updateDesignParts(newParts)
+    setParts(newParts)
   }
-
+  
   const handleAddRow = () => {
-    updateDesignParts([...parts, { ...defaultData }])
+    setParts([...parts, { ...defaultData }])
   }
 
   const handleRemoveRow = (index) => {
-    updateDesignParts(parts.filter((_, i) => i !== index))
+    setParts(parts.filter((_, i) => i !== index))
   }
 
   const handleCopyRow = async (rowIndex) => {
@@ -130,132 +251,12 @@ function AssemblePartWidget() {
         ...newParts[editingRowIndex],
         body: tempBodyValue,
       }
-      updateDesignParts(newParts)
+      setParts(newParts)
     }
     handleCloseBodyDialog()
   }
 
-  const renderEditableCell = (rowIndex, field, value) => {
-    const config = fieldConfig[field]
-    const errorMessage = validateField(field, value)
-    const hasError = Boolean(errorMessage)
-    
-    if (config.type === 'select') {
-      // Special handling for glyph field - show images
-      if (field === 'glyph') {
-        return (
-          <FormControl size="small" sx={{ width: '100px' }}>
-            <Select
-              value={value}
-              onChange={handleChange(rowIndex, field)}
-              sx={{ fontSize: '0.875rem' }}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <img 
-                    src={getSvgByGlyph(selected)} 
-                    alt={selected}
-                    style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-                  />
-                  <span>{selected}</span>
-                </Box>
-              )}
-            >
-              {config.options.map((option) => (
-                <MenuItem key={option} value={option}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <img 
-                      src={getSvgByGlyph(option)} 
-                      alt={option}
-                      style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-                    />
-                    <span>{option}</span>
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )
-      }
-      
-      // Default select for other fields
-      return (
-        <FormControl size="small" fullWidth>
-          <Select
-            value={value}
-            onChange={handleChange(rowIndex, field)}
-            sx={{ fontSize: '0.875rem' }}
-          >
-            {config.options.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )
-    }
-    
-    if (config.type === 'number') {
-      return (
-        <TextField
-          size="small"
-          type="number"
-          value={value}
-          onChange={handleChange(rowIndex, field)}
-          error={hasError}
-          inputProps={{ min: 0, style: { fontSize: '0.875rem' } }}
-          sx={{ '& .MuiInputBase-root': { height: '32px' } }}
-          helperText={errorMessage}
-        />
-      )
-    }
-    
-    // Special handling for body field - open dialog on click
-    if (field === 'body') {
-      const displayValue = value || ''
-      const truncatedValue = displayValue.length > 50 
-        ? `${displayValue.substring(0, 50)}...` 
-        : displayValue
-      
-      return (
-        <TextField
-          size="small"
-          value={truncatedValue}
-          onClick={() => handleOpenBodyDialog(rowIndex)}
-          readOnly
-          inputProps={{ 
-            style: { 
-              fontSize: '0.875rem',
-              cursor: 'pointer'
-            } 
-          }}
-          sx={{ 
-            '& .MuiInputBase-root': { 
-              height: '32px',
-              cursor: 'pointer'
-            },
-            '& .MuiInputBase-input': {
-              cursor: 'pointer'
-            }
-          }}
-          placeholder="Click to edit..."
-        />
-      )
-    }
-    
-    // Text fields (overhangs, insides, and color)
-    return (
-      <TextField
-        size="small"
-        value={value}
-        onChange={handleChange(rowIndex, field)}
-        error={hasError}
-        inputProps={{ style: { fontSize: '0.875rem' } }}
-        sx={{ '& .MuiInputBase-root': { height: '32px' } }}
-        helperText={errorMessage}
-      />
-    )
-  }
+  
 
   return (
     <Box sx={{ 
@@ -293,7 +294,7 @@ function AssemblePartWidget() {
             </TableHead>
             <TableBody>
               {parts.map((part, rowIndex) => (
-                <TableRow key={rowIndex}>
+                <TableRow key={part.left_overhang + part.right_overhang}>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                       <IconButton
@@ -315,7 +316,7 @@ function AssemblePartWidget() {
                   </TableCell>
                   {Object.keys(fieldConfig).map((field) => (
                     <TableCell key={field}>
-                      {renderEditableCell(rowIndex, field, part[field])}
+                      <EditableCell rowIndex={rowIndex} field={field} value={part[field]} handleChange={handleChange} handleOpenBodyDialog={handleOpenBodyDialog} />
                     </TableCell>
                   ))}
                 </TableRow>
