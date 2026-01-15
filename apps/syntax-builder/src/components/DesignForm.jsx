@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useCallback } from 'react'
+import isEqual from 'lodash/isEqual'
 import { TextField, FormControl, Select, MenuItem, Box, Paper, Typography, Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
 import { ContentCopy as ContentCopyIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
@@ -49,7 +50,7 @@ const fieldConfig = {
 /* eslint-enable camelcase */
 
 
-function EditableCell({ rowIndex, field, value, handleChange, handleOpenBodyDialog }) {
+function EditableCell({ rowIndex, field, value, handleChange }) {
   
   const config = fieldConfig[field]
   const errorMessage = validateField(field, value)
@@ -125,18 +126,51 @@ function EditableCell({ rowIndex, field, value, handleChange, handleOpenBodyDial
     )
   }
     
-  // Special handling for body field - open dialog on click
-  if (field === 'body') {
-    const displayValue = value || ''
-    const truncatedValue = displayValue.length > 50 
-      ? `${displayValue.substring(0, 50)}...` 
-      : displayValue
-      
-    return (
+  // Text fields (overhangs, insides, and color)
+  return (
+    <TextField
+      size="small"
+      value={value}
+      onChange={handleChange(rowIndex, field)}
+      error={hasError}
+      inputProps={{ style: { fontSize: '0.875rem' } }}
+      sx={{ '& .MuiInputBase-root': { height: '32px' } }}
+      helperText={errorMessage}
+    />
+  )
+}
+
+// Body cell with its own dialog
+function BodyCell({ value, onSave }) {
+  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [tempValue, setTempValue] = React.useState('')
+
+  const handleOpen = () => {
+    setTempValue(value || '')
+    setDialogOpen(true)
+  }
+
+  const handleClose = () => {
+    setDialogOpen(false)
+    setTempValue('')
+  }
+
+  const handleSave = () => {
+    onSave(tempValue)
+    handleClose()
+  }
+
+  const displayValue = value || ''
+  const truncatedValue = displayValue.length > 50 
+    ? `${displayValue.substring(0, 50)}...` 
+    : displayValue
+
+  return (
+    <>
       <TextField
         size="small"
         value={truncatedValue}
-        onClick={() => handleOpenBodyDialog(rowIndex)}
+        onClick={handleOpen}
         readOnly
         inputProps={{ 
           style: { 
@@ -155,31 +189,93 @@ function EditableCell({ rowIndex, field, value, handleChange, handleOpenBodyDial
         }}
         placeholder="Click to edit..."
       />
-    )
-  }
-    
-  // Text fields (overhangs, insides, and color)
-  return (
-    <TextField
-      size="small"
-      value={value}
-      onChange={handleChange(rowIndex, field)}
-      error={hasError}
-      inputProps={{ style: { fontSize: '0.875rem' } }}
-      sx={{ '& .MuiInputBase-root': { height: '32px' } }}
-      helperText={errorMessage}
-    />
+      <Dialog 
+        open={dialogOpen} 
+        onClose={handleClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Edit Body Text</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            multiline
+            rows={6}
+            fullWidth
+            value={tempValue}
+            onChange={(e) => setTempValue(e.target.value)}
+            placeholder="Enter body text..."
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSave} variant="contained">Save</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
+
+// Memoized table row to prevent re-rendering unchanged rows
+const PartRow = React.memo(function PartRow({ 
+  part, 
+  rowIndex, 
+  partsLength,
+  onRemove, 
+  onCopy, 
+  onFieldChange,
+  onBodyChange
+}) {
+  const handleBodySave = useCallback((newValue) => {
+    onBodyChange(rowIndex, newValue)
+  }, [onBodyChange, rowIndex])
+
+  return (
+    <TableRow>
+      <TableCell>
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <IconButton
+            size="small"
+            onClick={() => onRemove(rowIndex)}
+            disabled={partsLength === 1}
+            color="error"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => onCopy(rowIndex)}
+            color="primary"
+          >
+            <ContentCopyIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      </TableCell>
+      {Object.keys(fieldConfig).map((field) => (
+        <TableCell key={field}>
+          {field === 'body' ? (
+            <BodyCell value={part.body} onSave={handleBodySave} />
+          ) : (
+            <EditableCell 
+              rowIndex={rowIndex} 
+              field={field} 
+              value={part[field]} 
+              handleChange={onFieldChange} 
+            />
+          )}
+        </TableCell>
+      ))}
+    </TableRow>
+  )
+}, (prevProps, nextProps) => isEqual(prevProps, nextProps))
 
 
 function AssemblePartWidget() {
   const { parts, setParts } = useFormData()
-  const [bodyDialogOpen, setBodyDialogOpen] = React.useState(false)
-  const [editingRowIndex, setEditingRowIndex] = React.useState(null)
-  const [tempBodyValue, setTempBodyValue] = React.useState('')
 
-  const handleChange = (rowIndex, field) => (event) => {
+  // Stable handler - uses functional update to avoid stale closure
+  const handleChange = useCallback((rowIndex, field) => (event) => {
     let value = event.target.value
     
     // Convert overhangs to uppercase immediately and only allow ACGT
@@ -199,62 +295,50 @@ function AssemblePartWidget() {
       value = value === '' ? '' : parseInt(value, 10) || 0
     }
 
-    const newParts = [...parts]
-    newParts[rowIndex] = {
-      ...newParts[rowIndex],
-      [field]: value,
-    }
-    setParts(newParts)
-  }
+    setParts(prevParts => {
+      const newParts = [...prevParts]
+      newParts[rowIndex] = {
+        ...newParts[rowIndex],
+        [field]: value,
+      }
+      return newParts
+    })
+  }, [setParts])
   
-  const handleAddRow = () => {
-    setParts([...parts, { ...defaultData }])
-  }
+  const handleAddRow = useCallback(() => {
+    setParts(prevParts => [...prevParts, { ...defaultData }])
+  }, [setParts])
 
-  const handleRemoveRow = (index) => {
-    setParts(parts.filter((_, i) => i !== index))
-  }
+  const handleRemoveRow = useCallback((index) => {
+    setParts(prevParts => prevParts.filter((_, i) => i !== index))
+  }, [setParts])
 
-  const handleCopyRow = async (rowIndex) => {
-    const part = parts[rowIndex]
-    const keys = Object.keys(part)
-    const headers = keys.join('\t')
-    const values = keys.map((key) => String(part[key])).join('\t')
-    const tsvData = `${headers}\n${values}`
-    
-    try {
+  const handleCopyRow = useCallback(async (rowIndex) => {
+    setParts(prevParts => {
+      const part = prevParts[rowIndex]
+      const keys = Object.keys(part)
+      const headers = keys.join('\t')
+      const values = keys.map((key) => String(part[key])).join('\t')
+      const tsvData = `${headers}\n${values}`
+      
+      // Copy to clipboard (fire and forget)
       if (window.navigator && window.navigator.clipboard) {
-        await window.navigator.clipboard.writeText(tsvData)
+        window.navigator.clipboard.writeText(tsvData).catch(() => {})
       }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to copy to clipboard:', err)
-    }
-  }
+      return prevParts // No change to state
+    })
+  }, [setParts])
 
-  const handleOpenBodyDialog = (rowIndex) => {
-    setEditingRowIndex(rowIndex)
-    setTempBodyValue(parts[rowIndex].body || '')
-    setBodyDialogOpen(true)
-  }
-
-  const handleCloseBodyDialog = () => {
-    setBodyDialogOpen(false)
-    setEditingRowIndex(null)
-    setTempBodyValue('')
-  }
-
-  const handleSaveBodyDialog = () => {
-    if (editingRowIndex !== null) {
-      const newParts = [...parts]
-      newParts[editingRowIndex] = {
-        ...newParts[editingRowIndex],
-        body: tempBodyValue,
+  const handleBodyChange = useCallback((rowIndex, bodyValue) => {
+    setParts(prevParts => {
+      const newParts = [...prevParts]
+      newParts[rowIndex] = {
+        ...newParts[rowIndex],
+        body: bodyValue,
       }
-      setParts(newParts)
-    }
-    handleCloseBodyDialog()
-  }
+      return newParts
+    })
+  }, [setParts])
 
   
 
@@ -294,63 +378,21 @@ function AssemblePartWidget() {
             </TableHead>
             <TableBody>
               {parts.map((part, rowIndex) => (
-                <TableRow key={part.left_overhang + part.right_overhang}>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleRemoveRow(rowIndex)}
-                        disabled={parts.length === 1}
-                        color="error"
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleCopyRow(rowIndex)}
-                        color="primary"
-                      >
-                        <ContentCopyIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </TableCell>
-                  {Object.keys(fieldConfig).map((field) => (
-                    <TableCell key={field}>
-                      <EditableCell rowIndex={rowIndex} field={field} value={part[field]} handleChange={handleChange} handleOpenBodyDialog={handleOpenBodyDialog} />
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <PartRow
+                  key={rowIndex}
+                  part={part}
+                  rowIndex={rowIndex}
+                  partsLength={parts.length}
+                  onRemove={handleRemoveRow}
+                  onCopy={handleCopyRow}
+                  onFieldChange={handleChange}
+                  onBodyChange={handleBodyChange}
+                />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
-
-      {/* Body Edit Dialog */}
-      <Dialog 
-        open={bodyDialogOpen} 
-        onClose={handleCloseBodyDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Edit Body Text</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            multiline
-            rows={6}
-            fullWidth
-            value={tempBodyValue}
-            onChange={(e) => setTempBodyValue(e.target.value)}
-            placeholder="Enter body text..."
-            sx={{ mt: 1 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseBodyDialog}>Cancel</Button>
-          <Button onClick={handleSaveBodyDialog} variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   )
 }
