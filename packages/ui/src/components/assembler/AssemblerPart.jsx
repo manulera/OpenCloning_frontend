@@ -4,23 +4,6 @@ import styles from './assembly_component.module.css'
 import { getSvgByGlyph } from './sbol_visual_glyphs'
 import { partDataToDisplayData } from './assembler_utils'
 
-
-const defaultData =
-  {
-    header: 'Promoter',
-    body: 'promoter text',
-    glyph: 'cds-stop',
-    left_overhang: 'CCCT',
-    right_overhang: 'AACG',
-    left_inside:'AAAATA',
-    right_inside:'AATG',
-    left_codon_start: 2,
-    right_codon_start: 1,
-    color: 'greenyellow',
-  }
-
-
-
 export function AssemblerPartCore({ color = 'lightgray', glyph = 'engineered-region' }) {
   return (
     <div className={styles.boxContainer}>
@@ -62,7 +45,7 @@ export function AssemblerPartContainer({ children }) {
   )
 }
 
-function AssemblerPart( { data = defaultData, showRight = true } ) {
+function AssemblerPart( { data, showRight = true } ) {
   const { left_overhang: leftOverhang, right_overhang: rightOverhang, left_inside: leftInside, right_inside: rightInside, glyph } = data
   const { leftTranslationOverhang, leftTranslationInside, rightTranslationOverhang, rightTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc, rightInsideRc } = partDataToDisplayData(data)
 

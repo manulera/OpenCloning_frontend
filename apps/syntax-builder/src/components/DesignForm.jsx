@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { DataGrid, GridActionsCellItem, useGridApiContext, useGridApiRef } from '@mui/x-data-grid'
 import { Box, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Tooltip, Alert } from '@mui/material'
-import { AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import { AddCircle as AddCircleIcon, Delete as DeleteIcon, Download as DownloadIcon } from '@mui/icons-material'
 import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
 import { useFormData, validateField, validatePart } from '../context/FormDataContext'
 
@@ -11,6 +11,7 @@ const isPartProblematic = (part, problematicNodes) => {
   return problematicNodes.includes(`${part.left_overhang}-${part.right_overhang}`)
 }
 import OverhangsPreview from './OverhangsPreview'
+import { useDownloadData } from './useDownloadData'
 
 const glyphOptions = [
   'assembly-scar',
@@ -29,7 +30,7 @@ const glyphOptions = [
 ]
 
 /* eslint-disable camelcase */
-const createDefaultPart = () => ({
+export const createDefaultPart = () => ({
   id: Date.now() + Math.random(),
   header: '',
   body: '',
@@ -110,10 +111,10 @@ function BodyEditDialog({ open, value, onClose, onSave }) {
 }
 
 function AssemblePartWidget() {
-  const { parts, setParts, problematicNodes, graphErrorMessage } = useFormData()
+  const { parts, graph, setParts, problematicNodes, graphErrorMessage } = useFormData()
   const [bodyDialog, setBodyDialog] = React.useState({ open: false, rowId: null, value: '' })
   const apiRef = useGridApiRef()
-
+  const downloadData = useDownloadData()
   const processRowUpdate = useCallback((newRow) => {
     setParts(prevParts => 
       prevParts.map(part => 
@@ -296,7 +297,15 @@ function AssemblePartWidget() {
 
       <Paper sx={{ p: 1.5, mt: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography variant="h6">Parts Configuration</Typography>
+          <Typography variant="h6">Parts Info</Typography>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<DownloadIcon />}
+            onClick={downloadData}
+          >
+            Download data
+          </Button>
           <Button
             size="small"
             variant="contained"

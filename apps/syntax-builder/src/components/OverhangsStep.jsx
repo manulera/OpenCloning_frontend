@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Paper, Alert } from '@mui/material';
+import { Box, Typography, TextField, Paper, Alert, Button } from '@mui/material';
 import { useFormData, validateOverhang } from '../context/FormDataContext';
 import OverhangsPreview from './OverhangsPreview';
 
@@ -210,13 +210,14 @@ function OverhangsField() {
 
 
 
-function OverhangsStep() {
+function OverhangsStep({ setOverhangsStep }) {
 
 
   return (
     <Box sx={{ p: 3 }}>
       <OverhangsField />
       <OverhangsPreview />
+      <Button variant="contained" onClick={() => setOverhangsStep(false)}>Next</Button>
     </Box>
   );
 }
