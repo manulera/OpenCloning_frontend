@@ -1,9 +1,15 @@
 import React, { useCallback, useMemo } from 'react'
 import { DataGrid, GridActionsCellItem, useGridApiContext, useGridApiRef } from '@mui/x-data-grid'
-import { Box, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Tooltip } from '@mui/material'
+import { Box, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Tooltip, Alert } from '@mui/material'
 import { AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
-import { useFormData, validateField } from '../context/FormDataContext'
+import { useFormData, validateField, validatePart } from '../context/FormDataContext'
+
+// Check if a part has a problematic overhang
+const isPartProblematic = (part, problematicNodes) => {
+  if (!problematicNodes || problematicNodes.length === 0) return false
+  return problematicNodes.includes(`${part.left_overhang}-${part.right_overhang}`)
+}
 import OverhangsPreview from './OverhangsPreview'
 
 const glyphOptions = [
@@ -104,7 +110,7 @@ function BodyEditDialog({ open, value, onClose, onSave }) {
 }
 
 function AssemblePartWidget() {
-  const { parts, setParts } = useFormData()
+  const { parts, setParts, problematicNodes, graphErrorMessage } = useFormData()
   const [bodyDialog, setBodyDialog] = React.useState({ open: false, rowId: null, value: '' })
   const apiRef = useGridApiRef()
 
@@ -132,6 +138,11 @@ function AssemblePartWidget() {
       apiRef.current.startCellEditMode({ id: params.id, field: params.field })
     }
   }, [apiRef])
+
+  const getRowClassName = useCallback((params) => {
+    if (!validatePart(params.row)) return 'error-row'
+    return isPartProblematic(params.row, problematicNodes) ? 'problematic-row' : ''
+  }, [problematicNodes])
 
   const handleBodySave = useCallback((newValue) => {
     setParts(prevParts => 
@@ -295,13 +306,19 @@ function AssemblePartWidget() {
             Add Row
           </Button>
         </Box>
-        
+
+        {graphErrorMessage && graphErrorMessage.length > 0 && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            {graphErrorMessage}
+          </Alert>
+        )}
         <DataGrid
           apiRef={apiRef}
           rows={parts}
           columns={columns}
           processRowUpdate={processRowUpdate}
           onCellClick={handleCellClick}
+          getRowClassName={getRowClassName}
           density="compact"
           disableRowSelectionOnClick
           disableColumnSorting
@@ -311,7 +328,15 @@ function AssemblePartWidget() {
           autoHeight
           sx={{
             '& .MuiDataGrid-cell': { fontSize: '0.875rem' },
-            '& .MuiDataGrid-columnHeader': { fontWeight: 'bold' }
+            '& .MuiDataGrid-columnHeader': { fontWeight: 'bold' },
+            '& .problematic-row': { 
+              backgroundColor: 'rgba(255, 152, 0, 0.15)',
+              '&:hover': { backgroundColor: 'rgba(255, 152, 0, 0.25)' }
+            },
+            '& .error-row': {
+              backgroundColor: 'rgba(255, 0, 0, 0.15)',
+              '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.25)' }
+            }
           }}
         />
       </Paper>
