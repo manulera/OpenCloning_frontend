@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { graphHasCycle, graphToMSA, partsToGraph } from '../graph_utils';
 
 // Validation functions - return '' if valid, error message if invalid
@@ -76,10 +76,22 @@ function validateGraph(graph) {
 
 const FormDataContext = React.createContext();
 
-function isSamePart(part1, part2) {
-  return part1.left_overhang === part2.left_overhang &&
-    part1.right_overhang === part2.right_overhang
-}
+export const defaultPart = {
+  /* eslint-disable camelcase */
+  header: '',
+  body: '',
+  glyph: 'engineered-region',
+  left_overhang: '',
+  right_overhang: '',
+  left_inside: '',
+  right_inside: '',
+  left_codon_start: 0,
+  right_codon_start: 0,
+  color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
+};
+/* eslint-enable camelcase */
+
+export const defaultFields = ['id', ...Object.keys(defaultPart)];
 
 export function FormDataProvider({ children }) {
 
@@ -92,6 +104,11 @@ export function FormDataProvider({ children }) {
   const [graph, setGraph] = React.useState(null);
   const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
   const [problematicNodes, setProblematicNodes] = React.useState([]);
+
+
+  const addDefaultPart = useCallback(() => {
+    setParts(prevParts => [...prevParts, { ...defaultPart, id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
+  }, []);
 
   React.useEffect(() => {
     setGraphErrorMessage('');
@@ -146,7 +163,8 @@ export function FormDataProvider({ children }) {
     graph,
     graphErrorMessage,
     problematicNodes,
-  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes]);
+    addDefaultPart,
+  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart]);
 
   return (
     <FormDataContext.Provider value={value}>

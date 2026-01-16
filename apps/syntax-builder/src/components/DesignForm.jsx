@@ -29,22 +29,6 @@ const glyphOptions = [
   'three-prime-sticky-restriction-site',
 ]
 
-/* eslint-disable camelcase */
-export const createDefaultPart = () => ({
-  id: Date.now() + Math.random(),
-  header: '',
-  body: '',
-  glyph: 'engineered-region',
-  left_overhang: '',
-  right_overhang: '',
-  left_inside: '',
-  right_inside: '',
-  left_codon_start: 0,
-  right_codon_start: 0,
-  color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
-})
-/* eslint-enable camelcase */
-
 // Custom edit component for glyph field
 function GlyphEditCell(props) {
   const { id, value, field } = props
@@ -111,7 +95,7 @@ function BodyEditDialog({ open, value, onClose, onSave }) {
 }
 
 function AssemblePartWidget() {
-  const { parts, graph, setParts, problematicNodes, graphErrorMessage } = useFormData()
+  const { parts, addDefaultPart, setParts, problematicNodes, graphErrorMessage } = useFormData()
   const [bodyDialog, setBodyDialog] = React.useState({ open: false, rowId: null, value: '' })
   const apiRef = useGridApiRef()
   const downloadData = useDownloadData()
@@ -124,9 +108,6 @@ function AssemblePartWidget() {
     return newRow
   }, [setParts])
 
-  const handleAddRow = useCallback(() => {
-    setParts(prevParts => [...prevParts, createDefaultPart()])
-  }, [setParts])
 
   const handleDeleteRow = useCallback((id) => () => {
     setParts(prevParts => prevParts.filter(part => part.id !== id))
@@ -310,9 +291,9 @@ function AssemblePartWidget() {
             size="small"
             variant="contained"
             startIcon={<AddCircleIcon />}
-            onClick={handleAddRow}
+            onClick={addDefaultPart}
           >
-            Add Row
+            Add Part
           </Button>
         </Box>
 

@@ -1,19 +1,15 @@
 import React from 'react';
 import { Box, Typography, Paper, Container, Alert } from '@mui/material';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
-import { createDefaultPart } from './DesignForm';
-import { useFormData } from '../context/FormDataContext';
+import { useFormData, defaultFields } from '../context/FormDataContext';
 import { delimitedFileToJson } from '@opencloning/utils/fileParsers';
-
-const defaultPart = createDefaultPart();
 
 function validateSubmittedData(data) {
   if (!Array.isArray(data)) {
     throw new Error('Data should be an array');
   }
-  const fields = Object.keys(defaultPart);
   data.forEach(part => {
-    fields.forEach(field => {
+    defaultFields.forEach(field => {
       if (part[field] === undefined) {
         throw new Error(`Part is missing ${field} field`);
       }
@@ -23,7 +19,7 @@ function validateSubmittedData(data) {
 }
 
 function StartingPage({ setOverhangsStep }) {
-  const { setParts } = useFormData();
+  const { setParts, addDefaultPart } = useFormData();
   const fileInputRef = React.useRef(null);
   const [submissionError, setSubmissionError] = React.useState(null);
   const onFileChange = async (event) => {
@@ -33,13 +29,14 @@ function StartingPage({ setOverhangsStep }) {
       if (file.name.endsWith('.json')) {
         data = JSON.parse(await readSubmittedTextFile(file));
       } else if (file.name.endsWith('.tsv') || file.name.endsWith('.csv')) {
-        data = await delimitedFileToJson(file, Object.keys(defaultPart));
+        data = await delimitedFileToJson(file, defaultFields);
       } else {
         throw new Error('Invalid file type');
       }
-      data.forEach(part => {
+      data.forEach((part, index) => {
         part.left_codon_start = parseInt(part.left_codon_start) || 0;
         part.right_codon_start = parseInt(part.right_codon_start) || 0;
+        part.id = index + 1;
       });
       validateSubmittedData(data);
       setParts(data);
@@ -55,7 +52,7 @@ function StartingPage({ setOverhangsStep }) {
     } else if (id === 'import') {
       fileInputRef.current.click();
     } else {
-      setParts([defaultPart]);
+      addDefaultPart();
     }
 
   };
