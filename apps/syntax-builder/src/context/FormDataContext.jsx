@@ -110,6 +110,9 @@ export function FormDataProvider({ children }) {
         if (error.message.includes('given graph is not acyclic')) {
           setGraphErrorMessage('Multiple independent cycles detected in the graph, or cycle that does not include all parts. Please check the overhangs.');
         }
+        else if (error.message.includes('could not find source node "undefined"')) {
+          setGraphErrorMessage('Not enough parts to form a graph');
+        }
         else {
           setGraphErrorMessage(error.message);
         }

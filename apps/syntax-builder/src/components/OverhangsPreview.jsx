@@ -2,7 +2,7 @@ import React from 'react';
 import { useFormData } from '../context/FormDataContext';
 import { Paper, Box, Typography, FormControlLabel, Switch, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { AssemblerPart, AssemblerPartContainer, AssemblerPartCore, DisplayInside, DisplayOverhang } from '@opencloning/ui/components/assembler';
-import { GRAPH_SPACER, graphToMSA, partsToGraph } from '../graph_utils';
+import { GRAPH_SPACER, graphToMSA } from '../graph_utils';
 import { partDataToDisplayData } from '@opencloning/ui/components/assembler';
 
 function OverhangRow({ row, mode = 'detailed' }) {
@@ -42,8 +42,8 @@ function OverhangRow({ row, mode = 'detailed' }) {
           const showRight = index === actualRows.length - 1;
   
           const colSpan = (cell[1]-1)*2 + 1;
-          const { left_overhang, right_overhang, left_inside, right_inside, left_codon_start, right_codon_start, color, glyph } = cell[2];
-          const { leftTranslationOverhang, leftTranslationInside, rightTranslationOverhang, rightTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc, rightInsideRc } = partDataToDisplayData(cell[2]);
+          const { left_overhang, right_overhang, left_inside, color, glyph } = cell[2];
+          const { leftTranslationOverhang, leftTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc } = partDataToDisplayData(cell[2]);
           if (mode === 'compact') {
             return <React.Fragment key={`row-${index}-compact`}>
               <TableCell sx={{padding: 0}} >
@@ -60,9 +60,11 @@ function OverhangRow({ row, mode = 'detailed' }) {
               {showRight && (
                 <TableCell 
                   key={index}
-                  sx={{ padding: 0 }}
+                  sx={{ py: 0}}
                 >
-                  <DisplayOverhang overhang={right_overhang} overhangRc={rightOverhangRc} isRight={true} />
+                  <AssemblerPartContainer>
+                    <DisplayOverhang overhang={right_overhang} overhangRc={rightOverhangRc} isRight={true} />
+                  </AssemblerPartContainer>
                 </TableCell>
               )}
             </React.Fragment>
