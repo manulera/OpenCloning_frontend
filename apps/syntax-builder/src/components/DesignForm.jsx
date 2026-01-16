@@ -134,7 +134,7 @@ function AssemblePartWidget() {
   const handleCellClick = useCallback((params) => {
     if (params.field === 'body') {
       setBodyDialog({ open: true, rowId: params.id, value: params.value })
-    } else if (params.field !== 'actions' && params.isEditable) {
+    } else if (params.field !== 'actions' && params.isEditable && params.cellMode !== 'edit') {
       apiRef.current.startCellEditMode({ id: params.id, field: params.field })
     }
   }, [apiRef])
