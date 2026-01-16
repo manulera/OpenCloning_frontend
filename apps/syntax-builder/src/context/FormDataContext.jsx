@@ -78,8 +78,8 @@ const FormDataContext = React.createContext();
 
 export const defaultPart = {
   /* eslint-disable camelcase */
-  header: '',
-  body: '',
+  name: '',
+  info: '',
   glyph: 'engineered-region',
   left_overhang: '',
   right_overhang: '',

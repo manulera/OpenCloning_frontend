@@ -73,8 +73,8 @@ function OverhangRow({ row, mode = 'detailed' }) {
             return (
               <TableCell colSpan={cell[1]} key={`row-${index}-detailed`} sx={{ border: 1, py: 0 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-                  <Typography variant="h6" >{cell[2].header}</Typography>
-                  <Typography variant="body2" >{cell[2].body}</Typography>
+                  <Typography variant="h6" >{cell[2].name}</Typography>
+                  <Typography variant="body2" >{cell[2].info}</Typography>
                   <AssemblerPart data={cell[2]} />
                 </Box>
               </TableCell>
