@@ -293,3 +293,9 @@ export function updateVerificationFileNames(verificationFiles, originalFiles, va
     return file;
   });
 }
+
+export function jsonToDelimitedFile(json, delimiter = '\t') {
+  const headers = Object.keys(json[0]);
+  const rows = json.map((obj) => headers.map((header) => obj[header]).join(delimiter));
+  return [headers.join(delimiter), ...rows].join('\n');
+}
