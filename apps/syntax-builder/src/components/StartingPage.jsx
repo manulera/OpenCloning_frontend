@@ -37,6 +37,10 @@ function StartingPage({ setOverhangsStep }) {
       } else {
         throw new Error('Invalid file type');
       }
+      data.forEach(part => {
+        part.left_codon_start = parseInt(part.left_codon_start) || 0;
+        part.right_codon_start = parseInt(part.right_codon_start) || 0;
+      });
       validateSubmittedData(data);
       setParts(data);
     } catch (error) {
