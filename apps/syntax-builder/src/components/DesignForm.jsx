@@ -157,7 +157,7 @@ function AssemblePartWidget() {
 
   // Render cell with validation error display
   const renderValidatedCell = useCallback((field, params) => {
-    const errorMessage = validateField(field, params.value)
+    const errorMessage = validateField(field, params.value, params.row)
     return (
       <Tooltip title={errorMessage || ''} placement="top" arrow>
         <Box sx={{ 

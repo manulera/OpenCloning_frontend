@@ -1,5 +1,5 @@
 import React from 'react';
-import { partsToGraph } from '../graph_utils';
+import { graphToMSA, partsToGraph } from '../graph_utils';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
@@ -19,10 +19,11 @@ const validateColor = (color) => {
   return ''
 }
 
-export const validateOverhang = (overhang) => {
+export const validateOverhang = (overhang, otherOverhang=null) => {
   if (!overhang) return 'Overhang is required'
   if (!/^[ACGTacgt]+$/.test(overhang)) return 'Only ACGT allowed'
   if (overhang.length !== 4) return 'Must be exactly 4 bases'
+  if (otherOverhang && overhang === otherOverhang) return 'Overhangs must be different'
   return ''
 }
 
@@ -41,11 +42,12 @@ const validateCodonStart = (value) => {
   return ''
 }
 
-export const validateField = (field, value) => {
+export const validateField = (field, value, row=null) => {
   if (field === 'color') {
     return validateColor(value)
   } else if (field === 'left_overhang' || field === 'right_overhang') {
-    return validateOverhang(value)
+    const otherOverhang = field === 'left_overhang' ? 'right_overhang' : 'left_overhang'
+    return validateOverhang(value, row ? row[otherOverhang] : null)
   } else if (field === 'left_inside' || field === 'right_inside') {
     return validateInside(value)
   } else if (field === 'left_codon_start' || field === 'right_codon_start') {
@@ -94,12 +96,19 @@ export function FormDataProvider({ children }) {
       try {
         const validParts = parts.filter(validatePart);
         const thisGraph = partsToGraph(validParts);
+        // This is just to test if it gives errors
+        graphToMSA(thisGraph);
         const { error, nodes: problemNodes } = validateGraph(thisGraph);
         setGraphErrorMessage(error);
         setProblematicNodes(problemNodes);
         setGraph(thisGraph);
       } catch (error) {
-        setGraphErrorMessage(error.message);
+        if (error.message.includes('given graph is not acyclic')) {
+          setGraphErrorMessage('Multiple independent cycles detected in the graph. Please check the overhangs.');
+        }
+        else {
+          setGraphErrorMessage(error.message);
+        }
         setProblematicNodes([]);
         setGraph(null);
       }
