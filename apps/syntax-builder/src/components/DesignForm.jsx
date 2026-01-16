@@ -330,6 +330,11 @@ function AssemblePartWidget() {
           }}
         />
       </Paper>
+      <Paper sx={{ p: 1.5, mt: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+          <Typography variant="h6">Linked plasmids</Typography>
+        </Box>
+      </Paper>
 
       <InfoEditDialog
         open={infoDialog.open}
