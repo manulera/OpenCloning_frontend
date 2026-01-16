@@ -52,3 +52,6 @@ export function partDataToDisplayData(data) {
   }
 }
 
+export function assignSequenceToSyntaxPart(parts, sequence) {
+  
+}
