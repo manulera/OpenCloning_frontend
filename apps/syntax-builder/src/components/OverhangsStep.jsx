@@ -147,8 +147,8 @@ function OverhangsField() {
       /* eslint-disable camelcase */
       parts.push({
         id: `${parts.length + 1}`,
-        header: `${parts.length + 1}`,
-        body: '',
+        name: `${parts.length + 1}`,
+        info: '',
         glyph: 'engineered-region',
         left_overhang: leftOverhang,
         right_overhang: rightOverhang,

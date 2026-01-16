@@ -63,8 +63,8 @@ function GlyphEditCell(props) {
   )
 }
 
-// Body cell dialog for long text editing
-function BodyEditDialog({ open, value, onClose, onSave }) {
+// Info cell dialog for long text editing
+function InfoEditDialog({ open, value, onClose, onSave }) {
   const [tempValue, setTempValue] = React.useState(value || '')
 
   React.useEffect(() => {
@@ -73,7 +73,7 @@ function BodyEditDialog({ open, value, onClose, onSave }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Edit Body Text</DialogTitle>
+      <DialogTitle>Edit Info Text</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
@@ -81,8 +81,8 @@ function BodyEditDialog({ open, value, onClose, onSave }) {
           rows={6}
           fullWidth
           value={tempValue}
-          onChange={(e) => setTempValue(e.target.value)}
-          placeholder="Enter body text..."
+          onChange={(e) => setTempValue(e.target.value.replace(/\n/g, ''))}
+          placeholder="Enter info text..."
           sx={{ mt: 1 }}
         />
       </DialogContent>
@@ -96,7 +96,7 @@ function BodyEditDialog({ open, value, onClose, onSave }) {
 
 function AssemblePartWidget() {
   const { parts, addDefaultPart, setParts, problematicNodes, graphErrorMessage } = useFormData()
-  const [bodyDialog, setBodyDialog] = React.useState({ open: false, rowId: null, value: '' })
+  const [infoDialog, setInfoDialog] = React.useState({ open: false, rowId: null, value: '' })
   const apiRef = useGridApiRef()
   const downloadData = useDownloadData()
   const processRowUpdate = useCallback((newRow) => {
@@ -114,8 +114,8 @@ function AssemblePartWidget() {
   }, [setParts])
 
   const handleCellClick = useCallback((params) => {
-    if (params.field === 'body') {
-      setBodyDialog({ open: true, rowId: params.id, value: params.value })
+    if (params.field === 'info') {
+      setInfoDialog({ open: true, rowId: params.id, value: params.value })
     } else if (params.field !== 'actions' && params.isEditable && params.cellMode !== 'edit') {
       apiRef.current.startCellEditMode({ id: params.id, field: params.field })
     }
@@ -126,16 +126,16 @@ function AssemblePartWidget() {
     return isPartProblematic(params.row, problematicNodes) ? 'problematic-row' : ''
   }, [problematicNodes])
 
-  const handleBodySave = useCallback((newValue) => {
+  const handleInfoSave = useCallback((newValue) => {
     setParts(prevParts => 
       prevParts.map(part => 
-        part.id === bodyDialog.rowId 
-          ? { ...part, body: newValue } 
+        part.id === infoDialog.rowId 
+          ? { ...part, info: newValue } 
           : part
       )
     )
-    setBodyDialog({ open: false, rowId: null, value: '' })
-  }, [bodyDialog.rowId, setParts])
+    setInfoDialog({ open: false, rowId: null, value: '' })
+  }, [infoDialog.rowId, setParts])
 
   // Render cell with validation error display
   const renderValidatedCell = useCallback((field, params) => {
@@ -171,14 +171,14 @@ function AssemblePartWidget() {
       ]
     },
     { 
-      field: 'header', 
-      headerName: 'Header', 
+      field: 'name', 
+      headerName: 'Name', 
       flex: 1,
       editable: true 
     },
     { 
-      field: 'body', 
-      headerName: 'Body', 
+      field: 'info', 
+      headerName: 'Info', 
       flex: 1,
       editable: false,
       renderCell: (params) => (
@@ -331,11 +331,11 @@ function AssemblePartWidget() {
         />
       </Paper>
 
-      <BodyEditDialog
-        open={bodyDialog.open}
-        value={bodyDialog.value}
-        onClose={() => setBodyDialog({ open: false, rowId: null, value: '' })}
-        onSave={handleBodySave}
+      <InfoEditDialog
+        open={infoDialog.open}
+        value={infoDialog.value}
+        onClose={() => setInfoDialog({ open: false, rowId: null, value: '' })}
+        onSave={handleInfoSave}
       />
     </Box>
   )
