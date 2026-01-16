@@ -1,4 +1,4 @@
-import { getComplementSequenceString, getAminoAcidFromSequenceTriplet } from '@teselagen/sequence-utils';
+import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from '@teselagen/sequence-utils';
 
 function tripletsToTranslation(triplets) {
   if (!triplets) return ''
@@ -52,6 +52,35 @@ export function partDataToDisplayData(data) {
   }
 }
 
-export function assignSequenceToSyntaxPart(parts, sequence) {
-  
+
+export function simplifyDigestFragment({cut1, cut2}) {
+  return {
+    left: {ovhg: cut1.overhangBps.toUpperCase(), forward: cut1.forward},
+    right: {ovhg: cut2.overhangBps.toUpperCase(), forward: cut2.forward},
+  };
+};
+
+export function reverseComplementSimplifiedDigestFragment({left, right}) {
+  return {
+    left: {ovhg: getReverseComplementSequenceString(right.ovhg), forward: !right.forward},
+    right: {ovhg: getReverseComplementSequenceString(left.ovhg), forward: !left.forward},
+  };
+}
+
+export function getSimplifiedDigestFragments(sequence, circular, enzymes) {
+  const digestFragments = getDigestFragmentsForRestrictionEnzymes(
+    sequence,
+    circular,
+    enzymes,
+  );
+  const simplifiedDigestFragments = digestFragments.map(simplifyDigestFragment);
+  const simplifiedDigestFragmentsRc = simplifiedDigestFragments.map(reverseComplementSimplifiedDigestFragment);
+  return simplifiedDigestFragments.concat(simplifiedDigestFragmentsRc);
+}
+
+export function assignSequenceToSyntaxPart(sequence, circular, enzymes, partKeys) {
+  const simplifiedDigestFragments = getSimplifiedDigestFragments(sequence, circular, enzymes);
+  const partKeysUpper = partKeys.map(key => key.toUpperCase());
+  const digestKeys = simplifiedDigestFragments.filter(f => f.left.forward && !f.right.forward).map(f => `${f.left.ovhg}-${f.right.ovhg}`.toUpperCase());
+  return partKeysUpper.filter(key => digestKeys.includes(key));
 }
