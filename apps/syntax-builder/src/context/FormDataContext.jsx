@@ -1,5 +1,5 @@
 import React from 'react';
-import { graphToMSA, partsToGraph } from '../graph_utils';
+import { graphHasCycle, graphToMSA, partsToGraph } from '../graph_utils';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
@@ -67,6 +67,10 @@ function validateGraph(graph) {
   if (nodesWithMissingLinks.length > 0) {
     return { error: `Parts with missing links: ${nodesWithMissingLinks.join(', ')}`, nodes: nodesWithMissingLinks }
   }
+  // The graph should form a cycle
+  if (!graphHasCycle(graph)) {
+    return { error: 'The graph does not form a cycle. Please check the overhangs.', nodes: [] }
+  }
   return { error: '', nodes: [] }
 }
 
@@ -96,20 +100,19 @@ export function FormDataProvider({ children }) {
       try {
         const validParts = parts.filter(validatePart);
         const thisGraph = partsToGraph(validParts);
-        // This is just to test if it gives errors
-        graphToMSA(thisGraph);
         const { error, nodes: problemNodes } = validateGraph(thisGraph);
         setGraphErrorMessage(error);
         setProblematicNodes(problemNodes);
+        // This is just to test if it gives errors
+        graphToMSA(thisGraph);
         setGraph(thisGraph);
       } catch (error) {
         if (error.message.includes('given graph is not acyclic')) {
-          setGraphErrorMessage('Multiple independent cycles detected in the graph. Please check the overhangs.');
+          setGraphErrorMessage('Multiple independent cycles detected in the graph, or cycle that does not include all parts. Please check the overhangs.');
         }
         else {
           setGraphErrorMessage(error.message);
         }
-        setProblematicNodes([]);
         setGraph(null);
       }
     } else {

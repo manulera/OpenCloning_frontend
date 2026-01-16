@@ -132,3 +132,7 @@ export function graphToMSA(graph) {
   openCycleAtNode(newGraph, newGraph.nodes()[0]);
   return minimumCoveringRows(dagToMSA(newGraph));
 }
+
+export function graphHasCycle(graph) {
+  return allSimplePaths(graph, graph.nodes()[0], graph.nodes()[0]).length > 0;
+}
