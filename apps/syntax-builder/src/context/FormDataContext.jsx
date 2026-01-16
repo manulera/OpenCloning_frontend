@@ -54,6 +54,19 @@ export const validateField = (field, value) => {
   return undefined // No validation for other fields
 }
 
+export const validatePart = (part) => {
+  return !Object.keys(part).some(key => Boolean(validateField(key, part[key])));
+}
+
+function validateGraph(graph) {
+  if (!graph) return { error: 'Invalid paths entered', nodes: [] }
+  // All parts must be have in and out links
+  const nodesWithMissingLinks = graph.nodes().filter(node => graph.inDegree(node) === 0 || graph.outDegree(node) === 0);
+  if (nodesWithMissingLinks.length > 0) {
+    return { error: `Parts with missing links: ${nodesWithMissingLinks.join(', ')}`, nodes: nodesWithMissingLinks }
+  }
+  return { error: '', nodes: [] }
+}
 
 const FormDataContext = React.createContext();
 
@@ -71,10 +84,25 @@ export function FormDataProvider({ children }) {
   });
   const [parts, setParts] = React.useState([]);
   const [graph, setGraph] = React.useState(null);
+  const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
+  const [problematicNodes, setProblematicNodes] = React.useState([]);
 
   React.useEffect(() => {
+    setGraphErrorMessage('');
+    setProblematicNodes([]);
     if (parts.length > 0) {
-      setGraph(partsToGraph(parts));
+      try {
+        const validParts = parts.filter(validatePart);
+        const thisGraph = partsToGraph(validParts);
+        const { error, nodes: problemNodes } = validateGraph(thisGraph);
+        setGraphErrorMessage(error);
+        setProblematicNodes(problemNodes);
+        setGraph(thisGraph);
+      } catch (error) {
+        setGraphErrorMessage(error.message);
+        setProblematicNodes([]);
+        setGraph(null);
+      }
     } else {
       setGraph(null);
     }
@@ -101,7 +129,9 @@ export function FormDataProvider({ children }) {
     setParts,
     resetFormData,
     graph,
-  }), [submission, parts, updateSubmission, setParts, resetFormData, graph]);
+    graphErrorMessage,
+    problematicNodes,
+  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes]);
 
   return (
     <FormDataContext.Provider value={value}>

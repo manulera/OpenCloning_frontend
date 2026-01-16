@@ -69,8 +69,10 @@ function OverhangRow({ row, mode = 'detailed' }) {
           }
           if (mode === 'detailed') {
             return (
-              <TableCell colSpan={cell[1]} key={`row-${index}-detailed`} sx={{ border: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'center', }}>
+              <TableCell colSpan={cell[1]} key={`row-${index}-detailed`} sx={{ border: 1, py: 0 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                  <Typography variant="h6" >{cell[2].header}</Typography>
+                  <Typography variant="body2" >{cell[2].body}</Typography>
                   <AssemblerPart data={cell[2]} />
                 </Box>
               </TableCell>
@@ -87,13 +89,13 @@ function OverhangsPreview() {
 
   const { graph } = useFormData();
 
-  const [mode, setMode] = React.useState('compact');
+  const [mode, setMode] = React.useState('detailed');
   const msa = React.useMemo(() => graph ? graphToMSA(graph) : [], [graph])
 
   if (graph) {
     return (
       <Paper sx={{ p: 2, mt: 2}}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+        <Box sx={{ display: 'flex', gap: 3, alignItems: 'center', mb: 1.5 }}>
           <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
               Parts Preview
           </Typography>
