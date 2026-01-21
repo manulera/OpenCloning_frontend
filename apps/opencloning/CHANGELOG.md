@@ -1,5 +1,25 @@
 # opencloning
 
+## 1.2.0
+
+### Minor Changes
+
+- [#595](https://github.com/manulera/OpenCloning_frontend/pull/595) [`1b28cc5`](https://github.com/manulera/OpenCloning_frontend/commit/1b28cc5852460a072982dc529b58fc9607fae21f) Thanks [@manulera](https://github.com/manulera)! - Minor improvements and bug fixes:
+
+  - include name of tracks in alignment + update ove to display correct Track Properties table
+  - fix display main sequence when alignments are present
+  - change default minimum hib length to 14 for primer design
+  - Gibson primer design: default to circular assembly, force circular for single input assemblies
+  - Gibson primer design: make product sequence preview circular when assembly is circular
+  - Primer design: in circular assemblies of one fragment only, display the spacer before the fragment in the preview.
+
+### Patch Changes
+
+- Updated dependencies [[`1b28cc5`](https://github.com/manulera/OpenCloning_frontend/commit/1b28cc5852460a072982dc529b58fc9607fae21f)]:
+  - @opencloning/ui@1.2.0
+  - @opencloning/store@1.2.0
+  - @opencloning/utils@1.2.0
+
 ## 1.1.2
 
 ### Patch Changes
