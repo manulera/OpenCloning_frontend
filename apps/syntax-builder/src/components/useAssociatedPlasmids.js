@@ -20,9 +20,16 @@ export function useLinkedPlasmids() {
 
   const assignPlasmids = React.useCallback( (plasmids) => plasmids.map(plasmid => {
     const enzymes = [aliasedEnzymesByName[enzyme.toLowerCase()]];
-    const correspondingParts = assignSequenceToSyntaxPart(plasmid.sequence, true, enzymes, graph);
+    const correspondingParts = assignSequenceToSyntaxPart(plasmid, enzymes, graph);
     const correspondingPartsStr = correspondingParts.map(part => `${part.left_overhang}-${part.right_overhang}`);
-    return {...plasmid, appData: { ...plasmid.appData, correspondingParts: correspondingPartsStr, partInfo: correspondingPartsStr.map(partStr => partDictionary[partStr]) } };
+    return {
+      ...plasmid,
+      appData: {
+        ...plasmid.appData,
+        correspondingParts: correspondingPartsStr,
+        partInfo: correspondingPartsStr.map(partStr => partDictionary[partStr]),
+        longestFeature: correspondingParts.map(part => part.longestFeature)
+      } };
   }), [graph, partDictionary, enzyme]);
 
   React.useEffect(() => {
@@ -33,6 +40,8 @@ export function useLinkedPlasmids() {
     const plasmids = await Promise.all(files.map(async (file) => {
       const data = await anyToJson(file);
       const sequenceData = data[0].parsedSequence;
+      // Force circular
+      sequenceData.circular = true;
       return {...sequenceData, appData: { fileName: file.name, correspondingParts: [], partInfo: [] } };
     }));
     if (enzyme) {

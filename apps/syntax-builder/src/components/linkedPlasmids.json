@@ -6686,7 +6686,7 @@
         "isDNA": true,
         "isDoubleStrandedDNA": true,
         "date": "13-MAR-2015",
-        "circular": false,
+        "circular": true,
         "definition": ".",
         "description": ".",
         "accession": "<unknown id>",

@@ -14,14 +14,16 @@ import {
 
 function PlasmidRow({ plasmid }) {
   const { name, appData } = plasmid;
-  const { fileName, correspondingParts, partInfo } = appData;
+  const { fileName, correspondingParts, partInfo, longestFeature } = appData;
   let sx = undefined;
   let infoStr = '';
+  let longestFeatureStr = '-';
   if (partInfo.length === 1) {
     sx = {
       backgroundColor: partInfo[0]?.color,
     }
     infoStr = partInfo[0] ? partInfo[0].name : 'Spans multiple parts';
+    longestFeatureStr = longestFeature ? longestFeature[0].name : '-';
   }
   const multipleParts = partInfo.length > 1;
   if (multipleParts) {
@@ -66,6 +68,9 @@ function PlasmidRow({ plasmid }) {
       <TableCell>
         <Typography variant="body2">{infoStr}</Typography>
       </TableCell>
+      <TableCell>
+        <Typography variant="body2">{longestFeatureStr}</Typography>
+      </TableCell>
     </TableRow>
   )
 }
@@ -88,6 +93,7 @@ function LinkedPlasmidsTable({ plasmids }) {
             <TableCell>File Name</TableCell>
             <TableCell>Part</TableCell>
             <TableCell>Part Info</TableCell>
+            <TableCell>Longest Feature</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

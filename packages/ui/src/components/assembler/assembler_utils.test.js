@@ -1,6 +1,7 @@
 import { aliasedEnzymesByName, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from "@teselagen/sequence-utils";
 import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment } from "./assembler_utils";
-
+import { partsToEdgesGraph } from "./graph_utils";
+import mocloPlasmids from "../../../../../apps/syntax-builder/src/components/linkedPlasmids.json";
 
 const sequenceBsaI  = 'tgggtctcaTACTagagtcacacaggactactaAATGagagacctac';
 const sequenceBsaI2 = 'tgggtctcaAATGagagtcacacaggactactaAGGTagagacctac'
@@ -33,7 +34,6 @@ describe('assignSequenceToSyntaxPart', () => {
   it('works', () => {
     const enzymes = [aliasedEnzymesByName["bsai"]];
     const parts = [{left_overhang: 'TACT', right_overhang: 'AATG'}, {left_overhang: 'AATG', right_overhang: 'AGGT'}];
-    const result = assignSequenceToSyntaxPart(sequenceBsaI, true, enzymes, parts);
 
     for (const reverseComplement of [false, true]) {
       const seq1 = reverseComplement ? getReverseComplementSequenceString(sequenceBsaI) : sequenceBsaI;
@@ -65,4 +65,11 @@ describe('assignSequenceToSyntaxPart', () => {
     expect(result5).toEqual([])
   });
 
+  it('dummy test', () => {
+    const enzymes = [aliasedEnzymesByName["bsai"]];
+    const parts = [{left_overhang: 'TACT', right_overhang: 'AATG'}, {left_overhang: 'AATG', right_overhang: 'AGGT'}];
+    const graph = partsToEdgesGraph(parts);
+    const result = assignSequenceToSyntaxPart(mocloPlasmids[5], enzymes, graph);
+
+  });
 });

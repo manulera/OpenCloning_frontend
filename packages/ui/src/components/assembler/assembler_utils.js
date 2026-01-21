@@ -1,4 +1,4 @@
-import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from '@teselagen/sequence-utils';
+import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getSequenceDataBetweenRange } from '@teselagen/sequence-utils';
 import { openCycleAtNode, partsToEdgesGraph } from './graph_utils';
 import { allSimplePaths } from 'graphology-simple-path';
 
@@ -62,33 +62,51 @@ export function simplifyDigestFragment({cut1, cut2}) {
   };
 };
 
-export function reverseComplementSimplifiedDigestFragment({left, right}) {
+export function reverseComplementSimplifiedDigestFragment({left, right, longestFeature}) {
   return {
     left: {ovhg: getReverseComplementSequenceString(right.ovhg), forward: !right.forward},
     right: {ovhg: getReverseComplementSequenceString(left.ovhg), forward: !left.forward},
+    longestFeature
   };
 }
 
-export function getSimplifiedDigestFragments(sequence, circular, enzymes) {
+export function longestFeatureInDigestFragment(digestFragment, sequenceData) {
+  const {cut1, cut2} = digestFragment;
+  const leftEdge = cut1.overhangSize >=0 ? cut1.topSnipPosition : cut1.bottomSnipPosition;
+  const rightEdge = cut2.overhangSize >=0 ? cut2.bottomSnipPosition : cut2.topSnipPosition;
+  const {features} = getSequenceDataBetweenRange(sequenceData, {start: leftEdge, end: rightEdge});
+  return features.reduce((longest, feature) => {
+    return feature.end - feature.start > longest.end - longest.start ? feature : longest;
+  }, {start: 0, end: 1});
+}
+
+export function getSimplifiedDigestFragments(sequenceData, enzymes) {
+  const { sequence, circular } = sequenceData;
+
   const digestFragments = getDigestFragmentsForRestrictionEnzymes(
     sequence,
     circular,
     enzymes,
   );
+
+  const longestFeatures = digestFragments.map(fragment => longestFeatureInDigestFragment(fragment, sequenceData));
   const simplifiedDigestFragments = digestFragments.map(simplifyDigestFragment);
+  simplifiedDigestFragments.forEach((fragment, index) => {
+    fragment.longestFeature = longestFeatures[index];
+  });
   const simplifiedDigestFragmentsRc = simplifiedDigestFragments.map(reverseComplementSimplifiedDigestFragment);
   return simplifiedDigestFragments.concat(simplifiedDigestFragmentsRc);
 }
 
-export function assignSequenceToSyntaxPart(sequence, circular, enzymes, graph) {
-  const simplifiedDigestFragments = getSimplifiedDigestFragments(sequence, circular, enzymes);
+export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
+  const simplifiedDigestFragments = getSimplifiedDigestFragments(sequenceData, enzymes);
   const foundParts = [];
   simplifiedDigestFragments
     .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))
     .forEach(fragment => {
       const paths = allSimplePaths(graph, fragment.left.ovhg, fragment.right.ovhg);
       if (paths.length > 0) {
-        foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg});
+        foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg, longestFeature: fragment.longestFeature});
       }
     });
   return foundParts;
