@@ -6,32 +6,15 @@ import { usePrimerDesign } from './PrimerDesignContext';
 
 function PrimerSpacerForm({ open = true }) {
   const { spacers, setSpacers, circularAssembly, templateSequenceNames, templateSequenceIds } = usePrimerDesign();
-  const [localSpacers, setLocalSpacers] = React.useState(spacers);
-  const timeoutRef = React.useRef();
-
-  // Debounced upstream updates to avoid heavy re-rendering
-  const handleSpacerChange = (index, value) => {
-    setLocalSpacers((current) => current.map((spacer, i) => (i === index ? value : spacer)));
-
-    // Clear any existing timeout
-    clearTimeout(timeoutRef.current);
-
-    // Set new timeout and store its ID in the ref
-    timeoutRef.current = setTimeout(() => {
-      setSpacers((current) => current.map((spacer, i) => (i === index ? value : spacer)));
-    }, 500);
-  };
-
-  React.useEffect(() => {
-    if (!localSpacers.every((spacer, index) => spacer === spacers[index])) {
-      setLocalSpacers(spacers);
-    }
-  }, [spacers]);
 
   const fragmentCount = templateSequenceIds.length;
 
   const sequenceNamesWrapped = [...templateSequenceNames, templateSequenceNames[0]];
   const templateSequenceIdsWrapped = [...templateSequenceIds, templateSequenceIds[0]];
+
+  const handleSpacerChange = (index, value) => {
+    setSpacers((current) => current.map((spacer, i) => (i === index ? value : spacer)));
+  };
 
   const getSequenceName = (seqIndex) => {
     const name = sequenceNamesWrapped[seqIndex];
@@ -55,7 +38,7 @@ function PrimerSpacerForm({ open = true }) {
     <CollapsableLabel label="Spacer sequences" className="primer-spacer-form" open={open}>
       <Box sx={{ pt: 1, width: '80%', margin: 'auto' }}>
         <Box>
-          {localSpacers.map((spacer, index) => {
+          {spacers.map((spacer, index) => {
             const error = stringIsNotDNA(spacer) ? 'Invalid DNA sequence' : '';
             return (
               <FormControl key={index} fullWidth sx={{ mb: 2 }}>

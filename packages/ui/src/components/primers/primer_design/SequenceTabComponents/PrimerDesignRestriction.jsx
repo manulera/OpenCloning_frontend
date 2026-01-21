@@ -12,7 +12,7 @@ function PrimerDesignRestriction({ pcrSource }) {
     { label: 'Amplified region' },
   ], []);
 
-  const primerDesignSettings = useEnzymePrimerDesignSettings({ homology_length: null, minimal_hybridization_length: 20, target_tm: 55 });
+  const primerDesignSettings = useEnzymePrimerDesignSettings({ homology_length: null, minimal_hybridization_length: 14, target_tm: 55 });
 
   return (
     <PrimerDesignProvider designType="restriction_ligation" sequenceIds={sequenceIds} primerDesignSettings={primerDesignSettings} steps={steps}>

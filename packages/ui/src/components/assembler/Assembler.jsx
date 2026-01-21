@@ -138,7 +138,6 @@ function AssemblerComponent({ data, categories }) {
               {index === 0 && item.category !== '' && (
                 <AssemblerLink overhang={leftOverhang} />
               )}
-              <AssemblerPart />
               <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Category</InputLabel>

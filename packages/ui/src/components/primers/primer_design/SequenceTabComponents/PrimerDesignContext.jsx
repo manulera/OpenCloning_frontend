@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { batch, useDispatch, useSelector, useStore } from 'react-redux';
 import { updateEditor } from '@teselagen/ove';
 import { isEqual } from 'lodash-es';
@@ -18,19 +18,28 @@ function changeValueAtIndex(current, index, newValue) {
 const PrimerDesignContext = React.createContext();
 
 export function PrimerDesignProvider({ children, designType, sequenceIds, primerDesignSettings, steps }) {
-  let templateSequenceIds = sequenceIds;
-  if (designType === 'homologous_recombination' || designType === 'gateway_bp') {
-    templateSequenceIds = sequenceIds.slice(0, 1);
-  }
+
+  const templateSequenceIds = React.useMemo(() => {
+    if (designType === 'homologous_recombination' || designType === 'gateway_bp') {
+      return sequenceIds.slice(0, 1);
+    }
+    return sequenceIds;
+  }, [sequenceIds, designType]);
+
+  // Compute initial values based on design type (props don't change, so compute once)
+  const initialFragmentOrientationsLength = templateSequenceIds.length;
+  const initialCircularAssembly = designType === 'gibson_assembly';
+  const initialSpacersLength = initialCircularAssembly ? initialFragmentOrientationsLength : initialFragmentOrientationsLength + 1;
 
   const [primers, setPrimers] = useState([]);
   const [rois, setRois] = useState(Array(sequenceIds.length).fill(null));
   const [error, setError] = useState('');
   const [selectedTab, setSelectedTab] = useState(0);
   const [sequenceProduct, setSequenceProduct] = useState(null);
-  const [fragmentOrientations, setFragmentOrientations] = useState(Array(templateSequenceIds.length).fill('forward'));
-  const [circularAssembly, setCircularAssembly] = useState(false);
-  const [spacers, setSpacers] = useState(Array(templateSequenceIds.length + 1).fill(''));
+  const [fragmentOrientations, setFragmentOrientations] = useState(Array(initialFragmentOrientationsLength).fill('forward'));
+  const [circularAssembly, setCircularAssembly] = useState(initialCircularAssembly);
+  const [spacers, setSpacers] = useState(Array(initialSpacersLength).fill(''));
+  const sequenceProductTimeoutRef = React.useRef();
 
   const spacersAreValid = React.useMemo(() => spacers.every((spacer) => !stringIsNotDNA(spacer)), [spacers]);
   const sequenceNames = useSelector((state) => sequenceIds.map((id) => state.cloning.teselaJsonCache[id].name), isEqual);
@@ -44,7 +53,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
   const { setMainSequenceId, addPrimersToPCRSource, setCurrentTab } = cloningActions;
   const httpClient = useHttpClient();
 
-  const getSubmissionPreventedMessage = () => {
+  const submissionPreventedMessage = React.useMemo(() => {
     if (rois.some((region) => region === null)) {
       return 'Not all regions have been selected';
     } if (primerDesignSettings.error) {
@@ -53,71 +62,78 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       return 'Spacer sequences not valid';
     }
     return '';
-  };
-
-  const submissionPreventedMessage = getSubmissionPreventedMessage();
+  }, [rois, primerDesignSettings.error, spacers]);
 
   React.useEffect(() => {
-    let newSequenceProduct = null;
-    if (submissionPreventedMessage === '') {
-      const { teselaJsonCache } = store.getState().cloning;
-      const sequences = sequenceIds.map((id) => teselaJsonCache[id]);
-      if (designType === 'simple_pair' || designType === 'restriction_ligation') {
-        const enzymeSpacers = designType === 'restriction_ligation' ? primerDesignSettings.enzymeSpacers : ['', ''];
-        const extendedSpacers = [enzymeSpacers[0] + spacers[0], spacers[1] + enzymeSpacers[1]];
-        newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
-        newSequenceProduct.name = 'PCR product';
-      } else if (designType === 'gibson_assembly') {
-        newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
-        newSequenceProduct.name = 'Gibson Assembly product';
-      } else if (designType === 'homologous_recombination') {
-        newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois, fragmentOrientations[0] === 'reverse', spacers);
-        newSequenceProduct.name = 'Homologous recombination product';
-      } else if (designType === 'gateway_bp') {
-        newSequenceProduct = joinSequencesIntoSingleSequence([sequences[0]], [rois[0].selectionLayer], fragmentOrientations, spacers, false, 'primer tail');
-        newSequenceProduct.name = 'PCR product';
-        const { knownCombination } = primerDesignSettings;
-        const leftFeature = {
-          start: knownCombination.translationFrame[0],
-          end: spacers[0].length - 1,
-          type: 'CDS',
-          name: 'translation frame',
-          strand: 1,
-          forward: true,
-        };
-        const nbAas = Math.floor((spacers[1].length - knownCombination.translationFrame[1]) / 3);
-        const rightStart = newSequenceProduct.sequence.length - knownCombination.translationFrame[1] - nbAas * 3;
-        const rightFeature = {
-          start: rightStart,
-          end: newSequenceProduct.sequence.length - knownCombination.translationFrame[1] - 1,
-          type: 'CDS',
-          name: 'translation frame',
-          strand: 1,
-          forward: true,
-        };
-        newSequenceProduct.features.push(leftFeature);
-        newSequenceProduct.features.push(rightFeature);
-        setSequenceProduct(newSequenceProduct);
-      } else if (designType === 'ebic') {
-        newSequenceProduct = ebicTemplateAnnotation(sequences[0], rois[0].selectionLayer, primerDesignSettings);
-        setSequenceProduct(newSequenceProduct);
-      }
-    }
-    setSequenceProduct(newSequenceProduct);
-  }, [rois, spacersAreValid, fragmentOrientations, circularAssembly, designType, spacers, primerDesignSettings]);
+    // Clear any existing timeout
+    clearTimeout(sequenceProductTimeoutRef.current);
 
-  const onCircularAssemblyChange = (event) => {
-    setCircularAssembly(event.target.checked);
-    if (event.target.checked) {
-      // Remove the first spacer
+    // Debounce the heavy calculation
+    sequenceProductTimeoutRef.current = setTimeout(() => {
+      let newSequenceProduct = null;
+      if (submissionPreventedMessage === '') {
+        const { teselaJsonCache } = store.getState().cloning;
+        const sequences = sequenceIds.map((id) => teselaJsonCache[id]);
+        if (designType === 'simple_pair' || designType === 'restriction_ligation') {
+          const enzymeSpacers = designType === 'restriction_ligation' ? primerDesignSettings.enzymeSpacers : ['', ''];
+          const extendedSpacers = [enzymeSpacers[0] + spacers[0], spacers[1] + enzymeSpacers[1]];
+          newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
+          newSequenceProduct.name = 'PCR product';
+        } else if (designType === 'gibson_assembly') {
+          newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
+          newSequenceProduct.name = 'Gibson Assembly product';
+        } else if (designType === 'homologous_recombination') {
+          newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois, fragmentOrientations[0] === 'reverse', spacers);
+          newSequenceProduct.name = 'Homologous recombination product';
+        } else if (designType === 'gateway_bp') {
+          newSequenceProduct = joinSequencesIntoSingleSequence([sequences[0]], [rois[0].selectionLayer], fragmentOrientations, spacers, false, 'primer tail');
+          newSequenceProduct.name = 'PCR product';
+          const { knownCombination } = primerDesignSettings;
+          const leftFeature = {
+            start: knownCombination.translationFrame[0],
+            end: spacers[0].length - 1,
+            type: 'CDS',
+            name: 'translation frame',
+            strand: 1,
+            forward: true,
+          };
+          const nbAas = Math.floor((spacers[1].length - knownCombination.translationFrame[1]) / 3);
+          const rightStart = newSequenceProduct.sequence.length - knownCombination.translationFrame[1] - nbAas * 3;
+          const rightFeature = {
+            start: rightStart,
+            end: newSequenceProduct.sequence.length - knownCombination.translationFrame[1] - 1,
+            type: 'CDS',
+            name: 'translation frame',
+            strand: 1,
+            forward: true,
+          };
+          newSequenceProduct.features.push(leftFeature);
+          newSequenceProduct.features.push(rightFeature);
+        } else if (designType === 'ebic') {
+          newSequenceProduct = ebicTemplateAnnotation(sequences[0], rois[0].selectionLayer, primerDesignSettings);
+        }
+      }
+      setSequenceProduct({...newSequenceProduct, id: 'opencloning_primer_design_product'});
+    }, 300);
+
+    // Cleanup timeout on unmount or when dependencies change
+    return () => {
+      clearTimeout(sequenceProductTimeoutRef.current);
+    };
+  }, [rois, spacersAreValid, fragmentOrientations, circularAssembly, designType, spacers, primerDesignSettings, sequenceIds, templateSequenceIds, store, submissionPreventedMessage]);
+
+
+  React.useEffect(() => {
+    if (circularAssembly && spacers.length !== templateSequenceIds.length) {
       setSpacers((current) => current.slice(1));
-    } else {
-      // Add it again
+    }
+    if (!circularAssembly && spacers.length !== templateSequenceIds.length + 1) {
       setSpacers((current) => ['', ...current]);
     }
-  };
+  }, [circularAssembly, spacers, templateSequenceIds.length]);
 
-  const onSelectRegion = (index, selectedRegion, allowSinglePosition = false) => {
+
+  const onSelectRegion = useCallback((index, selectedRegion, allowSinglePosition = false) => {
     const { caretPosition } = selectedRegion;
     if (caretPosition === undefined) {
       setRois((c) => changeValueAtIndex(c, index, null));
@@ -133,39 +149,40 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     }
     setRois((c) => changeValueAtIndex(c, index, null));
     return 'Select a region (not a single position) to amplify';
-  };
+  }, [setRois]);
 
-  const onTabChange = (event, newValue) => {
+  const onTabChange = useCallback((event, newValue) => {
     setSelectedTab(newValue);
     if (newValue < sequenceIds.length) {
       updateStoreEditor('mainEditor', sequenceIds[newValue]);
       dispatch(setMainSequenceId(sequenceIds[newValue]));
     } else if (newValue === sequenceIds.length) {
-      updateEditor(store, 'mainEditor', { sequenceData: sequenceProduct || '', selectionLayer: {} });
+      // Don't update editor here - let the useEffect handle it when sequenceProduct is ready
+      // This avoids using stale data since sequenceProduct is debounced
     } else {
       updateStoreEditor('mainEditor', null);
     }
-  };
+  }, [sequenceIds, updateStoreEditor, dispatch, setMainSequenceId, setSelectedTab]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     onTabChange(null, selectedTab + 1);
-  };
+  }, [onTabChange, selectedTab]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     onTabChange(null, selectedTab - 1);
-  };
+  }, [onTabChange, selectedTab]);
 
-  const handleSelectRegion = (index, selectedRegion, allowSinglePosition = false) => {
+  const handleSelectRegion = useCallback((index, selectedRegion, allowSinglePosition = false) => {
     const regionError = onSelectRegion(index, selectedRegion, allowSinglePosition);
     if (!regionError) {
       handleNext();
     }
     return regionError;
-  };
+  }, [onSelectRegion, handleNext]);
 
-  const handleFragmentOrientationChange = (index, orientation) => {
+  const handleFragmentOrientationChange = useCallback((index, orientation) => {
     setFragmentOrientations((current) => changeValueAtIndex(current, index, orientation));
-  };
+  }, [setFragmentOrientations]);
 
   // Focus on the right sequence when changing tabs
   useEffect(() => {
@@ -178,16 +195,16 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
 
   // Update the sequence product in the editor if in the last tab
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (selectedTab === sequenceIds.length) {
-        updateEditor(store, 'mainEditor', { sequenceData: sequenceProduct || {} });
-      }
-    }, 500);
+    if (selectedTab === sequenceIds.length) {
+      const timeoutId = setTimeout(() => {
+        updateEditor(store, 'mainEditor', { sequenceData: sequenceProduct || {}, selectionLayer: {} });
+      }, 100);
 
-    return () => clearTimeout(timeoutId);
-  }, [sequenceProduct, store]);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [sequenceProduct, selectedTab, sequenceIds.length, store]);
 
-  const designPrimers = async () => {
+  const designPrimers = useCallback(async () => {
     // Validate fragmentOrientations
     fragmentOrientations.forEach((orientation) => {
       if (orientation !== 'forward' && orientation !== 'reverse') {
@@ -277,9 +294,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       setError(errorMessage);
       return true;
     }
-  };
+  }, [fragmentOrientations, rois, sequenceIds, templateSequenceIds, designType, circularAssembly, primerDesignSettings, spacers, store, httpClient, backendRoute, handleNext]);
 
-  const addPrimers = () => {
+  const addPrimers = useCallback(() => {
     const pcrSources = store.getState().cloning.sources.filter((source) => source.type === 'PCRSource');
     let usedPCRSources;
     if (designType === 'ebic') {
@@ -303,7 +320,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     onTabChange(null, 0);
     document.getElementById(`source-${usedPCRSources[0].id}`)?.scrollIntoView();
     updateStoreEditor('mainEditor', null);
-  };
+  }, [primers, dispatch, setMainSequenceId, setCurrentTab, onTabChange, updateStoreEditor, designType, templateSequenceIds, addPrimersToPCRSource, store]);
 
   const value = React.useMemo(() => ({
     primers,
@@ -318,7 +335,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     handleSelectRegion,
     sequenceIds,
     fragmentOrientations,
-    circularAssembly,
     spacers,
     setFragmentOrientations,
     setSpacers,
@@ -327,7 +343,8 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     primerDesignSettings,
     submissionPreventedMessage,
     addPrimers,
-    onCircularAssemblyChange,
+    circularAssembly,
+    setCircularAssembly,
     templateSequenceIds,
     templateSequenceNames,
     designType,
@@ -354,7 +371,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     primerDesignSettings,
     submissionPreventedMessage,
     addPrimers,
+    setCircularAssembly,
     templateSequenceIds,
+    templateSequenceNames,
     designType,
     steps,
   ]);

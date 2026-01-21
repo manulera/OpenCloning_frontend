@@ -19,7 +19,7 @@ function PrimerDesignGatewayBP({ donorVectorId, pcrSource }) {
     },
   ], [templateSequenceId, donorVectorId]);
 
-  const primerDesignSettings = useGatewayPrimerDesignSettings({ homology_length: null, minimal_hybridization_length: 20, target_tm: 55 });
+  const primerDesignSettings = useGatewayPrimerDesignSettings({ homology_length: null, minimal_hybridization_length: 14, target_tm: 55 });
 
   return (
     <PrimerDesignProvider
