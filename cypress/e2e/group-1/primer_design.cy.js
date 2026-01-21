@@ -242,7 +242,9 @@ describe('Test primer designer functionality', () => {
     cy.contains('svg g', 'ars1').should('have.class', 'ann-reverse');
     cy.get('table span').contains('Reverse').first().click({ force: true });
 
-    // Click on the Circular assembly button
+    // Circular assembly checkbox should be ticked
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.checked');
+    // Untick it 
     cy.get('span').contains('Circular assembly').click({ force: true });
 
     // Submit a high hybridization to get an error
@@ -271,6 +273,7 @@ describe('Test primer designer functionality', () => {
       expect(interception.request.query.homology_length).to.equal('20');
       expect(interception.request.query.minimal_hybridization_length).to.equal('30');
       expect(interception.request.query.target_tm).to.equal('30');
+      expect(interception.request.query.circular).to.equal('false');
       expect(interception.request.body.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
@@ -278,6 +281,9 @@ describe('Test primer designer functionality', () => {
     setInputValue('Homology length', '3', '.primer-design');
     setInputValue('Min. hybridization length', '2', '.primer-design');
     setInputValue('Target hybridization Tm', '6', '.primer-design');
+    cy.get('span').contains('Circular assembly').click({ force: true });
+    updateSpacer(0, 'AAAAAAAAA');
+    updateSpacer(1, 'CCCCCCCCC');
 
     // Design the primers
     cy.get('.main-sequence-editor button').contains('Design primers').click();

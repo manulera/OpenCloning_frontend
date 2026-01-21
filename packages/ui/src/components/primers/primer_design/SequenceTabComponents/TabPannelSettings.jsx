@@ -10,7 +10,6 @@ import RestrictionSpacerForm from './RestrictionSpacerForm';
 
 function TabPannelSettings() {
   const { error, templateSequenceIds, designType, selectedTab, sequenceIds, circularAssembly, setCircularAssembly, designPrimers, primers, primerDesignSettings, submissionPreventedMessage } = usePrimerDesign();
-  console.log(templateSequenceIds);
   return (
     <TabPanel value={selectedTab} index={sequenceIds.length}>
       <Box sx={{ width: '80%', margin: 'auto' }}>

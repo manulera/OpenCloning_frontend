@@ -10,7 +10,7 @@ export default function PrimerDesignGibsonAssembly({ pcrSources }) {
     ...templateSequencesIds.map((id, index) => (
       { label: `Seq ${id}`, selectOrientation: true }
     )),
-  ], [pcrSources]);
+  ], [pcrSources, templateSequencesIds]);
 
   const primerDesignSettings = usePrimerDesignSettings({ homology_length: 35, minimal_hybridization_length: 14, target_tm: 55 });
   return (
