@@ -27,6 +27,8 @@ export default function useStoreEditor() {
       const pcrPrimers = getPCRPrimers(cloning, id);
       const alignmentFiles = cloning.files.filter((e) => e.sequence_id === id && e.file_type === 'Sequencing file');
       let { panelsShown } = store.getState().VectorEditor.mainEditor;
+      panelsShown = [[...panelsShown[0].filter((p) => p.id !== 'simpleAlignment')]]
+
       if (alignmentFiles.length > 0) {
         addAlignment(store, {
           id: 'simpleAlignment',
