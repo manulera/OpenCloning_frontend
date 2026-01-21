@@ -117,13 +117,11 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
           };
           newSequenceProduct.features.push(leftFeature);
           newSequenceProduct.features.push(rightFeature);
-          setSequenceProduct(newSequenceProduct);
         } else if (designType === 'ebic') {
           newSequenceProduct = ebicTemplateAnnotation(sequences[0], rois[0].selectionLayer, primerDesignSettings);
-          setSequenceProduct(newSequenceProduct);
         }
       }
-      setSequenceProduct(newSequenceProduct);
+      setSequenceProduct({...newSequenceProduct, id: 'opencloning_primer_design_product'});
     }, 300);
 
     // Cleanup timeout on unmount or when dependencies change
