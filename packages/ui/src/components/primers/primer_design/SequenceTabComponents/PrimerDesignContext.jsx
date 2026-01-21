@@ -26,28 +26,20 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     return sequenceIds;
   }, [sequenceIds, designType]);
 
+  // Compute initial values based on design type (props don't change, so compute once)
+  const initialFragmentOrientationsLength = templateSequenceIds.length;
+  const initialCircularAssembly = designType === 'gibson_assembly';
+  const initialSpacersLength = initialCircularAssembly ? initialFragmentOrientationsLength : initialFragmentOrientationsLength + 1;
+
   const [primers, setPrimers] = useState([]);
   const [rois, setRois] = useState(Array(sequenceIds.length).fill(null));
   const [error, setError] = useState('');
   const [selectedTab, setSelectedTab] = useState(0);
   const [sequenceProduct, setSequenceProduct] = useState(null);
-  const [fragmentOrientations, setFragmentOrientations] = useState([]);
-  const [circularAssembly, setCircularAssembly] = useState(false);
-  const [spacers, setSpacers] = useState([]);
+  const [fragmentOrientations, setFragmentOrientations] = useState(Array(initialFragmentOrientationsLength).fill('forward'));
+  const [circularAssembly, setCircularAssembly] = useState(initialCircularAssembly);
+  const [spacers, setSpacers] = useState(Array(initialSpacersLength).fill(''));
   const sequenceProductTimeoutRef = React.useRef();
-
-  // Set initial values depending on design type
-  React.useEffect(() => {
-    if (designType === 'gibson_assembly') {
-      setFragmentOrientations(Array(templateSequenceIds.length).fill('forward'));
-      setCircularAssembly(true);
-      setSpacers(Array(templateSequenceIds.length).fill(''));
-    } else if (designType === 'homologous_recombination' || designType === 'gateway_bp') {
-      setFragmentOrientations(Array(templateSequenceIds.length).fill('forward'));
-      setCircularAssembly(false);
-      setSpacers(Array(templateSequenceIds.length + 1).fill(''));
-    }
-  }, [designType, templateSequenceIds]);
 
   const spacersAreValid = React.useMemo(() => spacers.every((spacer) => !stringIsNotDNA(spacer)), [spacers]);
   const sequenceNames = useSelector((state) => sequenceIds.map((id) => state.cloning.teselaJsonCache[id].name), isEqual);
