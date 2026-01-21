@@ -18,7 +18,7 @@ export default function PrimerDesignHomologousRecombination({ homologousRecombin
     },
   ], [templateSequenceId, homologousRecombinationTargetId]);
 
-  const primerDesignSettings = usePrimerDesignSettings({ homology_length: 80, minimal_hybridization_length: 20, target_tm: 55 });
+  const primerDesignSettings = usePrimerDesignSettings({ homology_length: 80, minimal_hybridization_length: 14, target_tm: 55 });
   return (
     <PrimerDesignProvider
       designType="homologous_recombination"
