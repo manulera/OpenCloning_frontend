@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { graphToMSA, partsToGraph, graphHasCycle } from '@opencloning/ui/components/assembler';
+import mocloParts from './mocloParts.json';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
@@ -100,11 +101,10 @@ export function FormDataProvider({ children }) {
     orcid: '',
     doi: '',
   });
-  const [parts, setParts] = React.useState([]);
+  const [parts, setParts] = React.useState(mocloParts);
   const [graph, setGraph] = React.useState(null);
   const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
   const [problematicNodes, setProblematicNodes] = React.useState([]);
-
 
   const addDefaultPart = useCallback(() => {
     setParts(prevParts => [...prevParts, { ...defaultPart, id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);

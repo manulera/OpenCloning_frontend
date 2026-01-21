@@ -1,9 +1,15 @@
-/* Ensure body and html can scroll */
+/* Single scrollbar solution: only body scrolls */
 html {
-  overflow-y: auto;
+  height: 100%;
+  /* Don't add overflow here - let body handle scrolling */
 }
 
 body {
-  height: auto;
+  min-height: 100%;
   padding-bottom: 100px;
+  overflow-y: auto;
+}
+
+#root {
+  min-height: 100%;
 }

@@ -80,10 +80,8 @@ export function getSimplifiedDigestFragments(sequence, circular, enzymes) {
   return simplifiedDigestFragments.concat(simplifiedDigestFragmentsRc);
 }
 
-export function assignSequenceToSyntaxPart(sequence, circular, enzymes, parts) {
+export function assignSequenceToSyntaxPart(sequence, circular, enzymes, graph) {
   const simplifiedDigestFragments = getSimplifiedDigestFragments(sequence, circular, enzymes);
-  const graph = partsToEdgesGraph(parts)
-  openCycleAtNode(graph, parts[0].left_overhang);
   const foundParts = [];
   simplifiedDigestFragments
     .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))

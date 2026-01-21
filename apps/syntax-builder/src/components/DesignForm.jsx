@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { DataGrid, GridActionsCellItem, useGridApiContext, useGridApiRef } from '@mui/x-data-grid'
 import { Box, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Tooltip, Alert } from '@mui/material'
-import { AddCircle as AddCircleIcon, Delete as DeleteIcon, Download as DownloadIcon } from '@mui/icons-material'
+import { AddCircle as AddCircleIcon, Delete as DeleteIcon, Download as DownloadIcon, Upload as UploadIcon } from '@mui/icons-material'
 import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
 import { useFormData, validateField, validatePart } from '../context/FormDataContext'
 
@@ -12,6 +12,8 @@ const isPartProblematic = (part, problematicNodes) => {
 }
 import OverhangsPreview from './OverhangsPreview'
 import { useDownloadData } from './useDownloadData'
+import LinkedPlasmidsTable from './LinkedPlasmidsTable'
+import { useLinkedPlasmids } from './useAssociatedPlasmids'
 
 const glyphOptions = [
   'assembly-scar',
@@ -94,8 +96,18 @@ function InfoEditDialog({ open, value, onClose, onSave }) {
   )
 }
 
+function UploadPlasmidsButton({ onFileChange }) {
+  const fileInputRef = React.useRef(null);
+  return (<>
+    <Button size="small" variant="contained" startIcon={<UploadIcon />} onClick={() => fileInputRef.current.click()}>Upload linked plasmids</Button>
+    <input type="file" multiple ref={fileInputRef} style={{ display: 'none' }} onChange={(event) => onFileChange(Array.from(event.target.files))} accept=".gbk,.gb,.fasta,.fa,.dna" />
+  </>
+  )
+}
+
 function AssemblePartWidget() {
   const { parts, addDefaultPart, setParts, problematicNodes, graphErrorMessage } = useFormData()
+  const { linkedPlasmids, uploadPlasmids } = useLinkedPlasmids()
   const [infoDialog, setInfoDialog] = React.useState({ open: false, rowId: null, value: '' })
   const apiRef = useGridApiRef()
   const downloadData = useDownloadData()
@@ -273,7 +285,7 @@ function AssemblePartWidget() {
   ], [handleDeleteRow, parts.length, renderValidatedCell])
 
   return (
-    <Box sx={{ p: 1.5, maxHeight: '100vh' }}>
+    <Box sx={{ p: 1.5 }}>
       <OverhangsPreview />
 
       <Paper sx={{ p: 1.5, mt: 2 }}>
@@ -333,7 +345,9 @@ function AssemblePartWidget() {
       <Paper sx={{ p: 1.5, mt: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
           <Typography variant="h6">Linked plasmids</Typography>
+          <UploadPlasmidsButton onFileChange={uploadPlasmids} />
         </Box>
+        <LinkedPlasmidsTable plasmids={linkedPlasmids} />
       </Paper>
 
       <InfoEditDialog
