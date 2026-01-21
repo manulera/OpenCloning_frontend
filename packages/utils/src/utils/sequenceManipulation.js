@@ -27,7 +27,7 @@ export function joinSequencesIntoSingleSequence(sequences, locations, orientatio
   const locations2join = [];
   const orientations2join = [];
 
-  if (!circularAssembly) {
+  if (!circularAssembly || (circularAssembly && sequences.length === 1)) {
     const firstSpacer = spacerSequences.shift();
     if (firstSpacer) {
       sequences2join.push(firstSpacer);

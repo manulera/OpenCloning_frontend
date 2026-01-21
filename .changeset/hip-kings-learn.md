@@ -10,3 +10,4 @@ Minor improvements and bug fixes:
 * change default minimum hib length to 14 for primer design
 * Gibson primer design: default to circular assembly, force circular for single input assemblies
 * Gibson primer design: make product sequence preview circular when assembly is circular
+* Primer design: in circular assemblies of one fragment only, display the spacer before the fragment in the preview.
