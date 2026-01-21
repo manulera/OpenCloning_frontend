@@ -59,6 +59,7 @@ export function joinSequencesIntoSingleSequence(sequences, locations, orientatio
   for (let i = 1; i < fragments.length; i++) {
     outputSequence = insertSequenceDataAtPositionOrRange(fragments[i], outputSequence, outputSequence.sequence.length);
   }
+  outputSequence.circular = circularAssembly;
   return outputSequence;
 }
 
