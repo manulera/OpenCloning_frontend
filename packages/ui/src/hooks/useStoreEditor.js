@@ -44,6 +44,7 @@ export default function useStoreEditor() {
               alignmentData: {
                 // the alignmentData just needs the sequence < TODO this has to be changed to be the largest ---
                 sequence: alignmentFiles[0].alignment[0],
+                name: sequenceData.name
               },
             },
             ...await Promise.all(alignmentFiles.map(async (aln) => {
@@ -75,6 +76,7 @@ export default function useStoreEditor() {
                 sequenceData: {...alignmentSequenceData, name: aln.file_name},
                 alignmentData: {
                   sequence: aln.alignment[1],
+                  name: aln.file_name
                 },
                 chromatogramData,
               };

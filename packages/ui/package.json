@@ -27,7 +27,7 @@
         "@opencloning/store": "workspace:*",
         "@opencloning/utils": "workspace:*",
         "@teselagen/bio-parsers": "^0.4.32",
-        "@teselagen/ove": "^0.8.18",
+        "@teselagen/ove": "^0.8.30",
         "@teselagen/range-utils": "^0.3.13",
         "@teselagen/sequence-utils": "^0.3.35",
         "@zip.js/zip.js": "^2.7.62",
