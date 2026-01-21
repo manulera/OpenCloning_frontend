@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { graphHasCycle, graphToMSA, partsToGraph } from '../graph_utils';
+import { graphToMSA, partsToGraph, graphHasCycle } from '@opencloning/ui/components/assembler';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {

@@ -24,7 +24,20 @@ export function partsToGraph(parts) {
   });
   return graph;
 }
-  
+
+export function partsToEdgesGraph(parts) {
+  const graph = new DirectedGraph();
+  for (const part of parts) {
+    for (const node of [part.left_overhang, part.right_overhang]) {
+      if (!graph.hasNode(node)) {
+        graph.addNode(node);
+      }
+    }
+    graph.mergeEdge(part.left_overhang, part.right_overhang);
+  }
+  return graph;
+}
+
 // Break cycles by removing incoming edges to a node
 export function openCycleAtNode(graph, cutNode) {
   for (const edge of graph.inEdges(cutNode)) {

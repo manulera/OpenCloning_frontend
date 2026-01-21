@@ -1,4 +1,6 @@
 import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from '@teselagen/sequence-utils';
+import { openCycleAtNode, partsToEdgesGraph } from './graph_utils';
+import { allSimplePaths } from 'graphology-simple-path';
 
 function tripletsToTranslation(triplets) {
   if (!triplets) return ''
@@ -78,9 +80,18 @@ export function getSimplifiedDigestFragments(sequence, circular, enzymes) {
   return simplifiedDigestFragments.concat(simplifiedDigestFragmentsRc);
 }
 
-export function assignSequenceToSyntaxPart(sequence, circular, enzymes, partKeys) {
+export function assignSequenceToSyntaxPart(sequence, circular, enzymes, parts) {
   const simplifiedDigestFragments = getSimplifiedDigestFragments(sequence, circular, enzymes);
-  const partKeysUpper = partKeys.map(key => key.toUpperCase());
-  const digestKeys = simplifiedDigestFragments.filter(f => f.left.forward && !f.right.forward).map(f => `${f.left.ovhg}-${f.right.ovhg}`.toUpperCase());
-  return partKeysUpper.filter(key => digestKeys.includes(key));
+  const graph = partsToEdgesGraph(parts)
+  openCycleAtNode(graph, parts[0].left_overhang);
+  const foundParts = [];
+  simplifiedDigestFragments
+    .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))
+    .forEach(fragment => {
+      const paths = allSimplePaths(graph, fragment.left.ovhg, fragment.right.ovhg);
+      if (paths.length > 0) {
+        foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg});
+      }
+    });
+  return foundParts;
 }
