@@ -105,6 +105,7 @@ export function FormDataProvider({ children }) {
   const [graph, setGraph] = React.useState(null);
   const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
   const [problematicNodes, setProblematicNodes] = React.useState([]);
+  const [enzyme, setEnzyme] = React.useState('BsaI');
 
   const addDefaultPart = useCallback(() => {
     setParts(prevParts => [...prevParts, { ...defaultPart, id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
@@ -164,7 +165,9 @@ export function FormDataProvider({ children }) {
     graphErrorMessage,
     problematicNodes,
     addDefaultPart,
-  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart]);
+    enzyme,
+    setEnzyme,
+  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, enzyme, setEnzyme]);
 
   return (
     <FormDataContext.Provider value={value}>

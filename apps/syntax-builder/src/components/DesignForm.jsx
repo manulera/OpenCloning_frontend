@@ -14,6 +14,7 @@ import OverhangsPreview from './OverhangsPreview'
 import { useDownloadData } from './useDownloadData'
 import LinkedPlasmidsTable from './LinkedPlasmidsTable'
 import { useLinkedPlasmids } from './useAssociatedPlasmids'
+import GeneralInfo from './GeneralInfo'
 
 const glyphOptions = [
   'assembly-scar',
@@ -286,6 +287,7 @@ function AssemblePartWidget() {
 
   return (
     <Box sx={{ p: 1.5 }}>
+      <GeneralInfo />
       <OverhangsPreview />
 
       <Paper sx={{ p: 1.5, mt: 2 }}>
