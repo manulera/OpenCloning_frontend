@@ -314,6 +314,21 @@ describe('Test primer designer functionality', () => {
     cy.contains('li', 'PCR with primers NC_003424_fwd and NC_003424_rvs').should('exist');
     cy.contains('li', 'Gibson assembly').should('exist');
   });
+  it('Gibson assembly primer design - single input', () => {
+    cy.viewport(1920, 1080);
+    manuallyTypeSequence('aagaattcaaaaGTCGACaacccccaagaattcaaaaGTCGACaa');
+    addSource('PCRSource');
+    cy.get('button').contains('Design primers').click();
+    clickMultiSelectOption('Purpose of primers', 'Gibson Assembly', 'li');
+    clickMultiSelectOption('Input sequences', 'name', 'li');
+    cy.get('button').contains('Design primers').click();
+    cy.get(`.veAxisTick[data-test="1"]`).first().click();
+    cy.get(`.veAxisTick[data-test="10"]`).first().click({ shiftKey: true });
+    cy.get('button').contains('Choose region').click();
+    checkCurrentStep('Other settings');
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.disabled');
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.checked');
+  });
 
   it('In-Fusion primer design', () => {
     loadExample('Gibson assembly');

@@ -29,7 +29,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
   const [selectedTab, setSelectedTab] = useState(0);
   const [sequenceProduct, setSequenceProduct] = useState(null);
   const [fragmentOrientations, setFragmentOrientations] = useState(Array(templateSequenceIds.length).fill('forward'));
-  const [circularAssembly, setCircularAssembly] = useState(false);
+  const [circularAssembly, setCircularAssembly] = useState(true);
   const [spacers, setSpacers] = useState(Array(templateSequenceIds.length + 1).fill(''));
 
   const spacersAreValid = React.useMemo(() => spacers.every((spacer) => !stringIsNotDNA(spacer)), [spacers]);
@@ -106,16 +106,15 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     setSequenceProduct(newSequenceProduct);
   }, [rois, spacersAreValid, fragmentOrientations, circularAssembly, designType, spacers, primerDesignSettings]);
 
-  const onCircularAssemblyChange = (event) => {
-    setCircularAssembly(event.target.checked);
-    if (event.target.checked) {
-      // Remove the first spacer
+
+  React.useEffect(() => {
+    if (circularAssembly) {
       setSpacers((current) => current.slice(1));
     } else {
-      // Add it again
       setSpacers((current) => ['', ...current]);
     }
-  };
+  }, [circularAssembly]);
+
 
   const onSelectRegion = (index, selectedRegion, allowSinglePosition = false) => {
     const { caretPosition } = selectedRegion;
@@ -318,7 +317,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     handleSelectRegion,
     sequenceIds,
     fragmentOrientations,
-    circularAssembly,
     spacers,
     setFragmentOrientations,
     setSpacers,
@@ -327,7 +325,8 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     primerDesignSettings,
     submissionPreventedMessage,
     addPrimers,
-    onCircularAssemblyChange,
+    circularAssembly,
+    setCircularAssembly,
     templateSequenceIds,
     templateSequenceNames,
     designType,
@@ -354,7 +353,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     primerDesignSettings,
     submissionPreventedMessage,
     addPrimers,
+    setCircularAssembly,
     templateSequenceIds,
+    templateSequenceNames,
     designType,
     steps,
   ]);

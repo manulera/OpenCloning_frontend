@@ -9,7 +9,8 @@ import { usePrimerDesign } from './PrimerDesignContext';
 import RestrictionSpacerForm from './RestrictionSpacerForm';
 
 function TabPannelSettings() {
-  const { error, templateSequenceIds, designType, selectedTab, sequenceIds, circularAssembly, onCircularAssemblyChange, designPrimers, primers, primerDesignSettings, submissionPreventedMessage } = usePrimerDesign();
+  const { error, templateSequenceIds, designType, selectedTab, sequenceIds, circularAssembly, setCircularAssembly, designPrimers, primers, primerDesignSettings, submissionPreventedMessage } = usePrimerDesign();
+  console.log(templateSequenceIds);
   return (
     <TabPanel value={selectedTab} index={sequenceIds.length}>
       <Box sx={{ width: '80%', margin: 'auto' }}>
@@ -32,12 +33,14 @@ function TabPannelSettings() {
               <FormControlLabel
                 control={(
                   <Checkbox
+                    data-test="circular-assembly-checkbox"
+                    disabled={templateSequenceIds.length === 1}
                     checked={circularAssembly}
-                    onChange={onCircularAssemblyChange}
+                    onChange={(e) => setCircularAssembly(e.target.checked)}
                     name="circular-assembly"
                   />
-                    )}
-                label="Circular assembly"
+                )}
+                label={templateSequenceIds.length === 1 ? 'Circular assembly (only one sequence input)' : 'Circular assembly'}
               />
             </FormControl>
           </Box>
