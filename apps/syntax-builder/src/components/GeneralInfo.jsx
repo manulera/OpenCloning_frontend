@@ -1,7 +1,10 @@
 import React from 'react'
 import { useFormData } from '../context/FormDataContext';
-import { Paper, Typography, Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
+import SectionWrapper from './SectionWrapper';
+
+const INPUT_MIN_LENGTH = 3;
 
 const enzymeOptions = Object.values(aliasedEnzymesByName).map((e) => e.name);
 
@@ -11,7 +14,7 @@ function GeneralInfo() {
 
   // Filter options based on input (require at least 2 characters)
   const filteredOptions = React.useMemo(() => {
-    if (inputValue.length < 3) {
+    if (inputValue.length < INPUT_MIN_LENGTH) {
       return [];
     }
     const lowerInput = inputValue.toLowerCase();
@@ -21,8 +24,7 @@ function GeneralInfo() {
   }, [inputValue]);
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6">General Info</Typography>
+    <SectionWrapper title="General Info">
       <Autocomplete
         value={enzyme || null}
         onChange={(event, newValue) => {
@@ -35,7 +37,7 @@ function GeneralInfo() {
         options={filteredOptions}
         getOptionLabel={(option) => option}
         isOptionEqualToValue={(option, value) => option === value}
-        noOptionsText={inputValue.length < 2 ? 'Type at least 2 characters to search' : 'No options found'}
+        noOptionsText={inputValue.length < INPUT_MIN_LENGTH ? `Type at least ${INPUT_MIN_LENGTH} characters to search` : 'No options found'}
         sx={{ mt: 2, maxWidth: 300 }}
         renderInput={(params) => (
           <TextField
@@ -45,7 +47,7 @@ function GeneralInfo() {
           />
         )}
       />
-    </Paper>
+    </SectionWrapper>
   )
 }
 

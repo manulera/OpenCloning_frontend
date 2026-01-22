@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo } from 'react'
-import { Paper, Box, Typography, Button, Alert, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tooltip } from '@mui/material'
+import { Box, Button, Alert, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tooltip } from '@mui/material'
 import { Delete as DeleteIcon, Download as DownloadIcon, AddCircle as AddCircleIcon } from '@mui/icons-material'
 import { useDownloadData } from './useDownloadData'
 import { useFormData, validatePart, validateField } from '../context/FormDataContext'
 import { DataGrid, GridActionsCellItem, useGridApiRef } from '@mui/x-data-grid'
 import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
 import GlyphEditCell from './GlyphEditCell'
+import SectionWrapper from './SectionWrapper'
 
 // Check if a part has a problematic overhang
 const isPartProblematic = (part, problematicNodes) => {
@@ -216,66 +217,55 @@ export default function PartsForm() {
   ], [handleDeleteRow, parts.length, renderValidatedCell])
 
   return (
-    <>
-      <Paper sx={{ p: 1.5, mt: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography variant="h6">Parts Info</Typography>
-          <Button
-            size="small"
-            variant="contained"
-            startIcon={<DownloadIcon />}
-            onClick={downloadData}
-          >
-        Download data
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            startIcon={<AddCircleIcon />}
-            onClick={addDefaultPart}
-          >
-        Add Part
-          </Button>
-        </Box>
-
+    <SectionWrapper title="Parts Info" actions={
+      <>
+        <Button size="small" variant="contained" startIcon={<DownloadIcon />} onClick={downloadData}>
+            Download data
+        </Button>
+        <Button size="small" variant="contained" startIcon={<AddCircleIcon />} onClick={addDefaultPart}>
+            Add Part
+        </Button>
         {graphErrorMessage && graphErrorMessage.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             {graphErrorMessage}
           </Alert>
         )}
-        <DataGrid
-          apiRef={apiRef}
-          rows={parts}
-          columns={columns}
-          onCellClick={handleCellClick}
-          getRowClassName={getRowClassName}
-          density="compact"
-          disableRowSelectionOnClick
-          disableColumnSorting
-          disableColumnFilter
-          disableColumnMenu
-          hideFooter
-          autoHeight
-          sx={{
-            '& .MuiDataGrid-cell': { fontSize: '0.875rem' },
-            '& .MuiDataGrid-columnHeader': { fontWeight: 'bold' },
-            '& .problematic-row': { 
-              backgroundColor: 'rgba(255, 152, 0, 0.15)',
-              '&:hover': { backgroundColor: 'rgba(255, 152, 0, 0.25)' }
-            },
-            '& .error-row': {
-              backgroundColor: 'rgba(255, 0, 0, 0.15)',
-              '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.25)' }
-            }
-          }}
-        />
-      </Paper>
+      </>
+    }>
+      
+      <DataGrid
+        apiRef={apiRef}
+        rows={parts}
+        columns={columns}
+        onCellClick={handleCellClick}
+        getRowClassName={getRowClassName}
+        density="compact"
+        disableRowSelectionOnClick
+        disableColumnSorting
+        disableColumnFilter
+        disableColumnMenu
+        hideFooter
+        autoHeight
+        sx={{
+          '& .MuiDataGrid-cell': { fontSize: '0.875rem' },
+          '& .MuiDataGrid-columnHeader': { fontWeight: 'bold' },
+          '& .problematic-row': { 
+            backgroundColor: 'rgba(255, 152, 0, 0.15)',
+            '&:hover': { backgroundColor: 'rgba(255, 152, 0, 0.25)' }
+          },
+          '& .error-row': {
+            backgroundColor: 'rgba(255, 0, 0, 0.15)',
+            '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.25)' }
+          }
+        }}
+      />
+      
       <InfoEditDialog
         open={infoDialog.open}
         value={infoDialog.value}
         onClose={() => setInfoDialog({ open: false, rowId: null, value: '' })}
         onSave={handleInfoSave}
       />
-    </>
+    </SectionWrapper>
   )
 }

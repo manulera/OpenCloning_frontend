@@ -3,6 +3,7 @@ import { useFormData } from '../context/FormDataContext';
 import { Paper, Box, Typography, FormControlLabel, Switch, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { AssemblerPart, AssemblerPartContainer, AssemblerPartCore, DisplayInside, DisplayOverhang } from '@opencloning/ui/components/assembler';
 import { GRAPH_SPACER, graphToMSA, partDataToDisplayData } from '@opencloning/ui/components/assembler';
+import SectionWrapper from './SectionWrapper';
 
 function OverhangRow({ row, mode = 'detailed' }) {
   const {parts} = useFormData();
@@ -95,21 +96,19 @@ function OverhangsPreview() {
 
   if (graph) {
     return (
-      <Paper sx={{ p: 2, mt: 2}}>
-        <Box sx={{ display: 'flex', gap: 3, alignItems: 'center', mb: 1.5 }}>
-          <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
-              Parts Preview
-          </Typography>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={mode === 'detailed'}
-                onChange={(e) => setMode(e.target.checked ? 'detailed' : 'compact')}
-              />
-            }
-            label={mode === 'compact' ? 'Compact' : 'Detailed'}
-          />
-        </Box>
+      <SectionWrapper title="Parts Preview" actions={
+        <FormControlLabel
+          control={
+            <Switch
+              checked={mode === 'detailed'}
+              onChange={(e) => setMode(e.target.checked ? 'detailed' : 'compact')}
+            />
+          }
+          label={mode === 'compact' ? 'Compact' : 'Detailed'}
+        />
+      }>
+
+
         <Box sx={{ overflowY: 'auto', overflowX: 'auto' }}>
           <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
             <TableBody>
@@ -119,7 +118,7 @@ function OverhangsPreview() {
             </TableBody>
           </Table>
         </Box>
-      </Paper>
+      </SectionWrapper>
     )}
 }
 
