@@ -13,6 +13,7 @@ const isPartProblematic = (part, problematicNodes) => {
   return problematicNodes.includes(`${part.left_overhang}-${part.right_overhang}`)
 }
 
+// Info cell dialog for long text editing
 function InfoEditDialog({ open, value, onClose, onSave }) {
   const [tempValue, setTempValue] = React.useState(value || '')
   
