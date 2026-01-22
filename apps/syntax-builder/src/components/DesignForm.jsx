@@ -1,101 +1,15 @@
-import React, { useCallback, useMemo } from 'react'
-import { DataGrid, GridActionsCellItem, useGridApiContext, useGridApiRef } from '@mui/x-data-grid'
-import { Box, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Tooltip, Alert } from '@mui/material'
-import { AddCircle as AddCircleIcon, Delete as DeleteIcon, Download as DownloadIcon, Upload as UploadIcon } from '@mui/icons-material'
-import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
-import { useFormData, validateField, validatePart } from '../context/FormDataContext'
+import React from 'react'
 
-// Check if a part has a problematic overhang
-const isPartProblematic = (part, problematicNodes) => {
-  if (!problematicNodes || problematicNodes.length === 0) return false
-  return problematicNodes.includes(`${part.left_overhang}-${part.right_overhang}`)
-}
+import { Box, Paper, Typography, Button } from '@mui/material'
+import { Upload as UploadIcon } from '@mui/icons-material'
+
+
 import OverhangsPreview from './OverhangsPreview'
-import { useDownloadData } from './useDownloadData'
 import LinkedPlasmidsTable from './LinkedPlasmidsTable'
 import { useLinkedPlasmids } from './useAssociatedPlasmids'
 import GeneralInfo from './GeneralInfo'
+import PartsForm from './PartsForm'
 
-const glyphOptions = [
-  'assembly-scar',
-  'cds',
-  'cds-stop',
-  'chromosomal-locus',
-  'engineered-region',
-  'five-prime-sticky-restriction-site',
-  'origin-of-replication',
-  'primer-binding-site',
-  'promoter',
-  'ribosome-entry-site',
-  'specific-recombination-site',
-  'terminator',
-  'three-prime-sticky-restriction-site',
-]
-
-// Custom edit component for glyph field
-function GlyphEditCell(props) {
-  const { id, value, field } = props
-  const apiRef = useGridApiContext()
-
-  const handleChange = (event) => {
-    apiRef.current.setEditCellValue({ id, field, value: event.target.value })
-  }
-
-  return (
-    <Select
-      value={value || 'engineered-region'}
-      onChange={handleChange}
-      fullWidth
-      size="small"
-      autoFocus
-      sx={{ fontSize: '0.875rem' }}
-    >
-      {glyphOptions.map((option) => (
-        <MenuItem key={option} value={option}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <img 
-              src={getSvgByGlyph(option)} 
-              alt={option}
-              style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-            />
-            <span>{option}</span>
-          </Box>
-        </MenuItem>
-      ))}
-    </Select>
-  )
-}
-
-// Info cell dialog for long text editing
-function InfoEditDialog({ open, value, onClose, onSave }) {
-  const [tempValue, setTempValue] = React.useState(value || '')
-
-  React.useEffect(() => {
-    if (open) setTempValue(value || '')
-  }, [open, value])
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Edit Info Text</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          multiline
-          rows={6}
-          fullWidth
-          value={tempValue}
-          onChange={(e) => setTempValue(e.target.value.replace(/\n/g, ''))}
-          placeholder="Enter info text..."
-          sx={{ mt: 1 }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={() => onSave(tempValue)} variant="contained">Save</Button>
-      </DialogActions>
-    </Dialog>
-  )
-}
 
 function UploadPlasmidsButton({ onFileChange }) {
   const fileInputRef = React.useRef(null);
@@ -107,243 +21,14 @@ function UploadPlasmidsButton({ onFileChange }) {
 }
 
 function AssemblePartWidget() {
-  const { parts, addDefaultPart, setParts, problematicNodes, graphErrorMessage } = useFormData()
   const { linkedPlasmids, uploadPlasmids } = useLinkedPlasmids()
-  const [infoDialog, setInfoDialog] = React.useState({ open: false, rowId: null, value: '' })
-  const apiRef = useGridApiRef()
-  const downloadData = useDownloadData()
-  const processRowUpdate = useCallback((newRow) => {
-    setParts(prevParts => 
-      prevParts.map(part => 
-        part.id === newRow.id ? newRow : part
-      )
-    )
-    return newRow
-  }, [setParts])
-
-
-  const handleDeleteRow = useCallback((id) => () => {
-    setParts(prevParts => prevParts.filter(part => part.id !== id))
-  }, [setParts])
-
-  const handleCellClick = useCallback((params) => {
-    if (params.field === 'info') {
-      setInfoDialog({ open: true, rowId: params.id, value: params.value })
-    } else if (params.field !== 'actions' && params.isEditable && params.cellMode !== 'edit') {
-      apiRef.current.startCellEditMode({ id: params.id, field: params.field })
-    }
-  }, [apiRef])
-
-  const getRowClassName = useCallback((params) => {
-    if (!validatePart(params.row)) return 'error-row'
-    return isPartProblematic(params.row, problematicNodes) ? 'problematic-row' : ''
-  }, [problematicNodes])
-
-  const handleInfoSave = useCallback((newValue) => {
-    setParts(prevParts => 
-      prevParts.map(part => 
-        part.id === infoDialog.rowId 
-          ? { ...part, info: newValue } 
-          : part
-      )
-    )
-    setInfoDialog({ open: false, rowId: null, value: '' })
-  }, [infoDialog.rowId, setParts])
-
-  // Render cell with validation error display
-  const renderValidatedCell = useCallback((field, params) => {
-    const errorMessage = validateField(field, params.value, params.row)
-    return (
-      <Tooltip title={errorMessage || ''} placement="top" arrow>
-        <Box sx={{ 
-          color: errorMessage ? 'error.main' : 'inherit',
-          fontWeight: errorMessage ? 'bold' : 'normal',
-          width: '100%'
-        }}>
-          {params.value ?? ''}
-        </Box>
-      </Tooltip>
-    )
-  }, [])
-
-  const columns = useMemo(() => [
-    {
-      field: 'actions',
-      type: 'actions',
-      headerName: '',
-      width: 50,
-      getActions: (params) => [
-        <GridActionsCellItem
-          key="delete"
-          icon={<DeleteIcon />}
-          label="Delete"
-          onClick={handleDeleteRow(params.id)}
-          disabled={parts.length === 1}
-          color="error"
-        />
-      ]
-    },
-    { 
-      field: 'name', 
-      headerName: 'Name', 
-      flex: 1,
-      editable: true 
-    },
-    { 
-      field: 'info', 
-      headerName: 'Info', 
-      flex: 1,
-      editable: false,
-      renderCell: (params) => (
-        <Box sx={{ cursor: 'pointer', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {params.value ? (params.value.length > 30 ? `${params.value.substring(0, 30)}...` : params.value) : 'Click to edit...'}
-        </Box>
-      )
-    },
-    { 
-      field: 'glyph', 
-      headerName: 'Glyph', 
-      flex: 1,
-      editable: true,
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <img src={getSvgByGlyph(params.value)} alt={params.value} style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
-          <span>{params.value}</span>
-        </Box>
-      ),
-      renderEditCell: (params) => <GlyphEditCell {...params} />
-    },
-    { 
-      field: 'left_overhang', 
-      headerName: 'Left Overhang', 
-      flex: 1,
-      editable: true,
-      renderCell: (params) => renderValidatedCell('left_overhang', params),
-      valueParser: (value) => (value || '').toUpperCase().replace(/[^ACGT]/g, '')
-    },
-    { 
-      field: 'right_overhang', 
-      headerName: 'Right Overhang', 
-      flex: 1,
-      editable: true,
-      renderCell: (params) => renderValidatedCell('right_overhang', params),
-      valueParser: (value) => (value || '').toUpperCase().replace(/[^ACGT]/g, '')
-    },
-    { 
-      field: 'left_inside', 
-      headerName: 'Left Inside', 
-      flex: 1,
-      editable: true,
-      renderCell: (params) => renderValidatedCell('left_inside', params),
-      valueParser: (value) => (value || '').toUpperCase().replace(/[^ACGTN]/g, '')
-    },
-    { 
-      field: 'right_inside', 
-      headerName: 'Right Inside', 
-      flex: 1,
-      editable: true,
-      renderCell: (params) => renderValidatedCell('right_inside', params),
-      valueParser: (value) => (value || '').toUpperCase().replace(/[^ACGTN]/g, '')
-    },
-    { 
-      field: 'left_codon_start', 
-      headerName: 'Left Codon Start', 
-      flex: 1,
-      type: 'number',
-      editable: true,
-      valueParser: (value) => Math.max(0, parseInt(value, 10) || 0)
-    },
-    { 
-      field: 'right_codon_start', 
-      headerName: 'Right Codon Start', 
-      flex: 1,
-      type: 'number',
-      editable: true,
-      valueParser: (value) => Math.max(0, parseInt(value, 10) || 0)
-    },
-    { 
-      field: 'color', 
-      headerName: 'Color', 
-      flex: 1,
-      editable: true,
-      renderCell: (params) => {
-        const errorMessage = validateField('color', params.value)
-        return (
-          <Tooltip title={errorMessage || ''} placement="top" arrow>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ 
-                width: 20, height: 20, 
-                backgroundColor: errorMessage ? 'transparent' : (params.value || 'transparent'),
-                border: errorMessage ? '2px solid red' : '1px solid #ccc',
-                borderRadius: '4px'
-              }} />
-              <span style={{ color: errorMessage ? 'red' : 'inherit' }}>{params.value}</span>
-            </Box>
-          </Tooltip>
-        )
-      }
-    },
-  ], [handleDeleteRow, parts.length, renderValidatedCell])
 
   return (
     <Box sx={{ p: 1.5 }}>
       <GeneralInfo />
       <OverhangsPreview />
+      <PartsForm />
 
-      <Paper sx={{ p: 1.5, mt: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography variant="h6">Parts Info</Typography>
-          <Button
-            size="small"
-            variant="contained"
-            startIcon={<DownloadIcon />}
-            onClick={downloadData}
-          >
-            Download data
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            startIcon={<AddCircleIcon />}
-            onClick={addDefaultPart}
-          >
-            Add Part
-          </Button>
-        </Box>
-
-        {graphErrorMessage && graphErrorMessage.length > 0 && (
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            {graphErrorMessage}
-          </Alert>
-        )}
-        <DataGrid
-          apiRef={apiRef}
-          rows={parts}
-          columns={columns}
-          processRowUpdate={processRowUpdate}
-          onCellClick={handleCellClick}
-          getRowClassName={getRowClassName}
-          density="compact"
-          disableRowSelectionOnClick
-          disableColumnSorting
-          disableColumnFilter
-          disableColumnMenu
-          hideFooter
-          autoHeight
-          sx={{
-            '& .MuiDataGrid-cell': { fontSize: '0.875rem' },
-            '& .MuiDataGrid-columnHeader': { fontWeight: 'bold' },
-            '& .problematic-row': { 
-              backgroundColor: 'rgba(255, 152, 0, 0.15)',
-              '&:hover': { backgroundColor: 'rgba(255, 152, 0, 0.25)' }
-            },
-            '& .error-row': {
-              backgroundColor: 'rgba(255, 0, 0, 0.15)',
-              '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.25)' }
-            }
-          }}
-        />
-      </Paper>
       <Paper sx={{ p: 1.5, mt: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
           <Typography variant="h6">Linked plasmids</Typography>
@@ -352,12 +37,6 @@ function AssemblePartWidget() {
         <LinkedPlasmidsTable plasmids={linkedPlasmids} />
       </Paper>
 
-      <InfoEditDialog
-        open={infoDialog.open}
-        value={infoDialog.value}
-        onClose={() => setInfoDialog({ open: false, rowId: null, value: '' })}
-        onSave={handleInfoSave}
-      />
     </Box>
   )
 }

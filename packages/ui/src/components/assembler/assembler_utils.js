@@ -1,5 +1,4 @@
 import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getSequenceDataBetweenRange } from '@teselagen/sequence-utils';
-import { openCycleAtNode, partsToEdgesGraph } from './graph_utils';
 import { allSimplePaths } from 'graphology-simple-path';
 
 function tripletsToTranslation(triplets) {

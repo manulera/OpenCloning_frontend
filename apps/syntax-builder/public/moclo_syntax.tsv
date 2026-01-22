@@ -1,0 +1,15 @@
+id	name	info	glyph	left_overhang	right_overhang	left_inside	right_inside	left_codon_start	right_codon_start	color
+1	1	Assembly connector	three-prime-sticky-restriction-site	CCCT	AACG			0	0	#84c5de
+2	2	Promoter	promoter	AACG	TATG			0	0	#a9d55e
+3	3	Coding sequence	cds	TATG	ATCC			0	0	#f3eb91
+4	4	Terminator	terminator	ATCC	GCTG			0	0	#ed8d9c
+5	5	Assembly connector	five-prime-sticky-restriction-site	GCTG	TACA			0	0	#8c69d4
+6	6	Yeast marker	engineered-region	TACA	GAGT			0	0	#f5d091
+7	7	Yeast plasmid origin of replication / Yeast 5' homology arm	engineered-region	GAGT	CCGA			0	0	#8b6239
+8	8	Bacterial marker and origin	engineered-region	CCGA	CCCT			0	0	#7e7e7e
+9	3a	N-term part	cds	TATG	TTCT			0	0	#f3eb91
+10	3b	C-term part	cds	TTCT	ATCC			0	0	#f3eb91
+11	4a	C-term (extra)	cds	ATCC	TGGC			0	0	#ed8d9c
+12	4b	Terminator	terminator	TGGC	GCTG			0	0	#ed8d9c
+13	8a	Bacterial marker and origin	origin-of-replication	CCGA	CAAT			0	0	#7e7e7e
+14	8b	Yeast 3' homology arm	engineered-region	CAAT	CCCT			0	0	#7e7e7e
