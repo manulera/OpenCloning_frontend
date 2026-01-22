@@ -16,12 +16,22 @@ import {
 import { useLinkedPlasmids } from './useAssociatedPlasmids';
 
 
+function PartChip({ name, overhang}) {
+  const label = name ? `${overhang} (${name})` : overhang;
+  return (
+    <Chip label={label} size="small" sx={{ fontSize: '0.7rem', height: 20, fontFamily: 'monospace' }}
+    />
+  )
+}
+
+
 function PlasmidRow({ plasmid }) {
   const { name, appData } = plasmid;
-  const { fileName, correspondingParts, partInfo, longestFeature } = appData;
+  const { fileName, correspondingParts, correspondingPartsNames, partInfo, longestFeature } = appData;
   let sx = undefined;
-  let infoStr = '';
+  let infoStr = '-';
   let longestFeatureStr = '-';
+  let noParts = partInfo.length === 0;
   if (partInfo.length === 1) {
     sx = {
       backgroundColor: partInfo[0]?.color,
@@ -47,27 +57,12 @@ function PlasmidRow({ plasmid }) {
         </Typography>
       </TableCell>
       <TableCell sx={multipleParts ? {backgroundColor: 'red'} : null}>
-        {correspondingParts && correspondingParts.length > 0 ? (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {correspondingParts.slice(0, 2).map((part, idx) => (
-              <Chip 
-                key={idx} 
-                label={part} 
-                size="small" 
-                sx={{ fontSize: '0.7rem', height: 20, fontFamily: 'monospace' }}
-              />
-            ))}
-            {correspondingParts.length > 2 && (
-              <Chip 
-                label={`+${correspondingParts.length - 2}`} 
-                size="small" 
-                sx={{ fontSize: '0.7rem', height: 20 }}
-              />
-            )}
-          </Box>
-        ) : (
-          <Typography variant="body2" color="text.secondary">-</Typography>
-        )}
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {noParts ? '-' : correspondingParts.map((part, idx) => (
+            <PartChip key={idx} name={correspondingPartsNames[idx]} overhang={part}
+            />
+          ))}
+        </Box>
       </TableCell>
       <TableCell>
         <Typography variant="body2">{infoStr}</Typography>
@@ -111,7 +106,7 @@ function LinkedPlasmidsTable() {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>File Name</TableCell>
-              <TableCell>Part</TableCell>
+              <TableCell>Overhangs</TableCell>
               <TableCell>Part Info</TableCell>
               <TableCell>Longest Feature</TableCell>
             </TableRow>

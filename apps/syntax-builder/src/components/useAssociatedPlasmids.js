@@ -7,7 +7,7 @@ import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
 import defaultPlasmids from './linkedPlasmids.json'
 
 export function useLinkedPlasmids() {
-  const { parts, enzyme } = useFormData();
+  const { parts, enzyme, overhangNames } = useFormData();
 
   const graph = React.useMemo(() => partsToEdgesGraph(parts), [parts]);
   const partDictionary = React.useMemo(() => parts.reduce((acc, part) => {
@@ -22,15 +22,25 @@ export function useLinkedPlasmids() {
     const enzymes = [aliasedEnzymesByName[enzyme.toLowerCase()]];
     const correspondingParts = assignSequenceToSyntaxPart(plasmid, enzymes, graph);
     const correspondingPartsStr = correspondingParts.map(part => `${part.left_overhang}-${part.right_overhang}`);
+    const correspondingPartsNames = correspondingParts.map(part => {
+      let namePart = '';
+      const leftName = overhangNames[part.left_overhang];
+      const rightName = overhangNames[part.right_overhang];
+      if (leftName || rightName) {
+        namePart = `${leftName || part.left_overhang}-${rightName || part.right_overhang}`;
+      }
+      return namePart;
+    });
     return {
       ...plasmid,
       appData: {
         ...plasmid.appData,
         correspondingParts: correspondingPartsStr,
         partInfo: correspondingPartsStr.map(partStr => partDictionary[partStr]),
+        correspondingPartsNames: correspondingPartsNames,
         longestFeature: correspondingParts.map(part => part.longestFeature)
       } };
-  }), [graph, partDictionary, enzyme]);
+  }), [graph, partDictionary, enzyme, overhangNames]);
 
   React.useEffect(() => {
     enzyme && setLinkedPlasmids((prevLinkedPlasmids) => assignPlasmids(prevLinkedPlasmids));
