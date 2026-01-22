@@ -14,6 +14,7 @@ import {
   Button
 } from '@mui/material'
 import { useLinkedPlasmids } from './useAssociatedPlasmids';
+import SectionWrapper from './SectionWrapper';
 
 
 function PartChip({ name, overhang}) {
@@ -87,11 +88,7 @@ function UploadPlasmidsButton({ onFileChange }) {
 function LinkedPlasmidsTable() {
   const { linkedPlasmids: plasmids, uploadPlasmids } = useLinkedPlasmids()
   return (
-    <Paper sx={{ p: 1.5, mt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-        <Typography variant="h6">Linked plasmids</Typography>
-        <UploadPlasmidsButton onFileChange={uploadPlasmids} />
-      </Box>
+    <SectionWrapper title="Linked plasmids" actions={<UploadPlasmidsButton onFileChange={uploadPlasmids} />}>
       <TableContainer 
         sx={{ 
           maxHeight: 600,
@@ -118,7 +115,7 @@ function LinkedPlasmidsTable() {
           </TableBody>
         </Table>
       </TableContainer>
-    </Paper>
+    </SectionWrapper>
   )
 }
 
