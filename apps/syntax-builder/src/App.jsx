@@ -13,7 +13,7 @@ function AppContent() {
   const { parts } = useFormData();
   const [overhangsStep, setOverhangsStep] = React.useState(false);
 
-  const renderContent = () => {
+  const renderContent = React.useCallback(() => {
     if (overhangsStep) {
       return <OverhangsStep setOverhangsStep={setOverhangsStep}/>;
     }
@@ -21,14 +21,13 @@ function AppContent() {
       return <StartingPage setOverhangsStep={setOverhangsStep}/>;
     }
     return <DesignForm />;
-  };
+  }, [overhangsStep, parts]);
 
   return (
     <Box sx={{ 
       width: '100%', 
       minHeight: '100vh', 
-      bgcolor: 'background.default'
-    }}>
+    }} className="app-content">
       <Container maxWidth="xl" sx={{ py: 3, pb: 5, minHeight: 'auto' }}>
         <Box sx={{ mb: 3 }}>
           {renderContent()}

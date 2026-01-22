@@ -17,3 +17,7 @@ body {
 .left_overhang, .right_overhang, .left_inside, .right_inside {
   font-family: monospace;
 }
+
+.app-content {
+  background-color: rgb(240, 240, 240);
+}

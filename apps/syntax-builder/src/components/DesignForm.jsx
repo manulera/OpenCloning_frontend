@@ -6,6 +6,7 @@ import GeneralInfo from './GeneralInfo'
 import PartsForm from './PartsForm'
 import LinkedPlasmidsTable from './LinkedPlasmidsTable'
 import OverhangNamesForm from './OverhangNamesForm'
+import ResetButton from './ResetButton'
 
 
 function AssemblePartWidget() {
@@ -16,6 +17,7 @@ function AssemblePartWidget() {
       <PartsForm />
       <OverhangNamesForm />
       <LinkedPlasmidsTable />
+      <ResetButton />
     </Box>
   )
 }
