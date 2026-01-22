@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormData } from '../context/FormDataContext';
-import { Paper, Box, Typography, FormControlLabel, Switch, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { Box, Typography, FormControlLabel, Switch, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { AssemblerPart, AssemblerPartContainer, AssemblerPartCore, DisplayInside, DisplayOverhang } from '@opencloning/ui/components/assembler';
 import { GRAPH_SPACER, graphToMSA, partDataToDisplayData } from '@opencloning/ui/components/assembler';
 import SectionWrapper from './SectionWrapper';
