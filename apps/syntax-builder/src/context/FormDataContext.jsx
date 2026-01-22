@@ -123,21 +123,21 @@ export function FormDataProvider({ children }) {
 
   React.useEffect(() => {
     const allOverhangs = allOverhangsFromParts(parts);
-    console.log('allOverhangs', allOverhangs);
     setOverhangNames(prev => {
+      const newOverhangNames = { ...prev };
       // Remove entries that are not in the parts
-      for (const overhang of Object.keys(prev)) {
+      for (const overhang of Object.keys(newOverhangNames)) {
         if (!allOverhangs.includes(overhang)) {
-          delete prev[overhang];
+          delete newOverhangNames[overhang];
         }
       }
       // Add new entries
       for (const overhang of allOverhangs) {
-        if (!prev[overhang]) {
-          prev[overhang] = '';
+        if (!newOverhangNames[overhang]) {
+          newOverhangNames[overhang] = '';
         }
       }
-      return prev;
+      return newOverhangNames;
 
     })
   }, [parts]);

@@ -5,7 +5,7 @@ import OverhangsPreview from './OverhangsPreview'
 import GeneralInfo from './GeneralInfo'
 import PartsForm from './PartsForm'
 import LinkedPlasmidsTable from './LinkedPlasmidsTable'
-import OverhangNames from './OverhangNames'
+import OverhangNamesForm from './OverhangNamesForm'
 
 
 function AssemblePartWidget() {
@@ -14,7 +14,7 @@ function AssemblePartWidget() {
       <GeneralInfo />
       <OverhangsPreview />
       <PartsForm />
-      <OverhangNames />
+      <OverhangNamesForm />
       <LinkedPlasmidsTable />
     </Box>
   )

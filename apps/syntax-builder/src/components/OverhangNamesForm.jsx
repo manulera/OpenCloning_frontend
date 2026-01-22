@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextF
 function OverhangNamesForm() {
   const { overhangNames, updateOverhangName } = useFormData();
   const allOverhangs = React.useMemo(() => Object.keys(overhangNames), [overhangNames]);
-
   return (
     <SectionWrapper title="Overhang Names">
       <TableContainer>
