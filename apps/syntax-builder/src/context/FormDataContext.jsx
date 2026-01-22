@@ -94,6 +94,19 @@ export const defaultPart = {
 
 export const defaultFields = ['id', ...Object.keys(defaultPart)];
 
+export const allOverhangsFromParts = (parts) => {
+  const overhangs = [];
+  parts.forEach(part => {
+    if (part.left_overhang && !overhangs.includes(part.left_overhang)) {
+      overhangs.push(part.left_overhang);
+    }
+    if (part.right_overhang && !overhangs.includes(part.right_overhang)) {
+      overhangs.push(part.right_overhang);
+    }
+  });
+  return overhangs;
+}
+
 export function FormDataProvider({ children }) {
 
   const [submission, setSubmission] = React.useState({
@@ -102,10 +115,36 @@ export function FormDataProvider({ children }) {
     doi: '',
   });
   const [parts, setParts] = React.useState(mocloParts);
+  const [overhangNames, setOverhangNames] = React.useState({});
   const [graph, setGraph] = React.useState(null);
   const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
   const [problematicNodes, setProblematicNodes] = React.useState([]);
   const [enzyme, setEnzyme] = React.useState('BsaI');
+
+  React.useEffect(() => {
+    const allOverhangs = allOverhangsFromParts(parts);
+    console.log('allOverhangs', allOverhangs);
+    setOverhangNames(prev => {
+      // Remove entries that are not in the parts
+      for (const overhang of Object.keys(prev)) {
+        if (!allOverhangs.includes(overhang)) {
+          delete prev[overhang];
+        }
+      }
+      // Add new entries
+      for (const overhang of allOverhangs) {
+        if (!prev[overhang]) {
+          prev[overhang] = '';
+        }
+      }
+      return prev;
+
+    })
+  }, [parts]);
+
+  const updateOverhangName = React.useCallback((overhang, name) => {
+    setOverhangNames(prev => ({ ...prev, [overhang]: name }));
+  }, [setOverhangNames]);
 
   const addDefaultPart = useCallback(() => {
     setParts(prevParts => [...prevParts, { ...defaultPart, id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
@@ -167,7 +206,9 @@ export function FormDataProvider({ children }) {
     addDefaultPart,
     enzyme,
     setEnzyme,
-  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, enzyme, setEnzyme]);
+    overhangNames,
+    updateOverhangName,
+  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, enzyme, setEnzyme, overhangNames, updateOverhangName]);
 
   return (
     <FormDataContext.Provider value={value}>

@@ -54,7 +54,7 @@ function PlasmidRow({ plasmid }) {
                 key={idx} 
                 label={part} 
                 size="small" 
-                sx={{ fontSize: '0.7rem', height: 20 }}
+                sx={{ fontSize: '0.7rem', height: 20, fontFamily: 'monospace' }}
               />
             ))}
             {correspondingParts.length > 2 && (

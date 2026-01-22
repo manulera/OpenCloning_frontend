@@ -86,7 +86,7 @@ export default function PartsForm() {
     const errorMessage = validateField(field, params.value, params.row)
     return (
       <Tooltip title={errorMessage || ''} placement="top" arrow>
-        <Box sx={{ 
+        <Box className={field} sx={{ 
           color: errorMessage ? 'error.main' : 'inherit',
           fontWeight: errorMessage ? 'bold' : 'normal',
           width: '100%'
