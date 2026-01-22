@@ -219,11 +219,11 @@ export default function PartsForm() {
   return (
     <SectionWrapper title="Parts Info" actions={
       <>
-        <Button size="small" variant="contained" startIcon={<DownloadIcon />} onClick={downloadData}>
-            Download data
-        </Button>
         <Button size="small" variant="contained" startIcon={<AddCircleIcon />} onClick={addDefaultPart}>
             Add Part
+        </Button>
+        <Button size="small" variant="contained" startIcon={<DownloadIcon />} onClick={downloadData}>
+            Download data
         </Button>
         {graphErrorMessage && graphErrorMessage.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>

@@ -52,7 +52,7 @@ export function useLinkedPlasmids() {
       const sequenceData = data[0].parsedSequence;
       // Force circular
       sequenceData.circular = true;
-      return {...sequenceData, appData: { fileName: file.name, correspondingParts: [], partInfo: [] } };
+      return {...sequenceData, appData: { fileName: file.name, correspondingParts: [], partInfo: [], correspondingPartsNames: [] } };
     }));
     if (enzyme) {
       setLinkedPlasmids(assignPlasmids(plasmids));

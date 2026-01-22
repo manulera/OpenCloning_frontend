@@ -242,7 +242,9 @@
         "appData": {
             "fileName": "pYTK001.gb",
             "correspondingParts": [],
-            "partInfo": []
+            "partInfo": [],
+            "correspondingPartsNames": [],
+            "longestFeature": []
         }
     },
     {
@@ -494,6 +496,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#84c5de"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ConS",
+                    "start": 19,
+                    "end": 161,
+                    "annotationTypePlural": "features",
+                    "id": "M-0KXHUNor",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -748,6 +777,33 @@
                     "right_codon_start": 0,
                     "color": "#84c5de"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con1",
+                    "start": 19,
+                    "end": 161,
+                    "annotationTypePlural": "features",
+                    "id": "QqO0AevY4El",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -1000,6 +1056,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#84c5de"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con2",
+                    "start": 19,
+                    "end": 161,
+                    "annotationTypePlural": "features",
+                    "id": "d6J4zUfLiJq",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -1254,6 +1337,33 @@
                     "right_codon_start": 0,
                     "color": "#84c5de"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con3",
+                    "start": 19,
+                    "end": 161,
+                    "annotationTypePlural": "features",
+                    "id": "5RiekBuPUM2",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -1506,6 +1616,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#84c5de"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con4",
+                    "start": 19,
+                    "end": 161,
+                    "annotationTypePlural": "features",
+                    "id": "qEqfQmE9zJd",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -1760,6 +1897,33 @@
                     "right_codon_start": 0,
                     "color": "#84c5de"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con5",
+                    "start": 19,
+                    "end": 161,
+                    "annotationTypePlural": "features",
+                    "id": "o2lSOnysOgu",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -1994,6 +2158,33 @@
                     "right_codon_start": 0,
                     "color": "#84c5de"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ConS",
+                    "start": 30,
+                    "end": 172,
+                    "annotationTypePlural": "features",
+                    "id": "hY8z5300ktm",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -2199,6 +2390,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScTDH3 Promoter",
+                    "start": 4,
+                    "end": 683,
+                    "annotationTypePlural": "features",
+                    "id": "ia54F-cKWAJ",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -2406,6 +2624,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScCCW12 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "iwa8ExBIPgB",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -2610,6 +2855,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScPGK1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "ED-UQDOK_VY",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -2816,6 +3088,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScHHF2 Promoter",
+                    "start": 4,
+                    "end": 679,
+                    "annotationTypePlural": "features",
+                    "id": "CBote7BZFAH",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -3020,6 +3319,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScTEF1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "kTeCKJTYIJD",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -3227,6 +3553,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScTEF2 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "WZzB3GuMNGz",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -3431,6 +3784,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScHHF1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "BTJk87lwIJh",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -3638,6 +4018,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScHTB2 Promoter",
+                    "start": 4,
+                    "end": 702,
+                    "annotationTypePlural": "features",
+                    "id": "lzYDhpKpRek1",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -3842,6 +4249,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScRPL18B Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "YHBqKZ3YPdyt",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -4049,6 +4483,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScALD6 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "jqgtF1VJw9UQ",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -4253,6 +4714,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScPAB1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "4hF639g1CjfD",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -4460,6 +4948,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScRET2 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "-EJe2umSVeX-",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -4665,6 +5180,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScRNR1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "2yyR5-IJVUxC",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -4872,6 +5414,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScSAC6 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "fKhC_4EOzwSb",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -5076,6 +5645,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScRNR2 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "FQfuSyIm158B",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -5283,6 +5879,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScPOP6 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "-N0YXZmK_qPE",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -5488,6 +6111,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScRAD27 Promoter",
+                    "start": 4,
+                    "end": 697,
+                    "annotationTypePlural": "features",
+                    "id": "76X2gPChgHUZ",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -5695,6 +6345,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScPSP2 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "tQua8R0_JRpp",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -5900,6 +6577,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScREV1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "cghZ-lxD2wuO",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -6107,6 +6811,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScMFA1 Promoter",
+                    "start": 4,
+                    "end": 703,
+                    "annotationTypePlural": "features",
+                    "id": "BykaHBQRWPGt",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -6313,6 +7044,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScMF(alpha)2 Promoter",
+                    "start": 4,
+                    "end": 753,
+                    "annotationTypePlural": "features",
+                    "id": "JGE3-fH050gy",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -6517,6 +7275,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#a9d55e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#00A1EE"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScGAL1 Promoter",
+                    "start": 4,
+                    "end": 536,
+                    "annotationTypePlural": "features",
+                    "id": "OBfmgrbglOYV",
+                    "color": "#31B440"
                 }
             ]
         }
@@ -6724,6 +7509,33 @@
                     "right_codon_start": 0,
                     "color": "#a9d55e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#118eea"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#118eea"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScCUP1 Promoter",
+                    "start": 4,
+                    "end": 309,
+                    "annotationTypePlural": "features",
+                    "id": "XJqTE2913d5t",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -6928,6 +7740,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mTurquoise2",
+                    "start": 4,
+                    "end": 717,
+                    "annotationTypePlural": "features",
+                    "id": "YuxOyxsPx9v8",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -7134,6 +7973,33 @@
                     "right_codon_start": 0,
                     "color": "#f3eb91"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Venus",
+                    "start": 4,
+                    "end": 714,
+                    "annotationTypePlural": "features",
+                    "id": "CPGS9S_MunCq",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -7338,6 +8204,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mRuby2",
+                    "start": 4,
+                    "end": 711,
+                    "annotationTypePlural": "features",
+                    "id": "mcXPIemtubcv",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -7544,6 +8437,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#958EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#958EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "I-SceI",
+                    "start": 4,
+                    "end": 708,
+                    "annotationTypePlural": "features",
+                    "id": "AG37HFkfdMJb",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -7769,6 +8689,33 @@
                     "right_codon_start": 0,
                     "color": "#f3eb91"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "cyan"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "green"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Cas9",
+                    "start": 4,
+                    "end": 4104,
+                    "annotationTypePlural": "features",
+                    "id": "U8B2-0BMzWNu",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -7973,6 +8920,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mTurquoise2",
+                    "start": 4,
+                    "end": 717,
+                    "annotationTypePlural": "features",
+                    "id": "wD_icZb8UO5Q",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -8179,6 +9153,33 @@
                     "right_codon_start": 0,
                     "color": "#f3eb91"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Venus",
+                    "start": 4,
+                    "end": 714,
+                    "annotationTypePlural": "features",
+                    "id": "HD1fodsrjclK",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -8383,6 +9384,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mRuby2",
+                    "start": 4,
+                    "end": 711,
+                    "annotationTypePlural": "features",
+                    "id": "U1o6NYmExI_o",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -8607,6 +9635,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#6C84FF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#6C84FF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "3X_FLAG",
+                    "start": 4,
+                    "end": 75,
+                    "annotationTypePlural": "features",
+                    "id": "ePtOqv93aLz_",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -8851,6 +9906,33 @@
                     "right_codon_start": 0,
                     "color": "#f3eb91"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFCBBF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFCBBF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Ubiquitin",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "wLt_DmFTBBrx",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -9093,6 +10175,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFCBBF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFCBBF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Ubiquitin",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "QbWWx1TaqHzN",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -9337,6 +10446,33 @@
                     "right_codon_start": 0,
                     "color": "#f3eb91"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFCBBF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFCBBF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Ubiquitin",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "2MAlfD8jNogC",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -9541,6 +10677,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mTurquoise2",
+                    "start": 4,
+                    "end": 717,
+                    "annotationTypePlural": "features",
+                    "id": "S8ZZKp9Lui5q",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -9747,6 +10910,33 @@
                     "right_codon_start": 0,
                     "color": "#f3eb91"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Venus",
+                    "start": 4,
+                    "end": 714,
+                    "annotationTypePlural": "features",
+                    "id": "2w0bBW8HpzGn",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -9951,6 +11141,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f3eb91"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mRuby2",
+                    "start": 4,
+                    "end": 711,
+                    "annotationTypePlural": "features",
+                    "id": "04Nqro4Jqr58",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -10202,6 +11419,33 @@
             ],
             "partInfo": [
                 null
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#7F7F7F"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#7F7F7F"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "rep_origin",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "ColE1",
+                    "start": 884,
+                    "end": 1647,
+                    "annotationTypePlural": "features",
+                    "id": "qSBGh1o47TDy",
+                    "color": "#878787"
+                }
             ]
         }
     },
@@ -10395,6 +11639,33 @@
             ],
             "partInfo": [
                 null
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#B7C1C4"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#B7C1C4"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Spacer",
+                    "start": 4,
+                    "end": 40,
+                    "annotationTypePlural": "features",
+                    "id": "f8noS5cnhGOV",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -10588,6 +11859,33 @@
             ],
             "partInfo": [
                 null
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#958EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#958EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "protein_bind",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "I-SceI Recognition Site",
+                    "start": 4,
+                    "end": 21,
+                    "annotationTypePlural": "features",
+                    "id": "awduuXcmMoNv",
+                    "color": "#2E2E2E"
+                }
             ]
         }
     },
@@ -10995,6 +12293,33 @@
             ],
             "partInfo": [
                 null
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#34FF03"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#34FF03"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "sfGFP",
+                    "start": 438,
+                    "end": 1154,
+                    "annotationTypePlural": "features",
+                    "id": "IuRPTqes7xCU",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -11199,6 +12524,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScENO1 Terminator",
+                    "start": 13,
+                    "end": 237,
+                    "annotationTypePlural": "features",
+                    "id": "RpgkzYDpGizo",
+                    "color": "#F51600"
                 }
             ]
         }
@@ -11405,6 +12757,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScSSA1 Terminator",
+                    "start": 13,
+                    "end": 237,
+                    "annotationTypePlural": "features",
+                    "id": "CzUYIcJIUtY0",
+                    "color": "#F51600"
+                }
             ]
         }
     },
@@ -11609,6 +12988,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScADH1 Terminator",
+                    "start": 13,
+                    "end": 237,
+                    "annotationTypePlural": "features",
+                    "id": "zR5Tgh80-NW9",
+                    "color": "#F51600"
                 }
             ]
         }
@@ -11815,6 +13221,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScPGK1 Terminator",
+                    "start": 13,
+                    "end": 237,
+                    "annotationTypePlural": "features",
+                    "id": "TR4spBBDqLcl",
+                    "color": "#F51600"
+                }
             ]
         }
     },
@@ -12019,6 +13452,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScENO2 Terminator",
+                    "start": 13,
+                    "end": 237,
+                    "annotationTypePlural": "features",
+                    "id": "wC5J-jcVfVHu",
+                    "color": "#F51600"
                 }
             ]
         }
@@ -12225,6 +13685,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScTDH1 Terminator",
+                    "start": 13,
+                    "end": 236,
+                    "annotationTypePlural": "features",
+                    "id": "jKkXojjs-h5T",
+                    "color": "#F51600"
+                }
             ]
         }
     },
@@ -12429,6 +13916,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#40E0D0"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mTurquoise2",
+                    "start": 4,
+                    "end": 717,
+                    "annotationTypePlural": "features",
+                    "id": "CpCVkjEs7u1c",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -12635,6 +14149,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#74FF7B"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Venus",
+                    "start": 4,
+                    "end": 714,
+                    "annotationTypePlural": "features",
+                    "id": "2iF9bfmPS944",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -12839,6 +14380,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF454E"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "mRuby2",
+                    "start": 4,
+                    "end": 711,
+                    "annotationTypePlural": "features",
+                    "id": "Vn9Fe3qwgzn6",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -13064,6 +14632,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#6C84FF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#6C84FF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "3X_FLAG",
+                    "start": 4,
+                    "end": 75,
+                    "annotationTypePlural": "features",
+                    "id": "5hVDCd-HxWpO",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -13268,6 +14863,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScENO1 Terminator",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "SR3BUipLuQ9W",
+                    "color": "#F51600"
                 }
             ]
         }
@@ -13474,6 +15096,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScSSA1 Terminator",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "yXUct6rYwk06",
+                    "color": "#F51600"
+                }
             ]
         }
     },
@@ -13678,6 +15327,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScADH1 Terminator",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "HUJ-6qlAKkDp",
+                    "color": "#F51600"
                 }
             ]
         }
@@ -13884,6 +15560,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScPGK1 Terminator",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "woA4mP3E3_V4",
+                    "color": "#F51600"
+                }
             ]
         }
     },
@@ -14089,6 +15792,33 @@
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScENO2 Terminator",
+                    "start": 4,
+                    "end": 228,
+                    "annotationTypePlural": "features",
+                    "id": "rlW5zBHBEnq0",
+                    "color": "#F51600"
+                }
             ]
         }
     },
@@ -14293,6 +16023,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#ed8d9c"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF8EFF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "terminator",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ScTDH1 Terminator",
+                    "start": 4,
+                    "end": 227,
+                    "annotationTypePlural": "features",
+                    "id": "NnhINq0BcTFU",
+                    "color": "#F51600"
                 }
             ]
         }
@@ -14528,6 +16285,33 @@
                     "right_codon_start": 0,
                     "color": "#8c69d4"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con1",
+                    "start": 15,
+                    "end": 157,
+                    "annotationTypePlural": "features",
+                    "id": "qVMQLVUx0NDz",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -14761,6 +16545,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#8c69d4"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con2",
+                    "start": 15,
+                    "end": 157,
+                    "annotationTypePlural": "features",
+                    "id": "m0RQbu_tLd9m",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -14996,6 +16807,33 @@
                     "right_codon_start": 0,
                     "color": "#8c69d4"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con3",
+                    "start": 15,
+                    "end": 157,
+                    "annotationTypePlural": "features",
+                    "id": "f_4MRvWn3yWH",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -15229,6 +17067,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#8c69d4"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con4",
+                    "start": 15,
+                    "end": 157,
+                    "annotationTypePlural": "features",
+                    "id": "sicnqAQ3aj4I",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -15464,6 +17329,33 @@
                     "right_codon_start": 0,
                     "color": "#8c69d4"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "Con5",
+                    "start": 15,
+                    "end": 157,
+                    "annotationTypePlural": "features",
+                    "id": "nyU6lTOs-Eie",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -15697,6 +17589,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#8c69d4"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ConE",
+                    "start": 15,
+                    "end": 157,
+                    "annotationTypePlural": "features",
+                    "id": "L8arhDC25If2",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -15951,6 +17870,33 @@
                     "right_codon_start": 0,
                     "color": "#8c69d4"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFD6C"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ConE",
+                    "start": 4,
+                    "end": 146,
+                    "annotationTypePlural": "features",
+                    "id": "lmCNaSBrwaRs",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -16195,6 +18141,33 @@
                     "right_codon_start": 0,
                     "color": "#f5d091"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#ff9127"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "green"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "URA3",
+                    "start": 181,
+                    "end": 984,
+                    "annotationTypePlural": "features",
+                    "id": "CAsquWUuojbk",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -16437,6 +18410,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f5d091"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#7cff8c"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "green"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "LEU2",
+                    "start": 652,
+                    "end": 1746,
+                    "annotationTypePlural": "features",
+                    "id": "9WfTlq9LwzBr",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -16682,6 +18682,33 @@
                     "right_codon_start": 0,
                     "color": "#f5d091"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#d455ac"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "green"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "HIS3",
+                    "start": 241,
+                    "end": 903,
+                    "annotationTypePlural": "features",
+                    "id": "RThXkKlEh_o_",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -16926,6 +18953,33 @@
                     "right_codon_start": 0,
                     "color": "#f5d091"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#E490FF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#E490FF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "KanR",
+                    "start": 387,
+                    "end": 1196,
+                    "annotationTypePlural": "features",
+                    "id": "vTFxJOxCfT0m",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -17168,6 +19222,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#f5d091"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FF9F89"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FF9F89"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "NAT (Nourseothricin Acetyltransferase)",
+                    "start": 387,
+                    "end": 959,
+                    "annotationTypePlural": "features",
+                    "id": "coQC_QlIKfEy",
+                    "color": "#EF6500"
                 }
             ]
         }
@@ -17412,6 +19493,33 @@
                     "right_codon_start": 0,
                     "color": "#f5d091"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#BAC9FF"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#BAC9FF"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "HPH (Hygromycin Phosphotransferase)",
+                    "start": 387,
+                    "end": 1415,
+                    "annotationTypePlural": "features",
+                    "id": "H58yEU-7ojQL",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -17655,6 +19763,33 @@
                     "right_codon_start": 0,
                     "color": "#f5d091"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#B29990"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#B29990"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "promoter",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "AgTEF Promoter",
+                    "start": 8,
+                    "end": 384,
+                    "annotationTypePlural": "features",
+                    "id": "HT2rY0lEQt12",
+                    "color": "#31B440"
+                }
             ]
         }
     },
@@ -17879,6 +20014,33 @@
                     "right_codon_start": 0,
                     "color": "#8b6239"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#9A969B"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#9A969B"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "rep_origin",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "ARS4",
+                    "start": 121,
+                    "end": 511,
+                    "annotationTypePlural": "features",
+                    "id": "Boed3HAzc3hO",
+                    "color": "#878787"
+                }
             ]
         }
     },
@@ -18102,6 +20264,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#8b6239"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#BDA661"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#BDA661"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "rep_origin",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "2micron",
+                    "start": 4,
+                    "end": 966,
+                    "annotationTypePlural": "features",
+                    "id": "9AG5-ONWjqwG",
+                    "color": "#878787"
                 }
             ]
         }
@@ -18366,6 +20555,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#9F4240"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#9F4240"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "AmpR",
+                    "start": 109,
+                    "end": 966,
+                    "annotationTypePlural": "features",
+                    "id": "P9jYnjtZ5oQc",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -18628,6 +20844,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#008000"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#008000"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "KanR",
+                    "start": 39,
+                    "end": 854,
+                    "annotationTypePlural": "features",
+                    "id": "6QkCIITOL_Ak",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -18871,6 +21114,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFF00"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFF00"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "SpecR",
+                    "start": 12,
+                    "end": 1022,
+                    "annotationTypePlural": "features",
+                    "id": "XW0KJoandS90",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -19095,6 +21365,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#8b6239"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "URA3 3' Homology",
+                    "start": 24,
+                    "end": 523,
+                    "annotationTypePlural": "features",
+                    "id": "4BGDssjbcLBj",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -19321,6 +21618,33 @@
                     "right_codon_start": 0,
                     "color": "#8b6239"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "LEU2 3' Homology",
+                    "start": 24,
+                    "end": 513,
+                    "annotationTypePlural": "features",
+                    "id": "Jkwwx1euO-IS",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -19544,6 +21868,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#8b6239"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#6685ca"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#6685ca"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "HO 3' Homology",
+                    "start": 24,
+                    "end": 523,
+                    "annotationTypePlural": "features",
+                    "id": "2IsLWvLMu_JR",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -19807,6 +22158,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#9F4240"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#9F4240"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "AmpR",
+                    "start": 109,
+                    "end": 966,
+                    "annotationTypePlural": "features",
+                    "id": "0suD8vsDCE0G",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -20069,6 +22447,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#008000"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#008000"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "KanR",
+                    "start": 39,
+                    "end": 854,
+                    "annotationTypePlural": "features",
+                    "id": "WJOvG57Ota4s",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -20312,6 +22717,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#FFFF00"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#FFFF00"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "SpecR",
+                    "start": 12,
+                    "end": 1022,
+                    "annotationTypePlural": "features",
+                    "id": "G1lUw6demgcr",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -20536,6 +22968,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "URA3 5' Homology",
+                    "start": 4,
+                    "end": 503,
+                    "annotationTypePlural": "features",
+                    "id": "hg5nNqJGpkW9",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -20762,6 +23221,33 @@
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
                 }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#7999D4"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "LEU2 5' Homology",
+                    "start": 4,
+                    "end": 503,
+                    "annotationTypePlural": "features",
+                    "id": "EQg1ANfrYgfK",
+                    "color": "#006FEF"
+                }
             ]
         }
     },
@@ -20985,6 +23471,33 @@
                     "left_codon_start": 0,
                     "right_codon_start": 0,
                     "color": "#7e7e7e"
+                }
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#6685ca"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#6685ca"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "misc_feature",
+                    "strand": 1,
+                    "forward": true,
+                    "name": "HO 5' Homology",
+                    "start": 4,
+                    "end": 503,
+                    "annotationTypePlural": "features",
+                    "id": "15WMeCLstsuK",
+                    "color": "#006FEF"
                 }
             ]
         }
@@ -21237,6 +23750,33 @@
             ],
             "partInfo": [
                 null
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#9F4240"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#9F4240"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "AmpR",
+                    "start": 109,
+                    "end": 966,
+                    "annotationTypePlural": "features",
+                    "id": "vGWnm3VuiFQC",
+                    "color": "#EF6500"
+                }
             ]
         }
     },
@@ -21739,6 +24279,33 @@
             ],
             "partInfo": [
                 null
+            ],
+            "correspondingPartsNames": [
+                ""
+            ],
+            "longestFeature": [
+                {
+                    "notes": {
+                        "ApEinfo_fwdcolor": [
+                            "#008000"
+                        ],
+                        "ApEinfo_revcolor": [
+                            "#008000"
+                        ],
+                        "ApEinfo_graphicformat": [
+                            "arrow_data {{0 1 2 0 0 -1} {} 0}width 5 offset 0"
+                        ]
+                    },
+                    "type": "CDS",
+                    "strand": -1,
+                    "forward": false,
+                    "name": "KanR",
+                    "start": 1820,
+                    "end": 2635,
+                    "annotationTypePlural": "features",
+                    "id": "4MWr_Ea7EHFK",
+                    "color": "#EF6500"
+                }
             ]
         }
     }
