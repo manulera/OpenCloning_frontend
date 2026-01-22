@@ -1,4 +1,5 @@
 import React from 'react'
+import { Upload as UploadIcon } from '@mui/icons-material'
 import { 
   Table, 
   TableHead, 
@@ -8,8 +9,11 @@ import {
   TableContainer,
   Box,
   Typography,
-  Chip
+  Chip,
+  Paper,
+  Button
 } from '@mui/material'
+import { useLinkedPlasmids } from './useAssociatedPlasmids';
 
 
 function PlasmidRow({ plasmid }) {
@@ -75,34 +79,51 @@ function PlasmidRow({ plasmid }) {
   )
 }
 
-function LinkedPlasmidsTable({ plasmids }) {
+function UploadPlasmidsButton({ onFileChange }) {
+  const fileInputRef = React.useRef(null);
+  return (<>
+    <Button size="small" variant="contained" startIcon={<UploadIcon />} onClick={() => fileInputRef.current.click()}>Upload linked plasmids</Button>
+    <input type="file" multiple ref={fileInputRef} style={{ display: 'none' }} onChange={(event) => onFileChange(Array.from(event.target.files))} accept=".gbk,.gb,.fasta,.fa,.dna" />
+  </>
+  )
+}
+
+
+function LinkedPlasmidsTable() {
+  const { linkedPlasmids: plasmids, uploadPlasmids } = useLinkedPlasmids()
   return (
-    <TableContainer 
-      sx={{ 
-        maxHeight: 600,
-        overflow: 'auto',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 1
-      }}
-    >
-      <Table stickyHeader size="small">
-        <TableHead sx={{ '& th': { fontWeight: 'bold' } }}>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>File Name</TableCell>
-            <TableCell>Part</TableCell>
-            <TableCell>Part Info</TableCell>
-            <TableCell>Longest Feature</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {plasmids.map((plasmid, index) => (
-            <PlasmidRow key={index} plasmid={plasmid} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Paper sx={{ p: 1.5, mt: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+        <Typography variant="h6">Linked plasmids</Typography>
+        <UploadPlasmidsButton onFileChange={uploadPlasmids} />
+      </Box>
+      <TableContainer 
+        sx={{ 
+          maxHeight: 600,
+          overflow: 'auto',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 1
+        }}
+      >
+        <Table stickyHeader size="small">
+          <TableHead sx={{ '& th': { fontWeight: 'bold' } }}>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>File Name</TableCell>
+              <TableCell>Part</TableCell>
+              <TableCell>Part Info</TableCell>
+              <TableCell>Longest Feature</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {plasmids.map((plasmid, index) => (
+              <PlasmidRow key={index} plasmid={plasmid} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   )
 }
 
