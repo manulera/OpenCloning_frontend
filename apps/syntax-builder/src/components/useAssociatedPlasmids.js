@@ -16,7 +16,6 @@ export function useLinkedPlasmids() {
 
   const [linkedPlasmids, setLinkedPlasmids] = React.useState([]);
 
-
   const assignPlasmids = React.useCallback( (plasmids) => plasmids.map(plasmid => {
     const enzymes = [aliasedEnzymesByName[enzyme.toLowerCase()]];
     const correspondingParts = assignSequenceToSyntaxPart(plasmid, enzymes, graph);
@@ -60,5 +59,5 @@ export function useLinkedPlasmids() {
     }
   }, [assignPlasmids, enzyme]);
 
-  return { linkedPlasmids, uploadPlasmids };
+  return { linkedPlasmids, uploadPlasmids, setLinkedPlasmids };
 }

@@ -1,48 +1,22 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Typography, Paper, Container, Alert } from '@mui/material';
-import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
-import { useFormData, defaultFields } from '../context/FormDataContext';
-import { delimitedFileToJson } from '@opencloning/utils/fileParsers';
+import { useFormData } from '../context/FormDataContext';
 import useUploadData from './useUploadData';
+import axios from 'axios';
+import { useLinkedPlasmids } from './useAssociatedPlasmids';
 
-function validateSubmittedData(data) {
-  if (!Array.isArray(data)) {
-    throw new Error('Data should be an array');
-  }
-  data.forEach(part => {
-    defaultFields.forEach(field => {
-      if (part[field] === undefined) {
-        throw new Error(`Part is missing ${field} field`);
-      }
-    });
-  });
-  return data;
-}
+
 
 function StartingPage({ setOverhangsStep }) {
-  const { setParts, addDefaultPart } = useFormData();
+  const { addDefaultPart } = useFormData();
   const { uploadData } = useUploadData();
+  const { setLinkedPlasmids } = useLinkedPlasmids();
   const fileInputRef = React.useRef(null);
   const [submissionError, setSubmissionError] = React.useState(null);
   const onFileChange = async (event) => {
     try {
       const file = event.target.files[0];
-      let data;
-      if (file.name.endsWith('.json')) {
-        data = JSON.parse(await readSubmittedTextFile(file));
-        uploadData([file]);
-      } else if (file.name.endsWith('.tsv') || file.name.endsWith('.csv')) {
-        data = await delimitedFileToJson(file, defaultFields);
-        data.forEach((part, index) => {
-          part.left_codon_start = parseInt(part.left_codon_start) || 0;
-          part.right_codon_start = parseInt(part.right_codon_start) || 0;
-          part.id = index + 1;
-        });
-        validateSubmittedData(data);
-        setParts(data);
-      } else {
-        throw new Error('Invalid file type');
-      }
+      uploadData(file);
     } catch (error) {
       setSubmissionError(error.message);
     } finally {
@@ -54,11 +28,25 @@ function StartingPage({ setOverhangsStep }) {
       setOverhangsStep(true);
     } else if (id === 'import') {
       fileInputRef.current.click();
+    } else if (id === 'example') {
+      onExampleClick();
     } else {
       addDefaultPart();
     }
 
   };
+  const onExampleClick = useCallback(async () => {
+    axios.get('moclo_ytk_syntax.json', { responseType: 'blob' }).then((response) => {
+      const file = new File([response.data], 'moclo_ytk_syntax.json', { type: 'application/json' });
+      uploadData(file);
+    }).catch((error) => {
+      setSubmissionError(error.message);
+    });
+
+    const { data } = await axios.get('moclo_ytk_plasmids.json')
+    setLinkedPlasmids(data);
+  }, [uploadData, setLinkedPlasmids]);
+
   const options = [
     {
       id: 'overhangs',
@@ -74,6 +62,11 @@ function StartingPage({ setOverhangsStep }) {
       id: 'direct',
       title: 'Defining parts directly',
       description: 'Manually define parts with all their properties',
+    },
+    {
+      id: 'example',
+      title: 'Loading an example',
+      description: 'Load an example syntax (MoClo YTK)',
     },
   ];
 
