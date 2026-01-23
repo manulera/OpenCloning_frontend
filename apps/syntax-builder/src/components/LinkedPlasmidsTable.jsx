@@ -12,7 +12,7 @@ import {
   Chip,
   Button
 } from '@mui/material'
-import { useLinkedPlasmids } from './useAssociatedPlasmids';
+import { useLinkedPlasmids } from '../context/FormDataContext';
 import SectionWrapper from './SectionWrapper';
 
 

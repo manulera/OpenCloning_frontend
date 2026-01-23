@@ -1,7 +1,7 @@
 import React from 'react'
 import { useFormData } from '../context/FormDataContext'
 import { Button } from '@mui/material'
-import { useLinkedPlasmids } from './useAssociatedPlasmids';
+import { useLinkedPlasmids } from '../context/FormDataContext';
 
 export default function ResetButton() {
   const { setParts } = useFormData();

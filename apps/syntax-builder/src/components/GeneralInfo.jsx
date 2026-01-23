@@ -5,6 +5,7 @@ import EnzymeInput from './form/EnzymeInput';
 import { Box, TextField, Typography } from '@mui/material';
 import OrcidInput from './form/OrcidInput';
 import { useFormData } from '../context/FormDataContext';
+import DebouncedTextField from './form/DebouncedTextField';
 
 const boxStyle = { width: 400, display: 'flex', flexDirection: 'column', gap: 2 };
 
@@ -48,7 +49,7 @@ function GeneralInfo() {
     <SectionWrapper title="General Info">
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', mb: 2 }}>
         <Box sx={boxStyle}>
-          <TextField label="Syntax name" value={syntaxName} onChange={(e) => setSyntaxName(e.target.value)} />
+          <DebouncedTextField label="Syntax name" value={syntaxName} setValue={setSyntaxName} />
         </Box>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>

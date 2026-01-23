@@ -1,18 +1,17 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Box, Typography, Paper, Container, Alert } from '@mui/material';
 import { useFormData } from '../context/FormDataContext';
 import useUploadData from './useUploadData';
-import axios from 'axios';
-import { useLinkedPlasmids } from './useAssociatedPlasmids';
+import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 
 
 
 function StartingPage({ setOverhangsStep }) {
   const { addDefaultPart } = useFormData();
   const { uploadData } = useUploadData();
-  const { setLinkedPlasmids } = useLinkedPlasmids();
   const fileInputRef = React.useRef(null);
   const [submissionError, setSubmissionError] = React.useState(null);
+  const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false);
   const onFileChange = async (event) => {
     try {
       const file = event.target.files[0];
@@ -29,23 +28,11 @@ function StartingPage({ setOverhangsStep }) {
     } else if (id === 'import') {
       fileInputRef.current.click();
     } else if (id === 'example') {
-      onExampleClick();
+      setExistingSyntaxDialogOpen(true);
     } else {
       addDefaultPart();
     }
-
   };
-  const onExampleClick = useCallback(async () => {
-    axios.get('moclo_ytk_syntax.json', { responseType: 'blob' }).then((response) => {
-      const file = new File([response.data], 'moclo_ytk_syntax.json', { type: 'application/json' });
-      uploadData(file);
-    }).catch((error) => {
-      setSubmissionError(error.message);
-    });
-
-    const { data } = await axios.get('moclo_ytk_plasmids.json')
-    setLinkedPlasmids(data);
-  }, [uploadData, setLinkedPlasmids]);
 
   const options = [
     {
@@ -109,6 +96,7 @@ function StartingPage({ setOverhangsStep }) {
           ))}
         </Box>
       </Box>
+      <ExistingSyntaxDialog setSubmissionError={setSubmissionError} open={existingSyntaxDialogOpen} onClose={() => setExistingSyntaxDialogOpen(false)} />
     </Container>
   );
 }

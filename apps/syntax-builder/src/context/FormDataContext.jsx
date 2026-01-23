@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { graphToMSA, partsToGraph, graphHasCycle } from '@opencloning/ui/components/assembler';
+import { usePlasmidsLogic } from './usePlasmidsLogic';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
@@ -119,6 +120,13 @@ export function FormDataProvider({ children }) {
   const [assemblyEnzyme, setAssemblyEnzyme] = React.useState('BsaI');
   const [domesticationEnzyme, setDomesticationEnzyme] = React.useState('BsaI');
 
+  // Plasmids logic - separated into its own hook for better organization
+  const { linkedPlasmids, setLinkedPlasmids, uploadPlasmids } = usePlasmidsLogic({
+    parts,
+    assemblyEnzyme,
+    overhangNames
+  });
+
   React.useEffect(() => {
     const allOverhangs = allOverhangsFromParts(parts);
     setOverhangNames(prev => {
@@ -180,7 +188,8 @@ export function FormDataProvider({ children }) {
 
   const resetFormData = React.useCallback(() => {
     setParts([]);
-  }, [setParts]);
+    setLinkedPlasmids([]);
+  }, [setParts, setLinkedPlasmids]);
 
 
   const value = React.useMemo(() => ({
@@ -204,9 +213,13 @@ export function FormDataProvider({ children }) {
     updateOverhangName,
     syntaxName,
     setSyntaxName,
+    linkedPlasmids,
+    setLinkedPlasmids,
+    uploadPlasmids,
   }), [
     relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts,
-    resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName, syntaxName, setSyntaxName]);
+    resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName, syntaxName, setSyntaxName,
+    linkedPlasmids, setLinkedPlasmids, uploadPlasmids]);
 
   return (
     <FormDataContext.Provider value={value}>
@@ -221,4 +234,10 @@ export function useFormData() {
     throw new Error('useFormData must be used within a FormDataProvider');
   }
   return context;
+}
+
+// Convenience hook for accessing plasmids-related values from context
+export function useLinkedPlasmids() {
+  const { linkedPlasmids, uploadPlasmids, setLinkedPlasmids } = useFormData();
+  return { linkedPlasmids, uploadPlasmids, setLinkedPlasmids };
 }
