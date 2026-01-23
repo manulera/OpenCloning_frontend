@@ -3,6 +3,7 @@ import { useFormData } from '../context/FormDataContext';
 import { Autocomplete, TextField } from '@mui/material';
 import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
 import SectionWrapper from './SectionWrapper';
+import DoiInput from './form/DoiInput';
 
 const INPUT_MIN_LENGTH = 3;
 
@@ -47,6 +48,7 @@ function GeneralInfo() {
           />
         )}
       />
+      <DoiInput />
     </SectionWrapper>
   )
 }
