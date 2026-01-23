@@ -26,7 +26,7 @@ async function validateOrcid(orcid, setError, setSuccessMessage) {
         'Accept': 'application/json'
       }
     });
-    console.log(response.data);
+
     setSuccessMessage(nameFromOrcidData(response.data));
     return response.data;
   } catch (error) {

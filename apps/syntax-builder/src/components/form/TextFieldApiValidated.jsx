@@ -41,12 +41,15 @@ function TextFieldApiValidated({
           }
           setIsValidating(false);
         }).catch(() => {
+          onChange('');
           setIsValidating(false);
         });
       }, debounceDelay);
       timeoutIdRef.current = timeoutId;
+    } else {
+      onChange('');
     }
-  };
+  } 
   
   return (
     <TextField

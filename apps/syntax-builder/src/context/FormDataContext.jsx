@@ -109,17 +109,16 @@ export const allOverhangsFromParts = (parts) => {
 
 export function FormDataProvider({ children }) {
 
-  const [submission, setSubmission] = React.useState({
-    name: '',
-    orcid: '',
-    doi: '',
-  });
   const [parts, setParts] = React.useState(mocloParts);
   const [overhangNames, setOverhangNames] = React.useState({});
   const [graph, setGraph] = React.useState(null);
   const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
   const [problematicNodes, setProblematicNodes] = React.useState([]);
   const [enzyme, setEnzyme] = React.useState('BsaI');
+  const [relatedDois, setRelatedDois] = React.useState(['']);
+  const [submitters, setSubmitters] = React.useState(['']);
+  const [assemblyEnzyme, setAssemblyEnzyme] = React.useState('BsaI');
+  const [domesticationEnzyme, setDomesticationEnzyme] = React.useState('BsaI');
 
   React.useEffect(() => {
     const allOverhangs = allOverhangsFromParts(parts);
@@ -180,24 +179,21 @@ export function FormDataProvider({ children }) {
     }
   }, [parts]);
 
-  const updateSubmission = React.useCallback((data) => {
-    setSubmission((prev) => ({ ...prev, ...data }));
-  }, [setSubmission]);
-
   const resetFormData = React.useCallback(() => {
-    setSubmission({
-      name: '',
-      orcid: '',
-      doi: '',
-    });
     setParts([]);
-  }, [setSubmission, setParts]);
+  }, [setParts]);
 
 
   const value = React.useMemo(() => ({
-    submission,
+    relatedDois,
+    setRelatedDois,
+    submitters,
+    setSubmitters,
+    assemblyEnzyme,
+    setAssemblyEnzyme,
+    domesticationEnzyme,
+    setDomesticationEnzyme,
     parts,
-    updateSubmission,
     setParts,
     resetFormData,
     graph,
@@ -208,7 +204,7 @@ export function FormDataProvider({ children }) {
     setEnzyme,
     overhangNames,
     updateOverhangName,
-  }), [submission, parts, updateSubmission, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, enzyme, setEnzyme, overhangNames, updateOverhangName]);
+  }), [relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, enzyme, setEnzyme, overhangNames, updateOverhangName]);
 
   return (
     <FormDataContext.Provider value={value}>

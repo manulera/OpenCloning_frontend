@@ -232,7 +232,7 @@ export default function PartsForm() {
             Add Part
         </Button>
         <Button size="small" variant="contained" startIcon={<DownloadIcon />} onClick={downloadData}>
-            Download data
+            Download Syntax table
         </Button>
         {graphErrorMessage && graphErrorMessage.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>

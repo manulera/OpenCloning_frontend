@@ -4,27 +4,59 @@ import DoiInput from './form/DoiInput';
 import EnzymeInput from './form/EnzymeInput';
 import { Box, Typography } from '@mui/material';
 import OrcidInput from './form/OrcidInput';
+import { useFormData } from '../context/FormDataContext';
 
 const boxStyle = { width: 400, display: 'flex', flexDirection: 'column', gap: 2 };
 
+function addEntry(setFunction, index, value, type) {
+  let newValue = '';
+  if (type === 'doi') {
+    newValue = value?.message?.DOI || '';
+  } else if (type === 'orcid') {
+    newValue = value?.['orcid-identifier']?.path || '';
+  }
+
+  setFunction(prev => {
+    const newArray = [...prev];
+    newArray[index] = newValue;
+    // Remove empty entries at the end (leave one at least)
+    while (newArray.length > 1 && newArray[newArray.length - 1] === '') {
+      newArray.pop();
+    }
+    // Add new empty entry if the last entry is not empty
+    if (newArray[newArray.length - 1] !== '') {
+      newArray.push('');
+    }
+    return newArray;
+  });
+}
+
 function GeneralInfo() {
+  const {
+    assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme,
+    relatedDois, setRelatedDois,
+    submitters, setSubmitters,
+  } = useFormData();
+
   return (
     <SectionWrapper title="General Info">
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
         <Box sx={boxStyle}>
           <Typography variant="h6">Assembly enzymes</Typography>
-          <EnzymeInput label="Assembly enzyme" helperText=" " />
-          <EnzymeInput label="Domestication enzyme" helperText=" " />
+          <EnzymeInput label="Assembly enzyme" enzyme={assemblyEnzyme} setEnzyme={setAssemblyEnzyme} helperText=" " />
+          <EnzymeInput label="Domestication enzyme" enzyme={domesticationEnzyme} setEnzyme={setDomesticationEnzyme} helperText=" " />
         </Box>
         <Box sx={boxStyle}>
           <Typography variant="h6">Related publications</Typography>
-          <DoiInput />
-          <DoiInput />
+          {relatedDois.map((doi, index) => (
+            <DoiInput key={index} doi={doi} onChange={(doiData) => addEntry(setRelatedDois, index, doiData, 'doi')} />
+          ))}
         </Box>
         <Box sx={boxStyle}>
           <Typography variant="h6">Submitters</Typography>
-          <OrcidInput />
-          <OrcidInput />
+          {submitters.map((submitter, index) => (
+            <OrcidInput key={index} orcid={submitter} onChange={(orcidData) => addEntry(setSubmitters, index, orcidData, 'orcid')} />
+          ))}
         </Box>
       </Box>
     </SectionWrapper>

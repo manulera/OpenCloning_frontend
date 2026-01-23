@@ -1,13 +1,12 @@
 import React from 'react'
 import { Autocomplete, TextField } from '@mui/material';
-import { useFormData } from '../../context/FormDataContext';
 import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
 
 const INPUT_MIN_LENGTH = 3;
 const enzymeOptions = Object.values(aliasedEnzymesByName).map((e) => e.name);
 
-function EnzymeInput({ label = 'Enzyme', ...rest }) {
-  const { enzyme, setEnzyme } = useFormData();
+function EnzymeInput({ label = 'Enzyme', enzyme, setEnzyme, ...rest }) {
+  
   const [inputValue, setInputValue] = React.useState(enzyme);
   
   // Filter options based on input (require at least 2 characters)
