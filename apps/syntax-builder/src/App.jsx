@@ -23,39 +23,10 @@ function AppContent() {
     return <DesignForm />;
   }, [overhangsStep, parts]);
 
-  const isDesignForm = parts.length > 0 && !overhangsStep;
-  
   return (
-    <Box sx={{ 
-      width: '100%', 
-      minHeight: '100vh',
-      ...(isDesignForm && {
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden'
-      })
-    }} className="app-content">
-      <Container maxWidth="xl" sx={{ 
-        py: 3, 
-        pb: 5, 
-        ...(isDesignForm && {
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        })
-      }}>
-        <Box sx={{ 
-          ...(isDesignForm && {
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden'
-          })
-        }}>
-          {renderContent()}
-        </Box>
+    <Box className="app-content">
+      <Container >
+        {renderContent()}
       </Container>
     </Box>
   );

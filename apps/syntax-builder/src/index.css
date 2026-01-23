@@ -21,3 +21,19 @@ body {
 .app-content {
   background-color: rgb(240, 240, 240);
 }
+
+.header-actions {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 1.5px;
+  padding-right: 1.5px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  background-color: rgb(240, 240, 240);;
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+  align-items: center;
+}

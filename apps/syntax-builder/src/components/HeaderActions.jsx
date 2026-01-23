@@ -11,16 +11,7 @@ export default function HeaderActions() {
   const { uploadData } = useUploadData()
   
   return (
-    <Box sx={{ position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-      pb: 2,
-      px: 1.5,
-      borderBottom: '2px solid rgba(0, 0, 0, 0.12)',
-      display: 'flex',
-      gap: 4,
-      justifyContent: 'space-between',
-      alignItems: 'center' }}>
+    <Box className="header-actions">
       <Button 
         variant="contained" 
         startIcon={<DownloadIcon />} 
