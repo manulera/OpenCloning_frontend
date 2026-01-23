@@ -80,6 +80,15 @@ export default function PartsForm() {
     setInfoDialog({ open: false, rowId: null, value: '' })
   }, [infoDialog.rowId, setParts])
 
+  const processRowUpdate = useCallback((newRow) => {
+    setParts(prevParts => 
+      prevParts.map(part => 
+        part.id === newRow.id ? newRow : part
+      )
+    )
+    return newRow
+  }, [setParts])
+
 
   // Render cell with validation error display
   const renderValidatedCell = useCallback((field, params) => {
@@ -239,6 +248,7 @@ export default function PartsForm() {
         columns={columns}
         onCellClick={handleCellClick}
         getRowClassName={getRowClassName}
+        processRowUpdate={processRowUpdate}
         density="compact"
         disableRowSelectionOnClick
         disableColumnSorting
