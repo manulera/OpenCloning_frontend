@@ -1,57 +1,31 @@
-import { TextField } from '@mui/material'
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import axios from 'axios';
+import TextFieldApiValidated from './TextFieldApiValidated';
 
-async function validateDoi(doi, setError) {
+async function validateDoi(doi, setError, setSuccessMessage) {
   try {
     const response = await axios.get(`https://api.crossref.org/works/${doi}`);
+    setSuccessMessage(response?.data?.message?.title?.[0]?.slice(0, 30) + '...' || 'Found, but no title available');
     return response.data;
   } catch (error) {
-    if (error.status === 404) {
+    if (error.response?.status === 404) {
       setError('DOI not found');
     } else {
-      setError('Error validating DOI - ' + error.message);
+      setError('Error validating DOI - ' + (error.message || 'Unknown error'));
     }
   }
 }
 
-
-function DoiInput({ label = 'DOI', onChange }) {
-  const [value, setValue] = useState('');
-  const [error, setError] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
-  const timeoutIdRef = useRef(null);
-
-  const handleChange = (e) => {
-    setValue(e.target.value);
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
-    }
-    setError('');
-    setIsValidating(false);
-    if (e.target.value.length !== 0) {
-      const timeoutId = setTimeout(() => {
-        setIsValidating(true);
-        validateDoi(e.target.value, setError).then((data) => {
-          onChange(data);
-          setIsValidating(false);
-        }).catch(() => {
-          setIsValidating(false);
-        });
-      }, 500);
-      timeoutIdRef.current = timeoutId;
-    }
-  };
-  
+function DoiInput({ label = 'DOI', onChange, ...rest }) {
   return (
-    <TextField
+    <TextFieldApiValidated
       label={label}
-      value={value}
-      onChange={handleChange}
       placeholder="10.1234/example.doi"
-      error={error !== ''}
-      helperText={isValidating ? 'Validating...' : error || ' '}
+      validateFunction={validateDoi}
+      onChange={onChange}
+      {...rest}
     />
   )
 }
+
 export default DoiInput
