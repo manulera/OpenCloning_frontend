@@ -188,8 +188,14 @@ export function FormDataProvider({ children }) {
 
   const resetFormData = React.useCallback(() => {
     setParts([]);
+    setOverhangNames({});
+    setAssemblyEnzyme('');
+    setDomesticationEnzyme('');
+    setSyntaxName('');
+    setRelatedDois(['']);
+    setSubmitters(['']);
     setLinkedPlasmids([]);
-  }, [setParts, setLinkedPlasmids]);
+  }, [setParts, setOverhangNames, setAssemblyEnzyme, setDomesticationEnzyme, setSyntaxName, setRelatedDois, setSubmitters, setLinkedPlasmids]);
 
 
   const value = React.useMemo(() => ({

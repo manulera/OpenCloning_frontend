@@ -27,8 +27,9 @@ function TextFieldApiValidated({
   React.useEffect(() => {
     if (value) {
       setLocalValue(value);
+      validateFunction(value, setError, setSuccessMessage);
     }
-  }, [value]);
+  }, [value, validateFunction]);
   const handleChange = (e) => {
     setLocalValue(e.target.value);
     if (timeoutIdRef.current) {

@@ -49,18 +49,11 @@ export function usePlasmidsLogic({ parts, assemblyEnzyme, overhangNames }) {
   // Wrapper for setLinkedPlasmids that automatically assigns plasmids if enzyme is available
   const setLinkedPlasmids = React.useCallback((plasmids) => {
     if (assemblyEnzyme && Array.isArray(plasmids) && plasmids.length > 0) {
-      // Check if plasmids need assignment (don't have correspondingParts array in appData)
-      const needsAssignment = !plasmids[0]?.appData?.correspondingParts;
-      if (needsAssignment) {
-        setLinkedPlasmidsState(assignPlasmids(plasmids));
-      } else {
-        // Already assigned, just set them
-        setLinkedPlasmidsState(plasmids);
-      }
+      setLinkedPlasmidsState(assignPlasmids(plasmids));
     } else {
       setLinkedPlasmidsState(plasmids);
     }
-  }, [assignPlasmids, assemblyEnzyme]);
+  }, [assemblyEnzyme, assignPlasmids]);
 
   // Update existing plasmids when enzyme or assignment logic changes
   React.useEffect(() => {
