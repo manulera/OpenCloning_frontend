@@ -38,10 +38,11 @@ async function validateOrcid(orcid, setError, setSuccessMessage) {
   }
 }
 
-function OrcidInput({ label = 'ORCID', onChange, ...rest }) {
+function OrcidInput({ label = 'ORCID', onChange, value, ...rest }) {
   return (
     <TextFieldApiValidated
       label={label}
+      value={value}
       placeholder="0000-0000-0000-0000"
       validateFunction={validateOrcid}
       onChange={onChange}

@@ -199,8 +199,9 @@ export function FormDataProvider({ children }) {
     problematicNodes,
     addDefaultPart,
     overhangNames,
+    setOverhangNames,
     updateOverhangName,
-  }), [relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, updateOverhangName]);
+  }), [relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName]);
 
   return (
     <FormDataContext.Provider value={value}>

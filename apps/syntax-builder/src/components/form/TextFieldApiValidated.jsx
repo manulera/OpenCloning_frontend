@@ -15,17 +15,22 @@ function TextFieldApiValidated({
   placeholder, 
   validateFunction, 
   onChange,
+  value = '',
   debounceDelay = 500, 
   ...rest
 }) {
-  const [value, setValue] = useState('');
+  const [localValue, setLocalValue] = useState(value);
   const [error, setError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const timeoutIdRef = useRef(null);
-
+  React.useEffect(() => {
+    if (value) {
+      setLocalValue(value);
+    }
+  }, [value]);
   const handleChange = (e) => {
-    setValue(e.target.value);
+    setLocalValue(e.target.value);
     if (timeoutIdRef.current) {
       clearTimeout(timeoutIdRef.current);
     }
@@ -54,7 +59,7 @@ function TextFieldApiValidated({
   return (
     <TextField
       label={label}
-      value={value}
+      value={localValue}
       onChange={handleChange}
       placeholder={placeholder}
       error={error !== ''}

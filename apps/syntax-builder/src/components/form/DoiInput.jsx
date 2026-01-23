@@ -16,10 +16,11 @@ async function validateDoi(doi, setError, setSuccessMessage) {
   }
 }
 
-function DoiInput({ label = 'DOI', onChange, ...rest }) {
+function DoiInput({ label = 'DOI', value, onChange, ...rest }) {
   return (
     <TextFieldApiValidated
       label={label}
+      value={value}
       placeholder="10.1234/example.doi"
       validateFunction={validateDoi}
       onChange={onChange}

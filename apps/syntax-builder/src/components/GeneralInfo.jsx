@@ -8,6 +8,19 @@ import { useFormData } from '../context/FormDataContext';
 
 const boxStyle = { width: 400, display: 'flex', flexDirection: 'column', gap: 2 };
 
+function updateArrayBasedOnValues(array) {
+  const newArray = [...array];
+  // Remove empty entries at the end (leave one at least)
+  while (newArray.length > 1 && newArray[newArray.length - 1] === '') {
+    newArray.pop();
+  }
+  // Add new empty entry if the last entry is not empty
+  if (newArray[newArray.length - 1] !== '') {
+    newArray.push('');
+  }
+  return newArray;
+}
+
 function addEntry(setFunction, index, value, type) {
   let newValue = '';
   if (type === 'doi') {
@@ -19,15 +32,7 @@ function addEntry(setFunction, index, value, type) {
   setFunction(prev => {
     const newArray = [...prev];
     newArray[index] = newValue;
-    // Remove empty entries at the end (leave one at least)
-    while (newArray.length > 1 && newArray[newArray.length - 1] === '') {
-      newArray.pop();
-    }
-    // Add new empty entry if the last entry is not empty
-    if (newArray[newArray.length - 1] !== '') {
-      newArray.push('');
-    }
-    return newArray;
+    return updateArrayBasedOnValues(newArray);
   });
 }
 
@@ -49,13 +54,13 @@ function GeneralInfo() {
         <Box sx={boxStyle}>
           <Typography variant="h6">Related publications</Typography>
           {relatedDois.map((doi, index) => (
-            <DoiInput key={index} doi={doi} onChange={(doiData) => addEntry(setRelatedDois, index, doiData, 'doi')} />
+            <DoiInput key={index} value={doi} onChange={(doiData) => addEntry(setRelatedDois, index, doiData, 'doi')} />
           ))}
         </Box>
         <Box sx={boxStyle}>
           <Typography variant="h6">Submitters</Typography>
           {submitters.map((submitter, index) => (
-            <OrcidInput key={index} orcid={submitter} onChange={(orcidData) => addEntry(setSubmitters, index, orcidData, 'orcid')} />
+            <OrcidInput key={index} value={submitter} onChange={(orcidData) => addEntry(setSubmitters, index, orcidData, 'orcid')} />
           ))}
         </Box>
       </Box>
