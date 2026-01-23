@@ -108,6 +108,7 @@ export const allOverhangsFromParts = (parts) => {
 
 export function FormDataProvider({ children }) {
 
+  const [syntaxName, setSyntaxName] = React.useState('');
   const [parts, setParts] = React.useState([]);
   const [overhangNames, setOverhangNames] = React.useState({});
   const [graph, setGraph] = React.useState(null);
@@ -201,7 +202,11 @@ export function FormDataProvider({ children }) {
     overhangNames,
     setOverhangNames,
     updateOverhangName,
-  }), [relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName]);
+    syntaxName,
+    setSyntaxName,
+  }), [
+    relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts,
+    resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName, syntaxName, setSyntaxName]);
 
   return (
     <FormDataContext.Provider value={value}>

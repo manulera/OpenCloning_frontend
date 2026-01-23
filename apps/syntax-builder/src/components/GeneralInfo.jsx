@@ -2,7 +2,7 @@ import React from 'react'
 import SectionWrapper from './SectionWrapper';
 import DoiInput from './form/DoiInput';
 import EnzymeInput from './form/EnzymeInput';
-import { Box, Typography } from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 import OrcidInput from './form/OrcidInput';
 import { useFormData } from '../context/FormDataContext';
 
@@ -41,13 +41,19 @@ function GeneralInfo() {
     assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme,
     relatedDois, setRelatedDois,
     submitters, setSubmitters,
+    syntaxName, setSyntaxName,
   } = useFormData();
 
   return (
     <SectionWrapper title="General Info">
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', mb: 2 }}>
+        <Box sx={boxStyle}>
+          <TextField label="Syntax name" value={syntaxName} onChange={(e) => setSyntaxName(e.target.value)} />
+        </Box>
+      </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
         <Box sx={boxStyle}>
-          <Typography variant="h6">Assembly enzymes</Typography>
+          <Typography variant="h6">Restriction enzymes</Typography>
           <EnzymeInput label="Assembly enzyme" enzyme={assemblyEnzyme} setEnzyme={setAssemblyEnzyme} helperText=" " />
           <EnzymeInput label="Domestication enzyme" enzyme={domesticationEnzyme} setEnzyme={setDomesticationEnzyme} helperText=" " />
         </Box>

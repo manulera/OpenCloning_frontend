@@ -3,7 +3,7 @@ import { useFormData } from '../context/FormDataContext';
 import { downloadTextFile, jsonToDelimitedFile } from '@opencloning/utils/readNwrite';
 
 export function useDownloadData() {
-  const { assemblyEnzyme, domesticationEnzyme, relatedDois, submitters, overhangNames, parts } = useFormData();
+  const { syntaxName, assemblyEnzyme, domesticationEnzyme, relatedDois, submitters, overhangNames, parts } = useFormData();
 
   const downloadSyntaxTable = useCallback(() => {
     // Download as tsv file
@@ -14,6 +14,7 @@ export function useDownloadData() {
   const downloadData = useCallback(() => {
     // Download as json file
     const json = JSON.stringify({
+      syntaxName,
       assemblyEnzyme,
       domesticationEnzyme,
       relatedDois: relatedDois.filter(doi => doi !== ''),
@@ -23,7 +24,7 @@ export function useDownloadData() {
     },
     null, 2);
     downloadTextFile(json, 'syntax.json');
-  }, [assemblyEnzyme, domesticationEnzyme, relatedDois, submitters, overhangNames, parts]);
+  }, [syntaxName, assemblyEnzyme, domesticationEnzyme, relatedDois, submitters, overhangNames, parts]);
 
   return { downloadSyntaxTable, downloadData };
 }
