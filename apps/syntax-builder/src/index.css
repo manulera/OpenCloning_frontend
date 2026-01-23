@@ -7,7 +7,7 @@ html {
 body {
   min-height: 100%;
   padding-bottom: 100px;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 #root {

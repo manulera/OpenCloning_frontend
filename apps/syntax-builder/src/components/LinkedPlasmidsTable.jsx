@@ -10,7 +10,6 @@ import {
   Box,
   Typography,
   Chip,
-  Paper,
   Button
 } from '@mui/material'
 import { useLinkedPlasmids } from './useAssociatedPlasmids';

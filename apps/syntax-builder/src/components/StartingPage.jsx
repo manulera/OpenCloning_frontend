@@ -3,6 +3,7 @@ import { Box, Typography, Paper, Container, Alert } from '@mui/material';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
 import { useFormData, defaultFields } from '../context/FormDataContext';
 import { delimitedFileToJson } from '@opencloning/utils/fileParsers';
+import useUploadData from './useUploadData';
 
 function validateSubmittedData(data) {
   if (!Array.isArray(data)) {
@@ -20,6 +21,7 @@ function validateSubmittedData(data) {
 
 function StartingPage({ setOverhangsStep }) {
   const { setParts, addDefaultPart } = useFormData();
+  const { uploadData } = useUploadData();
   const fileInputRef = React.useRef(null);
   const [submissionError, setSubmissionError] = React.useState(null);
   const onFileChange = async (event) => {
@@ -28,18 +30,19 @@ function StartingPage({ setOverhangsStep }) {
       let data;
       if (file.name.endsWith('.json')) {
         data = JSON.parse(await readSubmittedTextFile(file));
+        uploadData([file]);
       } else if (file.name.endsWith('.tsv') || file.name.endsWith('.csv')) {
         data = await delimitedFileToJson(file, defaultFields);
+        data.forEach((part, index) => {
+          part.left_codon_start = parseInt(part.left_codon_start) || 0;
+          part.right_codon_start = parseInt(part.right_codon_start) || 0;
+          part.id = index + 1;
+        });
+        validateSubmittedData(data);
+        setParts(data);
       } else {
         throw new Error('Invalid file type');
       }
-      data.forEach((part, index) => {
-        part.left_codon_start = parseInt(part.left_codon_start) || 0;
-        part.right_codon_start = parseInt(part.right_codon_start) || 0;
-        part.id = index + 1;
-      });
-      validateSubmittedData(data);
-      setParts(data);
     } catch (error) {
       setSubmissionError(error.message);
     } finally {
@@ -64,12 +67,12 @@ function StartingPage({ setOverhangsStep }) {
     },
     {
       id: 'import',
-      title: 'Importing parts from file',
-      description: 'Import parts from a file (JSON, FASTA, or GenBank format)',
+      title: 'Importing parts or syntax from file',
+      description: 'Import parts or syntax from a file (tsv or JSON)',
     },
     {
       id: 'direct',
-      title: 'Define parts directly',
+      title: 'Defining parts directly',
       description: 'Manually define parts with all their properties',
     },
   ];

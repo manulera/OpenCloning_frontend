@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { graphToMSA, partsToGraph, graphHasCycle } from '@opencloning/ui/components/assembler';
-import mocloParts from './mocloParts.json';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
@@ -109,12 +108,11 @@ export const allOverhangsFromParts = (parts) => {
 
 export function FormDataProvider({ children }) {
 
-  const [parts, setParts] = React.useState(mocloParts);
+  const [parts, setParts] = React.useState([]);
   const [overhangNames, setOverhangNames] = React.useState({});
   const [graph, setGraph] = React.useState(null);
   const [graphErrorMessage, setGraphErrorMessage] = React.useState('');
   const [problematicNodes, setProblematicNodes] = React.useState([]);
-  const [enzyme, setEnzyme] = React.useState('BsaI');
   const [relatedDois, setRelatedDois] = React.useState(['']);
   const [submitters, setSubmitters] = React.useState(['']);
   const [assemblyEnzyme, setAssemblyEnzyme] = React.useState('BsaI');
@@ -200,11 +198,9 @@ export function FormDataProvider({ children }) {
     graphErrorMessage,
     problematicNodes,
     addDefaultPart,
-    enzyme,
-    setEnzyme,
     overhangNames,
     updateOverhangName,
-  }), [relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, enzyme, setEnzyme, overhangNames, updateOverhangName]);
+  }), [relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts, resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, updateOverhangName]);
 
   return (
     <FormDataContext.Provider value={value}>

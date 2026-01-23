@@ -4,7 +4,6 @@ import { anyToJson } from '@teselagen/bio-parsers';
 import { partsToEdgesGraph } from '@opencloning/ui/components/assembler';
 import { assignSequenceToSyntaxPart } from '../../../../packages/ui/src/components/assembler/assembler_utils';
 import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
-import defaultPlasmids from './linkedPlasmids.json'
 
 export function useLinkedPlasmids() {
   const { parts, enzyme, overhangNames } = useFormData();
@@ -15,7 +14,7 @@ export function useLinkedPlasmids() {
     return acc;
   }, {}), [parts]);
 
-  const [linkedPlasmids, setLinkedPlasmids] = React.useState(defaultPlasmids);
+  const [linkedPlasmids, setLinkedPlasmids] = React.useState([]);
 
 
   const assignPlasmids = React.useCallback( (plasmids) => plasmids.map(plasmid => {
