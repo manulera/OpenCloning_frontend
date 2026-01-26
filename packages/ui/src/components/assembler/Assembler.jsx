@@ -1,5 +1,4 @@
 import React from 'react'
-import data2 from './assembler_data2.json'
 import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useAssembler } from './useAssembler';
@@ -9,15 +8,19 @@ import { cloningActions } from '@opencloning/store/cloning';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import useHttpClient from '../../hooks/useHttpClient';
 import AssemblerPart from './AssemblerPart';
+import { partsToEdgesGraph } from './graph_utils';
 
+import moCloYTKSyntax from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/syntax.json'
+import moCloPlasmids from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/plasmids.json'
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
-const categoryFilter = (category, previousCategory) => {
-  if (previousCategory === '') {
-    return category.startsWith('A_')
+const categoryFilter = (category, categories, previousCategoryId) => {
+  if (previousCategoryId === null) {
+    return category.left_overhang === categories[0].left_overhang
   }
-  return previousCategory.split('_')[1] === category.split('_')[0]
+  const previousCategory = categories.find((category) => category.id === previousCategoryId)
+  return previousCategory?.right_overhang === category.left_overhang
 }
 
 function AssemblerLink({ overhang }) {
@@ -39,9 +42,10 @@ function formatItemName(item) {
   return item.id
 }
 
-function AssemblerComponent({ data, categories }) {
+function AssemblerComponent({ plasmids, categories }) {
 
   const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
+
   const { requestSources, requestAssemblies } = useAssembler()
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
   const [loadingMessage, setLoadingMessage] = React.useState('')
@@ -49,7 +53,7 @@ function AssemblerComponent({ data, categories }) {
   const dispatch = useDispatch()
   const onSubmitAssembly = async () => {
     clearAssembly()
-    const sources = assembly.map(({ id }) => id.map((id) => (data.find((item) => item.id === id).source)))
+    const sources = assembly.map(({ id }) => id.map((id) => (plasmids.find((item) => item.id === id).source)))
     let errorMessage = 'Error fetching sequences'
     try {
       setLoadingMessage('Requesting sequences...')
@@ -91,7 +95,7 @@ function AssemblerComponent({ data, categories }) {
     // For multiple selection, we need to determine the category based on the first selected item
     // or maintain the current category if it's already set
     const currentItem = assembly[index]
-    const firstOption = data.find((item) => item.id === idArray[0])
+    const firstOption = plasmids.find((item) => item.id === idArray[0])
     const category = currentItem.category || firstOption?.category || ''
 
     setAssembly(assembly.map((item, i) => i === index ? { id: idArray, category } : item))
@@ -105,7 +109,8 @@ function AssemblerComponent({ data, categories }) {
 
   React.useEffect(() => {
     const lastPosition = assembly.length - 1
-    if (assembly[lastPosition].category.endsWith('A')) {
+    const lastCategory = categories.find((category) => category.id === assembly[lastPosition].category)
+    if ( lastCategory?.right_overhang === categories[0].left_overhang) {
       return
     }
     if (assembly[lastPosition].category !== '') {
@@ -126,11 +131,12 @@ function AssemblerComponent({ data, categories }) {
 
       <Stack direction="row" alignItems="center" spacing={1} sx={{ overflowX: 'auto', my: 2 }}>
         {assembly.map((item, index) => {
-          const allowedCategories = item.category ? [item.category] : categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category))
+          const allowedCategories = item.category ? categories.filter((category) => category.id === item.category) : categories.filter((category) => categoryFilter(category, categories, index === 0 ? null : assembly[index - 1].category))
           const isCompleted = item.category !== '' && item.id.length > 0
           const borderColor = isCompleted ? 'success.main' : 'primary.main'
-          const leftOverhang = data.find((d) => d.category === item.category)?.left_overhang
-          const rightOverhang = data.find((d) => d.category === item.category)?.right_overhang
+          const leftOverhang = plasmids.find((d) => d.category === item.category)?.left_overhang
+          const rightOverhang = plasmids.find((d) => d.category === item.category)?.right_overhang
+
 
           return (
             <React.Fragment key={index}>
@@ -149,7 +155,7 @@ function AssemblerComponent({ data, categories }) {
                     disabled={index < assembly.length - 1}
                   >
                     {allowedCategories.map((category) => (
-                      <MenuItem key={category} value={category}>{category === 'F_A' ? 'Backbone' : category}</MenuItem>
+                      <MenuItem key={category.id} value={category.id}>{category.name} ({category.info})</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -159,8 +165,8 @@ function AssemblerComponent({ data, categories }) {
                     value={item.id}
                     onChange={(e, value) => setId(value, index)}
                     label="ID"
-                    options={data.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
-                    getOptionLabel={(id) => formatItemName(data.find((d) => d.id === id))}
+                    options={plasmids.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
+                    getOptionLabel={(id) => formatItemName(plasmids.find((d) => d.id === id))}
                     renderInput={(params) => <TextField {...params} label="ID" />}
                   />
                 </FormControl>
@@ -218,7 +224,7 @@ function AssemblerComponent({ data, categories }) {
                           </TableCell>
                           {parts.map((part, colIndex) => (
                             <TableCell key={colIndex}>
-                              {formatItemName(data.find((d) => d.id === part))}
+                              {formatItemName(plasmids.find((d) => d.id === part))}
                             </TableCell>
                           ))}
 
@@ -236,23 +242,44 @@ function AssemblerComponent({ data, categories }) {
 
 function Assembler() {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
-  const [retry, setRetry] = React.useState(0)
-  const [data, setData] = React.useState([])
+  const [syntax, setSyntax] = React.useState(moCloYTKSyntax)
+
+  const [graph, setGraph] = React.useState(null)
   const [categories, setCategories] = React.useState([])
+  const [data2, setData2] = React.useState([])
+
+  React.useEffect(() => {
+    setGraph(partsToEdgesGraph(syntax.parts))
+  }, [syntax])
+
+  React.useEffect(() => {
+    const newCategories = syntax.parts.map((part) => ({
+      ...part,
+      left_name: syntax.overhangNames[part.left_overhang] || null,
+      right_name: syntax.overhangNames[part.right_overhang] || null,
+      key: `${part.left_overhang}-${part.right_overhang}`,
+    }))
+    setCategories(newCategories)
+  }, [syntax])
+  
+  
+  const [retry, setRetry] = React.useState(0)
+  const [plasmids, setPlasmids] = React.useState(moCloPlasmids)
   const httpClient = useHttpClient()
+  
   React.useEffect(() => {
     setRequestStatus({ status: 'loading' })
     const fetchData = async () => {
       try {
-        const { data } = await httpClient.get('https://assets.opencloning.org/open-dna-collections/scripts/index_overhangs.json')
-        const formattedData = data.map((item) => ({
-          ...item,
-          category: data2.find((item2) => item2.overhang === item.left_overhang).name + '_' + data2.find((item2) => item2.overhang === item.right_overhang).name
-        }))
+        // const { data } = await httpClient.get('https://assets.opencloning.org/open-dna-collections/scripts/index_overhangs.json')
+        // const formattedData = data.map((item) => ({
+        //   ...item,
+        //   category: data2.find((item2) => item2.overhang === item.left_overhang).name + '_' + data2.find((item2) => item2.overhang === item.right_overhang).name
+        // }))
 
-        const categories = [...new Set(formattedData.map((item) => item.category))].sort()
-        setData(formattedData)
-        setCategories(categories)
+        // const categories = [...new Set(formattedData.map((item) => item.category))].sort()
+        // setPlasmids(formattedData)
+        // setCategories(categories)
         setRequestStatus({ status: 'success' })
       } catch (error) {
         setRequestStatus({ status: 'error', message: 'Could not load assembler data' })
@@ -263,7 +290,7 @@ function Assembler() {
   }, [retry])
   return (
     <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
-      <AssemblerComponent data={data} categories={categories} />
+      <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />
     </RequestStatusWrapper>
   )
 }
