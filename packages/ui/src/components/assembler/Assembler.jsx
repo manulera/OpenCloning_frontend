@@ -23,23 +23,27 @@ const categoryFilter = (category, categories, previousCategoryId) => {
   return previousCategory?.right_overhang === category.left_overhang
 }
 
-function AssemblerLink({ overhang }) {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
-      <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-      <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
-        {overhang}
-      </Box>
-      <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-    </Box>
-  )
-}
+const formattedMoCloPlasmids = moCloPlasmids
+  .filter(({ appData}) => appData.correspondingParts.length === 1)
+  .map((sequenceData, index) => {
+    const { appData } = sequenceData;
+    const { fileName, correspondingParts, longestFeature } = appData;
+    const [left_overhang, right_overhang] = correspondingParts[0].split('-');
+    
+    return {
+      type: 'loadedFile',
+      id: index + 1,
+      plasmid_name: `${fileName} (${longestFeature[0].name})`,
+      left_overhang,
+      right_overhang,
+      key: `${left_overhang}-${right_overhang}`,
+      sequenceData
+    };
+  });
+
 
 function formatItemName(item) {
-  if (item.plasmid_name && item.id !== item.plasmid_name) {
-    return `${item.id} (${item.plasmid_name})`
-  }
-  return item.id
+  return `${item.plasmid_name}`
 }
 
 function AssemblerComponent({ plasmids, categories }) {
@@ -51,9 +55,12 @@ function AssemblerComponent({ plasmids, categories }) {
   const [loadingMessage, setLoadingMessage] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const dispatch = useDispatch()
+
   const onSubmitAssembly = async () => {
     clearAssembly()
-    const sources = assembly.map(({ id }) => id.map((id) => (plasmids.find((item) => item.id === id).source)))
+    const selectedPlasmids = assembly.map(({ id }) => id.map((id) => (plasmids.find((item) => item.id === id))))
+    console.log('selectedPlasmids', selectedPlasmids)
+    const sources = 'blah'
     let errorMessage = 'Error fetching sequences'
     try {
       setLoadingMessage('Requesting sequences...')
@@ -134,16 +141,12 @@ function AssemblerComponent({ plasmids, categories }) {
           const allowedCategories = item.category ? categories.filter((category) => category.id === item.category) : categories.filter((category) => categoryFilter(category, categories, index === 0 ? null : assembly[index - 1].category))
           const isCompleted = item.category !== '' && item.id.length > 0
           const borderColor = isCompleted ? 'success.main' : 'primary.main'
-          const leftOverhang = plasmids.find((d) => d.category === item.category)?.left_overhang
-          const rightOverhang = plasmids.find((d) => d.category === item.category)?.right_overhang
-
+          const thisCategory = categories.find((category) => category.id === item.category)
+          const allowedPlasmids = thisCategory ? plasmids.filter((d) => d.key === thisCategory.key) : [];
 
           return (
             <React.Fragment key={index}>
               {/* Link before first box */}
-              {index === 0 && item.category !== '' && (
-                <AssemblerLink overhang={leftOverhang} />
-              )}
               <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Category</InputLabel>
@@ -165,27 +168,18 @@ function AssemblerComponent({ plasmids, categories }) {
                     value={item.id}
                     onChange={(e, value) => setId(value, index)}
                     label="ID"
-                    options={plasmids.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
+                    options={allowedPlasmids.map((item) => item.id)}
                     getOptionLabel={(id) => formatItemName(plasmids.find((d) => d.id === id))}
                     renderInput={(params) => <TextField {...params} label="ID" />}
                   />
                 </FormControl>
-                {leftOverhang && rightOverhang && (
+                {thisCategory && (
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <AssemblerPart data={ { left_overhang: leftOverhang, right_overhang: rightOverhang }}/>
+                    <AssemblerPart data={ thisCategory }/>
                   </Box>
                 )}
               </Box>
 
-              {/* Link between boxes */}
-              {index < assembly.length - 1 && item.category !== '' && (
-                <AssemblerLink overhang={rightOverhang} />
-              )}
-
-              {/* Link after last box */}
-              {index === assembly.length - 1 && item.category !== '' && (
-                <AssemblerLink overhang={rightOverhang} />
-              )}
             </React.Fragment>
           )
         })}
@@ -242,7 +236,7 @@ function AssemblerComponent({ plasmids, categories }) {
 
 function Assembler() {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
-  const [syntax, setSyntax] = React.useState(moCloYTKSyntax)
+  const [syntax, setSyntax] = React.useState(moCloYTKSyntax);
 
   const [graph, setGraph] = React.useState(null)
   const [categories, setCategories] = React.useState([])
@@ -264,7 +258,7 @@ function Assembler() {
   
   
   const [retry, setRetry] = React.useState(0)
-  const [plasmids, setPlasmids] = React.useState(moCloPlasmids)
+  const [plasmids, setPlasmids] = React.useState(formattedMoCloPlasmids)
   const httpClient = useHttpClient()
   
   React.useEffect(() => {

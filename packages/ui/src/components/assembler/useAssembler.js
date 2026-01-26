@@ -12,22 +12,22 @@ export const useAssembler = () => {
   const requestSources = useCallback(async (assemblerOutput) => {
     const processedOutput = []
     for (let pos = 0; pos < assemblerOutput.length; pos++) {
-        processedOutput.push([])
-        for (let source of assemblerOutput[pos]) {
-            const url = backendRoute(classNameToEndPointMap[source.type])
-            const {data} = await httpClient.post(url, source)
-            if (data.sources.length !== 1) {
-                console.error('Expected 1 source, got ' + data.sources.length)
-            }
-            const thisData = {
-                source: {...data.sources[0], id: pos + 1},
-                sequence: {...data.sequences[0], id: pos + 1},
-            }
-            processedOutput[pos].push(thisData)
+      processedOutput.push([])
+      for (let source of assemblerOutput[pos]) {
+        const url = backendRoute(classNameToEndPointMap[source.type])
+        const {data} = await httpClient.post(url, source)
+        if (data.sources.length !== 1) {
+          console.error('Expected 1 source, got ' + data.sources.length)
         }
+        const thisData = {
+          source: {...data.sources[0], id: pos + 1},
+          sequence: {...data.sequences[0], id: pos + 1},
+        }
+        processedOutput[pos].push(thisData)
+      }
     }
     return processedOutput
-  }, [])
+  }, [ httpClient, backendRoute ])
 
 
   const requestAssemblies = useCallback(async (requestedSources) => {
@@ -43,9 +43,9 @@ export const useAssembler = () => {
       }
       const requestData = {
         source: {
-            type: 'RestrictionAndLigationSource',
-            restriction_enzymes: ['BsaI'],
-            id: assembly.length + 1,
+          type: 'RestrictionAndLigationSource',
+          restriction_enzymes: ['BsaI'],
+          id: assembly.length + 1,
         },
         sequences: assembly.map((p) => p.sequence),
       }
@@ -64,7 +64,7 @@ export const useAssembler = () => {
       output.push(cloningStrategy)
     }
     return output;
-  }, [])
+  }, [ httpClient, backendRoute ])
 
   return { requestSources, requestAssemblies }
 }
