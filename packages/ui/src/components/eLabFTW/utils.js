@@ -30,7 +30,9 @@ export const getFileFromELabFTW = async (itemId, fileInfo) => {
 };
 
 export function arrayCombinations(sets) {
-  if (sets.length === 1) {
+  if (sets.length === 0) {
+    return null;
+  } else if (sets.length === 1) {
     return sets[0].map((el) => [el]);
   } else
     return sets[0].flatMap((val) =>

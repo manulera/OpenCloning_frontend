@@ -46,9 +46,20 @@ function formatItemName(item) {
   return `${item.plasmid_name}`
 }
 
+
+function isAssemblyComplete(assembly, categories) {
+  const lastPosition = assembly.length - 1
+  if (lastPosition === -1) {
+    return false
+  }
+  const lastCategory = categories.find((category) => category.id === assembly[lastPosition].category)
+  console.log('lastCategory',lastPosition, lastCategory)
+  return lastCategory?.right_overhang === categories[0].left_overhang
+}
+
 function AssemblerComponent({ plasmids, categories }) {
 
-  const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
+  const [assembly, setAssembly] = React.useState([])
 
   const { requestSources, requestAssemblies } = useAssembler()
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
@@ -84,12 +95,10 @@ function AssemblerComponent({ plasmids, categories }) {
   const setCategory = (category, index) => {
     clearAssembly()
     if (category === '') {
-      const newAssembly = assembly.slice(0, index)
-      newAssembly[index] = { category: '', id: [] }
-      setAssembly(newAssembly)
-      return
+      setAssembly(prev => prev.slice(0, index))
+    } else {
+      setAssembly(prev => [...prev.slice(0, index), { category, id: [] }])
     }
-    setAssembly(assembly.map((item, i) => i === index ? { category, id: [] } : item))
   }
   const setId = (idArray, index) => {
     clearAssembly()
@@ -115,20 +124,30 @@ function AssemblerComponent({ plasmids, categories }) {
   }
 
   React.useEffect(() => {
-    const lastPosition = assembly.length - 1
-    const lastCategory = categories.find((category) => category.id === assembly[lastPosition].category)
-    if ( lastCategory?.right_overhang === categories[0].left_overhang) {
-      return
+    const newAssembly = [...assembly]
+    while (true) {
+      if (isAssemblyComplete(newAssembly, categories)) {
+        break
+      }
+      let lastPosition = newAssembly.length - 1
+      const previousCategoryId = lastPosition === -1 ? null : newAssembly[lastPosition].category
+      let nextCategories = categories.filter((category) => categoryFilter(category, categories, previousCategoryId))
+      if (nextCategories.length !== 1) {
+        break
+      } else if (nextCategories.length === 1) {
+        newAssembly.push({ category: nextCategories[0].id, id: [] })
+      }
     }
-    if (assembly[lastPosition].category !== '') {
-      const newAssembly = [...assembly, { category: '', id: [] }]
+    if (newAssembly.length !== assembly.length) {
       setAssembly(newAssembly)
     }
-  }, [assembly])
+  }, [assembly, categories])
+
 
   const expandedAssemblies = arrayCombinations(assembly.map(({ id }) => id))
-  const assemblyComplete = assembly.every((item) => item.category !== '' && item.id.length > 0)
+  const assemblyComplete = isAssemblyComplete(assembly, categories)
   const currentCategories = assembly.map((item) => item.category)
+  const options = assemblyComplete ? assembly : [...assembly, { category: '', id: [] }]
 
   return (
     <Box className="assembler-container" sx={{ width: '80%', margin: 'auto', mb: 4 }}>
@@ -137,8 +156,8 @@ function AssemblerComponent({ plasmids, categories }) {
       </Alert>
 
       <Stack direction="row" alignItems="center" spacing={1} sx={{ overflowX: 'auto', my: 2 }}>
-        {assembly.map((item, index) => {
-          const allowedCategories = item.category ? categories.filter((category) => category.id === item.category) : categories.filter((category) => categoryFilter(category, categories, index === 0 ? null : assembly[index - 1].category))
+        {options.map((item, index) => {
+          const allowedCategories = categories.filter((category) => categoryFilter(category, categories, index === 0 ? null : assembly[index - 1].category))
           const isCompleted = item.category !== '' && item.id.length > 0
           const borderColor = isCompleted ? 'success.main' : 'primary.main'
           const thisCategory = categories.find((category) => category.id === item.category)
@@ -151,11 +170,11 @@ function AssemblerComponent({ plasmids, categories }) {
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Category</InputLabel>
                   <Select
-                    endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
+                    endAdornment={item.category && allowedCategories.length > 1 && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
                     value={item.category}
                     onChange={(e) => setCategory(e.target.value, index)}
                     label="Category"
-                    disabled={index < assembly.length - 1}
+                    disabled={index < assembly.length}
                   >
                     {allowedCategories.map((category) => (
                       <MenuItem key={category.id} value={category.id}>{category.name} ({category.info})</MenuItem>
