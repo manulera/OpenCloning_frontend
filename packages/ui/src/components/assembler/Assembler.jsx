@@ -13,6 +13,7 @@ import moCloYTKSyntax from '../../../../../apps/syntax-builder/public/syntax/moc
 import moCloPlasmids from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/plasmids.json'
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useCombinatorialAssembly from './useCombinatorialAssembly';
+import { usePlasmidsLogic } from './usePlasmidsLogic';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
@@ -25,7 +26,7 @@ const categoryFilter = (category, categories, previousCategoryId) => {
 }
 
 function formatPlasmid(sequenceData) {
-  
+
   const { appData } = sequenceData;
   const { fileName, correspondingParts, longestFeature } = appData;
   const [left_overhang, right_overhang] = correspondingParts[0].split('-');
@@ -275,6 +276,32 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
   return newCategories
 }
 
+function AddPlasmidsButton({ addPlasmids, syntax }) {
+  const { uploadPlasmids, linkedPlasmids, setLinkedPlasmids } = usePlasmidsLogic(syntax)
+  const fileInputRef = React.useRef(null)
+
+  React.useEffect(() => {
+    if (linkedPlasmids.length > 0) {
+      const validPlasmids = linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1)
+      const invalidPlasmids = linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1)
+      addPlasmids(validPlasmids.map(formatPlasmid))
+      setLinkedPlasmids([])
+    }
+  }, [linkedPlasmids, addPlasmids, setLinkedPlasmids])
+
+  const handleFileChange = (event) => {
+    uploadPlasmids(Array.from(event.target.files))
+    fileInputRef.current.value = ''
+  }
+
+  return (<>
+    <Button variant="contained" color="primary" onClick={() => fileInputRef.current.click()}>
+      Add Plasmids
+    </Button>
+    <input multiple type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} accept=".gbk,.gb,.fasta,.fa,.dna" />
+  </>)
+}
+
 function Assembler() {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
   const [syntax, setSyntax] = React.useState(moCloYTKSyntax);
@@ -297,9 +324,9 @@ function Assembler() {
     })
   }, [])
 
-  React.useEffect(() => {
-    addPlasmids(formattedMoCloPlasmids)
-  }, [addPlasmids])
+  // React.useEffect(() => {
+  //   addPlasmids(formattedMoCloPlasmids)
+  // }, [addPlasmids])
 
   React.useEffect(() => {
     setRequestStatus({ status: 'loading' })
@@ -325,6 +352,7 @@ function Assembler() {
 
   return (
     <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
+      <AddPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
       <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />
     </RequestStatusWrapper>
   )

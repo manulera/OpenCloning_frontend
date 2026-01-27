@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { graphToMSA, partsToGraph, graphHasCycle } from '@opencloning/ui/components/assembler';
-import { usePlasmidsLogic } from './usePlasmidsLogic';
+import { usePlasmidsLogic } from '@opencloning/ui/components/assembler';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {

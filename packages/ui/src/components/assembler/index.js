@@ -4,3 +4,4 @@ export { getSvgByGlyph } from './sbol_visual_glyphs';
 export { DisplayOverhang, DisplayInside, AssemblerPartContainer } from './AssemblerPart';
 export { partDataToDisplayData } from './assembler_utils.js';
 export { partsToGraph, graphToMSA, graphHasCycle, partsToEdgesGraph, GRAPH_SPACER } from './graph_utils.js';
+export { usePlasmidsLogic } from './usePlasmidsLogic.js';

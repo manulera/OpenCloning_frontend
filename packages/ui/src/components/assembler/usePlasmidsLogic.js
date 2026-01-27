@@ -1,7 +1,7 @@
 import React from 'react';
 import { anyToJson } from '@teselagen/bio-parsers';
 import { partsToEdgesGraph } from '@opencloning/ui/components/assembler';
-import { assignSequenceToSyntaxPart } from '../../../../packages/ui/src/components/assembler/assembler_utils';
+import { assignSequenceToSyntaxPart } from './assembler_utils';
 import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
 
 /**
