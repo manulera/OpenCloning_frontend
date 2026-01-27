@@ -12,6 +12,7 @@ import { partsToEdgesGraph } from './graph_utils';
 
 import moCloYTKSyntax from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/syntax.json'
 import moCloPlasmids from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/plasmids.json'
+import { jsonToGenbank } from '@teselagen/bio-parsers';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
@@ -34,12 +35,30 @@ const formattedMoCloPlasmids = moCloPlasmids
       type: 'loadedFile',
       id: index + 1,
       plasmid_name: `${fileName} (${longestFeature[0].name})`,
+      file_name: fileName,
       left_overhang,
       right_overhang,
       key: `${left_overhang}-${right_overhang}`,
-      sequenceData
+      sequenceData,
+      genbankString: jsonToGenbank(sequenceData),
     };
   });
+
+formattedMoCloPlasmids.push({
+  collection: "Ecoli Nanobody Toolkit",
+  id:"BC_RJ_SD8",
+  plasmid_name: 'HELLO!',
+  left_overhang:"CCCT",
+  right_overhang:"AACG",
+  key: "CCCT-AACG",
+  longest_feature_type:"CDS",
+  source:{
+    id: 0,
+    type: "AddgeneIdSource",
+    input: [],
+    repository_id: "65115",
+  }
+})
 
 
 function formatItemName(item) {
@@ -69,13 +88,12 @@ function AssemblerComponent({ plasmids, categories }) {
 
   const onSubmitAssembly = async () => {
     clearAssembly()
-    const selectedPlasmids = assembly.map(({ id }) => id.map((id) => (plasmids.find((item) => item.id === id))))
-    console.log('selectedPlasmids', selectedPlasmids)
-    const sources = 'blah'
+    const selectedPlasmids = assembly.map(({ plasmidIds }) => plasmidIds.map((id) => (plasmids.find((item) => item.id === id))))
+
     let errorMessage = 'Error fetching sequences'
     try {
       setLoadingMessage('Requesting sequences...')
-      const resp = await requestSources(sources)
+      const resp = await requestSources(selectedPlasmids)
       errorMessage = 'Error assembling sequences'
       setLoadingMessage('Assembling...')
       const assemblies = await requestAssemblies(resp)
@@ -97,24 +115,24 @@ function AssemblerComponent({ plasmids, categories }) {
     if (category === '') {
       setAssembly(prev => prev.slice(0, index))
     } else {
-      setAssembly(prev => [...prev.slice(0, index), { category, id: [] }])
+      setAssembly(prev => [...prev.slice(0, index), { category, plasmidIds: [] }])
     }
   }
-  const setId = (idArray, index) => {
+  const setId = (plasmidIds, index) => {
     clearAssembly()
     // Handle case where user clears all selections (empty array)
-    if (!idArray || idArray.length === 0) {
-      setAssembly(assembly.map((item, i) => i === index ? { ...item, id: [] } : item))
+    if (!plasmidIds || plasmidIds.length === 0) {
+      setAssembly(assembly.map((item, i) => i === index ? { ...item, plasmidIds: [] } : item))
       return
     }
 
     // For multiple selection, we need to determine the category based on the first selected item
     // or maintain the current category if it's already set
     const currentItem = assembly[index]
-    const firstOption = plasmids.find((item) => item.id === idArray[0])
+    const firstOption = plasmids.find((item) => item.id === plasmidIds[0])
     const category = currentItem.category || firstOption?.category || ''
 
-    setAssembly(assembly.map((item, i) => i === index ? { id: idArray, category } : item))
+    setAssembly(assembly.map((item, i) => i === index ? { plasmidIds, category } : item))
   }
 
   const handleViewAssembly = (index) => {
@@ -135,7 +153,7 @@ function AssemblerComponent({ plasmids, categories }) {
       if (nextCategories.length !== 1) {
         break
       } else if (nextCategories.length === 1) {
-        newAssembly.push({ category: nextCategories[0].id, id: [] })
+        newAssembly.push({ category: nextCategories[0].id, plasmidIds: [] })
       }
     }
     if (newAssembly.length !== assembly.length) {
@@ -144,10 +162,11 @@ function AssemblerComponent({ plasmids, categories }) {
   }, [assembly, categories])
 
 
-  const expandedAssemblies = arrayCombinations(assembly.map(({ id }) => id))
-  const assemblyComplete = isAssemblyComplete(assembly, categories)
+  const expandedAssemblies = arrayCombinations(assembly.map(({ plasmidIds }) => plasmidIds))
+  const assemblyComplete = isAssemblyComplete(assembly, categories);
+  const canBeSubmitted = assemblyComplete && assembly.every((item) => item.plasmidIds.length > 0)
   const currentCategories = assembly.map((item) => item.category)
-  const options = assemblyComplete ? assembly : [...assembly, { category: '', id: [] }]
+  const options = assemblyComplete ? assembly : [...assembly, { category: '', plasmidIds: [] }]
 
   return (
     <Box className="assembler-container" sx={{ width: '80%', margin: 'auto', mb: 4 }}>
@@ -158,7 +177,7 @@ function AssemblerComponent({ plasmids, categories }) {
       <Stack direction="row" alignItems="center" spacing={1} sx={{ overflowX: 'auto', my: 2 }}>
         {options.map((item, index) => {
           const allowedCategories = categories.filter((category) => categoryFilter(category, categories, index === 0 ? null : assembly[index - 1].category))
-          const isCompleted = item.category !== '' && item.id.length > 0
+          const isCompleted = item.category !== '' && item.plasmidIds.length > 0
           const borderColor = isCompleted ? 'success.main' : 'primary.main'
           const thisCategory = categories.find((category) => category.id === item.category)
           const allowedPlasmids = thisCategory ? plasmids.filter((d) => d.key === thisCategory.key) : [];
@@ -177,19 +196,25 @@ function AssemblerComponent({ plasmids, categories }) {
                     disabled={index < assembly.length}
                   >
                     {allowedCategories.map((category) => (
-                      <MenuItem key={category.id} value={category.id}>{category.name} ({category.info})</MenuItem>
+                      <MenuItem key={category.id} value={category.id}>{category.displayName}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>
                   <Autocomplete
                     multiple
-                    value={item.id}
+                    value={item.plasmidIds}
                     onChange={(e, value) => setId(value, index)}
-                    label="ID"
                     options={allowedPlasmids.map((item) => item.id)}
                     getOptionLabel={(id) => formatItemName(plasmids.find((d) => d.id === id))}
-                    renderInput={(params) => <TextField {...params} label="ID" />}
+                    renderInput={(params) => <TextField {...params} label="Plasmids" />}
+                    renderOption={(props, option) => {
+                      const plasmid = plasmids.find((d) => d.id === option)
+                      return (
+                        <MenuItem {...props} sx={{ backgroundColor: plasmid.type === 'loadedFile' ? 'success.light' : undefined }}>
+                          {formatItemName(plasmid)}
+                        </MenuItem>
+                      )}}
                   />
                 </FormControl>
                 {thisCategory && (
@@ -203,7 +228,7 @@ function AssemblerComponent({ plasmids, categories }) {
           )
         })}
       </Stack>
-      {assemblyComplete && <>
+      {canBeSubmitted && <>
         <Button
           sx={{ p: 2, px: 4, my: 2, fontSize: '1.2rem' }}
           variant="contained"
@@ -253,13 +278,32 @@ function AssemblerComponent({ plasmids, categories }) {
   )
 }
 
+function displayNameFromCategory(category) {
+  let name = ''
+  if (category.name) {
+    name = category.name
+    if (category.info)
+      name += ` (${category.info}) `
+  }
+  if (category.left_name && category.right_name) {
+    name += `${category.left_name}_${category.right_name}`
+  }
+  if (name === '') {
+    name = category.key
+  }
+  return name.trim()
+}
+
 function Assembler() {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
   const [syntax, setSyntax] = React.useState(moCloYTKSyntax);
 
   const [graph, setGraph] = React.useState(null)
   const [categories, setCategories] = React.useState([])
-  const [data2, setData2] = React.useState([])
+  const [data2, setData2] = React.useState([])  
+  const [retry, setRetry] = React.useState(0)
+  const [plasmids, setPlasmids] = React.useState(formattedMoCloPlasmids)
+  const httpClient = useHttpClient()
 
   React.useEffect(() => {
     setGraph(partsToEdgesGraph(syntax.parts))
@@ -272,13 +316,26 @@ function Assembler() {
       right_name: syntax.overhangNames[part.right_overhang] || null,
       key: `${part.left_overhang}-${part.right_overhang}`,
     }))
+    let newCategoryKeys = newCategories.map((category) => category.key)
+    plasmids.forEach((plasmid) => {
+      if (!newCategoryKeys.includes(plasmid.key)) {
+        const {left_overhang, right_overhang} = plasmid
+        newCategories.push({
+          left_overhang,
+          right_overhang,
+          left_name: syntax.overhangNames[left_overhang] || null,
+          right_name: syntax.overhangNames[right_overhang] || null,
+          key: `${left_overhang}-${right_overhang}`,
+        })
+        newCategoryKeys.push(`${left_overhang}-${right_overhang}`)
+      }
+    })
+    newCategories.forEach((category, index) => {
+      category.id = index + 1
+      category.displayName = displayNameFromCategory(category)
+    })
     setCategories(newCategories)
-  }, [syntax])
-  
-  
-  const [retry, setRetry] = React.useState(0)
-  const [plasmids, setPlasmids] = React.useState(formattedMoCloPlasmids)
-  const httpClient = useHttpClient()
+  }, [syntax, plasmids])
   
   React.useEffect(() => {
     setRequestStatus({ status: 'loading' })
@@ -301,6 +358,8 @@ function Assembler() {
     fetchData()
 
   }, [retry])
+
+  console.log('categories', categories)
   return (
     <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
       <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />
