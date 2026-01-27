@@ -5,3 +5,4 @@ export { DisplayOverhang, DisplayInside, AssemblerPartContainer } from './Assemb
 export { partDataToDisplayData } from './assembler_utils.js';
 export { partsToGraph, graphToMSA, graphHasCycle, partsToEdgesGraph, GRAPH_SPACER } from './graph_utils.js';
 export { usePlasmidsLogic } from './usePlasmidsLogic.js';
+export { default as PlasmidSyntaxTable } from './PlasmidSyntaxTable.jsx';

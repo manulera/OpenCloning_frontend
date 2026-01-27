@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
+import { Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useAssembler } from './useAssembler';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ import moCloPlasmids from '../../../../../apps/syntax-builder/public/syntax/mocl
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useCombinatorialAssembly from './useCombinatorialAssembly';
 import { usePlasmidsLogic } from './usePlasmidsLogic';
+import PlasmidSyntaxTable from './PlasmidSyntaxTable';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
@@ -278,16 +279,9 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
 
 function AddPlasmidsButton({ addPlasmids, syntax }) {
   const { uploadPlasmids, linkedPlasmids, setLinkedPlasmids } = usePlasmidsLogic(syntax)
+  const validPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1), [linkedPlasmids])
+  const invalidPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1), [linkedPlasmids])
   const fileInputRef = React.useRef(null)
-
-  React.useEffect(() => {
-    if (linkedPlasmids.length > 0) {
-      const validPlasmids = linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1)
-      const invalidPlasmids = linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1)
-      addPlasmids(validPlasmids.map(formatPlasmid))
-      setLinkedPlasmids([])
-    }
-  }, [linkedPlasmids, addPlasmids, setLinkedPlasmids])
 
   const handleFileChange = (event) => {
     uploadPlasmids(Array.from(event.target.files))
@@ -299,6 +293,37 @@ function AddPlasmidsButton({ addPlasmids, syntax }) {
       Add Plasmids
     </Button>
     <input multiple type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} accept=".gbk,.gb,.fasta,.fa,.dna" />
+    <Dialog
+      maxWidth="lg"
+      fullWidth
+      open={invalidPlasmids.length > 0 || validPlasmids.length > 0}
+      onClose={() => setLinkedPlasmids([])}
+      PaperProps={{
+        style: {
+          maxHeight: '80vh',
+        },
+      }}
+    >
+      {invalidPlasmids.length > 0 && (
+        <Box>
+          <DialogTitle>Invalid Plasmids</DialogTitle>
+          <DialogContent>
+            <PlasmidSyntaxTable plasmids={invalidPlasmids} />
+          </DialogContent>
+        </Box>
+      )}
+      {validPlasmids.length > 0 && (
+        <Box>
+          <DialogTitle>Valid Plasmids</DialogTitle>
+          <DialogContent>
+            <PlasmidSyntaxTable plasmids={validPlasmids} />
+          </DialogContent>
+        </Box>
+      )}
+      <DialogActions>
+        <Button variant="contained" color="primary" onClick={() => setLinkedPlasmids([])}>Close</Button>
+      </DialogActions>
+    </Dialog>
   </>)
 }
 
