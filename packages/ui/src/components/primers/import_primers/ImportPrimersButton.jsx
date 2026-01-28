@@ -52,7 +52,6 @@ function ImportPrimersButton({ addPrimer }) {
       <Tooltip arrow title={<span style={{ fontSize: '1.4em' }}>Upload a .csv or .tsv file with headers &apos;name&apos; and &apos;sequence&apos;</span>}>
         <Button
           onClick={handleUploadClick}
-          variant="contained"
         >
           Import from file
         </Button>
