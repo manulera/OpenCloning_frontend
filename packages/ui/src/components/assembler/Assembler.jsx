@@ -8,17 +8,12 @@ import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-mat
 import { useAssembler } from './useAssembler';
 import { useDispatch } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
-import RequestStatusWrapper from '../form/RequestStatusWrapper';
-import useHttpClient from '../../hooks/useHttpClient';
 import AssemblerPart from './AssemblerPart';
-import { partsToEdgesGraph } from './graph_utils';
-
-import moCloYTKSyntax from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/syntax.json'
-import moCloPlasmids from '../../../../../apps/syntax-builder/public/syntax/moclo_ytk/plasmids.json'
 import { jsonToGenbank } from '@teselagen/bio-parsers';
 import useCombinatorialAssembly from './useCombinatorialAssembly';
 import { usePlasmidsLogic } from './usePlasmidsLogic';
 import PlasmidSyntaxTable from './PlasmidSyntaxTable';
+import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
@@ -53,25 +48,6 @@ function formatPlasmid(sequenceData) {
   };
 
 }
-
-const formattedMoCloPlasmids = moCloPlasmids
-  .filter(({ appData}) => appData.correspondingParts.length === 1)
-  .map(formatPlasmid);
-
-formattedMoCloPlasmids.push({
-  collection: "Ecoli Nanobody Toolkit",
-  plasmid_name: 'HELLO!',
-  left_overhang:"CCCT",
-  right_overhang:"AACG",
-  key: "CCCT-AACG",
-  longest_feature_type:"CDS",
-  source:{
-    id: 0,
-    type: "AddgeneIdSource",
-    input: [],
-    repository_id: "65115",
-  }
-})
 
 
 function formatItemName(item) {
@@ -283,8 +259,16 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
   return newCategories
 }
 
-function LoadSyntaxButton({ setSyntax }) {
-  return <Button color="success" onClick={() => setSyntax(moCloYTKSyntax)}>Load Syntax</Button>
+function LoadSyntaxButton({ setSyntax, addPlasmids }) {
+  const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
+  const onSyntaxSelect = React.useCallback((syntax, plasmids) => {
+    setSyntax(syntax)
+    addPlasmids(plasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1).map(formatPlasmid))
+  }, [setSyntax, addPlasmids])
+  return <>
+    <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
+    {existingSyntaxDialogOpen && <ExistingSyntaxDialog onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
+  </>
 }
 
 function UploadPlasmidsButton({ addPlasmids, syntax }) {
@@ -344,17 +328,8 @@ function UploadPlasmidsButton({ addPlasmids, syntax }) {
 }
 
 function Assembler() {
-  const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
   const [syntax, setSyntax] = React.useState(null);
-  const [retry, setRetry] = React.useState(0)
   const [plasmids, setPlasmids] = React.useState([])
-  const httpClient = useHttpClient()
-
-  const graph = React.useMemo(() => {
-    if (syntax) {
-      return partsToEdgesGraph(syntax.parts)
-    }
-  }, [syntax])
 
   const categories = React.useMemo(() => {
     return categoriesFromSyntaxAndPlasmids(syntax, plasmids)
@@ -371,39 +346,13 @@ function Assembler() {
     setPlasmids(prev => prev.filter((plasmid) => plasmid.type !== 'loadedFile'))
   }, [])
 
-  // React.useEffect(() => {
-  //   addPlasmids(formattedMoCloPlasmids)
-  // }, [addPlasmids])
-
-  React.useEffect(() => {
-    setRequestStatus({ status: 'loading' })
-    const fetchData = async () => {
-      try {
-        // const { data } = await httpClient.get('https://assets.opencloning.org/open-dna-collections/scripts/index_overhangs.json')
-        // const formattedData = data.map((item) => ({
-        //   ...item,
-        //   category: data2.find((item2) => item2.overhang === item.left_overhang).name + '_' + data2.find((item2) => item2.overhang === item.right_overhang).name
-        // }))
-
-        // const categories = [...new Set(formattedData.map((item) => item.category))].sort()
-        // setPlasmids(formattedData)
-        // setCategories(categories)
-        setRequestStatus({ status: 'success' })
-      } catch (error) {
-        setRequestStatus({ status: 'error', message: 'Could not load assembler data' })
-      }
-    }
-    fetchData()
-
-  }, [retry])
-
   return (
-    <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
+    <>
       <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem', mb: 2 }}>
         The Assembler is experimental. Use with caution.
       </Alert>
       <ButtonGroup>
-        <LoadSyntaxButton setSyntax={setSyntax} />
+        <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} />
         {syntax &&
         <>
           <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
@@ -411,7 +360,7 @@ function Assembler() {
         </>}
       </ButtonGroup>
       {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />}
-    </RequestStatusWrapper>
+    </>
   )
 }
 
