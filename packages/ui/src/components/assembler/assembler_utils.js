@@ -75,8 +75,9 @@ export function longestFeatureInDigestFragment(digestFragment, sequenceData) {
   const rightEdge = cut2.overhangSize >=0 ? cut2.bottomSnipPosition : cut2.topSnipPosition;
   const {features} = getSequenceDataBetweenRange(sequenceData, {start: leftEdge, end: rightEdge});
   return features.reduce((longest, feature) => {
+    if (!longest) return feature;
     return feature.end - feature.start > longest.end - longest.start ? feature : longest;
-  }, {start: 0, end: 1});
+  }, null);
 }
 
 export function getSimplifiedDigestFragments(sequenceData, enzymes) {
