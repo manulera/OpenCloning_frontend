@@ -1,14 +1,15 @@
 import React from 'react';
 import { Box, Typography, Paper, Container, Alert } from '@mui/material';
-import { useFormData } from '../context/FormDataContext';
+import { useFormData, useLinkedPlasmids } from '../context/FormDataContext';
 import useUploadData from './useUploadData';
-import ExistingSyntaxDialog from './ExistingSyntaxDialog';
+import { ExistingSyntaxDialog } from '@opencloning/ui/components/assembler';
 
 
 
 function StartingPage({ setOverhangsStep }) {
   const { addDefaultPart } = useFormData();
   const { uploadData } = useUploadData();
+  const { setLinkedPlasmids } = useLinkedPlasmids();
   const fileInputRef = React.useRef(null);
   const [submissionError, setSubmissionError] = React.useState(null);
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false);
@@ -33,6 +34,16 @@ function StartingPage({ setOverhangsStep }) {
       addDefaultPart();
     }
   };
+
+  const onSyntaxSelect = React.useCallback((syntax, plasmids) => {
+    try {
+      const file = new File([JSON.stringify(syntax)], 'syntax.json', { type: 'application/json' });
+      uploadData(file);
+      setLinkedPlasmids(plasmids);
+    } catch (error) {
+      setSubmissionError(error.message);
+    }
+  }, [uploadData, setLinkedPlasmids]);
 
   const options = [
     {
@@ -96,7 +107,7 @@ function StartingPage({ setOverhangsStep }) {
           ))}
         </Box>
       </Box>
-      <ExistingSyntaxDialog setSubmissionError={setSubmissionError} open={existingSyntaxDialogOpen} onClose={() => setExistingSyntaxDialogOpen(false)} />
+      {existingSyntaxDialogOpen && <ExistingSyntaxDialog onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect} />}
     </Container>
   );
 }

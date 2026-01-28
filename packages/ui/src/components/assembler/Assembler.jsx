@@ -253,6 +253,9 @@ function displayNameFromCategory(category) {
 }
 
 function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
+  if (!syntax) {
+    return []
+  }
   const newCategories = syntax.parts.map((part) => ({
     ...part,
     left_name: syntax.overhangNames[part.left_overhang] || null,
@@ -278,6 +281,10 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
     category.displayName = displayNameFromCategory(category)
   })
   return newCategories
+}
+
+function LoadSyntaxButton({ setSyntax }) {
+  return <Button color="success" onClick={() => setSyntax(moCloYTKSyntax)}>Load Syntax</Button>
 }
 
 function UploadPlasmidsButton({ addPlasmids, syntax }) {
@@ -338,13 +345,15 @@ function UploadPlasmidsButton({ addPlasmids, syntax }) {
 
 function Assembler() {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
-  const [syntax, setSyntax] = React.useState(moCloYTKSyntax);
+  const [syntax, setSyntax] = React.useState(null);
   const [retry, setRetry] = React.useState(0)
   const [plasmids, setPlasmids] = React.useState([])
   const httpClient = useHttpClient()
 
   const graph = React.useMemo(() => {
-    return partsToEdgesGraph(syntax.parts)
+    if (syntax) {
+      return partsToEdgesGraph(syntax.parts)
+    }
   }, [syntax])
 
   const categories = React.useMemo(() => {
@@ -394,11 +403,14 @@ function Assembler() {
         The Assembler is experimental. Use with caution.
       </Alert>
       <ButtonGroup>
-
-        <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
-        <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>
+        <LoadSyntaxButton setSyntax={setSyntax} />
+        {syntax &&
+        <>
+          <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
+          <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>
+        </>}
       </ButtonGroup>
-      <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />
+      {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />}
     </RequestStatusWrapper>
   )
 }

@@ -2,7 +2,11 @@ import axios from 'axios';
 import urlWhitelist from '../config/urlWhitelist';
 
 export default function getHttpClient(extraUrls = []) {
-  const whitelist = [...urlWhitelist, import.meta.env.BASE_URL, window.location.origin, ...extraUrls];
+  const baseURL = import.meta.env.BASE_URL || null;
+  const whitelist = [...urlWhitelist, window.location.origin, ...extraUrls];
+  if (baseURL) {
+    whitelist.push(baseURL);
+  }
 
   const client = axios.create();
 

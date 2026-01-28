@@ -9,6 +9,8 @@ export default [
   'https://assets.opencloning.org/SnapGene_crawler',
   // GitHub repository for Open DNA Collections index
   'https://assets.opencloning.org/open-dna-collections',
+  // GitHub repository for syntaxes
+  'https://assets.opencloning.org/syntaxes/syntaxes',
   // NCBI entrez API
   'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi',
   'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
