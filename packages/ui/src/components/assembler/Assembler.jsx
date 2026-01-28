@@ -353,11 +353,8 @@ function Assembler() {
       </Alert>
       <ButtonGroup>
         <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} />
-        {syntax &&
-        <>
-          <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
-          <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>
-        </>}
+        {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
+        {syntax && <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>}
       </ButtonGroup>
       {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />}
     </>
