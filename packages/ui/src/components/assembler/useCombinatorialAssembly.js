@@ -69,6 +69,11 @@ export default function useCombinatorialAssembly( { onValueChange, categories, p
     )
   }, [plasmids])
 
+  // If categories are changed, clear the assembly
+  React.useEffect(() => {
+    setAssembly([])
+  }, [categories])
+
   const expandedAssemblies = React.useMemo(() => arrayCombinations(assembly.map(({ plasmidIds }) => plasmidIds)), [assembly])
   const assemblyComplete = isAssemblyComplete(assembly, categories);
   const canBeSubmitted = assemblyComplete && assembly.every((item) => item.plasmidIds.length > 0)
