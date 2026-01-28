@@ -58,6 +58,6 @@ export const primersFromTextFile = async (fileUploaded, existingNames) => {
     } else if (stringIsNotDNA(primer.sequence)) {
       return { ...primer, error: 'invalid' };
     }
-    return primer;
+    return { ...primer, error: '' };
   });
 };

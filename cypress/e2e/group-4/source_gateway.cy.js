@@ -50,7 +50,12 @@ describe('Tests Gateway cloning functionality', () => {
     clickMultiSelectOption('Reaction type', 'BP');
     cy.get('span').contains('Single-site recombination').click({ force: true });
     cy.get('span').contains('Circular assemblies').click({ force: true });
+    // Check parameters in the request
+    cy.intercept('POST', '**/gateway*', { forceNetworkError: true }).as('gatewayRequest');
     cy.get('.open-cloning button.submit-backend-api').click();
-    cy.get('.multiple-output-selector-navigate', { timeout: 20000 }).contains('3').should('exist');
+    cy.wait('@gatewayRequest').then((interception) => {
+      expect(interception.request.query.circular_only).to.be.equal('false');
+      expect(interception.request.query.only_multi_site).to.be.equal('false');
+    });
   });
 });
