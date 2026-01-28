@@ -19,7 +19,7 @@ const categoryFilter = (category, categories, previousCategoryId) => {
   return previousCategory?.right_overhang === category.left_overhang
 }
 
-export default function useCombinatorialAssembly( { onValueChange, categories }) {
+export default function useCombinatorialAssembly( { onValueChange, categories, plasmids }) {
 
   const [assembly, setAssembly] = React.useState([])
 
@@ -59,6 +59,15 @@ export default function useCombinatorialAssembly( { onValueChange, categories })
       setAssembly(newAssembly)
     }
   }, [assembly, categories])
+
+  // If plasmids are removed, remove them from the assembly
+  React.useEffect(() => {
+    setAssembly(prev => {
+      const existingPlasmidIds = plasmids.map((plasmid) => plasmid.id)
+      return prev.map((item) => ({ ...item, plasmidIds: item.plasmidIds.filter((id) => existingPlasmidIds.includes(id)) }))
+    }
+    )
+  }, [plasmids])
 
   const expandedAssemblies = React.useMemo(() => arrayCombinations(assembly.map(({ plasmidIds }) => plasmidIds)), [assembly])
   const assemblyComplete = isAssemblyComplete(assembly, categories);

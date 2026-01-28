@@ -1,5 +1,9 @@
 import React from 'react'
-import { Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
+import {
+  Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogTitle, DialogContent,
+  DialogActions, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table,
+  TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ButtonGroup
+} from '@mui/material'
 import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useAssembler } from './useAssembler';
 import { useDispatch } from 'react-redux';
@@ -71,7 +75,8 @@ formattedMoCloPlasmids.push({
 
 
 function formatItemName(item) {
-  return `${item.plasmid_name}`
+  // Fallback in case the item is not found (while updating list)
+  return item ? `${item.plasmid_name}` : '-'
 }
 
 function AssemblerProductTable({ requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories }) {
@@ -151,9 +156,10 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
               getOptionLabel={(id) => formatItemName(plasmids.find((d) => d.id === id))}
               renderInput={(params) => <TextField {...params} label="Plasmids" />}
               renderOption={(props, option) => {
+                const { key, ...restProps } = props
                 const plasmid = plasmids.find((d) => d.id === option)
                 return (
-                  <MenuItem {...props} sx={{ backgroundColor: plasmid.type === 'loadedFile' ? 'success.light' : undefined }}>
+                  <MenuItem key={key} {...restProps} sx={{ backgroundColor: plasmid.type === 'loadedFile' ? 'success.light' : undefined }}>
                     {formatItemName(plasmid)}
                   </MenuItem>
                 )}}
@@ -179,7 +185,7 @@ function AssemblerComponent({ plasmids, categories }) {
     setErrorMessage('')
   }, [])
 
-  const { assembly, setCategory, setId, expandedAssemblies, assemblyComplete, canBeSubmitted, currentCategories } = useCombinatorialAssembly({ onValueChange: clearAssemblySelection, categories })
+  const { assembly, setCategory, setId, expandedAssemblies, assemblyComplete, canBeSubmitted, currentCategories } = useCombinatorialAssembly({ onValueChange: clearAssemblySelection, categories, plasmids })
   const { requestSources, requestAssemblies } = useAssembler()
 
   const onSubmitAssembly = async () => {
@@ -205,9 +211,6 @@ function AssemblerComponent({ plasmids, categories }) {
 
   return (
     <Box className="assembler-container" sx={{ width: '80%', margin: 'auto', mb: 4 }}>
-      <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem' }}>
-                The Assembler is experimental. Use with caution.
-      </Alert>
 
       <Stack direction="row" alignItems="center" spacing={1} sx={{ overflowX: 'auto', my: 2 }}>
         {options.map((item, index) =>
@@ -277,7 +280,7 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
   return newCategories
 }
 
-function AddPlasmidsButton({ addPlasmids, syntax }) {
+function UploadPlasmidsButton({ addPlasmids, syntax }) {
   const { uploadPlasmids, linkedPlasmids, setLinkedPlasmids } = usePlasmidsLogic(syntax)
   const validPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1), [linkedPlasmids])
   const invalidPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1), [linkedPlasmids])
@@ -288,9 +291,14 @@ function AddPlasmidsButton({ addPlasmids, syntax }) {
     fileInputRef.current.value = ''
   }
 
+  const handleImportValidPlasmids = React.useCallback(() => {
+    addPlasmids(validPlasmids.map(formatPlasmid))
+    setLinkedPlasmids([])
+  }, [addPlasmids, validPlasmids, setLinkedPlasmids])
+
   return (<>
-    <Button variant="contained" color="primary" onClick={() => fileInputRef.current.click()}>
-      Add Plasmids
+    <Button color="primary" onClick={() => fileInputRef.current.click()}>
+        Add Plasmids
     </Button>
     <input multiple type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} accept=".gbk,.gb,.fasta,.fa,.dna" />
     <Dialog
@@ -304,6 +312,10 @@ function AddPlasmidsButton({ addPlasmids, syntax }) {
         },
       }}
     >
+      <DialogActions sx={{ justifyContent: 'center', position: 'sticky', top: 0, zIndex: 99, background: '#fff' }}>
+        {validPlasmids.length > 0 && <Button variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>}
+        <Button variant="contained" color="error" onClick={() => setLinkedPlasmids([])}>Cancel</Button>
+      </DialogActions>
       {invalidPlasmids.length > 0 && (
         <Box>
           <DialogTitle>Invalid Plasmids</DialogTitle>
@@ -320,9 +332,6 @@ function AddPlasmidsButton({ addPlasmids, syntax }) {
           </DialogContent>
         </Box>
       )}
-      <DialogActions>
-        <Button variant="contained" color="primary" onClick={() => setLinkedPlasmids([])}>Close</Button>
-      </DialogActions>
     </Dialog>
   </>)
 }
@@ -347,6 +356,10 @@ function Assembler() {
       const maxId = Math.max(...prevPlasmids.map((plasmid) => plasmid.id), 0)
       return [...prevPlasmids, ...newPlasmids.map((plasmid, index) => ({ ...plasmid, id: maxId + index + 1 }))]
     })
+  }, [])
+
+  const clearPlasmids = React.useCallback(() => {
+    setPlasmids(prev => prev.filter((plasmid) => plasmid.type !== 'loadedFile'))
   }, [])
 
   // React.useEffect(() => {
@@ -377,7 +390,14 @@ function Assembler() {
 
   return (
     <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
-      <AddPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
+      <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem', mb: 2 }}>
+        The Assembler is experimental. Use with caution.
+      </Alert>
+      <ButtonGroup>
+
+        <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />
+        <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>
+      </ButtonGroup>
       <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />
     </RequestStatusWrapper>
   )
