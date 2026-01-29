@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import cypress from 'eslint-plugin-cypress';
+import vitest from '@vitest/eslint-plugin'
 
 export default [
   js.configs.recommended,
@@ -37,7 +38,8 @@ export default [
     },
     plugins: {
       react,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
+      vitest
     },
     rules: {
       ...react.configs.recommended.rules,
@@ -51,7 +53,8 @@ export default [
       'indent': ['error', 2],
       'no-unused-vars': 'warn',
       'no-console': 'warn',
-      'camelcase': ['warn', { properties: 'always' }]
+      'camelcase': ['warn', { properties: 'always' }],
+      ...vitest.configs.recommended.rules,
     },
     settings: {
       react: {
