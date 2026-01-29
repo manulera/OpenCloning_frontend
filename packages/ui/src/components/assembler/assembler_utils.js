@@ -1,7 +1,7 @@
 import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getSequenceDataBetweenRange } from '@teselagen/sequence-utils';
 import { allSimplePaths } from 'graphology-simple-path';
 
-function tripletsToTranslation(triplets) {
+export function tripletsToTranslation(triplets) {
   if (!triplets) return ''
   return triplets.map(triplet =>
     /[^ACGT]/i.test(triplet) ? ' - ' :
@@ -111,3 +111,14 @@ export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
     });
   return foundParts;
 }
+
+export function arrayCombinations(sets) {
+  if (sets.length === 0) {
+    return null;
+  } else if (sets.length === 1) {
+    return sets[0].map((el) => [el]);
+  } else
+    return sets[0].flatMap((val) =>
+      arrayCombinations(sets.slice(1)).map((c) => [val].concat(c))
+    );
+};

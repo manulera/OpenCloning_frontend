@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export default [
   // GitHub repository for OpenCloning templates
   'https://assets.opencloning.org/OpenCloning-submission',

@@ -1,5 +1,5 @@
-import { aliasedEnzymesByName, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from "@teselagen/sequence-utils";
-import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment } from "./assembler_utils";
+import { aliasedEnzymesByName, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getComplementSequenceString } from "@teselagen/sequence-utils";
+import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment, tripletsToTranslation, partDataToDisplayData, arrayCombinations } from "./assembler_utils";
 import { partsToEdgesGraph } from "./graph_utils";
 
 const sequenceBsaI  = 'tgggtctcaTACTagagtcacacaggactactaAATGagagacctac';
@@ -69,4 +69,110 @@ describe('assignSequenceToSyntaxPart', () => {
     expect(result5).toEqual([])
   });
 
+});
+
+describe('tripletsToTranslation', () => {
+  it('returns empty string for falsy input', () => {
+    expect(tripletsToTranslation(null)).toBe('');
+    expect(tripletsToTranslation(undefined)).toBe('');
+    expect(tripletsToTranslation(false)).toBe('');
+  });
+
+  it('returns empty string for empty array', () => {
+    expect(tripletsToTranslation([])).toBe('');
+  });
+
+  it('translates valid triplets to amino acid codes', () => {
+    // ATG = Methionine (Met)
+    expect(tripletsToTranslation(['ATG'])).toBe('Met');
+    
+    // TTT = Phenylalanine (Phe)
+    expect(tripletsToTranslation(['TTT'])).toBe('Phe');
+    
+    // Multiple triplets
+    expect(tripletsToTranslation(['ATG', 'TTT', 'GCA'])).toBe('MetPheAla');
+  });
+
+  it('replaces Stop codons with ***', () => {
+    // TAA, TAG, TGA are stop codons
+    const stopCodons = ['TAA', 'TAG', 'TGA'];
+    const result = tripletsToTranslation(stopCodons);
+    expect(result).toBe('*********');
+  });
+
+  it('returns " - " for triplets with non-ACGT characters', () => {
+    expect(tripletsToTranslation(['ATN'])).toBe(' - ');
+    expect(tripletsToTranslation(['XYZ'])).toBe(' - ');
+    expect(tripletsToTranslation(['AT-'])).toBe(' - ');
+  });
+
+  it('handles mixed valid and invalid triplets', () => {
+    const result = tripletsToTranslation(['ATG', 'XYZ', 'TTT']);
+    expect(result).toBe('Met - Phe');
+  });
+});
+
+describe('partDataToDisplayData', () => {
+  it('computes reverse complements for all sequences and returns empty translations when no codon starts provided', () => {
+    const data = {
+      left_overhang: 'ATGC',
+      right_overhang: 'CGTA',
+      left_inside: 'TTAA',
+      right_inside: 'AATT'
+    };
+    
+    const result = partDataToDisplayData(data);
+    
+    expect(result.leftOverhangRc).toBe(getComplementSequenceString('ATGC'));
+    expect(result.rightOverhangRc).toBe(getComplementSequenceString('CGTA'));
+    expect(result.leftInsideRc).toBe(getComplementSequenceString('TTAA'));
+    expect(result.rightInsideRc).toBe(getComplementSequenceString('AATT'));
+
+    expect(result.leftTranslationOverhang).toBe('');
+    expect(result.leftTranslationInside).toBe('');
+    expect(result.rightTranslationOverhang).toBe('');
+    expect(result.rightTranslationInside).toBe('');
+  });
+
+  it('computes left translation when left_codon_start is provided', () => {
+    const data = {
+      left_overhang: 'AT',
+      left_inside: 'GCGCA',
+      left_codon_start: 1,
+      right_overhang: '',
+      right_inside: ''
+    };
+    
+    const result = partDataToDisplayData(data);
+    
+    // ATG CGC A... should translate to Met Arg...
+    expect(result.leftTranslationOverhang).toBe('Me');
+    expect(result.leftTranslationInside).toBe('tArg');
+
+    const data2 = {
+      left_overhang: 'ATTT',
+      left_inside: 'GCGCA',
+      left_codon_start: 3,
+      right_overhang: '',
+      right_inside: ''
+    };
+    const result2 = partDataToDisplayData(data2);
+    expect(result2.leftTranslationOverhang).toBe('  Le');
+    expect(result2.leftTranslationInside).toBe('uArg');
+  });
+
+});
+
+describe('arrayCombinations', () => {
+  it('returns null for empty array', () => {
+    expect(arrayCombinations([])).toBe(null);
+  });
+
+  it('returns array of arrays for single array', () => {
+    expect(arrayCombinations([[1, 2, 3]])).toEqual([[1], [2], [3]]);
+  });
+
+  it('returns array of arrays for multiple arrays', () => {
+    expect(arrayCombinations([[1, 2], [3, 4], [5, 6]])).toEqual([[1, 3, 5], [1, 3, 6], [1, 4, 5], [1, 4, 6], [2, 3, 5], [2, 3, 6], [2, 4, 5], [2, 4, 6]]);
+  });
 });

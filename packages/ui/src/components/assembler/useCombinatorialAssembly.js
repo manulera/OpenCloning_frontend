@@ -1,5 +1,5 @@
 import React from 'react'
-import { arrayCombinations } from '../eLabFTW/utils'
+import { arrayCombinations } from './assembler_utils'
 
 function isAssemblyComplete(assembly, categories) {
   const lastPosition = assembly.length - 1

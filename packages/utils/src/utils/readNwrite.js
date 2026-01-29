@@ -296,6 +296,12 @@ export function updateVerificationFileNames(verificationFiles, originalFiles, va
 
 export function jsonToDelimitedFile(json, delimiter = '\t') {
   const headers = Object.keys(json[0]);
-  const rows = json.map((obj) => headers.map((header) => obj[header]).join(delimiter));
+  const rows = json.map((obj) =>
+    headers
+      .map((header) =>
+        String(obj[header]).replaceAll(/[\r\n]+/g, ' ').replaceAll(delimiter, ' ')
+      )
+      .join(delimiter)
+  );
   return [headers.join(delimiter), ...rows].join('\n');
 }

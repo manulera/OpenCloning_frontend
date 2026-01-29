@@ -46,7 +46,7 @@ export function openCycleAtNode(graph, cutNode) {
 }
   
 // Convert DAG to MSA-like matrix (rows = paths, columns = topological generations)
-export function dagToMSA(graph) {
+function dagToMSA(graph) {
   const generations = topologicalGenerations(graph);
   const nodeToCol = new Map();
   generations.forEach((gen, col) => gen.forEach(node => nodeToCol.set(node, col)));
@@ -66,7 +66,7 @@ export function dagToMSA(graph) {
 // Find independent segments in the MSA
 // Two adjacent columns are in the same segment if they're correlated (vary together)
 // They're independent if all combinations of values exist
-export function getIndependentSegments(msa) {
+function getIndependentSegments(msa) {
   if (msa.length === 0) return [];
   
   const numCols = msa[0].length;
@@ -98,7 +98,7 @@ export function getIndependentSegments(msa) {
 }
   
 // Find minimum set of rows that covers all unique alternatives (greedy set cover)
-export function minimumCoveringRows(msa) {
+function minimumCoveringRows(msa) {
   if (msa.length === 0) return [];
   
   const segments = getIndependentSegments(msa).filter(s => !s.stable);
@@ -141,11 +141,13 @@ export function minimumCoveringRows(msa) {
 }
 
 export function graphToMSA(graph) {
+  if (graph.nodes().length === 0) return [];
   const newGraph = graph.copy();
   openCycleAtNode(newGraph, newGraph.nodes()[0]);
   return minimumCoveringRows(dagToMSA(newGraph));
 }
 
 export function graphHasCycle(graph) {
+  if (graph.nodes().length === 0) return false;
   return allSimplePaths(graph, graph.nodes()[0], graph.nodes()[0]).length > 0;
 }
