@@ -67,8 +67,23 @@ describe('assignSequenceToSyntaxPart', () => {
 
     const result5 = assignSequenceToSyntaxPart({ sequence: 'AACGTAGACAGATTA', circular: true }, enzymes, graph);
     expect(result5).toEqual([])
-  });
 
+    // Features are picked up
+    const sequenceDataWithFeatures = {
+      sequence: sequenceBsaI3,
+      circular: true,
+      features: [
+        {start: 15, end: 30, type: 'misc_feature', name: 'feature1'},
+        {start: 2, end: 45, type: 'misc_feature', name: 'feature2'}
+      ]};
+
+    const result6 = assignSequenceToSyntaxPart(sequenceDataWithFeatures, enzymes, graph);
+    const {start, end, type, name} = result6[0].longestFeature;
+    expect(start).toBe(15);
+    expect(end).toBe(30);
+    expect(type).toBe('misc_feature');
+    expect(name).toBe('feature1');
+  });
 });
 
 describe('tripletsToTranslation', () => {

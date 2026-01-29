@@ -1,4 +1,5 @@
-import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getSequenceDataBetweenRange } from '@teselagen/sequence-utils';
+import { isRangeWithinRange } from '@teselagen/range-utils';
+import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from '@teselagen/sequence-utils';
 import { allSimplePaths } from 'graphology-simple-path';
 
 export function tripletsToTranslation(triplets) {
@@ -73,8 +74,9 @@ export function longestFeatureInDigestFragment(digestFragment, sequenceData) {
   const {cut1, cut2} = digestFragment;
   const leftEdge = cut1.overhangSize >=0 ? cut1.topSnipPosition : cut1.bottomSnipPosition;
   const rightEdge = cut2.overhangSize >=0 ? cut2.bottomSnipPosition : cut2.topSnipPosition;
-  const {features} = getSequenceDataBetweenRange(sequenceData, {start: leftEdge, end: rightEdge});
-  return features.reduce((longest, feature) => {
+  if (!sequenceData.features || sequenceData.features.length === 0) return null;
+  const featuresInside = sequenceData.features.filter(feature => isRangeWithinRange(feature, {start: leftEdge, end: rightEdge}, sequenceData.length));
+  return featuresInside.reduce((longest, feature) => {
     if (!longest) return feature;
     return feature.end - feature.start > longest.end - longest.start ? feature : longest;
   }, null);
