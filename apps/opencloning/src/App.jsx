@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import getHttpClient from '@opencloning/utils/getHttpClient';
-import MainAppBar from '@opencloning/ui/components/navigation/MainAppBar';
-import OpenCloning from '@opencloning/ui/components/OpenCloning';
-import useUrlParamsLoader from '@opencloning/ui/hooks/useUrlParamsLoader';
-import useInitializeApp from '@opencloning/ui/hooks/useInitializeApp';
+import { MainAppBar, OpenCloning, useUrlParamsLoader, useInitializeApp } from '@opencloning/ui/components';
 import { useConfig } from '@opencloning/ui/hooks/useConfig';
 
 // Create a basic HTTP client for loading config (doesn't require backendUrl)

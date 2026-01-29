@@ -28,12 +28,3 @@ export const getFileFromELabFTW = async (itemId, fileInfo) => {
     throw new Error(`${error2String(e)}`);
   }
 };
-
-export function arrayCombinations(sets) {
-  if (sets.length === 1) {
-    return sets[0].map((el) => [el]);
-  } else
-    return sets[0].flatMap((val) =>
-      arrayCombinations(sets.slice(1)).map((c) => [val].concat(c))
-    );
-};
