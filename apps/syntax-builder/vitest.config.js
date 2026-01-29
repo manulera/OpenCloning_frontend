@@ -1,22 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
+import { testConfig } from '../../vitest.common.config';
 
 export default defineConfig({
   test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: '../../tests/setup.js',
-    include: ['src/**/*.{test,spec}.{js,jsx}'],
-    coverage: {
-      provider: 'istanbul',
-      reporter: ['json', 'html'],
-      include: ['src/**/*.{js,jsx}'],
-      exclude: [
-        'src/**/*.{test,spec}.{js,jsx}',
-        '**/*.test.{js,jsx}',
-        '**/*.spec.{js,jsx}',
-      ],
-    },
+    ...testConfig,
   },
   resolve: {
     alias: {
