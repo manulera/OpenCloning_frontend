@@ -107,7 +107,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
 
   return(
     <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
-      <FormControl fullWidth sx={{ mb: 2 }}>
+      <FormControl data-testid="category-select" fullWidth sx={{ mb: 2 }}>
         <InputLabel>Category</InputLabel>
         <Select
           endAdornment={item.category && allowedCategories.length > 1 && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
@@ -123,7 +123,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
       </FormControl>
       {thisCategory && (
         <>
-          <FormControl fullWidth>
+          <FormControl data-testid="plasmid-select" fullWidth>
             <Autocomplete
               multiple
               value={item.plasmidIds}
