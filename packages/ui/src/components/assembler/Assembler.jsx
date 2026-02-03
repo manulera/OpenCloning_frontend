@@ -65,13 +65,13 @@ function AssemblerProductTable({ requestedAssemblies, expandedAssemblies, plasmi
   }
   return (
     <TableContainer sx={{ '& td': { fontSize: '1.2rem' }, '& th': { fontSize: '1.2rem' } }}>
-      <Table size="small">
+      <Table size="small" data-testid="assembler-product-table">
         <TableHead>
           <TableRow>
             <TableCell padding="checkbox" />
             {currentCategories.map(category => (
               <TableCell key={category} sx={{ fontWeight: 'bold' }}>
-                {categories.find((c) => c.id === category).displayName}
+                {categories.find((c) => c.id === category)?.displayName}
               </TableCell>
             ))}
           </TableRow>
@@ -80,7 +80,7 @@ function AssemblerProductTable({ requestedAssemblies, expandedAssemblies, plasmi
           {expandedAssemblies.map((parts, rowIndex) => (
             <TableRow key={rowIndex}>
               <TableCell padding="checkbox">
-                <IconButton onClick={() => handleViewAssembly(rowIndex)} size="small">
+                <IconButton data-testid="assembler-product-table-view-button" onClick={() => handleViewAssembly(rowIndex)} size="small">
                   <VisibilityIcon />
                 </IconButton>
               </TableCell>
@@ -198,6 +198,7 @@ function AssemblerComponent({ plasmids, categories }) {
           sx={{ p: 2, px: 4, my: 2, fontSize: '1.2rem' }}
           variant="contained"
           color="primary"
+          data-testid="assembler-submit-button"
           onClick={onSubmitAssembly}
           disabled={Boolean(loadingMessage)}>
           {loadingMessage ? <><CircularProgress /> {loadingMessage}</> : 'Submit'}

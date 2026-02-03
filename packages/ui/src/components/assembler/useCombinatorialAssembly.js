@@ -62,12 +62,13 @@ export default function useCombinatorialAssembly( { onValueChange, categories, p
 
   // If plasmids are removed, remove them from the assembly
   React.useEffect(() => {
+    onValueChange()
     setAssembly(prev => {
       const existingPlasmidIds = plasmids.map((plasmid) => plasmid.id)
       return prev.map((item) => ({ ...item, plasmidIds: item.plasmidIds.filter((id) => existingPlasmidIds.includes(id)) }))
     }
     )
-  }, [plasmids])
+  }, [plasmids, onValueChange])
 
   // If categories are changed, clear the assembly
   React.useEffect(() => {
