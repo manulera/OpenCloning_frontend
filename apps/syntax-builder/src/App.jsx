@@ -9,7 +9,7 @@ import StartingPage from './components/StartingPage';
 import OverhangsStep from './components/OverhangsStep';
 
 
-function AppContent() {
+export function AppContent() {
   const { parts } = useFormData();
   const [overhangsStep, setOverhangsStep] = React.useState(false);
 
