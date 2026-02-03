@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { graphToMSA, partsToGraph, graphHasCycle } from '@opencloning/ui/components/assembler';
+import { graphToMSA, partsToGraph, graphHasCycle, partsToEdgesGraph } from '@opencloning/ui/components/assembler';
 import { usePlasmidsLogic } from '@opencloning/ui/components/assembler';
 
 // Validation functions - return '' if valid, error message if invalid
@@ -120,6 +120,14 @@ export function FormDataProvider({ children }) {
   const [assemblyEnzyme, setAssemblyEnzyme] = React.useState('BsaI');
   const [domesticationEnzyme, setDomesticationEnzyme] = React.useState('BsaI');
 
+  const graph2 = React.useMemo(() => partsToEdgesGraph(parts), [parts]);
+  let mermaid = 'flowchart TD\n';
+  graph2.forEachNode((node) => {
+    graph2.forEachOutboundNeighbor(node, (neighbor) => {
+      mermaid += `${node} --> ${neighbor}\n`;
+    });
+  });
+  console.log(mermaid);
   // Plasmids logic - separated into its own hook for better organization
   const { linkedPlasmids, setLinkedPlasmids, uploadPlasmids } = usePlasmidsLogic({
     parts,
