@@ -110,7 +110,7 @@ function OverhangsPreview() {
 
 
         <Box sx={{ overflowY: 'auto', overflowX: 'auto' }}>
-          <Table sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+          <Table data-testid="overhangs-preview-table" sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
             <TableBody>
               {msa.map((row, index) => (
                 <OverhangRow key={index} row={row} mode={mode} />

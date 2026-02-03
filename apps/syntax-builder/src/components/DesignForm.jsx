@@ -9,9 +9,9 @@ import OverhangNamesForm from './OverhangNamesForm'
 import HeaderActions from './HeaderActions'
 
 
-function AssemblePartWidget() {
+function DesignForm() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box data-testid="design-form" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <HeaderActions />
       <Box sx={{ overflowY: 'auto', flex: 1, p: 1.5 }}>
         <GeneralInfo />
@@ -24,4 +24,4 @@ function AssemblePartWidget() {
   )
 }
 
-export default AssemblePartWidget
+export default DesignForm

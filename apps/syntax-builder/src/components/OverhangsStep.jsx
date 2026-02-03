@@ -170,7 +170,7 @@ function OverhangsField() {
   
   return (
 
-    <Paper sx={{ p: 1.5 }}>
+    <Paper data-testid="overhangs-step" sx={{ p: 1.5 }}>
       <Typography variant="h6" gutterBottom>
           Overhangs
       </Typography>
@@ -214,7 +214,7 @@ function OverhangsStep({ setOverhangsStep }) {
 
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box data-testid="overhangs-step-container" sx={{ p: 3 }}>
       <OverhangsField />
       <OverhangsPreview />
       <Button variant="contained" onClick={() => setOverhangsStep(false)}>Next</Button>
