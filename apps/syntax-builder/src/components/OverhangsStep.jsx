@@ -146,7 +146,7 @@ function OverhangsField() {
       const [leftOverhang, rightOverhang] = edge.split('|');
       /* eslint-disable camelcase */
       parts.push({
-        id: `${parts.length + 1}`,
+        id: parts.length + 1,
         name: `${parts.length + 1}`,
         info: '',
         glyph: 'engineered-region',

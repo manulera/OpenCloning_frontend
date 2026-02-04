@@ -15,16 +15,9 @@ import { usePlasmidsLogic } from './usePlasmidsLogic';
 import PlasmidSyntaxTable from './PlasmidSyntaxTable';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 import error2String from '@opencloning/utils/error2String';
+import { categoryFilter } from './assembler_utils';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
-
-const categoryFilter = (category, categories, previousCategoryId) => {
-  if (previousCategoryId === null) {
-    return category.left_overhang === categories[0].left_overhang
-  }
-  const previousCategory = categories.find((category) => category.id === previousCategoryId)
-  return previousCategory?.right_overhang === category.left_overhang
-}
 
 function formatPlasmid(sequenceData) {
 

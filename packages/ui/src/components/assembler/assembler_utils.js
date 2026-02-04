@@ -124,3 +124,11 @@ export function arrayCombinations(sets) {
       arrayCombinations(sets.slice(1)).map((c) => [val].concat(c))
     );
 };
+
+export function categoryFilter(category, categories, previousCategoryId) {
+  if (previousCategoryId === null) {
+    return category.left_overhang === categories[0].left_overhang
+  }
+  const previousCategory = categories.find((category) => category.id === previousCategoryId)
+  return previousCategory?.right_overhang === category.left_overhang
+}

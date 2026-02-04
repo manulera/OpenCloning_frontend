@@ -12,6 +12,12 @@ function DebouncedTextField({ value, setValue, debounceDelay = 500, ...props }) 
 
   // Debounce the setValue call when localValue changes
   React.useEffect(() => {
+    // Only call setValue if localValue differs from external value
+    // This prevents echoing external changes back to parent
+    if (localValue === value) {
+      return;
+    }
+
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -28,7 +34,7 @@ function DebouncedTextField({ value, setValue, debounceDelay = 500, ...props }) 
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [localValue, debounceDelay, setValue]);
+  }, [localValue, value, debounceDelay, setValue]);
 
   return (
     <TextField 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { arrayCombinations } from './assembler_utils'
+import { arrayCombinations, categoryFilter } from './assembler_utils'
 
 function isAssemblyComplete(assembly, categories) {
   const lastPosition = assembly.length - 1
@@ -10,14 +10,6 @@ function isAssemblyComplete(assembly, categories) {
   return lastCategory?.right_overhang === categories[0].left_overhang
 }
 
-
-const categoryFilter = (category, categories, previousCategoryId) => {
-  if (previousCategoryId === null) {
-    return category.left_overhang === categories[0].left_overhang
-  }
-  const previousCategory = categories.find((category) => category.id === previousCategoryId)
-  return previousCategory?.right_overhang === category.left_overhang
-}
 
 export default function useCombinatorialAssembly( { onValueChange, categories, plasmids }) {
 
