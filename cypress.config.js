@@ -46,7 +46,7 @@ export default defineConfig({
   },
 
   component: {
-    specPattern: 'packages/**/*.cy.{js,jsx}',
+    specPattern: ['packages/**/*.cy.{js,jsx}', 'apps/**/*.cy.{js,jsx}'],
     devServer: {
       framework: 'react',
       bundler: 'vite',

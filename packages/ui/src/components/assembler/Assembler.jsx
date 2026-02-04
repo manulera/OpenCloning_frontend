@@ -1,194 +1,203 @@
 import React from 'react'
-import data2 from './assembler_data2.json'
-import { Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
+import {
+  Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogTitle, DialogContent,
+  DialogActions, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table,
+  TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ButtonGroup
+} from '@mui/material'
 import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useAssembler } from './useAssembler';
-import { arrayCombinations } from '../eLabFTW/utils';
 import { useDispatch } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
-import RequestStatusWrapper from '../form/RequestStatusWrapper';
-import useHttpClient from '../../hooks/useHttpClient';
 import AssemblerPart from './AssemblerPart';
-
+import { jsonToGenbank } from '@teselagen/bio-parsers';
+import useCombinatorialAssembly from './useCombinatorialAssembly';
+import { usePlasmidsLogic } from './usePlasmidsLogic';
+import PlasmidSyntaxTable from './PlasmidSyntaxTable';
+import ExistingSyntaxDialog from './ExistingSyntaxDialog';
+import error2String from '@opencloning/utils/error2String';
+import { categoryFilter } from './assembler_utils';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
-const categoryFilter = (category, previousCategory) => {
-  if (previousCategory === '') {
-    return category.startsWith('A_')
+function formatPlasmid(sequenceData) {
+
+  const { appData } = sequenceData;
+  const { fileName, correspondingParts, longestFeature } = appData;
+  const [left_overhang, right_overhang] = correspondingParts[0].split('-');
+
+  let plasmidName = fileName;
+  if (longestFeature[0]?.name) {
+    plasmidName += ` (${longestFeature[0].name})`;
   }
-  return previousCategory.split('_')[1] === category.split('_')[0]
+
+  return {
+    type: 'loadedFile',
+    plasmid_name: plasmidName,
+    file_name: fileName,
+    left_overhang,
+    right_overhang,
+    key: `${left_overhang}-${right_overhang}`,
+    sequenceData,
+    genbankString: jsonToGenbank(sequenceData),
+  };
+
 }
 
-function AssemblerLink({ overhang }) {
+
+function formatItemName(item) {
+  // Fallback in case the item is not found (while updating list)
+  return item ? `${item.plasmid_name}` : '-'
+}
+
+function AssemblerProductTable({ requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories }) {
+
+  const dispatch = useDispatch()
+  const handleViewAssembly = (index) => {
+    const newState = requestedAssemblies[index]
+    dispatch(setCloningState(newState))
+    dispatch(setCurrentTabAction(0))
+  }
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '80px' }}>
-      <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
-      <Box sx={{ mx: 1, px: 1, py: 0.5, bgcolor: 'background.paper', border: 1, borderColor: 'primary.main', borderRadius: 1, fontSize: '0.75rem', fontWeight: 'bold' }}>
-        {overhang}
-      </Box>
-      <Box sx={{ flex: 1, height: '2px', bgcolor: 'primary.main' }} />
+    <TableContainer sx={{ '& td': { fontSize: '1.2rem' }, '& th': { fontSize: '1.2rem' } }}>
+      <Table size="small" data-testid="assembler-product-table">
+        <TableHead>
+          <TableRow>
+            <TableCell padding="checkbox" />
+            {currentCategories.map(category => (
+              <TableCell key={category} sx={{ fontWeight: 'bold' }}>
+                {categories.find((c) => c.id === category)?.displayName}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {expandedAssemblies.map((parts, rowIndex) => (
+            <TableRow key={rowIndex}>
+              <TableCell padding="checkbox">
+                <IconButton data-testid="assembler-product-table-view-button" onClick={() => handleViewAssembly(rowIndex)} size="small">
+                  <VisibilityIcon />
+                </IconButton>
+              </TableCell>
+              {parts.map((part, colIndex) => (
+                <TableCell key={colIndex}>
+                  {formatItemName(plasmids.find((d) => d.id === part))}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
+}
+
+function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, assembly }) {
+
+  const allowedCategories = categories.filter((category) => categoryFilter(category, categories, index === 0 ? null : assembly[index - 1].category))
+  const isCompleted = item.category !== '' && item.plasmidIds.length > 0
+  const borderColor = isCompleted ? 'success.main' : 'primary.main'
+  const thisCategory = categories.find((category) => category.id === item.category)
+  const allowedPlasmids = thisCategory ? plasmids.filter((d) => d.key === thisCategory.key) : [];
+
+  return(
+    <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
+      <FormControl data-testid="category-select" fullWidth sx={{ mb: 2 }}>
+        <InputLabel>Category</InputLabel>
+        <Select
+          endAdornment={item.category && allowedCategories.length > 1 && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
+          value={item.category}
+          onChange={(e) => setCategory(e.target.value, index)}
+          label="Category"
+          disabled={index < assembly.length}
+        >
+          {allowedCategories.map((category) => (
+            <MenuItem key={category.id} value={category.id}>{category.displayName}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {thisCategory && (
+        <>
+          <FormControl data-testid="plasmid-select" fullWidth>
+            <Autocomplete
+              multiple
+              value={item.plasmidIds}
+              onChange={(e, value) => setId(value, index)}
+              options={allowedPlasmids.map((item) => item.id)}
+              getOptionLabel={(id) => formatItemName(plasmids.find((d) => d.id === id))}
+              renderInput={(params) => <TextField {...params} label="Plasmids" />}
+              renderOption={(props, option) => {
+                const { key, ...restProps } = props
+                const plasmid = plasmids.find((d) => d.id === option)
+                return (
+                  <MenuItem key={key} {...restProps} sx={{ backgroundColor: plasmid.type === 'loadedFile' ? 'success.light' : undefined }}>
+                    {formatItemName(plasmid)}
+                  </MenuItem>
+                )}}
+            />
+          </FormControl>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <AssemblerPart data={ thisCategory }/>
+          </Box>
+        </>
+      )}
     </Box>
   )
 }
 
-function formatItemName(item) {
-  if (item.plasmid_name && item.id !== item.plasmid_name) {
-    return `${item.id} (${item.plasmid_name})`
-  }
-  return item.id
-}
+export function AssemblerComponent({ plasmids, categories }) {
 
-function AssemblerComponent({ data, categories }) {
-
-  const [assembly, setAssembly] = React.useState([{ category: '', id: [] }])
-  const { requestSources, requestAssemblies } = useAssembler()
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
-  const [loadingMessage, setLoadingMessage] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
-  const dispatch = useDispatch()
+  const [loadingMessage, setLoadingMessage] = React.useState('')
+
+  const clearAssemblySelection = React.useCallback(() => {
+    setRequestedAssemblies([])
+    setErrorMessage('')
+  }, [])
+
+  const { assembly, setCategory, setId, expandedAssemblies, assemblyComplete, canBeSubmitted, currentCategories } = useCombinatorialAssembly({ onValueChange: clearAssemblySelection, categories, plasmids })
+  const { requestSources, requestAssemblies } = useAssembler()
+
   const onSubmitAssembly = async () => {
-    clearAssembly()
-    const sources = assembly.map(({ id }) => id.map((id) => (data.find((item) => item.id === id).source)))
+    clearAssemblySelection()
+    const selectedPlasmids = assembly.map(({ plasmidIds }) => plasmidIds.map((id) => (plasmids.find((item) => item.id === id))))
+
     let errorMessage = 'Error fetching sequences'
     try {
       setLoadingMessage('Requesting sequences...')
-      const resp = await requestSources(sources)
+      const resp = await requestSources(selectedPlasmids)
       errorMessage = 'Error assembling sequences'
       setLoadingMessage('Assembling...')
       const assemblies = await requestAssemblies(resp)
       setRequestedAssemblies(assemblies)
     } catch (e) {
+      if (e.assembly) {
+        errorMessage = (<><div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{error2String(e)}</div><div>Error assembling {e.assembly.map((p) => formatItemName(p.plasmid)).join(', ')}</div></>)
+      } else if (e.plasmid) {
+        errorMessage = (<><div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{error2String(e)}</div><div>Error fetching sequence for {formatItemName(e.plasmid)}</div></>)
+      }
       setErrorMessage(errorMessage)
     } finally {
       setLoadingMessage(false)
     }
   }
 
-  const clearAssembly = () => {
-    setRequestedAssemblies([])
-    setErrorMessage('')
-  }
-
-  const setCategory = (category, index) => {
-    clearAssembly()
-    if (category === '') {
-      const newAssembly = assembly.slice(0, index)
-      newAssembly[index] = { category: '', id: [] }
-      setAssembly(newAssembly)
-      return
-    }
-    setAssembly(assembly.map((item, i) => i === index ? { category, id: [] } : item))
-  }
-  const setId = (idArray, index) => {
-    clearAssembly()
-    // Handle case where user clears all selections (empty array)
-    if (!idArray || idArray.length === 0) {
-      setAssembly(assembly.map((item, i) => i === index ? { ...item, id: [] } : item))
-      return
-    }
-
-    // For multiple selection, we need to determine the category based on the first selected item
-    // or maintain the current category if it's already set
-    const currentItem = assembly[index]
-    const firstOption = data.find((item) => item.id === idArray[0])
-    const category = currentItem.category || firstOption?.category || ''
-
-    setAssembly(assembly.map((item, i) => i === index ? { id: idArray, category } : item))
-  }
-
-  const handleViewAssembly = (index) => {
-    const newState = requestedAssemblies[index]
-    dispatch(setCloningState(newState))
-    dispatch(setCurrentTabAction(0))
-  }
-
-  React.useEffect(() => {
-    const lastPosition = assembly.length - 1
-    if (assembly[lastPosition].category.endsWith('A')) {
-      return
-    }
-    if (assembly[lastPosition].category !== '') {
-      const newAssembly = [...assembly, { category: '', id: [] }]
-      setAssembly(newAssembly)
-    }
-  }, [assembly])
-
-  const expandedAssemblies = arrayCombinations(assembly.map(({ id }) => id))
-  const assemblyComplete = assembly.every((item) => item.category !== '' && item.id.length > 0)
-  const currentCategories = assembly.map((item) => item.category)
+  const options = React.useMemo(() => assemblyComplete ? assembly : [...assembly, { category: '', plasmidIds: [] }], [assembly, assemblyComplete])
 
   return (
     <Box className="assembler-container" sx={{ width: '80%', margin: 'auto', mb: 4 }}>
-      <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem' }}>
-                The Assembler is experimental. Use with caution.
-      </Alert>
 
       <Stack direction="row" alignItems="center" spacing={1} sx={{ overflowX: 'auto', my: 2 }}>
-        {assembly.map((item, index) => {
-          const allowedCategories = item.category ? [item.category] : categories.filter((category) => categoryFilter(category, index === 0 ? '' : assembly[index - 1].category))
-          const isCompleted = item.category !== '' && item.id.length > 0
-          const borderColor = isCompleted ? 'success.main' : 'primary.main'
-          const leftOverhang = data.find((d) => d.category === item.category)?.left_overhang
-          const rightOverhang = data.find((d) => d.category === item.category)?.right_overhang
-
-          return (
-            <React.Fragment key={index}>
-              {/* Link before first box */}
-              {index === 0 && item.category !== '' && (
-                <AssemblerLink overhang={leftOverhang} />
-              )}
-              <Box sx={{ width: '250px', border: 3, borderColor, borderRadius: 4, p: 2 }}>
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    endAdornment={item.category && (<InputAdornment position="end"><IconButton onClick={() => setCategory('', index)}><ClearIcon /></IconButton></InputAdornment>)}
-                    value={item.category}
-                    onChange={(e) => setCategory(e.target.value, index)}
-                    label="Category"
-                    disabled={index < assembly.length - 1}
-                  >
-                    {allowedCategories.map((category) => (
-                      <MenuItem key={category} value={category}>{category === 'F_A' ? 'Backbone' : category}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth>
-                  <Autocomplete
-                    multiple
-                    value={item.id}
-                    onChange={(e, value) => setId(value, index)}
-                    label="ID"
-                    options={data.filter((d) => allowedCategories.includes(d.category)).map((item) => item.id)}
-                    getOptionLabel={(id) => formatItemName(data.find((d) => d.id === id))}
-                    renderInput={(params) => <TextField {...params} label="ID" />}
-                  />
-                </FormControl>
-                {leftOverhang && rightOverhang && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <AssemblerPart data={ { left_overhang: leftOverhang, right_overhang: rightOverhang }}/>
-                  </Box>
-                )}
-              </Box>
-
-              {/* Link between boxes */}
-              {index < assembly.length - 1 && item.category !== '' && (
-                <AssemblerLink overhang={rightOverhang} />
-              )}
-
-              {/* Link after last box */}
-              {index === assembly.length - 1 && item.category !== '' && (
-                <AssemblerLink overhang={rightOverhang} />
-              )}
-            </React.Fragment>
-          )
-        })}
+        {options.map((item, index) =>
+          <AssemblerBox key={index} {...{item, index, setCategory, setId, categories, plasmids, assembly}} />
+        )}
       </Stack>
-      {assemblyComplete && <>
+      {canBeSubmitted && <>
         <Button
           sx={{ p: 2, px: 4, my: 2, fontSize: '1.2rem' }}
           variant="contained"
           color="primary"
+          data-testid="assembler-submit-button"
           onClick={onSubmitAssembly}
           disabled={Boolean(loadingMessage)}>
           {loadingMessage ? <><CircularProgress /> {loadingMessage}</> : 'Submit'}
@@ -196,75 +205,159 @@ function AssemblerComponent({ data, categories }) {
       </>}
       {errorMessage && <Alert severity="error" sx={{ my: 2, maxWidth: 300, margin: 'auto', fontSize: '1.2rem' }}>{errorMessage}</Alert>}
       {requestedAssemblies.length > 0 &&
-                <TableContainer sx={{ '& td': { fontSize: '1.2rem' }, '& th': { fontSize: '1.2rem' } }}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell padding="checkbox" />
-                        {currentCategories.map(category => (
-                          <TableCell key={category} sx={{ fontWeight: 'bold' }}>
-                            {category === 'F_A' ? 'Backbone' : category}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {expandedAssemblies.map((parts, rowIndex) => (
-                        <TableRow key={rowIndex}>
-                          <TableCell padding="checkbox">
-                            <IconButton onClick={() => handleViewAssembly(rowIndex)} size="small">
-                              <VisibilityIcon />
-                            </IconButton>
-                          </TableCell>
-                          {parts.map((part, colIndex) => (
-                            <TableCell key={colIndex}>
-                              {formatItemName(data.find((d) => d.id === part))}
-                            </TableCell>
-                          ))}
-
-
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+        <AssemblerProductTable {...{requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories}} />
       }
 
     </Box >
   )
 }
 
-function Assembler() {
-  const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' })
-  const [retry, setRetry] = React.useState(0)
-  const [data, setData] = React.useState([])
-  const [categories, setCategories] = React.useState([])
-  const httpClient = useHttpClient()
-  React.useEffect(() => {
-    setRequestStatus({ status: 'loading' })
-    const fetchData = async () => {
-      try {
-        const { data } = await httpClient.get('https://assets.opencloning.org/open-dna-collections/scripts/index_overhangs.json')
-        const formattedData = data.map((item) => ({
-          ...item,
-          category: data2.find((item2) => item2.overhang === item.left_overhang).name + '_' + data2.find((item2) => item2.overhang === item.right_overhang).name
-        }))
+function displayNameFromCategory(category) {
+  let name = ''
+  if (category.name) {
+    name = category.name
+    if (category.info)
+      name += ` (${category.info}) `
+  }
+  if (category.left_name && category.right_name) {
+    name += `${category.left_name}_${category.right_name}`
+  }
+  if (name === '') {
+    name = category.key
+  }
+  return name.trim()
+}
 
-        const categories = [...new Set(formattedData.map((item) => item.category))].sort()
-        setData(formattedData)
-        setCategories(categories)
-        setRequestStatus({ status: 'success' })
-      } catch (error) {
-        setRequestStatus({ status: 'error', message: 'Could not load assembler data' })
-      }
+function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
+  if (!syntax) {
+    return []
+  }
+  const newCategories = syntax.parts.map((part) => ({
+    ...part,
+    left_name: syntax.overhangNames[part.left_overhang] || null,
+    right_name: syntax.overhangNames[part.right_overhang] || null,
+    key: `${part.left_overhang}-${part.right_overhang}`,
+  }))
+  let newCategoryKeys = newCategories.map((category) => category.key)
+  plasmids.forEach((plasmid) => {
+    if (!newCategoryKeys.includes(plasmid.key)) {
+      const {left_overhang, right_overhang} = plasmid
+      newCategories.push({
+        left_overhang,
+        right_overhang,
+        left_name: syntax.overhangNames[left_overhang] || null,
+        right_name: syntax.overhangNames[right_overhang] || null,
+        key: `${left_overhang}-${right_overhang}`,
+      })
+      newCategoryKeys.push(`${left_overhang}-${right_overhang}`)
     }
-    fetchData()
+  })
+  newCategories.forEach((category, index) => {
+    category.id = index + 1
+    category.displayName = displayNameFromCategory(category)
+  })
+  return newCategories
+}
 
-  }, [retry])
+function LoadSyntaxButton({ setSyntax, addPlasmids }) {
+  const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
+  const onSyntaxSelect = React.useCallback((syntax, plasmids) => {
+    setSyntax(syntax)
+    addPlasmids(plasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1).map(formatPlasmid))
+  }, [setSyntax, addPlasmids])
+  return <>
+    <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
+    {existingSyntaxDialogOpen && <ExistingSyntaxDialog onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
+  </>
+}
+
+export function UploadPlasmidsButton({ addPlasmids, syntax }) {
+  const { uploadPlasmids, linkedPlasmids, setLinkedPlasmids } = usePlasmidsLogic(syntax)
+  const validPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1), [linkedPlasmids])
+  const invalidPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1), [linkedPlasmids])
+  const fileInputRef = React.useRef(null)
+
+  const handleFileChange = (event) => {
+    uploadPlasmids(Array.from(event.target.files))
+    fileInputRef.current.value = ''
+  }
+
+  const handleImportValidPlasmids = React.useCallback(() => {
+    addPlasmids(validPlasmids.map(formatPlasmid))
+    setLinkedPlasmids([])
+  }, [addPlasmids, validPlasmids, setLinkedPlasmids])
+
+  return (<>
+    <Button color="primary" onClick={() => fileInputRef.current.click()}>
+        Add Plasmids
+    </Button>
+    <input multiple type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} accept=".gbk,.gb,.fasta,.fa,.dna" />
+    <Dialog
+      maxWidth="lg"
+      fullWidth
+      open={invalidPlasmids.length > 0 || validPlasmids.length > 0}
+      onClose={() => setLinkedPlasmids([])}
+      PaperProps={{
+        style: {
+          maxHeight: '80vh',
+        },
+      }}
+    >
+      <DialogActions sx={{ justifyContent: 'center', position: 'sticky', top: 0, zIndex: 99, background: '#fff' }}>
+        <Button disabled={validPlasmids.length === 0} variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>
+        <Button variant="contained" color="error" onClick={() => setLinkedPlasmids([])}>Cancel</Button>
+      </DialogActions>
+      {invalidPlasmids.length > 0 && (
+        <Box data-testid="invalid-plasmids-box">
+          <DialogTitle>Invalid Plasmids</DialogTitle>
+          <DialogContent>
+            <PlasmidSyntaxTable plasmids={invalidPlasmids} />
+          </DialogContent>
+        </Box>
+      )}
+      {validPlasmids.length > 0 && (
+        <Box data-testid="valid-plasmids-box">
+          <DialogTitle>Valid Plasmids</DialogTitle>
+          <DialogContent>
+            <PlasmidSyntaxTable plasmids={validPlasmids} />
+          </DialogContent>
+        </Box>
+      )}
+    </Dialog>
+  </>)
+}
+
+function Assembler() {
+  const [syntax, setSyntax] = React.useState(null);
+  const [plasmids, setPlasmids] = React.useState([])
+
+  const categories = React.useMemo(() => {
+    return categoriesFromSyntaxAndPlasmids(syntax, plasmids)
+  }, [syntax, plasmids])
+
+  const addPlasmids = React.useCallback((newPlasmids) => {
+    setPlasmids((prevPlasmids) => {
+      const maxId = Math.max(...prevPlasmids.map((plasmid) => plasmid.id), 0)
+      return [...prevPlasmids, ...newPlasmids.map((plasmid, index) => ({ ...plasmid, id: maxId + index + 1 }))]
+    })
+  }, [])
+
+  const clearPlasmids = React.useCallback(() => {
+    setPlasmids(prev => prev.filter((plasmid) => plasmid.type !== 'loadedFile'))
+  }, [])
+
   return (
-    <RequestStatusWrapper requestStatus={requestStatus} retry={() => setRetry((prev) => prev + 1)}>
-      <AssemblerComponent data={data} categories={categories} />
-    </RequestStatusWrapper>
+    <>
+      <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem', mb: 2 }}>
+        The Assembler is experimental. Use with caution.
+      </Alert>
+      <ButtonGroup>
+        <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} />
+        {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
+        {syntax && <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>}
+      </ButtonGroup>
+      {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} />}
+    </>
   )
 }
 

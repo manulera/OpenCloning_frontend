@@ -85,7 +85,6 @@ function DownloadPrimersButton({ primers }) {
   return (
     <>
       <Button
-        variant="contained"
         onClick={() => setDialogOpen(true)}
       >
         Download Primers

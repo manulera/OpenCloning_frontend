@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import PrimerForm from './PrimerForm';
 import PrimerTableRow from './PrimerTableRow';
 import './PrimerList.css';
@@ -99,8 +99,8 @@ function PrimerList() {
           />
         )) || (
             <div className="primer-add-container">
+              <ButtonGroup>
               <Button
-                variant="contained"
                 onClick={switchAddingPrimer}
               >
                 Add Primer
@@ -109,12 +109,13 @@ function PrimerList() {
               <DownloadPrimersButton primers={primers} />
               {database && (
                 <Button
-                  variant="contained"
                   onClick={() => setImportingPrimer(true)}
                 >
                   {`Import from ${database.name}`}
                 </Button>
+                
               )}
+              </ButtonGroup>
             </div>
           )}
       </div>

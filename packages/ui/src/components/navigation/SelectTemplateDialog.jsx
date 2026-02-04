@@ -11,7 +11,6 @@ function SelectTemplateDialog({ onClose, open }) {
   const baseUrl = 'https://assets.opencloning.org/OpenCloning-submission';
   const httpClient = useHttpClient();
 
-  // const baseUrl = '';
   React.useEffect(() => {
     const fetchData = async () => {
       try {

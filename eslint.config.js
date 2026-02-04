@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import cypress from 'eslint-plugin-cypress';
+import vitest from '@vitest/eslint-plugin'
 
 export default [
   js.configs.recommended,
@@ -12,10 +13,12 @@ export default [
       sourceType: 'module',
       globals: {
         browser: true,
+        navigator: 'readonly',
         window: 'readonly',
         document: 'readonly',
         HTMLElement: 'readonly',
         console: 'readonly',
+        File: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         setInterval: 'readonly',
@@ -37,7 +40,8 @@ export default [
     },
     plugins: {
       react,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
+      vitest
     },
     rules: {
       ...react.configs.recommended.rules,
@@ -51,7 +55,8 @@ export default [
       'indent': ['error', 2],
       'no-unused-vars': 'warn',
       'no-console': 'warn',
-      'camelcase': ['warn', { properties: 'always' }]
+      'camelcase': ['warn', { properties: 'always' }],
+      ...vitest.configs.recommended.rules,
     },
     settings: {
       react: {
@@ -60,12 +65,24 @@ export default [
     }
   },
   {
-    files: ['cypress/**/*.{js,jsx}'],
+    files: ['cypress/**/*.{js,jsx}', '**/*.cy.{js,jsx}'],
     plugins: {
       cypress
     },
+    languageOptions: {
+      globals: {
+        cy: 'readonly',
+        Cypress: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        expect: 'readonly',
+      }
+    },
     rules: {
-      ...cypress.configs.recommended.rules
+      ...cypress.configs.recommended.rules,
+      'vitest/expect-expect': 'off',
     }
   }
 ];
