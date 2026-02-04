@@ -77,7 +77,7 @@ function validateGraph(graph) {
 
 const FormDataContext = React.createContext();
 
-export const defaultPart = {
+export const makeDefaultPart = () => ({
   /* eslint-disable camelcase */
   name: '',
   info: '',
@@ -89,10 +89,10 @@ export const defaultPart = {
   left_codon_start: 0,
   right_codon_start: 0,
   color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
-};
+});
 /* eslint-enable camelcase */
 
-export const defaultFields = [...Object.keys(defaultPart)];
+export const defaultFields = [...Object.keys(makeDefaultPart())];
 
 export const allOverhangsFromParts = (parts) => {
   const overhangs = [];
@@ -161,7 +161,7 @@ export function FormDataProvider({ children }) {
   }, [setOverhangNames]);
 
   const addDefaultPart = useCallback(() => {
-    setParts(prevParts => [...prevParts, { ...defaultPart, id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
+    setParts(prevParts => [...prevParts, { ...makeDefaultPart(), id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
   }, []);
 
   React.useEffect(() => {

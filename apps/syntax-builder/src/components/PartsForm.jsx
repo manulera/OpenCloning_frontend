@@ -234,17 +234,17 @@ export default function PartsForm() {
         <Button size="small" variant="contained" startIcon={<DownloadIcon />} onClick={downloadSyntaxTable}>
             Download Parts Table
         </Button>
-          <Button size="small" variant="contained" startIcon={<CopyIcon />} onClick={() => navigator.clipboard.writeText(mermaidString)}>
+        <Button size="small" variant="contained" startIcon={<CopyIcon />} onClick={() => navigator.clipboard.writeText(mermaidString)}>
             Copy Mermaid String
         </Button>
-        {graphErrorMessage && graphErrorMessage.length > 0 && (
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            {graphErrorMessage}
-          </Alert>
-        )}
+        
       </>
     }>
-      
+      {graphErrorMessage && graphErrorMessage.length > 0 && (
+        <Alert severity="warning" sx={{ my: 2 }}>
+          {graphErrorMessage}
+        </Alert>
+      )}
       <DataGrid
         apiRef={apiRef}
         rows={parts}
