@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { Box, Button, Alert, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tooltip } from '@mui/material'
-import { Delete as DeleteIcon, Download as DownloadIcon, AddCircle as AddCircleIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon, Download as DownloadIcon, AddCircle as AddCircleIcon, CopyAll as CopyIcon } from '@mui/icons-material'
 import { useDownloadData } from './useDownloadData'
 import { useFormData, validatePart, validateField } from '../context/FormDataContext'
 import { DataGrid, GridActionsCellItem, useGridApiRef } from '@mui/x-data-grid'
@@ -46,7 +46,7 @@ function InfoEditDialog({ open, value, onClose, onSave }) {
 }
 
 export default function PartsForm() {
-  const { parts, addDefaultPart, setParts, problematicNodes, graphErrorMessage } = useFormData()
+  const { parts, addDefaultPart, setParts, problematicNodes, graphErrorMessage, mermaidString } = useFormData()
   const [infoDialog, setInfoDialog] = React.useState({ open: false, rowId: null, value: '' })
   const apiRef = useGridApiRef()
 
@@ -233,6 +233,9 @@ export default function PartsForm() {
         </Button>
         <Button size="small" variant="contained" startIcon={<DownloadIcon />} onClick={downloadSyntaxTable}>
             Download Parts Table
+        </Button>
+          <Button size="small" variant="contained" startIcon={<CopyIcon />} onClick={() => navigator.clipboard.writeText(mermaidString)}>
+            Copy Mermaid String
         </Button>
         {graphErrorMessage && graphErrorMessage.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>

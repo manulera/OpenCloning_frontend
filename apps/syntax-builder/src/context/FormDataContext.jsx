@@ -92,7 +92,7 @@ export const defaultPart = {
 };
 /* eslint-enable camelcase */
 
-export const defaultFields = ['id', ...Object.keys(defaultPart)];
+export const defaultFields = [...Object.keys(defaultPart)];
 
 export const allOverhangsFromParts = (parts) => {
   const overhangs = [];
@@ -121,13 +121,13 @@ export function FormDataProvider({ children }) {
   const [domesticationEnzyme, setDomesticationEnzyme] = React.useState('BsaI');
 
   const graph2 = React.useMemo(() => partsToEdgesGraph(parts), [parts]);
-  let mermaid = 'flowchart TD\n';
+  let mermaidString = 'flowchart TD\n';
   graph2.forEachNode((node) => {
     graph2.forEachOutboundNeighbor(node, (neighbor) => {
-      mermaid += `${node} --> ${neighbor}\n`;
+      mermaidString += `${node} --> ${neighbor}\n`;
     });
   });
-  console.log(mermaid);
+
   // Plasmids logic - separated into its own hook for better organization
   const { linkedPlasmids, setLinkedPlasmids, uploadPlasmids } = usePlasmidsLogic({
     parts,
@@ -230,10 +230,11 @@ export function FormDataProvider({ children }) {
     linkedPlasmids,
     setLinkedPlasmids,
     uploadPlasmids,
+    mermaidString,
   }), [
     relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts,
     resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName, syntaxName, setSyntaxName,
-    linkedPlasmids, setLinkedPlasmids, uploadPlasmids]);
+    linkedPlasmids, setLinkedPlasmids, uploadPlasmids, mermaidString]);
 
   return (
     <FormDataContext.Provider value={value}>

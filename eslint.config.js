@@ -13,10 +13,12 @@ export default [
       sourceType: 'module',
       globals: {
         browser: true,
+        navigator: 'readonly',
         window: 'readonly',
         document: 'readonly',
         HTMLElement: 'readonly',
         console: 'readonly',
+        File: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         setInterval: 'readonly',

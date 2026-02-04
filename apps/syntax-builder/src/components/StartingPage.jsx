@@ -13,17 +13,17 @@ function StartingPage({ setOverhangsStep }) {
   const fileInputRef = React.useRef(null);
   const [submissionError, setSubmissionError] = React.useState(null);
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false);
-  const onFileChange = async (event) => {
+  const onFileChange = React.useCallback(async (event) => {
     try {
       const file = event.target.files[0];
-      uploadData(file);
+      await uploadData(file);
     } catch (error) {
       setSubmissionError(error.message);
     } finally {
       fileInputRef.current.value = '';
     }
-  };
-  const onSelectOption = (id) => {
+  }, [uploadData]);
+  const onSelectOption = React.useCallback((id) => {
     if (id === 'overhangs') {
       setOverhangsStep(true);
     } else if (id === 'import') {
@@ -33,12 +33,12 @@ function StartingPage({ setOverhangsStep }) {
     } else {
       addDefaultPart();
     }
-  };
+  }, [addDefaultPart, setOverhangsStep, fileInputRef, setExistingSyntaxDialogOpen]);
 
-  const onSyntaxSelect = React.useCallback((syntax, plasmids) => {
+  const onSyntaxSelect = React.useCallback(async (syntax, plasmids) => {
     try {
       const file = new File([JSON.stringify(syntax)], 'syntax.json', { type: 'application/json' });
-      uploadData(file);
+      await uploadData(file);
       setLinkedPlasmids(plasmids);
     } catch (error) {
       setSubmissionError(error.message);
