@@ -1,5 +1,16 @@
 # @opencloning/store
 
+## 1.3.0
+
+### Minor Changes
+
+- [#597](https://github.com/manulera/OpenCloning_frontend/pull/597) [`d5a456d`](https://github.com/manulera/OpenCloning_frontend/commit/d5a456d70ccfe949b21aae260d2c99507ff6a88e) Thanks [@manulera](https://github.com/manulera)! - Changes associated with new "Syntax Builder" application for creating and managing modular cloning syntaxes, along with significant refactoring of assembler components to support both the new app and the existing OpenCloning application.
+
+  - Added a new standalone app (`apps/syntax-builder`) for building and editing cloning syntaxes with visual previews
+  - Refactored assembler components to be more modular and reusable across applications
+  - Enhanced file parsing utilities to support bidirectional conversion between JSON and delimited formats
+  - Added graph-based validation and visualization for syntax parts using the graphology library
+
 ## 1.2.0
 
 ## 1.1.2

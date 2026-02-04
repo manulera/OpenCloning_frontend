@@ -1,5 +1,14 @@
 # test-app
 
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`d5a456d`](https://github.com/manulera/OpenCloning_frontend/commit/d5a456d70ccfe949b21aae260d2c99507ff6a88e)]:
+  - @opencloning/store@1.3.0
+  - @opencloning/utils@1.3.0
+  - @opencloning/ui@1.3.0
+
 ## 1.1.3
 
 ### Patch Changes
