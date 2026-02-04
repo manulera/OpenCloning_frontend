@@ -14,6 +14,7 @@ import useCombinatorialAssembly from './useCombinatorialAssembly';
 import { usePlasmidsLogic } from './usePlasmidsLogic';
 import PlasmidSyntaxTable from './PlasmidSyntaxTable';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
+import error2String from '@opencloning/utils/error2String';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
@@ -150,7 +151,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
   )
 }
 
-function AssemblerComponent({ plasmids, categories }) {
+export function AssemblerComponent({ plasmids, categories }) {
 
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('')
@@ -177,6 +178,11 @@ function AssemblerComponent({ plasmids, categories }) {
       const assemblies = await requestAssemblies(resp)
       setRequestedAssemblies(assemblies)
     } catch (e) {
+      if (e.assembly) {
+        errorMessage = (<><div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{error2String(e)}</div><div>Error assembling {e.assembly.map((p) => formatItemName(p.plasmid)).join(', ')}</div></>)
+      } else if (e.plasmid) {
+        errorMessage = (<><div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{error2String(e)}</div><div>Error fetching sequence for {formatItemName(e.plasmid)}</div></>)
+      }
       setErrorMessage(errorMessage)
     } finally {
       setLoadingMessage(false)
@@ -272,7 +278,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
   </>
 }
 
-function UploadPlasmidsButton({ addPlasmids, syntax }) {
+export function UploadPlasmidsButton({ addPlasmids, syntax }) {
   const { uploadPlasmids, linkedPlasmids, setLinkedPlasmids } = usePlasmidsLogic(syntax)
   const validPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1), [linkedPlasmids])
   const invalidPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1), [linkedPlasmids])
@@ -305,11 +311,11 @@ function UploadPlasmidsButton({ addPlasmids, syntax }) {
       }}
     >
       <DialogActions sx={{ justifyContent: 'center', position: 'sticky', top: 0, zIndex: 99, background: '#fff' }}>
-        {validPlasmids.length > 0 && <Button variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>}
+        <Button disabled={validPlasmids.length === 0} variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>
         <Button variant="contained" color="error" onClick={() => setLinkedPlasmids([])}>Cancel</Button>
       </DialogActions>
       {invalidPlasmids.length > 0 && (
-        <Box>
+        <Box data-testid="invalid-plasmids-box">
           <DialogTitle>Invalid Plasmids</DialogTitle>
           <DialogContent>
             <PlasmidSyntaxTable plasmids={invalidPlasmids} />
@@ -317,7 +323,7 @@ function UploadPlasmidsButton({ addPlasmids, syntax }) {
         </Box>
       )}
       {validPlasmids.length > 0 && (
-        <Box>
+        <Box data-testid="valid-plasmids-box">
           <DialogTitle>Valid Plasmids</DialogTitle>
           <DialogContent>
             <PlasmidSyntaxTable plasmids={validPlasmids} />

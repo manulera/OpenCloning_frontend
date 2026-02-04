@@ -63,12 +63,24 @@ export default [
     }
   },
   {
-    files: ['cypress/**/*.{js,jsx}'],
+    files: ['cypress/**/*.{js,jsx}', '**/*.cy.{js,jsx}'],
     plugins: {
       cypress
     },
+    languageOptions: {
+      globals: {
+        cy: 'readonly',
+        Cypress: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        expect: 'readonly',
+      }
+    },
     rules: {
-      ...cypress.configs.recommended.rules
+      ...cypress.configs.recommended.rules,
+      'vitest/expect-expect': 'off',
     }
   }
 ];
