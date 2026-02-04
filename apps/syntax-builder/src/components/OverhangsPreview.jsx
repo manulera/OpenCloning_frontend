@@ -46,13 +46,13 @@ function OverhangRow({ row, mode = 'detailed' }) {
           const { leftTranslationOverhang, leftTranslationInside, leftOverhangRc, rightOverhangRc, leftInsideRc } = partDataToDisplayData(cell[2]);
           if (mode === 'compact') {
             return <React.Fragment key={`row-${index}-compact`}>
-              <TableCell sx={{padding: 0}} >
+              <TableCell sx={{padding: 0, borderRight: 'solid 1px gray'}} >
                 <AssemblerPartContainer>
                   <DisplayOverhang overhang={left_overhang} overhangRc={leftOverhangRc} translation={leftTranslationOverhang} isRight={false} />
                   {left_inside && <DisplayInside inside={left_inside} insideRc={leftInsideRc} translation={leftTranslationInside} isRight={false} />}
                 </AssemblerPartContainer>
               </TableCell>
-              <TableCell sx={{ padding: 0, textAlign: "center" }} colSpan={colSpan}>
+              <TableCell sx={{ padding: 0, textAlign: "center", borderRight: 'solid 1px gray' }} colSpan={colSpan}>
                 <AssemblerPartContainer>
                   <AssemblerPartCore color={color} glyph={glyph} />
                 </AssemblerPartContainer>
@@ -60,7 +60,7 @@ function OverhangRow({ row, mode = 'detailed' }) {
               {showRight && (
                 <TableCell 
                   key={index}
-                  sx={{ py: 0}}
+                  sx={{ padding: 0, borderRight: 'solid 1px gray' }}
                 >
                   <AssemblerPartContainer>
                     <DisplayOverhang overhang={right_overhang} overhangRc={rightOverhangRc} isRight={true} />

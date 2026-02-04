@@ -6,7 +6,7 @@ import { partDataToDisplayData } from './assembler_utils'
 
 export function AssemblerPartCore({ color = 'lightgray', glyph = 'engineered-region' }) {
   return (
-    <div className={styles.boxContainer}>
+    <div data-testid="assembler-part-core" className={styles.boxContainer}>
       <div className={styles.box}>
         <div className={styles.imageContainer} style={{ backgroundColor: color }}>
           <img src={getSvgByGlyph(glyph)} alt={`${glyph}.svg`} />
@@ -18,7 +18,7 @@ export function AssemblerPartCore({ color = 'lightgray', glyph = 'engineered-reg
 
 export function DisplayOverhang( { overhang, overhangRc, translation, isRight = false } ) {
   return (
-    <div className={`${styles.dna} ${styles.overhang} ${isRight ? styles.right : styles.left}`}>
+    <div data-testid="display-overhang" className={`${styles.dna} ${styles.overhang} ${isRight ? styles.right : styles.left}`}>
       <div className={styles.top}>{translation}</div>
       <div className={styles.watson}>{overhang}</div>
       <div className={styles.crick}>{overhangRc}</div>
@@ -28,7 +28,7 @@ export function DisplayOverhang( { overhang, overhangRc, translation, isRight = 
 }
 export function DisplayInside( { inside, insideRc, translation, isRight = false } ) {
   return (
-    <div className={`${styles.dna} ${styles.inside} ${isRight ? styles.right : styles.left}`}>
+    <div data-testid="display-inside" className={`${styles.dna} ${styles.inside} ${isRight ? styles.right : styles.left}`}>
       <div className={styles.top}>{translation}</div>
       <div className={styles.watson}>{inside}</div>
       <div className={styles.crick}>{insideRc}</div>
