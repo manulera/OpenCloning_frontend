@@ -71,7 +71,7 @@ describe('Tests restriction-ligation functionality', () => {
 
     cy.get('li#source-3 button').contains('Submit').click();
     cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
-    cy.get('li#source-3 .MuiAlert-message').contains('No compatible restriction-ligation was found.');
+    cy.get('li#source-3 .MuiAlert-message').contains('No compatible restriction-ligation was found');
   });
   it('displays errors when server fails', () => {
     manuallyTypeSequence('aagaattcaaaagaattcaa');
