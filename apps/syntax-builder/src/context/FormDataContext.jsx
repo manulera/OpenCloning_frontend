@@ -1,21 +1,19 @@
 import React, { useCallback } from 'react';
 import { graphToMSA, partsToGraph, graphHasCycle, partsToEdgesGraph } from '@opencloning/ui/components/assembler';
 import { usePlasmidsLogic } from '@opencloning/ui/components/assembler';
+import cssColors from './css_colors';
 
 // Validation functions - return '' if valid, error message if invalid
 const validateColor = (color) => {
   // Color can be empty
   if (!color || color.trim() === '') return ''
-  // Create a temporary element to test CSS color validity
-  if (typeof document !== 'undefined') {
-    const s = document.createElement('div').style
-    s.color = color
-    if (s.color === '') return 'Invalid color'
-  } else {
-    // Fallback: basic validation if document is not available
-    if (!/^#[0-9A-Fa-f]{3,6}$|^[a-zA-Z]+$|^rgb\(|^rgba\(|^hsl\(|^hsla\(/.test(color)) {
-      return 'Invalid color'
-    }
+  if (!cssColors.includes(color)
+    && !/^#[0-9A-Fa-f]{3,6}$/.test(color)
+    && !/^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/.test(color)
+    && !/^rgba\(\d{1,3},\d{1,3},\d{1,3},\d{1,3}\)$/.test(color)
+    && !/^hsl\(\d{1,3},\d{1,3},\d{1,3}\)$/.test(color)
+    && !/^hsla\(\d{1,3},\d{1,3},\d{1,3},\d{1,3}\)$/.test(color)) {
+    return 'Invalid color'
   }
   return ''
 }
@@ -77,7 +75,7 @@ function validateGraph(graph) {
 
 const FormDataContext = React.createContext();
 
-export const defaultPart = {
+export const makeDefaultPart = () => ({
   /* eslint-disable camelcase */
   name: '',
   info: '',
@@ -89,10 +87,10 @@ export const defaultPart = {
   left_codon_start: 0,
   right_codon_start: 0,
   color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
-};
+});
 /* eslint-enable camelcase */
 
-export const defaultFields = [...Object.keys(defaultPart)];
+export const defaultFields = [...Object.keys(makeDefaultPart())];
 
 export const allOverhangsFromParts = (parts) => {
   const overhangs = [];
@@ -161,7 +159,7 @@ export function FormDataProvider({ children }) {
   }, [setOverhangNames]);
 
   const addDefaultPart = useCallback(() => {
-    setParts(prevParts => [...prevParts, { ...defaultPart, id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
+    setParts(prevParts => [...prevParts, { ...makeDefaultPart(), id: Math.max(...prevParts.map(part => part.id), 0) + 1 }]);
   }, []);
 
   React.useEffect(() => {

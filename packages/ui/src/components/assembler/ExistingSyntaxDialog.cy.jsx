@@ -191,4 +191,61 @@ describe('<ExistingSyntaxDialog />', () => {
     cy.get('@onSyntaxSelectSpy').should('have.been.calledWith', mockSyntaxData, mockPlasmidsData);
     cy.get('@onCloseSpy').should('have.been.called');
   });
+
+  it('successfully uploads syntax from JSON file', () => {
+    const onCloseSpy = cy.spy().as('onCloseSpy');
+    const onSyntaxSelectSpy = cy.spy().as('onSyntaxSelectSpy');
+
+    const uploadedSyntaxData = {
+      name: 'Uploaded Syntax',
+      parts: [
+        { id: 1, name: 'Part 1' },
+        { id: 2, name: 'Part 2' },
+      ],
+    };
+
+    // Create a temporary JSON file
+    cy.writeFile('cypress/temp/syntax.json', uploadedSyntaxData);
+
+    cy.mount(
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
+    );
+
+    cy.wait('@getSyntaxes');
+    cy.contains('Upload syntax from JSON file').should('exist');
+
+    // Upload the JSON file
+    cy.get('input[type="file"]').selectFile('cypress/temp/syntax.json', { force: true });
+
+    cy.get('@onSyntaxSelectSpy').should('have.been.calledWith', uploadedSyntaxData, []);
+    cy.get('@onCloseSpy').should('have.been.called');
+  });
+
+  it('displays error message when uploaded JSON file is invalid', () => {
+    const onCloseSpy = cy.spy().as('onCloseSpy');
+    const onSyntaxSelectSpy = cy.spy().as('onSyntaxSelectSpy');
+
+    // Create a file with invalid JSON
+    cy.writeFile('cypress/temp/invalid.json', '{ invalid json }', { encoding: 'utf8' });
+
+    cy.mount(
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
+    );
+
+    cy.wait('@getSyntaxes');
+    cy.contains('Upload syntax from JSON file').should('exist');
+
+    // Upload invalid JSON
+    cy.get('input[type="file"]').selectFile('cypress/temp/invalid.json', { force: true });
+
+    cy.contains(/Failed to parse JSON file/).should('exist');
+    cy.get('@onSyntaxSelectSpy').should('not.have.been.called');
+    cy.get('@onCloseSpy').should('not.have.been.called');
+  });
 });
