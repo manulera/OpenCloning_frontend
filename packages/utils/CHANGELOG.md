@@ -1,5 +1,12 @@
 # @opencloning/utils
 
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @opencloning/store@1.3.1
+
 ## 1.3.0
 
 ### Minor Changes
