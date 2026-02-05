@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.3.1
+
+### Patch Changes
+
+- [#602](https://github.com/manulera/OpenCloning_frontend/pull/602) [`b9b821d`](https://github.com/manulera/OpenCloning_frontend/commit/b9b821d562417b85b69dbf53ddaac324474d4e6b) Thanks [@manulera](https://github.com/manulera)! - Allow users to submit their own syntax from JSON file. Not validated yet so wrong syntaxes will trigger an error.
+
+- Updated dependencies []:
+  - @opencloning/store@1.3.1
+  - @opencloning/utils@1.3.1
+
 ## 1.3.0
 
 ### Minor Changes
