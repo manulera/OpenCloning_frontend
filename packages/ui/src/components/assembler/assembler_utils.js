@@ -101,6 +101,11 @@ export function getSimplifiedDigestFragments(sequenceData, enzymes) {
 }
 
 export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
+  // Something that is important to understand here is the meaning of forward and reverse.
+  // It does not mean whether the overhang is 5' or 3', the value on the top strand is always
+  // used, which is convenient for classification within the syntax.
+  // Instead, forward means whether the recognition site was forward or reverse when producing that cut.
+  // see the test called "shows the meaning of forward and reverse" for more details.
   const simplifiedDigestFragments = getSimplifiedDigestFragments(sequenceData, enzymes);
   const foundParts = [];
   simplifiedDigestFragments

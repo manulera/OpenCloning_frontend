@@ -28,6 +28,46 @@ describe('reverseComplementSimplifiedDigestFragment', () => {
   });
 });
 
+it('shows the meaning of forward and reverse', () => {
+  const sequence = 'aaGGTCTCaTACTaaa'
+  const digestFragments = getDigestFragmentsForRestrictionEnzymes(
+    sequence,
+    false,
+    aliasedEnzymesByName["bsai"],
+  );
+
+  // This does not denote whether the overhang is 5' or 3',
+  // but the orientation of the recognition site.
+  expect(digestFragments[0].cut2.overhangBps).toBe('TACT');
+  expect(digestFragments[0].cut2.forward).toBe(true);
+  expect(digestFragments[1].cut1.overhangBps).toBe('TACT');
+  expect(digestFragments[1].cut1.forward).toBe(true);
+
+  // See how for a fragment with the same overhangs, the forward
+  // value is different
+  const sequence2 = 'aTACTcGAGACCaaa'
+  const digestFragments2 = getDigestFragmentsForRestrictionEnzymes(
+    sequence2,
+    false,
+    aliasedEnzymesByName["bsai"],
+  );
+  expect(digestFragments2[0].cut2.overhangBps).toBe('TACT');
+  expect(digestFragments2[0].cut2.forward).toBe(false);
+  expect(digestFragments2[1].cut1.overhangBps).toBe('TACT');
+  expect(digestFragments2[1].cut1.forward).toBe(false);
+
+  // For EcoRI, it's always forward
+  const sequenceEcoRI = 'aaaGAATTCaaaGAATTCaaaa'
+  const digestFragmentsEcoRI = getDigestFragmentsForRestrictionEnzymes(
+    sequenceEcoRI,
+    true,
+    aliasedEnzymesByName["ecori"],
+  );
+  expect(digestFragmentsEcoRI[0].cut2.overhangBps).toBe('AATT');
+  expect(digestFragmentsEcoRI[0].cut2.forward).toBe(true);
+  expect(digestFragmentsEcoRI[0].cut1.overhangBps).toBe('AATT');
+  expect(digestFragmentsEcoRI[0].cut1.forward).toBe(true);
+});
 
 describe('assignSequenceToSyntaxPart', () => {
   it('works', () => {
