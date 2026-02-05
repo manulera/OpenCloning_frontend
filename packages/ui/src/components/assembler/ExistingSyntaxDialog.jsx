@@ -68,8 +68,8 @@ function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
     <Dialog open onClose={onClose}>
       <DialogTitle>Load an existing syntax</DialogTitle>
       <DialogContent>
+        {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
         <RequestStatusWrapper requestStatus={requestStatus} retry={() => setConnectAttempt((prev) => prev + 1)}>
-          {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
           <List>
             {syntaxes.map((syntax) => (
               <ListItem key={syntax.path}>
