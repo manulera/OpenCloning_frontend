@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.3.2
+
+### Patch Changes
+
+- [#605](https://github.com/manulera/OpenCloning_frontend/pull/605) [`ff60c18`](https://github.com/manulera/OpenCloning_frontend/commit/ff60c18c1500e8b9046f0810cbd69fe1a65c550c) Thanks [@manulera](https://github.com/manulera)! - Fix how syntaxes are imported to adapt to syntaxes repository change
+
+- Updated dependencies []:
+  - @opencloning/store@1.3.2
+  - @opencloning/utils@1.3.2
+
 ## 1.3.1
 
 ### Patch Changes
