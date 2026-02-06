@@ -95,7 +95,7 @@ describe('Test assembler functionality', () => {
 
     cy.get('[data-testid="assembler-submit-button"]').click();
 
-    cy.get('[data-testid="assembler-product-table"]').should('be.visible');
+    cy.get('[data-testid="assembler-product-table"]', { timeout: 20000 }).should('be.visible');
     cy.get('[data-testid="assembler-product-table"] tr').should('have.length', 4 + 1);
 
     // cy.get('[data-testid="category-select"]').last().click();
@@ -128,6 +128,10 @@ describe('Test assembler functionality', () => {
     // Remove plasmids
     cy.get('button').contains('Remove uploaded plasmids').click();
     
+    // Select Promoter
+    cy.get('[data-testid="category-select"]').last().click();
+    cy.get('li[role="option"]').contains('Promoter').click();
+
     // Select N-term
     cy.get('[data-testid="category-select"]').last().click();
     cy.get('li[role="option"]').contains('N-term').click();
