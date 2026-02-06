@@ -263,7 +263,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
   const onSyntaxSelect = React.useCallback((syntax, plasmids) => {
     setSyntax(syntax)
-    addPlasmids(plasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1).map(formatPlasmid))
+    addPlasmids(plasmids)
   }, [setSyntax, addPlasmids])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
