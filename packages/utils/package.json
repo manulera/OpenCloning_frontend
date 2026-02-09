@@ -28,11 +28,11 @@
     },
     "dependencies": {
         "@opencloning/store": "workspace:*",
-        "@teselagen/bio-parsers": "^0.4.32",
-        "@teselagen/sequence-utils": "^0.3.35",
+        "@teselagen/bio-parsers": "^0.4.34",
+        "@teselagen/sequence-utils": "^0.3.42",
         "@zip.js/zip.js": "^2.7.62",
         "dom-to-svg": "^0.12.2",
-        "lodash-es": "^4.17.21"
+        "lodash-es": "^4.17.23"
     },
     "peerDependencies": {
         "react": "^18.3.1",
