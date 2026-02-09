@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.3.3
+
+### Patch Changes
+
+- [#607](https://github.com/manulera/OpenCloning_frontend/pull/607) [`1e4bfbf`](https://github.com/manulera/OpenCloning_frontend/commit/1e4bfbfb805e841d9a91cf650ebf632ac62b1248) Thanks [@manulera](https://github.com/manulera)! - Syntax validation and fix longestFeature when it's empty
+
+- Updated dependencies []:
+  - @opencloning/store@1.3.3
+  - @opencloning/utils@1.3.3
+
 ## 1.3.2
 
 ### Patch Changes
