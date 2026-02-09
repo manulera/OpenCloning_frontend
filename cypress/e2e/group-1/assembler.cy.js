@@ -155,4 +155,23 @@ describe('Test assembler functionality', () => {
     cy.get('[data-testid="category-select"]').should('have.length', 3);
   })
 
+  it('displays error message when syntax is invalid', () => {
+    changeTab('Assembler');
+
+    cy.intercept('POST', 'http://localhost:8000/validate_syntax', {
+      statusCode: 500,
+      body: { error: 'Invalid syntax' },
+    }).as('validateSyntaxError');
+
+    const dummyFile  = {
+      contents: Cypress.Buffer.from(JSON.stringify({a: 'b'})),
+      fileName: 'moclo_syntax.json',
+      mimeType: 'text/plain',
+      lastModified: Date.now(),
+    }
+    cy.get('button').contains('Load Syntax').click();
+    cy.get('[role="dialog"] input[type="file"]').selectFile(dummyFile, { force: true });
+    cy.wait('@validateSyntaxError');
+
+  });
 });
