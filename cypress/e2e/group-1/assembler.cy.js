@@ -41,24 +41,10 @@ describe('Test assembler functionality', () => {
     cy.get('li[role="option"]').first().click();
     cy.get('[data-testid="plasmid-select"]').last().click();
     cy.get('li[role="option"]').eq(1).click();
-    
+
     // Select the next category and one or two plasmids for each category
     cy.get('[data-testid="category-select"]').last().click();
-    cy.get('li[role="option"]').contains('2 (Promoter)').click();
-    cy.get('[data-testid="plasmid-select"]').last().click();
-    cy.get('li[role="option"]').first().click();
-    // cy.get('[data-testid="plasmid-select"]').last().click();
-    // cy.get('li[role="option"]').eq(1).click();
-
-    cy.get('[data-testid="category-select"]').last().click();
-    cy.get('li[role="option"]').contains('3').click();
-    cy.get('[data-testid="plasmid-select"]').last().click();
-    cy.get('li[role="option"]').first().click();
-    // cy.get('[data-testid="plasmid-select"]').last().click();
-    // cy.get('li[role="option"]').eq(1).click();
-
-    cy.get('[data-testid="category-select"]').last().click();
-    cy.get('li[role="option"]').contains('4').click();
+    cy.get('li[role="option"]').contains('AACG').click();
     cy.get('[data-testid="plasmid-select"]').last().click();
     cy.get('li[role="option"]').first().click();
     // cy.get('[data-testid="plasmid-select"]').last().click();
@@ -71,39 +57,26 @@ describe('Test assembler functionality', () => {
     // cy.get('[data-testid="plasmid-select"]').last().click();
     // cy.get('li[role="option"]').eq(1).click();
 
-    cy.get('[data-testid="category-select"]').last().click();
-    cy.get('li[role="option"]').contains('6').click();
-    cy.get('[data-testid="plasmid-select"]').last().click();
-    cy.get('li[role="option"]').first().click();
-    // cy.get('[data-testid="plasmid-select"]').last().click();
-    // cy.get('li[role="option"]').eq(1).click();
-
-    cy.get('[data-testid="category-select"]').last().click();
-    cy.get('li[role="option"]').contains('8').click();
-    cy.get('[data-testid="plasmid-select"]').last().click();
-    cy.get('li[role="option"]').first().click();
-    // cy.get('[data-testid="plasmid-select"]').last().click();
-    // cy.get('li[role="option"]').eq(1).click();
-
     cy.get('[data-testid="assembler-submit-button"]').should('not.exist');
 
-    // Select option 6 which is missing
-    cy.get('[data-testid="plasmid-select"]').eq(5).click();
+    cy.get('[data-testid="category-select"]').last().click();
+    cy.get('li[role="option"]').contains('TACA-CCCT').click();
+    cy.get('[data-testid="plasmid-select"]').last().click();
     cy.get('li[role="option"]').first().click();
-    cy.get('[data-testid="plasmid-select"]').eq(5).click();
-    cy.get('li[role="option"]').eq(1).click();
+    // cy.get('[data-testid="plasmid-select"]').last().click();
+    // cy.get('li[role="option"]').eq(1).click();
 
     cy.get('[data-testid="assembler-submit-button"]').click();
 
-    cy.get('[data-testid="assembler-product-table"]', { timeout: 20000 }).should('be.visible');
-    cy.get('[data-testid="assembler-product-table"] tr').should('have.length', 4 + 1);
+    cy.get('[data-testid="assembler-product-table"]', { timeout: 30000 }).should('be.visible');
+    cy.get('[data-testid="assembler-product-table"] tr').should('have.length', 3);
 
     // cy.get('[data-testid="category-select"]').last().click();
     cy.get('[data-testid="assembler-product-table-view-button"]').first().click();
 
     // Should be in cloning tab
     cy.get('button.MuiTab-root.Mui-selected').contains('Cloning').should('exist');
-    cy.get('li#sequence-9').contains('5459 bps');
+    cy.get('li#sequence-5').contains('2278 bps');
 
     changeTab('Assembler');
 
@@ -114,7 +87,7 @@ describe('Test assembler functionality', () => {
 
     // Should show the default first two categories now that there is no uploaded plasmids
     cy.get('[data-testid="category-select"]').contains('Assembly connector').should('be.visible');
-    cy.get('[data-testid="category-select"]').contains('Promoter').should('be.visible');
+    cy.get('[data-testid="category-select"]').contains('Promoter').should('not.exist');
 
   });
   it('Correctly applies constraints and auto-fills', () => {
@@ -139,9 +112,15 @@ describe('Test assembler functionality', () => {
     // Category 3b should have been auto-filled
     cy.get('[data-testid="category-select"]').contains('3b').should('be.visible');
 
-    // Select 4 (Terminator)
+    // Select 4, 5, 6
     cy.get('[data-testid="category-select"]').last().click();
     cy.get('li[role="option"]').contains('4 (Terminator)').click();
+
+    cy.get('[data-testid="category-select"]').last().click();
+    cy.get('li[role="option"]').contains('5').click();
+
+    cy.get('[data-testid="category-select"]').last().click();
+    cy.get('li[role="option"]').contains('6').click();
 
     // Category 7 should have been auto-filled
     cy.get('[data-testid="category-select"]').contains('Yeast plasmid').should('exist');
@@ -152,7 +131,26 @@ describe('Test assembler functionality', () => {
 
     // Removing it removes previous options
     cy.get('[data-testid="category-select"] [data-testid="ClearIcon"]').first().click( { force: true } );
-    cy.get('[data-testid="category-select"]').should('have.length', 3);
+    cy.get('[data-testid="category-select"]').should('have.length', 2);
   })
 
+  it('displays error message when syntax is invalid', () => {
+    changeTab('Assembler');
+
+    cy.intercept('POST', '**/validate_syntax', {
+      statusCode: 500,
+      body: { error: 'Invalid syntax' },
+    }).as('validateSyntaxError');
+
+    const dummyFile  = {
+      contents: Cypress.Buffer.from(JSON.stringify({a: 'b'})),
+      fileName: 'moclo_syntax.json',
+      mimeType: 'text/plain',
+      lastModified: Date.now(),
+    }
+    cy.get('button').contains('Load Syntax').click();
+    cy.get('[role="dialog"] input[type="file"]').selectFile(dummyFile, { force: true });
+    cy.wait('@validateSyntaxError');
+
+  });
 });

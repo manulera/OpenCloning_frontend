@@ -16,6 +16,9 @@ import PlasmidSyntaxTable from './PlasmidSyntaxTable';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 import error2String from '@opencloning/utils/error2String';
 import { categoryFilter } from './assembler_utils';
+import useBackendRoute from '../../hooks/useBackendRoute';
+import useHttpClient from '../../hooks/useHttpClient';
+import useAlerts from '../../hooks/useAlerts';
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
 
@@ -261,10 +264,22 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
 
 function LoadSyntaxButton({ setSyntax, addPlasmids }) {
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
-  const onSyntaxSelect = React.useCallback((syntax, plasmids) => {
-    setSyntax(syntax)
-    addPlasmids(plasmids)
-  }, [setSyntax, addPlasmids])
+  const httpClient = useHttpClient();
+  const backendRoute = useBackendRoute();
+  const { addAlert } = useAlerts();
+  const onSyntaxSelect = React.useCallback(async (syntax, plasmids) => {
+    const url = backendRoute('validate_syntax');
+    try {
+      await httpClient.post(url, syntax);
+      setSyntax(syntax)
+      addPlasmids(plasmids)
+    } catch (error) {
+      addAlert({
+        message: error2String(error),
+        severity: 'error',
+      });
+    }
+  }, [setSyntax, addPlasmids, httpClient, backendRoute, addAlert])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
     {existingSyntaxDialogOpen && <ExistingSyntaxDialog onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}

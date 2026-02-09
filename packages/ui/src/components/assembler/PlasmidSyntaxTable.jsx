@@ -22,7 +22,7 @@ function PlasmidRow({ plasmid }) {
       backgroundColor: partInfo[0]?.color,
     }
     infoStr = partInfo[0] ? partInfo[0].name : 'Spans multiple parts';
-    longestFeatureStr = longestFeature ? longestFeature[0].name : '-';
+    longestFeatureStr = longestFeature[0] ? longestFeature[0].name : '-';
   }
   const multipleParts = partInfo.length > 1;
   if (multipleParts) {

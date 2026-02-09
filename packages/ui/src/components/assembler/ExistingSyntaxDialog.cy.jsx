@@ -204,8 +204,12 @@ describe('<ExistingSyntaxDialog />', () => {
       ],
     };
 
-    // Create a temporary JSON file
-    cy.writeFile('cypress/temp/syntax.json', uploadedSyntaxData);
+    const tempFile = {
+      contents: Cypress.Buffer.from(JSON.stringify(uploadedSyntaxData)),
+      fileName: 'syntax.json',
+      mimeType: 'text/plain',
+      lastModified: Date.now(),
+    }
 
     cy.mount(
       <ExistingSyntaxDialog
@@ -218,7 +222,7 @@ describe('<ExistingSyntaxDialog />', () => {
     cy.contains('Upload syntax from JSON file').should('exist');
 
     // Upload the JSON file
-    cy.get('input[type="file"]').selectFile('cypress/temp/syntax.json', { force: true });
+    cy.get('input[type="file"]').selectFile(tempFile, { force: true });
 
     cy.get('@onSyntaxSelectSpy').should('have.been.calledWith', uploadedSyntaxData, []);
     cy.get('@onCloseSpy').should('have.been.called');
@@ -228,8 +232,12 @@ describe('<ExistingSyntaxDialog />', () => {
     const onCloseSpy = cy.spy().as('onCloseSpy');
     const onSyntaxSelectSpy = cy.spy().as('onSyntaxSelectSpy');
 
-    // Create a file with invalid JSON
-    cy.writeFile('cypress/temp/invalid.json', '{ invalid json }', { encoding: 'utf8' });
+    const invalidFile = {
+      contents: Cypress.Buffer.from('{ invalid json }'),
+      fileName: 'invalid.json',
+      mimeType: 'text/plain',
+      lastModified: Date.now(),
+    }
 
     cy.mount(
       <ExistingSyntaxDialog
@@ -242,7 +250,7 @@ describe('<ExistingSyntaxDialog />', () => {
     cy.contains('Upload syntax from JSON file').should('exist');
 
     // Upload invalid JSON
-    cy.get('input[type="file"]').selectFile('cypress/temp/invalid.json', { force: true });
+    cy.get('input[type="file"]').selectFile(invalidFile, { force: true });
 
     cy.contains(/Failed to parse JSON file/).should('exist');
     cy.get('@onSyntaxSelectSpy').should('not.have.been.called');
