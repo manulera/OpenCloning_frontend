@@ -87,7 +87,7 @@ describe('Test assembler functionality', () => {
 
     // Should show the default first two categories now that there is no uploaded plasmids
     cy.get('[data-testid="category-select"]').contains('Assembly connector').should('be.visible');
-    cy.get('[data-testid="category-select"]').contains('Promoter').should('not.be.visible');
+    cy.get('[data-testid="category-select"]').contains('Promoter').should('not.exist');
 
   });
   it('Correctly applies constraints and auto-fills', () => {
