@@ -253,7 +253,10 @@ describe('<UploadPlasmidsButton />', () => {
       'cypress/test_files/syntax/pYTK002.gb',
       'cypress/test_files/syntax/moclo_ytk_multi_part.gb',
       'cypress/test_files/syntax/pYTK095.gb',
-      'cypress/test_files/sequencing/locus.gb'],
+      'cypress/test_files/sequencing/locus.gb',
+      // This one just to verify that it works with no features
+      'cypress/test_files/syntax/pYTK002_no_features.gb'
+    ],
     { force: true });
 
     // Wait for the dialog to appear (indicating plasmids were processed)
@@ -287,6 +290,9 @@ describe('<UploadPlasmidsButton />', () => {
     cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(3).should('contain', 'Spans multiple parts')
     cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(4).should('contain', 'AmpR')
 
+    // No features
+    cy.get('[data-testid="valid-plasmids-box"] tr').eq(3).find('td').eq(4).should('contain', '-');
+
     // Click the import button
     cy.contains('button', 'Import valid plasmids').click();
 
@@ -298,7 +304,7 @@ describe('<UploadPlasmidsButton />', () => {
       const firstCall = spy.getCall(0);
       console.log('firstCall', firstCall.args);
       cy.wrap(firstCall.args[0]).should('be.an', 'array');
-      cy.wrap(firstCall.args[0]).should('have.length', 2);
+      cy.wrap(firstCall.args[0]).should('have.length', 3);
 
       const firstPlasmid = firstCall.args[0][0];
       
