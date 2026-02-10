@@ -22,9 +22,7 @@ function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
     <Dialog open onClose={onClose}>
       <DialogTitle>Load syntax from local server</DialogTitle>
       <DialogContent sx={{ minWidth: '400px' }}>
-        <Box sx={{ py: 2 }}>
-          <LocalFileSelect onFileSelected={onFileSelected} type="syntax" />
-        </Box>
+        <LocalFileSelect onFileSelected={onFileSelected} type="syntax" />
       </DialogContent>
     </Dialog>
   )
@@ -127,7 +125,7 @@ function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
               </Button>
             )}
           </ButtonGroup>
-          {localDialogOpen && <LocalSyntaxDialog onClose={() => setLocalDialogOpen(false)} onSyntaxSelect={onSyntaxSelect} />}
+          {localDialogOpen && <LocalSyntaxDialog onClose={() => {setLocalDialogOpen(false); onClose()}} onSyntaxSelect={onSyntaxSelect} />}
         </Box>
       </DialogContent>
     </Dialog>

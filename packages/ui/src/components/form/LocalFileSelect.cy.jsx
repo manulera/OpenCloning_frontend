@@ -15,7 +15,7 @@ const config = {
   enablePlannotate: false,
 };
 
-const dummyIndex = {
+export const dummyIndex = {
   sequences: [
     {
       name: 'Example sequence 1',
@@ -24,7 +24,7 @@ const dummyIndex = {
     },
     {
       name: 'Example sequence 2',
-      path: 'example2.fa',
+      path: 'example2.gb',
       categories: ['Test category2'],
     },
     {
@@ -284,7 +284,7 @@ describe('<LocalFileSelect />', () => {
       if (url.endsWith('/example.fa')) {
         return Promise.resolve({ data: 'ATGC' });
       }
-      if (url.endsWith('/example2.fa')) {
+      if (url.endsWith('/example2.gb')) {
         return Promise.resolve({ data: 'ATGCA' });
       }
       throw new Error(`Unexpected URL: ${url}`);
@@ -317,7 +317,7 @@ describe('<LocalFileSelect />', () => {
       expect(files[0].name).to.equal('example.fa');
       expect(files[0].type).to.equal('text/plain');
       expect(files[0].size).to.equal(4);
-      expect(files[1].name).to.equal('example2.fa');
+      expect(files[1].name).to.equal('example2.gb');
       expect(files[1].type).to.equal('text/plain');
       expect(files[1].size).to.equal(5);
     });

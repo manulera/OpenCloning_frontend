@@ -1,7 +1,6 @@
 import React from 'react'
 import {
-  Alert, Autocomplete, Box, Button, CircularProgress, Dialog, DialogTitle, DialogContent,
-  DialogActions, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table,
+  Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table,
   TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ButtonGroup
 } from '@mui/material'
 import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
@@ -9,42 +8,18 @@ import { useAssembler } from './useAssembler';
 import { useDispatch } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
 import AssemblerPart from './AssemblerPart';
-import { jsonToGenbank } from '@teselagen/bio-parsers';
+
 import useCombinatorialAssembly from './useCombinatorialAssembly';
-import { usePlasmidsLogic } from './usePlasmidsLogic';
-import PlasmidSyntaxTable from './PlasmidSyntaxTable';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 import error2String from '@opencloning/utils/error2String';
 import { categoryFilter } from './assembler_utils';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useHttpClient from '../../hooks/useHttpClient';
 import useAlerts from '../../hooks/useAlerts';
+import UploadPlasmidsButton from './UploadPlasmidsButton';
+
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
-
-function formatPlasmid(sequenceData) {
-
-  const { appData } = sequenceData;
-  const { fileName, correspondingParts, longestFeature } = appData;
-  const [left_overhang, right_overhang] = correspondingParts[0].split('-');
-
-  let plasmidName = fileName;
-  if (longestFeature[0]?.name) {
-    plasmidName += ` (${longestFeature[0].name})`;
-  }
-
-  return {
-    type: 'loadedFile',
-    plasmid_name: plasmidName,
-    file_name: fileName,
-    left_overhang,
-    right_overhang,
-    key: `${left_overhang}-${right_overhang}`,
-    sequenceData,
-    genbankString: jsonToGenbank(sequenceData),
-  };
-
-}
 
 
 function formatItemName(item) {
@@ -286,61 +261,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
   </>
 }
 
-export function UploadPlasmidsButton({ addPlasmids, syntax }) {
-  const { uploadPlasmids, linkedPlasmids, setLinkedPlasmids } = usePlasmidsLogic(syntax)
-  const validPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length === 1), [linkedPlasmids])
-  const invalidPlasmids = React.useMemo(() => linkedPlasmids.filter((plasmid) => plasmid.appData.correspondingParts.length !== 1), [linkedPlasmids])
-  const fileInputRef = React.useRef(null)
 
-  const handleFileChange = (event) => {
-    uploadPlasmids(Array.from(event.target.files))
-    fileInputRef.current.value = ''
-  }
-
-  const handleImportValidPlasmids = React.useCallback(() => {
-    addPlasmids(validPlasmids.map(formatPlasmid))
-    setLinkedPlasmids([])
-  }, [addPlasmids, validPlasmids, setLinkedPlasmids])
-
-  return (<>
-    <Button color="primary" onClick={() => fileInputRef.current.click()}>
-        Add Plasmids
-    </Button>
-    <input multiple type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} accept=".gbk,.gb,.fasta,.fa,.dna" />
-    <Dialog
-      maxWidth="lg"
-      fullWidth
-      open={invalidPlasmids.length > 0 || validPlasmids.length > 0}
-      onClose={() => setLinkedPlasmids([])}
-      PaperProps={{
-        style: {
-          maxHeight: '80vh',
-        },
-      }}
-    >
-      <DialogActions sx={{ justifyContent: 'center', position: 'sticky', top: 0, zIndex: 99, background: '#fff' }}>
-        <Button disabled={validPlasmids.length === 0} variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>
-        <Button variant="contained" color="error" onClick={() => setLinkedPlasmids([])}>Cancel</Button>
-      </DialogActions>
-      {invalidPlasmids.length > 0 && (
-        <Box data-testid="invalid-plasmids-box">
-          <DialogTitle>Invalid Plasmids</DialogTitle>
-          <DialogContent>
-            <PlasmidSyntaxTable plasmids={invalidPlasmids} />
-          </DialogContent>
-        </Box>
-      )}
-      {validPlasmids.length > 0 && (
-        <Box data-testid="valid-plasmids-box">
-          <DialogTitle>Valid Plasmids</DialogTitle>
-          <DialogContent>
-            <PlasmidSyntaxTable plasmids={validPlasmids} />
-          </DialogContent>
-        </Box>
-      )}
-    </Dialog>
-  </>)
-}
 
 function Assembler() {
   const [syntax, setSyntax] = React.useState(null);

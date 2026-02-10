@@ -7,7 +7,7 @@
         },
         {
             "name": "seq2",
-            "path": "sequences/seq2.gb",
+            "path": "sequences/seq2.fasta",
             "categories": ["category2"]
         },
         {

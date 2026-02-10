@@ -41,6 +41,7 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
 
   const onSubmit = React.useCallback(async (e) => {
     e.preventDefault();
+    setError(null);
     try {
       if (!multiple) {
         const file = await optionToFile(options[selectedOptionIndex]);
@@ -67,7 +68,7 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
       {error && <Alert severity="error">{error}</Alert>}
       <form onSubmit={onSubmit}>
         {type === 'sequence' && (
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={{ my: 1 }}>
             <InputLabel id="category-label">Category</InputLabel>
             <Select
               label="Category"
@@ -83,7 +84,7 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
             </Select>
           </FormControl>
         )}
-        <FormControl fullWidth>
+        <FormControl fullWidth sx={{ my: 1 }}>
           <InputLabel id="option-label">{label}</InputLabel>
           <Select
             label={label}
