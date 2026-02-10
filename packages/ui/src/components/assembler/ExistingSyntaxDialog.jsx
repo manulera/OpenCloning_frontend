@@ -19,7 +19,7 @@ function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
     onClose();
   }, [onSyntaxSelect, onClose]);
   return (
-    <Dialog open onClose={onClose}>
+    <Dialog data-testid="local-syntax-dialog" open onClose={onClose}>
       <DialogTitle>Load syntax from local server</DialogTitle>
       <DialogContent sx={{ minWidth: '400px' }}>
         <LocalFileSelect onFileSelected={onFileSelected} type="syntax" />
