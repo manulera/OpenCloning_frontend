@@ -48,10 +48,10 @@ export function UploadPlasmidsFromLocalServerButton({ handleFileChange }) {
   }
   
   return <>
-    <Button color="primary" onClick={() => setDialogOpen(true)}>
+    <Button color="primary" onClick={() => {setError(null); setDialogOpen(true)}}>
           Load Plasmids from Local Server
     </Button>
-    {dialogOpen && <Dialog open onClose={() => setDialogOpen(false)}>
+    {dialogOpen && <Dialog open onClose={() => {setError(null); setDialogOpen(false)}}>
       <DialogTitle>Load Plasmids from Local Server</DialogTitle>
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
