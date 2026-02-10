@@ -2,13 +2,6 @@
 import React from 'react';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { AssemblerComponent } from './Assembler';
-import mocloSyntax from '../../../../../cypress/test_files/syntax/moclo_syntax.json';
-
-mocloSyntax.overhangNames = {
-  ...mocloSyntax.overhangNames,
-  CCCT: 'CCCT_overhang',
-  AACG: 'AACG_overhang',
-};
 
 // Test config
 const testConfig = {

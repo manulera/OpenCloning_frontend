@@ -1,11 +1,11 @@
 import React from 'react'
 import useLocalFiles from '../../hooks/useLocalFiles';
 import RequestStatusWrapper from './RequestStatusWrapper';
-import { Alert, Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Alert, Autocomplete, Button, FormControl, TextField } from '@mui/material';
 
 function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }) {
   const [selectedCategory, setSelectedCategory] = React.useState('');
-  const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(multiple ? [] : '');
+  const [selectedOptions, setSelectedOptions] = React.useState(multiple ? [] : null);
   const [error, setError] = React.useState(null);
 
   const localFiles = useLocalFiles();
@@ -21,6 +21,11 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
     }
     return index.sequences.filter((sequence) => sequence.categories?.includes(selectedCategory));
   }, [type, index, selectedCategory]);
+
+  const categoryOptions = React.useMemo(() => {
+    if (!index?.categories) return [];
+    return ['All', ...index.categories];
+  }, [index]);
 
   const optionToFile = React.useCallback(async (option) => {
     if (!option.path) {
@@ -44,23 +49,27 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
     setError(null);
     try {
       if (!multiple) {
-        const file = await optionToFile(options[selectedOptionIndex]);
+        const file = await optionToFile(selectedOptions);
         onFileSelected(file);
       } else {
-        const files = await Promise.all(selectedOptionIndex.map((index) => optionToFile(options[index])));
+        const files = await Promise.all(selectedOptions.map((option) => optionToFile(option)));
         onFileSelected(files);
       }
     } catch (error) {
       setError(error.message);
     }
-  }, [multiple, selectedOptionIndex, options, onFileSelected, optionToFile]);
+  }, [multiple, selectedOptions, onFileSelected, optionToFile]);
 
-  const onCategoryChange = React.useCallback((e) => {
-    setSelectedOptionIndex(multiple ? [] : '');
-    setSelectedCategory(e.target.value);
+  const onCategoryChange = React.useCallback((event, newValue) => {
+    setSelectedOptions(multiple ? [] : null);
+    if (!newValue || newValue === 'All') {
+      setSelectedCategory('');
+    } else {
+      setSelectedCategory(newValue);
+    }
   }, [multiple]);
 
-  const buttonDisabled = multiple ? selectedOptionIndex.length === 0 : selectedOptionIndex === '';
+  const buttonDisabled = multiple ? selectedOptions.length === 0 : !selectedOptions;
 
   const label = type === 'sequence' ? 'Sequence' : 'Syntax';
   return (
@@ -69,33 +78,36 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
       <form onSubmit={onSubmit}>
         {type === 'sequence' && (
           <FormControl fullWidth sx={{ my: 1 }}>
-            <InputLabel id="category-label">Category</InputLabel>
-            <Select
-              label="Category"
-              labelId="category-label"
+            <Autocomplete
               id="category-select"
-              value={selectedCategory}
+              options={categoryOptions}
+              value={selectedCategory === '' ? 'All' : selectedCategory}
               onChange={onCategoryChange}
-            >
-              <MenuItem value="">
-                <em>All</em>
-              </MenuItem>
-              {index?.categories?.map((category) => <MenuItem key={category} value={category}>{category}</MenuItem>)}
-            </Select>
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Category"
+                />
+              )}
+            />
           </FormControl>
         )}
         <FormControl fullWidth sx={{ my: 1 }}>
-          <InputLabel id="option-label">{label}</InputLabel>
-          <Select
-            label={label}
-            labelId="option-label"
+          <Autocomplete
             id="option-select"
             multiple={multiple}
-            value={selectedOptionIndex}
-            onChange={(e) => setSelectedOptionIndex(e.target.value)}
-          >
-            {options.map((option, index) => <MenuItem key={index} value={index}>{option.name}</MenuItem>)}
-          </Select>
+            options={options}
+            value={selectedOptions}
+            onChange={(event, value) => setSelectedOptions(value)}
+            getOptionLabel={(option) => option?.name || option?.path || ''}
+            disableCloseOnSelect={multiple}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+              />
+            )}
+          />
         </FormControl>
         <FormControl fullWidth>
           <Button disabled={buttonDisabled} type="submit" variant="contained" color="primary">Submit</Button>

@@ -4,6 +4,13 @@ import { localFilesHttpClient } from '@opencloning/ui/hooks/useLocalFiles';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import mocloSyntax from '../../../../../cypress/test_files/syntax/moclo_syntax.json';
 import { dummyIndex } from '../form/LocalFileSelect.cy.jsx';
+
+mocloSyntax.overhangNames = {
+  ...mocloSyntax.overhangNames,
+  CCCT: 'CCCT_overhang',
+  AACG: 'AACG_overhang',
+};
+
 // Test config
 const testConfig = {
   backendUrl: 'http://localhost:8000',
@@ -176,7 +183,7 @@ describe('<UploadPlasmidsButton />', () => {
     cy.contains('Example sequence 1').click();
     cy.contains('Example sequence 2').click();
     // Click outside to close select element
-    cy.get('body').click(0, 0);
+    cy.get('.MuiDialog-container h2').click({force: true});
     cy.contains('button', 'Submit').click();
 
     cy.get('[data-testid="invalid-plasmids-box"]').contains('Invalid Plasmids').should('exist');
@@ -214,15 +221,14 @@ describe('<UploadPlasmidsButton />', () => {
     cy.get('button').contains('Submit').should('be.disabled');
     cy.get('#option-select').click();
     cy.contains('Example sequence 1').click();
-    // Click outside to close select element
-    cy.get('body').click(0, 0);
+    cy.get('.MuiDialog-container h2').click({force: true});
     cy.contains('button', 'Submit').click();
     cy.get('.MuiAlert-colorError').contains('Error requesting file').should('exist');
 
     cy.get('#option-select').click();
     cy.get('ul').contains('Example sequence 1').click();
     cy.contains('Example sequence 2').click();
-    cy.get('body').click(0, 0);
+    cy.get('.MuiDialog-container h2').click({force: true});
     cy.contains('button', 'Submit').click();
     cy.get('.MuiAlert-colorError').contains('Error uploading plasmid from file example2.gb').should('exist');
     cy.get('.MuiAlert-colorError').contains('Error requesting file').should('not.exist');
