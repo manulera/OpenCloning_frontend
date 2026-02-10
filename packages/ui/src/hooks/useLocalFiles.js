@@ -39,15 +39,18 @@ export default function useLocalFiles() {
     return resp.data;
   }, [localFilesPath, httpClient]);
 
-  return React.useMemo(() => ({
-    index,
-    indexRequestStatus,
-    indexRetry,
-    requestFile
-  }),
+  return React.useMemo(() => (
+    !localFilesPath ? null :
+      {
+        index,
+        indexRequestStatus,
+        indexRetry,
+        requestFile
+      }),
   [
     index,
     indexRequestStatus,
     indexRetry,
-    requestFile]);
+    requestFile,
+    localFilesPath]);
 }
