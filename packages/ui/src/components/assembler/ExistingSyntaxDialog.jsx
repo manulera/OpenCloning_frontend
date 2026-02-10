@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListI
 import getHttpClient from '@opencloning/utils/getHttpClient';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import { useConfig } from '../../providers';
-import LocalFileSelect from '../form/LocalFileSelect';
+import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
 
 const httpClient = getHttpClient();
@@ -22,7 +22,7 @@ function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
     <Dialog data-testid="local-syntax-dialog" open onClose={onClose}>
       <DialogTitle>Load syntax from local server</DialogTitle>
       <DialogContent sx={{ minWidth: '400px' }}>
-        <LocalFileSelect onFileSelected={onFileSelected} type="syntax" />
+        <ServerStaticFileSelect onFileSelected={onFileSelected} type="syntax" />
       </DialogContent>
     </Dialog>
   )
@@ -34,7 +34,7 @@ function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' });
   const [loadError, setLoadError] = React.useState(null);
   const fileInputRef = React.useRef(null);
-  const { localFilesPath } = useConfig();
+  const { staticContentPath } = useConfig();
   const [localDialogOpen, setLocalDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -117,7 +117,7 @@ function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
             >
                 Upload syntax from JSON file
             </Button>
-            {localFilesPath && (
+            {staticContentPath && (
               <Button
                 onClick={() => setLocalDialogOpen(true)}
               >

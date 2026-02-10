@@ -5,5 +5,5 @@
     "noExternalRequests": false,
     "enableAssembler": true,
     "enablePlannotate": true,
-    "localFilesPath": "collection"
+    "staticContentPath": "collection"
 }

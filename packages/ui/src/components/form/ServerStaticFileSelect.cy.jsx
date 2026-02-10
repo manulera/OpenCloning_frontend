@@ -1,14 +1,14 @@
 import React from 'react';
 import { ConfigProvider } from '../../providers/ConfigProvider';
-import { localFilesHttpClient } from '../../hooks/useLocalFiles';
-import LocalFileSelect from './LocalFileSelect';
+import { localFilesHttpClient } from '../../hooks/useServerStaticFiles';
+import ServerStaticFileSelect from './ServerStaticFileSelect';
 
 // A common intercept does not work here, because we are requesting
 // static files, and cypress intercepts don't work.
 
 const config = {
   backendUrl: 'http://localhost:8000',
-  localFilesPath: 'collection',
+  staticContentPath: 'collection',
   showAppBar: false,
   noExternalRequests: false,
   enableAssembler: true,
@@ -45,7 +45,7 @@ export const dummyIndex = {
   ],
 };
 
-describe('<LocalFileSelect />', () => {
+describe('<ServerStaticFileSelect />', () => {
   it('loads index, fetches file and calls onFileSelected', () => {
     const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
       if (url.endsWith('/index.json')) {
@@ -64,7 +64,7 @@ describe('<LocalFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={onFileSelected}
         />
       </ConfigProvider>,
@@ -111,7 +111,7 @@ describe('<LocalFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={cy.spy()}
         />
       </ConfigProvider>,
@@ -161,7 +161,7 @@ describe('<LocalFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={onFileSelected}
         />
       </ConfigProvider>,
@@ -205,7 +205,7 @@ describe('<LocalFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={cy.spy()}
         />
       </ConfigProvider>,
@@ -249,7 +249,7 @@ describe('<LocalFileSelect />', () => {
     const onFileSelected = cy.spy().as('onFileSelected');
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={onFileSelected}
           type="syntax"
         />
@@ -293,7 +293,7 @@ describe('<LocalFileSelect />', () => {
     const onFileSelected = cy.spy().as('onFileSelected');
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={onFileSelected}
           multiple
         />
@@ -335,7 +335,7 @@ describe('<LocalFileSelect />', () => {
     cy.wrap(httpGet).as('httpGet');
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalFileSelect
+        <ServerStaticFileSelect
           onFileSelected={cy.spy()}
           multiple
         />

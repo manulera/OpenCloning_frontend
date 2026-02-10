@@ -1,9 +1,9 @@
 import React from 'react';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
-import { localFilesHttpClient } from '@opencloning/ui/hooks/useLocalFiles';
+import { localFilesHttpClient } from '@opencloning/ui/hooks/useServerStaticFiles';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import mocloSyntax from '../../../../../cypress/test_files/syntax/moclo_syntax.json';
-import { dummyIndex } from '../form/LocalFileSelect.cy.jsx';
+import { dummyIndex } from '../form/ServerStaticFileSelect.cy.jsx';
 
 mocloSyntax.overhangNames = {
   ...mocloSyntax.overhangNames,
@@ -172,7 +172,7 @@ describe('<UploadPlasmidsButton />', () => {
     cy.wrap(httpGet).as('httpGet');
     const addPlasmidsSpy = cy.spy().as('addPlasmidsSpy');
     cy.mount(
-      <ConfigProvider config={{...testConfig, localFilesPath: 'collection'}}>
+      <ConfigProvider config={{...testConfig, staticContentPath: 'collection'}}>
         <UploadPlasmidsButton addPlasmids={addPlasmidsSpy} syntax={mocloSyntax} />
       </ConfigProvider>,
     );
@@ -213,7 +213,7 @@ describe('<UploadPlasmidsButton />', () => {
     cy.wrap(httpGet).as('httpGet');
     const addPlasmidsSpy = cy.spy().as('addPlasmidsSpy');
     cy.mount(
-      <ConfigProvider config={{...testConfig, localFilesPath: 'collection'}}>
+      <ConfigProvider config={{...testConfig, staticContentPath: 'collection'}}>
         <UploadPlasmidsButton addPlasmids={addPlasmidsSpy} syntax={mocloSyntax} />
       </ConfigProvider>,
     );

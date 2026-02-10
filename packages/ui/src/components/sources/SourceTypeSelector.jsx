@@ -13,7 +13,7 @@ function SourceTypeSelector({ source }) {
   const dispatch = useDispatch();
   const database = useDatabase();
   const sourceIsPrimerDesign = useSelector((state) => Boolean(state.cloning.sequences.find((e) => e.id === source.id)?.primer_design));
-  const { noExternalRequests, enablePlannotate, localFilesPath } = useConfig();
+  const { noExternalRequests, enablePlannotate, staticContentPath } = useConfig();
 
   const onChange = (event) => {
     // Clear the source other than these fields
@@ -28,7 +28,7 @@ function SourceTypeSelector({ source }) {
   const options = [];
   if (inputSequences.length === 0) {
     options.push(<MenuItem key="UploadedFileSource" value="UploadedFileSource">Submit file</MenuItem>);
-    if (localFilesPath) {
+    if (staticContentPath) {
       options.push(<MenuItem key="LocalFileSource" value="LocalFileSource">Local server file</MenuItem>);
     }
     if (!noExternalRequests) {

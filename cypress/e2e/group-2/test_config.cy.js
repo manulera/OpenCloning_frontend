@@ -61,8 +61,8 @@ describe('test that configuration works', () => {
     cy.get('.MuiTabs-root').contains('Assembler').should('exist');
   });
 
-  it('when localFilesPath is set, sequences and syntaxes can be loaded from local server', () => {
-    // Intercept config.json request and modify localFilesPath to 'collection'
+  it('when staticContentPath is set, sequences and syntaxes can be loaded from local server', () => {
+    // Intercept config.json request and modify staticContentPath to 'collection'
     cy.visit('/');
     cy.get('label').contains('Source type').click({force: true});
     selectOptionShould('Source type', 'Local server file', 'exist', '#source-1');
@@ -74,10 +74,10 @@ describe('test that configuration works', () => {
     cy.get('button').contains('Submit').click();
     cy.get('button').contains('Load Plasmids from Local Server').should('exist');
   });
-  it('when localFilesPath is not set, sequences and syntaxes cannot be loaded from local server', () => {
-    // Intercept config.json request and modify localFilesPath to 'collection'
+  it('when staticContentPath is not set, sequences and syntaxes cannot be loaded from local server', () => {
+    // Intercept config.json request and modify staticContentPath to 'collection'
     cy.intercept('GET', '**/config.json', (req) => {
-      req.reply({ statusCode: 200, body: {...defaultConfig, localFilesPath: null}});
+      req.reply({ statusCode: 200, body: {...defaultConfig, staticContentPath: null}});
     }).as('configRequest');
     cy.visit('/');
     cy.wait('@configRequest');

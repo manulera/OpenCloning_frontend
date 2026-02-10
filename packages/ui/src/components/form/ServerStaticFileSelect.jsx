@@ -1,14 +1,14 @@
 import React from 'react'
-import useLocalFiles from '../../hooks/useLocalFiles';
+import useServerStaticFiles from '../../hooks/useServerStaticFiles';
 import RequestStatusWrapper from './RequestStatusWrapper';
 import { Alert, Autocomplete, Button, FormControl, TextField } from '@mui/material';
 
-function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }) {
+function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequence' }) {
   const [selectedCategory, setSelectedCategory] = React.useState('');
   const [selectedOptions, setSelectedOptions] = React.useState(multiple ? [] : null);
   const [error, setError] = React.useState(null);
 
-  const localFiles = useLocalFiles();
+  const localFiles = useServerStaticFiles();
   const{ index, indexRequestStatus, indexRetry, requestFile } = localFiles;
 
   const options = React.useMemo(() => {
@@ -117,4 +117,4 @@ function LocalFileSelect({ onFileSelected, multiple = false, type = 'sequence' }
   );
 }
 
-export default LocalFileSelect
+export default ServerStaticFileSelect

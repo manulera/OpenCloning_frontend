@@ -1,8 +1,8 @@
 import React from 'react'
-import LocalFileSelect from '../form/LocalFileSelect';
+import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { Alert, LinearProgress } from '@mui/material';
 
-function SourceLocalFile({ source, requestStatus, sendPostRequest }) {
+function SourceServerStaticFile({ source, requestStatus, sendPostRequest }) {
   const onFileSelected = React.useCallback((file) => {
     const requestData = new FormData();
     requestData.append('file', file);
@@ -16,11 +16,11 @@ function SourceLocalFile({ source, requestStatus, sendPostRequest }) {
 
   return (
     <>
-      <LocalFileSelect onFileSelected={onFileSelected} />
+      <ServerStaticFileSelect onFileSelected={onFileSelected} />
       { requestStatus.status === 'loading' && <LinearProgress /> }
       { requestStatus.status === 'error' && <Alert severity="error">{requestStatus.message}</Alert> }
     </>
   );
 }
 
-export default SourceLocalFile
+export default SourceServerStaticFile

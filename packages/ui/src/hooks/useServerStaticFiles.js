@@ -13,17 +13,17 @@ function sequencesToCategories(sequences) {
     .filter(Boolean);
   return Array.from(new Set(allCategories)).sort((a, b) => a.localeCompare(b));
 }
-export default function useLocalFiles() {
+export default function useServerStaticFiles() {
   const [index, setIndex] = React.useState(null);
 
   const config = useConfig();
   const httpClient = localFilesHttpClient;
-  const localFilesPath = `${import.meta.env.BASE_URL}${config.localFilesPath}`;
+  const staticContentPath = `${import.meta.env.BASE_URL}${config.staticContentPath}`;
 
   const requestFunction = React.useCallback(async () => {
-    const resp = await httpClient.get(`${localFilesPath}/index.json`);
+    const resp = await httpClient.get(`${staticContentPath}/index.json`);
     return resp.data;
-  }, [localFilesPath, httpClient]);
+  }, [staticContentPath, httpClient]);
 
   const onSuccess = React.useCallback((data) => {
     const sequences = !data.sequences ? [] : data.sequences;
@@ -35,12 +35,12 @@ export default function useLocalFiles() {
   const { requestStatus: indexRequestStatus, retry: indexRetry } = useRequestForEffect({ requestFunction, onSuccess });
 
   const requestFile = React.useCallback(async (path) => {
-    const resp = await httpClient.get(`${localFilesPath}/${path}`);
+    const resp = await httpClient.get(`${staticContentPath}/${path}`);
     return resp.data;
-  }, [localFilesPath, httpClient]);
+  }, [staticContentPath, httpClient]);
 
   return React.useMemo(() => (
-    !localFilesPath ? null :
+    !staticContentPath ? null :
       {
         index,
         indexRequestStatus,
@@ -52,5 +52,5 @@ export default function useLocalFiles() {
     indexRequestStatus,
     indexRetry,
     requestFile,
-    localFilesPath]);
+    staticContentPath]);
 }

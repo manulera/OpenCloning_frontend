@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Box } from '@mui/material';
 import { useConfig } from '../../providers';
-import LocalFileSelect from '../form/LocalFileSelect';
+import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { usePlasmidsLogic } from './usePlasmidsLogic';
 import PlasmidSyntaxTable from './PlasmidSyntaxTable';
 import { jsonToGenbank } from '@teselagen/bio-parsers';
@@ -33,7 +33,7 @@ function formatPlasmid(sequenceData) {
 export function UploadPlasmidsFromLocalServerButton({ handleFileChange }) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [error, setError] = React.useState(null);
-  const {localFilesPath} = useConfig();
+  const {staticContentPath} = useConfig();
   
   const onFileSelected = React.useCallback(async (files) => {
     try {
@@ -43,7 +43,7 @@ export function UploadPlasmidsFromLocalServerButton({ handleFileChange }) {
     }
   }, [handleFileChange, setError])
   
-  if (!localFilesPath) {
+  if (!staticContentPath) {
     return null;
   }
   
@@ -55,7 +55,7 @@ export function UploadPlasmidsFromLocalServerButton({ handleFileChange }) {
       <DialogTitle>Load Plasmids from Local Server</DialogTitle>
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        <LocalFileSelect onFileSelected={onFileSelected} type="sequence" multiple />
+        <ServerStaticFileSelect onFileSelected={onFileSelected} type="sequence" multiple />
       </DialogContent>
     </Dialog>}
   </>
