@@ -44,8 +44,8 @@ export default ({ mode }) => {
       }),
       {
         name: 'copy-config',
-        // Copy config file immediately when plugin loads
         configResolved() {
+          // Copy config file immediately when plugin loads
           try {
             const configPath = resolve(__dirname, 'public', configFileName);
             const destPath = resolve(__dirname, 'public', 'config.json');
@@ -59,6 +59,16 @@ export default ({ mode }) => {
           } catch (error) {
             console.error('Failed to copy config file:', error);
           }
+
+          // Copy example collection folder to the public folder
+          const exampleCollectionPath = resolve(__dirname, 'local_files_example', 'collection');
+          if (fs.existsSync(exampleCollectionPath)) {
+            // Recursively copy the 'collection' directory to 'public/collection'
+            fs.cpSync(exampleCollectionPath, resolve(__dirname, 'public', 'collection'), { recursive: true });
+          } else {
+            console.warn(`Example collection folder not found at ${exampleCollectionPath}`);
+          }
+
         },
         // When building the project, copy the config file to the build folder
         writeBundle() {
