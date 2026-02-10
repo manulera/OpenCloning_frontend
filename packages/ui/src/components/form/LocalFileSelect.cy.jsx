@@ -1,7 +1,7 @@
 import React from 'react';
 import { ConfigProvider } from '../../providers/ConfigProvider';
 import { localFilesHttpClient } from '../../hooks/useLocalFiles';
-import LocalSequenceFileSelect from './LocalSequenceFileSelect';
+import LocalFileSelect from './LocalFileSelect';
 
 // A common intercept does not work here, because we are requesting
 // static files, and cypress intercepts don't work.
@@ -33,9 +33,19 @@ const dummyIndex = {
       categories: ['Test category'],
     },
   ],
+  syntaxes: [
+    {
+      name: 'Example syntax 1',
+      path: 'example.json',
+    },
+    {
+      name: 'Example syntax 2',
+      path: 'example2.json',
+    },
+  ],
 };
 
-describe('<LocalSequenceFileSelect />', () => {
+describe('<LocalFileSelect />', () => {
   it('loads index, fetches file and calls onFileSelected', () => {
     const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
       if (url.endsWith('/index.json')) {
@@ -54,7 +64,7 @@ describe('<LocalSequenceFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalSequenceFileSelect
+        <LocalFileSelect
           onFileSelected={onFileSelected}
         />
       </ConfigProvider>,
@@ -66,7 +76,7 @@ describe('<LocalSequenceFileSelect />', () => {
     cy.contains('button', 'Submit').should('be.disabled');
 
     // Select sequence
-    cy.get('#sequence-select').click();
+    cy.get('#option-select').click();
     cy.contains('Example sequence 1').click();
 
     // Submit form
@@ -101,7 +111,7 @@ describe('<LocalSequenceFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalSequenceFileSelect
+        <LocalFileSelect
           onFileSelected={cy.spy()}
         />
       </ConfigProvider>,
@@ -118,7 +128,7 @@ describe('<LocalSequenceFileSelect />', () => {
 
     // Error alert should disappear and form should be visible
     cy.get('.MuiAlert-colorError').should('not.exist');
-    cy.get('#sequence-select').should('exist');
+    cy.get('#option-select').should('exist');
   });
 
   it('handles invalid sequence and file request failure', () => {
@@ -151,7 +161,7 @@ describe('<LocalSequenceFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalSequenceFileSelect
+        <LocalFileSelect
           onFileSelected={onFileSelected}
         />
       </ConfigProvider>,
@@ -164,17 +174,17 @@ describe('<LocalSequenceFileSelect />', () => {
     cy.contains('Test category').click();
 
     // First: select malformed sequence (no path)
-    cy.get('#sequence-select').click();
+    cy.get('#option-select').click();
     cy.contains('No path sequence').click();
     cy.contains('button', 'Submit').click();
 
     cy.get('.MuiAlert-colorError')
-      .contains('Malformatted sequence, must have a path')
+      .contains('Malformatted option, must have a path')
       .should('exist');
     cy.get('@onFileSelected').should('not.have.been.called');
 
     // Then: select valid sequence but make file request fail
-    cy.get('#sequence-select').click();
+    cy.get('#option-select').click();
     cy.contains('Valid path sequence').click();
     cy.contains('button', 'Submit').click();
 
@@ -195,7 +205,7 @@ describe('<LocalSequenceFileSelect />', () => {
 
     cy.mount(
       <ConfigProvider config={config}>
-        <LocalSequenceFileSelect
+        <LocalFileSelect
           onFileSelected={cy.spy()}
         />
       </ConfigProvider>,
@@ -208,7 +218,7 @@ describe('<LocalSequenceFileSelect />', () => {
     cy.contains('Test category').click();
 
     // Only one sequence should be shown
-    cy.get('#sequence-select').click();
+    cy.get('#option-select').click();
     cy.contains('Example sequence 1').should('exist');
     cy.contains('Example sequence 2').should('not.exist');
     cy.contains('Example sequence 3').should('exist');
@@ -220,6 +230,128 @@ describe('<LocalSequenceFileSelect />', () => {
     cy.contains('All').click();
 
     // Nothing should be selected
-    cy.get('#sequence-select').should('have.value', '');
+    cy.get('#option-select').should('have.value', '');
+  });
+  it('works with syntaxes', () => {
+    const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
+      if (url.endsWith('/index.json')) {
+        return Promise.resolve({
+          data: dummyIndex,
+        });
+      }
+      if (url.endsWith('/example.json')) {
+        return Promise.resolve({ data: '{"name": "Example syntax 1"}' });
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+    cy.wrap(httpGet).as('httpGet');
+
+    const onFileSelected = cy.spy().as('onFileSelected');
+    cy.mount(
+      <ConfigProvider config={config}>
+        <LocalFileSelect
+          onFileSelected={onFileSelected}
+          type="syntax"
+        />
+      </ConfigProvider>,
+    );
+
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'index.json');
+
+    // Select syntax
+    cy.get('#option-select').click();
+    cy.contains('Example syntax 1').click();
+
+    // Submit form
+    cy.contains('button', 'Submit').click();
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'example.json');
+
+    cy.get('@onFileSelected').should('have.been.calledOnce');
+    cy.get('@onFileSelected').should((spy) => {
+      const [file] = spy.lastCall.args;
+      expect(file.name).to.equal('example.json');
+      expect(file.type).to.equal('text/plain');
+      expect(file.size).to.equal(28);
+    });
+  });
+  it('works with multiple', () => {
+    const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
+      if (url.endsWith('/index.json')) {
+        return Promise.resolve({
+          data: dummyIndex,
+        });
+      }
+      if (url.endsWith('/example.fa')) {
+        return Promise.resolve({ data: 'ATGC' });
+      }
+      if (url.endsWith('/example2.fa')) {
+        return Promise.resolve({ data: 'ATGCA' });
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+    cy.wrap(httpGet).as('httpGet');
+    const onFileSelected = cy.spy().as('onFileSelected');
+    cy.mount(
+      <ConfigProvider config={config}>
+        <LocalFileSelect
+          onFileSelected={onFileSelected}
+          multiple
+        />
+      </ConfigProvider>,
+    );
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'index.json');
+
+    // Select sequence
+    cy.get('#option-select').click();
+    cy.contains('Example sequence 1').click();
+    cy.contains('Example sequence 2').click();
+    // Click outside to close select element
+    cy.get('body').click(0, 0);
+    cy.contains('button', 'Submit').click();
+
+    cy.get('@httpGet').should('have.been.calledThrice');
+    cy.get('@onFileSelected').should('have.been.calledOnce');
+    cy.get('@onFileSelected').should((spy) => {
+      const [files] = spy.lastCall.args;
+      expect(files).to.have.length(2);
+      expect(files[0].name).to.equal('example.fa');
+      expect(files[0].type).to.equal('text/plain');
+      expect(files[0].size).to.equal(4);
+      expect(files[1].name).to.equal('example2.fa');
+      expect(files[1].type).to.equal('text/plain');
+      expect(files[1].size).to.equal(5);
+    });
+  });
+
+  it('can filter with multiple', () => {
+    const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
+      if (url.endsWith('/index.json')) {
+        return Promise.resolve({
+          data: dummyIndex,
+        });
+      }
+    });
+
+    cy.wrap(httpGet).as('httpGet');
+    cy.mount(
+      <ConfigProvider config={config}>
+        <LocalFileSelect
+          onFileSelected={cy.spy()}
+          multiple
+        />
+      </ConfigProvider>,
+    );
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'index.json');
+
+    // Select category
+    cy.get('#category-select').click();
+    cy.contains('Test category').click();
+
+    // Only one sequence should be shown
+    cy.get('#option-select').click();
+    cy.contains('Example sequence 1').should('exist');
+    cy.contains('Example sequence 2').should('not.exist');
+    cy.contains('Example sequence 3').should('exist');
+
   });
 });

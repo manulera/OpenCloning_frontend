@@ -13,7 +13,6 @@ function useRequestForEffect({ requestFunction, onSuccess }) {
       setRequestStatus({ status: 'loading', message: '' });
       try {
         const resp = await requestFunction();
-        console.log('resp', resp);
         setRequestStatus({ status: 'success', message: '' });
         onSuccess(resp);
       } catch (error) {

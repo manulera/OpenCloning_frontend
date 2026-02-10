@@ -1,5 +1,5 @@
 import React from 'react'
-import LocalSequenceFileSelect from '../form/LocalSequenceFileSelect';
+import LocalFileSelect from '../form/LocalFileSelect';
 import { Alert, LinearProgress } from '@mui/material';
 
 function SourceLocalFile({ source, requestStatus, sendPostRequest }) {
@@ -16,7 +16,7 @@ function SourceLocalFile({ source, requestStatus, sendPostRequest }) {
 
   return (
     <>
-      <LocalSequenceFileSelect onFileSelected={onFileSelected} />
+      <LocalFileSelect onFileSelected={onFileSelected} />
       { requestStatus.status === 'loading' && <LinearProgress /> }
       { requestStatus.status === 'error' && <Alert severity="error">{requestStatus.message}</Alert> }
     </>

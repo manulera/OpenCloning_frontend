@@ -29,7 +29,7 @@ function SourceTypeSelector({ source }) {
   if (inputSequences.length === 0) {
     options.push(<MenuItem key="UploadedFileSource" value="UploadedFileSource">Submit file</MenuItem>);
     if (localFilesPath) {
-      options.push(<MenuItem key="LocalFileSource" value="LocalFileSource">Local file</MenuItem>);
+      options.push(<MenuItem key="LocalFileSource" value="LocalFileSource">Local server file</MenuItem>);
     }
     if (!noExternalRequests) {
       options.push(<MenuItem key="RepositoryIdSource" value="RepositoryIdSource">Repository</MenuItem>);

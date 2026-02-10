@@ -302,12 +302,11 @@ describe('<UploadPlasmidsButton />', () => {
     // Verify it was called with an array and check structure
     cy.get('@addPlasmidsSpy').then((spy) => {
       const firstCall = spy.getCall(0);
-      console.log('firstCall', firstCall.args);
       cy.wrap(firstCall.args[0]).should('be.an', 'array');
       cy.wrap(firstCall.args[0]).should('have.length', 3);
 
       const firstPlasmid = firstCall.args[0][0];
-      
+
       cy.wrap(firstPlasmid.file_name).should('equal', 'pYTK002.gb');
       cy.wrap(firstPlasmid.plasmid_name).should('equal', 'pYTK002.gb (ConS)');
       cy.wrap(firstPlasmid.left_overhang).should('equal', 'CCCT');
