@@ -42,12 +42,13 @@ describe('Test Source input constrains', () => {
 
   it('Empty source displays the right options', () => {
     cy.get('#tab-panel-0 .MuiInputBase-root').click();
-    cy.get('ul[aria-labelledby="select-source-1-label"] li').should('have.length', 5);
+    cy.get('ul[aria-labelledby="select-source-1-label"] li').should('have.length', 6);
     cy.get('ul[aria-labelledby="select-source-1-label"] li[data-value="RepositoryIdSource"]').should('exist');
     cy.get('ul[aria-labelledby="select-source-1-label"] li[data-value="ManuallyTypedSource"]').should('exist');
     cy.get('ul[aria-labelledby="select-source-1-label"] li[data-value="GenomeCoordinatesSource"]').should('exist');
     cy.get('ul[aria-labelledby="select-source-1-label"] li[data-value="UploadedFileSource"]').should('exist');
     cy.get('ul[aria-labelledby="select-source-1-label"] li[data-value="OligoHybridizationSource"]').should('exist');
+    cy.get('ul[aria-labelledby="select-source-1-label"] li[data-value="LocalFileSource"]').should('exist');
   });
   it('All experimental sources are available as children of a sequence', () => {
     manuallyTypeSequence('atata');
