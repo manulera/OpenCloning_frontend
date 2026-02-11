@@ -1,5 +1,13 @@
 # syntax-builder
 
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [[`1419d5c`](https://github.com/manulera/OpenCloning_frontend/commit/1419d5cb80f738b737076e4d3b958c31eeb0f7b4)]:
+  - @opencloning/ui@1.4.1
+  - @opencloning/utils@1.4.1
+
 ## 0.2.4
 
 ### Patch Changes
