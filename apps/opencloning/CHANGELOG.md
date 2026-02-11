@@ -1,5 +1,11 @@
 # opencloning
 
+## 1.3.1
+
+### Patch Changes
+
+- [#614](https://github.com/manulera/OpenCloning_frontend/pull/614) [`9b193ea`](https://github.com/manulera/OpenCloning_frontend/commit/9b193ea4ad0f523bed31052208705ab1859060ba) Thanks [@manulera](https://github.com/manulera)! - Fix release of multi-platform images
+
 ## 1.3.0
 
 ### Minor Changes
