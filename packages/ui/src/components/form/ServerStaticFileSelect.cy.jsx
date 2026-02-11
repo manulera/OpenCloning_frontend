@@ -274,6 +274,115 @@ describe('<ServerStaticFileSelect />', () => {
       expect(file.size).to.equal(28);
     });
   });
+  it('allows selecting all sequences with the Select all option when multiple', () => {
+    const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
+      if (url.endsWith('/index.json')) {
+        return Promise.resolve({
+          data: dummyIndex,
+        });
+      }
+      if (url.endsWith('/example.fa')) {
+        return Promise.resolve({ data: 'ATGC' });
+      }
+      if (url.endsWith('/example2.gb')) {
+        return Promise.resolve({ data: 'ATGCA' });
+      }
+      if (url.endsWith('/example3.fa')) {
+        return Promise.resolve({ data: 'ATGCG' });
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+    cy.wrap(httpGet).as('httpGet');
+
+    const onFileSelected = cy.spy().as('onFileSelected');
+    cy.mount(
+      <ConfigProvider config={config}>
+        <ServerStaticFileSelect
+          onFileSelected={onFileSelected}
+          multiple
+        />
+      </ConfigProvider>,
+    );
+
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'index.json');
+
+    // Use the Select all option to select all sequences
+    cy.get('#option-select').click();
+    cy.contains('Select all').click();
+    cy.get('body').click(0, 0);
+
+    // Submit form
+    cy.contains('button', 'Submit').click();
+
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'example.fa');
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'example2.gb');
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'example3.fa');
+
+    cy.get('@onFileSelected').should('have.been.calledOnce');
+    cy.get('@onFileSelected').should((spy) => {
+      const [files] = spy.lastCall.args;
+      expect(files).to.have.length(3);
+      expect(files[0].name).to.equal('example.fa');
+      expect(files[0].type).to.equal('text/plain');
+      expect(files[1].name).to.equal('example2.gb');
+      expect(files[1].type).to.equal('text/plain');
+      expect(files[2].name).to.equal('example3.fa');
+      expect(files[2].type).to.equal('text/plain');
+    });
+  });
+  it('clicking select all only selects the sequences that were filtered by category', () => {
+    const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
+      if (url.endsWith('/index.json')) {
+        return Promise.resolve({
+          data: dummyIndex,
+        });
+      }
+      if (url.endsWith('/example.fa')) {
+        return Promise.resolve({ data: 'ATGC' });
+      }
+      if (url.endsWith('/example3.fa')) {
+        return Promise.resolve({ data: 'ATGCG' });
+      }
+    });
+    cy.wrap(httpGet).as('httpGet');
+    const onFileSelected = cy.spy().as('onFileSelected');
+    cy.mount(
+      <ConfigProvider config={config}>
+        <ServerStaticFileSelect
+          onFileSelected={onFileSelected}
+          multiple
+        />
+      </ConfigProvider>,
+    );
+    cy.get('@httpGet').should('have.been.calledWithMatch', 'index.json');
+
+    // Select category
+    cy.get('#category-select').click();
+    cy.contains('Test category').click();
+
+    // Select all
+    cy.get('#option-select').click();
+    cy.contains('Select all').click();
+
+    // Only one sequence should be shown
+    cy.get('#option-select').click();
+    cy.contains('Example sequence 1').should('exist');
+    cy.contains('Example sequence 2').should('not.exist');
+    cy.contains('Example sequence 3').should('exist');
+
+    // Click outside to close select element
+    cy.get('body').click(0, 0);
+    cy.contains('button', 'Submit').click();
+
+    cy.get('@httpGet').should('have.been.calledThrice');
+    cy.get('@onFileSelected').should('have.been.calledOnce');
+    cy.get('@onFileSelected').should((spy) => {
+      const [files] = spy.lastCall.args;
+      expect(files).to.have.length(2);
+      expect(files[0].name).to.equal('example.fa');
+      expect(files[1].name).to.equal('example3.fa');
+    });
+  })
   it('works with multiple', () => {
     const httpGet = cy.stub(localFilesHttpClient, 'get').callsFake((url) => {
       if (url.endsWith('/index.json')) {
