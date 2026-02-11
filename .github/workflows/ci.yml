@@ -267,13 +267,20 @@ jobs:
   # Update docker image when committing to master branch if tests pass
   push_to_registry:
     name: Push Docker image to Docker Hub
-    # Only run if tests pass
-    needs: [cypress-tests, cypress-gather-coverage]
     runs-on: ubuntu-latest
+    # Only run if the branch is master
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
