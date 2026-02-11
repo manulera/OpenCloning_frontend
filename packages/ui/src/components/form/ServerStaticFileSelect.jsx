@@ -16,11 +16,12 @@ function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequ
     if (type !== 'sequence') {
       return index.syntaxes;
     }
+    const prePendArray = multiple ? ['__all__'] : [];
     if (selectedCategory === '') {
-      return index.sequences;
+      return [...prePendArray, ...index.sequences];
     }
-    return index.sequences.filter((sequence) => sequence.categories?.includes(selectedCategory));
-  }, [type, index, selectedCategory]);
+    return [...prePendArray, ...index.sequences.filter((sequence) => sequence.categories?.includes(selectedCategory))];
+  }, [type, index, selectedCategory, multiple]);
 
   const categoryOptions = React.useMemo(() => {
     if (!index?.categories) return [];
@@ -72,6 +73,19 @@ function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequ
   const buttonDisabled = multiple ? selectedOptions.length === 0 : !selectedOptions;
 
   const label = type === 'sequence' ? 'Sequence' : 'Syntax';
+
+  const onOptionsChange = React.useCallback((event, value) => {
+    console.log('onOptionsChange', value);
+    if (multiple && type === 'sequence') {
+      if (value.includes('__all__')) {
+        const allSequences = options.filter((option) => option !== '__all__');
+        setSelectedOptions(allSequences);
+        return;
+      }
+    }
+    setSelectedOptions(value);
+  }, [multiple, type, options]);
+
   return (
     <RequestStatusWrapper requestStatus={indexRequestStatus} retry={indexRetry}>
       {error && <Alert severity="error">{error}</Alert>}
@@ -98,8 +112,8 @@ function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequ
             multiple={multiple}
             options={options}
             value={selectedOptions}
-            onChange={(event, value) => setSelectedOptions(value)}
-            getOptionLabel={(option) => option?.name || option?.path || ''}
+            onChange={onOptionsChange}
+            getOptionLabel={(option) => (option === '__all__' ? 'Select all' : option?.name || option?.path || '')}
             disableCloseOnSelect={multiple}
             renderInput={(params) => (
               <TextField
