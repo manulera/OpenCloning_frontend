@@ -53,7 +53,7 @@ export function UploadPlasmidsFromLocalServerButton({ handleFileChange }) {
     </Button>
     {dialogOpen && <Dialog open onClose={() => {setError(null); setDialogOpen(false)}}>
       <DialogTitle>Load Plasmids from Local Server</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ width: '500px' }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <ServerStaticFileSelect onFileSelected={onFileSelected} type="sequence" multiple />
       </DialogContent>
