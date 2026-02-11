@@ -1,11 +1,32 @@
 import React from 'react'
-import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Alert, Button, Box } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Alert, Button, Box, ButtonGroup } from '@mui/material'
 import getHttpClient from '@opencloning/utils/getHttpClient';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
+import { useConfig } from '../../providers';
+import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
+import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
 
 const httpClient = getHttpClient();
 const baseURL = 'https://assets.opencloning.org/syntaxes/syntaxes/';
 httpClient.defaults.baseURL = baseURL;
+
+function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
+
+  const onFileSelected = React.useCallback(async (file) => {
+    const text = await readSubmittedTextFile(file);
+    const syntaxData = JSON.parse(text);
+    onSyntaxSelect(syntaxData, []);
+    onClose();
+  }, [onSyntaxSelect, onClose]);
+  return (
+    <Dialog data-testid="local-syntax-dialog" open onClose={onClose}>
+      <DialogTitle>Load syntax from local server</DialogTitle>
+      <DialogContent sx={{ minWidth: '400px' }}>
+        <ServerStaticFileSelect onFileSelected={onFileSelected} type="syntax" />
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
   const [syntaxes, setSyntaxes] = React.useState([]);
@@ -13,6 +34,8 @@ function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' });
   const [loadError, setLoadError] = React.useState(null);
   const fileInputRef = React.useRef(null);
+  const { staticContentPath } = useConfig();
+  const [localDialogOpen, setLocalDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
     setRequestStatus({ status: 'loading' });
@@ -88,13 +111,21 @@ function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
             onChange={handleFileUpload}
             style={{ display: 'none' }}
           />
-          <Button
-            variant="outlined"
-            sx={{ display: 'block', mx: 'auto' }}
-            onClick={() => fileInputRef.current?.click()}
-          >
-              Upload syntax from JSON file
-          </Button>
+          <ButtonGroup sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+            >
+                Upload syntax from JSON file
+            </Button>
+            {staticContentPath && (
+              <Button
+                onClick={() => setLocalDialogOpen(true)}
+              >
+                Load syntax from local server
+              </Button>
+            )}
+          </ButtonGroup>
+          {localDialogOpen && <LocalSyntaxDialog onClose={() => {setLocalDialogOpen(false); onClose()}} onSyntaxSelect={onSyntaxSelect} />}
         </Box>
       </DialogContent>
     </Dialog>

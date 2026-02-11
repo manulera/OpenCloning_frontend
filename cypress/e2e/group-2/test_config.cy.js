@@ -1,4 +1,4 @@
-import { manuallyTypeSequence } from "../common_functions";
+import { changeTab, clickMultiSelectOption, manuallyTypeSequence, selectOptionShould } from "../common_functions";
 import defaultConfig from '../../../apps/opencloning/public/config.dev.json';
 
 
@@ -61,5 +61,34 @@ describe('test that configuration works', () => {
     cy.get('.MuiTabs-root').contains('Assembler').should('exist');
   });
 
+  it('when staticContentPath is set, sequences and syntaxes can be loaded from local server', () => {
+    // Intercept config.json request and modify staticContentPath to 'collection'
+    cy.visit('/');
+    cy.get('label').contains('Source type').click({force: true});
+    selectOptionShould('Source type', 'Local server file', 'exist', '#source-1');
+    changeTab('Assembler');
+    cy.get('button').contains('Load Syntax').click();
+    cy.get('button').contains('Load syntax from local server').click();
+    cy.get('[data-testid="local-syntax-dialog"] input').click();
+    cy.get('div[role="presentation"]').contains('syntax1').click();
+    cy.get('button').contains('Submit').click();
+    cy.get('button').contains('Load Plasmids from Local Server').should('exist');
+  });
+  it('when staticContentPath is not set, sequences and syntaxes cannot be loaded from local server', () => {
+    // Intercept config.json request and modify staticContentPath to 'collection'
+    cy.intercept('GET', '**/config.json', (req) => {
+      req.reply({ statusCode: 200, body: {...defaultConfig, staticContentPath: null}});
+    }).as('configRequest');
+    cy.visit('/');
+    cy.wait('@configRequest');
+    cy.get('label').contains('Source type').click({force: true});
+    cy.get('ul').contains('Local server file').should('not.exist');
+    changeTab('Assembler');
+    cy.get('button').contains('Load Syntax').click();
+    cy.get('button').contains('Load syntax from local server').should('not.exist');
+    cy.get('li').contains('MoClo').click();
+    cy.get('button').contains('Add Plasmids').should('exist');
+    cy.get('button').contains('Load Plasmids from Local Server').should('not.exist');
+  });
 });
 

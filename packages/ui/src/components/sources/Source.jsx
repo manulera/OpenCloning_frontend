@@ -21,6 +21,7 @@ import SourceCopySequence from './SourceCopySequence';
 import SourceReverseComplement from './SourceReverseComplement';
 import SourceKnownGenomeRegion from './SourceKnownGenomeRegion';
 import { doesSourceHaveOutput } from '@opencloning/store/cloning_utils';
+import SourceServerStaticFile from './SourceServerStaticFile';
 
 // There are several types of source, this components holds the common part,
 // which for now is a select element to pick which kind of source is created
@@ -49,6 +50,8 @@ function Source({ sourceId }) {
     /* eslint-disable */
     case 'UploadedFileSource':
       specificSource = <SourceFile {...{ source, requestStatus, sendPostRequest }} />; break;
+    case 'LocalFileSource':
+      specificSource = <SourceServerStaticFile {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'RestrictionEnzymeDigestionSource':
       specificSource = <SourceRestriction {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'RepositoryIdSource':

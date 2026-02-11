@@ -3,5 +3,6 @@
     "showAppBar": true,
     "noExternalRequests": false,
     "enableAssembler": true,
-    "enablePlannotate": true
+    "enablePlannotate": true,
+    "staticContentPath": "collection"
 }

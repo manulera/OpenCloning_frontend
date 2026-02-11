@@ -69,11 +69,15 @@ export function usePlasmidsLogic({ parts, assemblyEnzyme, overhangNames }) {
 
   const uploadPlasmids = React.useCallback(async (files) => {
     const plasmids = await Promise.all(files.map(async (file) => {
-      const data = await anyToJson(file);
-      const sequenceData = data[0].parsedSequence;
-      // Force circular
-      sequenceData.circular = true;
-      return {...sequenceData, appData: { fileName: file.name, correspondingParts: [], partInfo: [], correspondingPartsNames: [] } };
+      try {
+        const data = await anyToJson(file);
+        const sequenceData = data[0].parsedSequence;
+        // Force circular
+        sequenceData.circular = true;
+        return {...sequenceData, appData: { fileName: file.name, correspondingParts: [], partInfo: [], correspondingPartsNames: [] } };
+      } catch (e) {
+        throw new Error(`Error uploading plasmid from file ${file.name}: ${e.message}`);
+      }
     }));
     setLinkedPlasmids(plasmids);
   }, [setLinkedPlasmids]);
