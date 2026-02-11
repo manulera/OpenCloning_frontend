@@ -1,5 +1,27 @@
 # @opencloning/ui
 
+## 1.4.0
+
+### Minor Changes
+
+- [#611](https://github.com/manulera/OpenCloning_frontend/pull/611) [`74a58c4`](https://github.com/manulera/OpenCloning_frontend/commit/74a58c463a32bf6443eaf062094dc4aac5c76b5a) Thanks [@manulera](https://github.com/manulera)! - Adds functionality to load files (sequences and syntaxes) from a local public folder, providing an alternative to uploading files manually. The implementation enables users to pre-configure collections of sequences and syntaxes that can be easily selected through a UI.
+
+  **Changes:**
+
+  - Added `useRequestForEffect` hook for managing async requests with retry capability
+  - Added `useServerStaticFiles` hook for fetching and managing local file collections
+  - Added `ServerStaticFileSelect` component for selecting files from the local collection with category filtering
+  - Added `SourceServerStaticFile` component and integrated it into the source selection flow
+  - Added local file loading capability to the assembler's plasmid uploader and syntax loader
+  - Configured build system to copy example collection folder to public directory during development
+  - Added comprehensive test coverage for all new components and functionality
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @opencloning/store@1.4.0
+  - @opencloning/utils@1.4.0
+
 ## 1.3.3
 
 ### Patch Changes
