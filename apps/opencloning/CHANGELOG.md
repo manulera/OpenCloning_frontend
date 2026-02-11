@@ -1,5 +1,16 @@
 # opencloning
 
+## 1.3.2
+
+### Patch Changes
+
+- [#616](https://github.com/manulera/OpenCloning_frontend/pull/616) [`1419d5c`](https://github.com/manulera/OpenCloning_frontend/commit/1419d5cb80f738b737076e4d3b958c31eeb0f7b4) Thanks [@manulera](https://github.com/manulera)! - Allow to "select all" when importing static sequences from server
+
+- Updated dependencies [[`1419d5c`](https://github.com/manulera/OpenCloning_frontend/commit/1419d5cb80f738b737076e4d3b958c31eeb0f7b4)]:
+  - @opencloning/ui@1.4.1
+  - @opencloning/store@1.4.1
+  - @opencloning/utils@1.4.1
+
 ## 1.3.1
 
 ### Patch Changes
