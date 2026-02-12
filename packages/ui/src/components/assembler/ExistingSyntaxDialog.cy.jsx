@@ -1,5 +1,4 @@
 import React from 'react';
-import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 
 // Test config
@@ -50,12 +49,10 @@ describe('<ExistingSyntaxDialog />', () => {
     const onSyntaxSelectSpy = cy.spy().as('onSyntaxSelectSpy');
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
@@ -82,12 +79,10 @@ describe('<ExistingSyntaxDialog />', () => {
     }).as('getPlasmidsData');
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
@@ -111,12 +106,10 @@ describe('<ExistingSyntaxDialog />', () => {
     }).as('getSyntaxDataError');
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
@@ -146,12 +139,10 @@ describe('<ExistingSyntaxDialog />', () => {
     }).as('getPlasmidsDataError');
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
@@ -187,12 +178,10 @@ describe('<ExistingSyntaxDialog />', () => {
     }).as('getPlasmidsData2');
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
@@ -232,12 +221,10 @@ describe('<ExistingSyntaxDialog />', () => {
     }
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
@@ -262,12 +249,10 @@ describe('<ExistingSyntaxDialog />', () => {
     }
 
     cy.mount(
-      <ConfigProvider config={testConfig}>
-        <ExistingSyntaxDialog
-          onClose={onCloseSpy}
-          onSyntaxSelect={onSyntaxSelectSpy}
-        />
-      </ConfigProvider>,
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
     );
 
     cy.wait('@getSyntaxes');
