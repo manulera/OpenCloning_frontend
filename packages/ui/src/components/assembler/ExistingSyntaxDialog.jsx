@@ -28,13 +28,12 @@ function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
   )
 }
 
-function ExistingSyntaxDialog({ onClose, onSyntaxSelect }) {
+function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
   const [syntaxes, setSyntaxes] = React.useState([]);
   const [connectAttempt, setConnectAttempt] = React.useState(0);
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' });
   const [loadError, setLoadError] = React.useState(null);
   const fileInputRef = React.useRef(null);
-  const { staticContentPath } = useConfig();
   const [localDialogOpen, setLocalDialogOpen] = React.useState(false);
 
   React.useEffect(() => {

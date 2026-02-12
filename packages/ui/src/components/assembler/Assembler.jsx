@@ -17,6 +17,7 @@ import useBackendRoute from '../../hooks/useBackendRoute';
 import useHttpClient from '../../hooks/useHttpClient';
 import useAlerts from '../../hooks/useAlerts';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
+import { useConfig } from '../../providers';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
@@ -240,6 +241,7 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
 function LoadSyntaxButton({ setSyntax, addPlasmids }) {
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
   const httpClient = useHttpClient();
+  const { staticContentPath } = useConfig();
   const backendRoute = useBackendRoute();
   const { addAlert } = useAlerts();
   const onSyntaxSelect = React.useCallback(async (syntax, plasmids) => {
@@ -257,7 +259,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
   }, [setSyntax, addPlasmids, httpClient, backendRoute, addAlert])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
-    {existingSyntaxDialogOpen && <ExistingSyntaxDialog onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
+    {existingSyntaxDialogOpen && <ExistingSyntaxDialog staticContentPath={staticContentPath} onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
   </>
 }
 
