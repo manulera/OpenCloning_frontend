@@ -1,5 +1,15 @@
 # syntax-builder
 
+## 0.2.7
+
+### Patch Changes
+
+- [#622](https://github.com/manulera/OpenCloning_frontend/pull/622) [`03cec1c`](https://github.com/manulera/OpenCloning_frontend/commit/03cec1c53e6e8365bb8bf9617ed3128b65ab18cc) Thanks [@manulera](https://github.com/manulera)! - Fix loading external assemblies in syntax builder by extracting config out of ExistingSyntaxDialog component
+
+- Updated dependencies [[`03cec1c`](https://github.com/manulera/OpenCloning_frontend/commit/03cec1c53e6e8365bb8bf9617ed3128b65ab18cc)]:
+  - @opencloning/ui@1.4.3
+  - @opencloning/utils@1.4.3
+
 ## 0.2.6
 
 ### Patch Changes
