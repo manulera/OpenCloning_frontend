@@ -96,6 +96,7 @@ describe('<AssemblerComponent />', () => {
         <AssemblerComponent
           plasmids={mockPlasmids}
           categories={mockCategories}
+          assemblyEnzyme="assembly_enzyme"
         />
       </ConfigProvider>,
     );
@@ -209,9 +210,15 @@ describe('<AssemblerComponent />', () => {
       body: dummyResponse,
     }).as('fetchSourceSuccess');
     // Mock assembly request
-    cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', {
-      statusCode: 200,
-      body: dummyResponse,
+    cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', (req) => {
+      // Check that the value of the enzyme was set in the request body
+      expect(req.body).to.have.property('source');
+      expect(req.body.source).to.have.property('restriction_enzymes');
+      expect(req.body.source.restriction_enzymes).to.include('assembly_enzyme');
+      req.reply({
+        statusCode: 200,
+        body: dummyResponse,
+      });
     }).as('assemblySuccess');
 
     // Click submit button
