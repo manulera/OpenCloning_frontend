@@ -1,5 +1,16 @@
 # opencloning
 
+## 1.3.3
+
+### Patch Changes
+
+- [#620](https://github.com/manulera/OpenCloning_frontend/pull/620) [`1c2dbef`](https://github.com/manulera/OpenCloning_frontend/commit/1c2dbef236d54b4980599cd6acc4fdabced13f1d) Thanks [@manulera](https://github.com/manulera)! - Fix assembler using BsaI by default always
+
+- Updated dependencies [[`1c2dbef`](https://github.com/manulera/OpenCloning_frontend/commit/1c2dbef236d54b4980599cd6acc4fdabced13f1d)]:
+  - @opencloning/ui@1.4.2
+  - @opencloning/store@1.4.2
+  - @opencloning/utils@1.4.2
+
 ## 1.3.2
 
 ### Patch Changes
