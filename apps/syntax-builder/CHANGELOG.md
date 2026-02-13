@@ -1,5 +1,15 @@
 # syntax-builder
 
+## 0.2.8
+
+### Patch Changes
+
+- [#624](https://github.com/manulera/OpenCloning_frontend/pull/624) [`c333aa3`](https://github.com/manulera/OpenCloning_frontend/commit/c333aa3f5eda8ab7a65799d589ba6e9b376e2d24) Thanks [@manulera](https://github.com/manulera)! - Assigning plasmids to categories handles palindromic parts
+
+- Updated dependencies [[`c333aa3`](https://github.com/manulera/OpenCloning_frontend/commit/c333aa3f5eda8ab7a65799d589ba6e9b376e2d24)]:
+  - @opencloning/ui@1.4.4
+  - @opencloning/utils@1.4.4
+
 ## 0.2.7
 
 ### Patch Changes
