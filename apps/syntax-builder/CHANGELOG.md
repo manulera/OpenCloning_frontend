@@ -1,5 +1,15 @@
 # syntax-builder
 
+## 0.2.9
+
+### Patch Changes
+
+- [#627](https://github.com/manulera/OpenCloning_frontend/pull/627) [`74e5365`](https://github.com/manulera/OpenCloning_frontend/commit/74e53653a27c2dc64f19afd984981c0fb70fc747) Thanks [@manulera](https://github.com/manulera)! - Allow selecting sub-assemblies from a kit
+
+- Updated dependencies [[`74e5365`](https://github.com/manulera/OpenCloning_frontend/commit/74e53653a27c2dc64f19afd984981c0fb70fc747)]:
+  - @opencloning/ui@1.4.5
+  - @opencloning/utils@1.4.5
+
 ## 0.2.8
 
 ### Patch Changes
