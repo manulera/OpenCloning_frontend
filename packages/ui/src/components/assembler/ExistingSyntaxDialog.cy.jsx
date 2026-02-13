@@ -21,6 +21,23 @@ const mockSyntaxes = [
     name: 'Test Syntax 2',
     description: 'Second test syntax',
   },
+  {
+    path: 'test-syntax-3',
+    name: 'Test Syntax 3',
+    description: 'Third test syntax',
+    syntaxes: [
+      {
+        path: 'test-syntax-3-1.json',
+        name: 'Test Syntax 3-1',
+        description: 'Third test syntax 1',
+      },
+      {
+        path: 'test-syntax-3-2.json',
+        name: 'Test Syntax 3-2',
+        description: 'Third test syntax 2',
+      },
+    ],
+  },
 ];
 
 const mockSyntaxData = {
@@ -264,5 +281,39 @@ describe('<ExistingSyntaxDialog />', () => {
     cy.contains(/Failed to parse JSON file/).should('exist');
     cy.get('@onSyntaxSelectSpy').should('not.have.been.called');
     cy.get('@onCloseSpy').should('not.have.been.called');
+  });
+
+  it('works with multiple syntaxes', () => {
+    const onCloseSpy = cy.spy().as('onCloseSpy');
+    const onSyntaxSelectSpy = cy.spy().as('onSyntaxSelectSpy');
+
+    cy.intercept('GET', 'https://assets.opencloning.org/syntaxes/syntaxes/test-syntax-3/test-syntax-3-2.json', {
+      statusCode: 200,
+      body: mockSyntaxData,
+    }).as('getSyntaxData');
+
+    cy.intercept('GET', 'https://assets.opencloning.org/syntaxes/syntaxes/test-syntax-3/plasmids_test-syntax-3-2.json', {
+      statusCode: 200,
+      body: mockPlasmidsData,
+    }).as('getPlasmidsData');
+
+    cy.mount(
+      <ExistingSyntaxDialog
+        onClose={onCloseSpy}
+        onSyntaxSelect={onSyntaxSelectSpy}
+      />,
+    );
+
+    cy.wait('@getSyntaxes');
+    cy.contains('Test Syntax 3').click();
+    cy.contains('Test Syntax 3-1').should('exist');
+    cy.contains('Test Syntax 3-2').should('exist');
+    cy.contains('Third test syntax 1').should('exist');
+    cy.contains('Third test syntax 2').should('exist');
+    cy.contains('Test Syntax 3-2').click();
+    cy.wait('@getSyntaxData');
+    cy.wait('@getPlasmidsData');
+    cy.get('@onSyntaxSelectSpy').should('have.been.calledWith', mockSyntaxData, mockPlasmidsData);
+    cy.get('@onCloseSpy').should('have.been.called');
   });
 });

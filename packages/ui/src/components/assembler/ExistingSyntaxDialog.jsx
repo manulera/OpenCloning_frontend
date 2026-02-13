@@ -1,10 +1,11 @@
 import React from 'react'
-import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Alert, Button, Box, ButtonGroup } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Alert, Button, Box, ButtonGroup, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import getHttpClient from '@opencloning/utils/getHttpClient';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import { useConfig } from '../../providers';
 import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 const httpClient = getHttpClient();
 const baseURL = 'https://assets.opencloning.org/syntaxes/syntaxes/';
@@ -28,6 +29,48 @@ function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
   )
 }
 
+function SyntaxListItem({ syntax, onSyntaxClick }) {
+  if (syntax.syntaxes === undefined) {
+    const syntaxPath = syntax.path + '/syntax.json';
+    const plasmidsPath = syntax.path + '/plasmids.json';
+    return (
+      <ListItem>
+        <ListItemButton onClick={() => {onSyntaxClick(syntaxPath, plasmidsPath)}}>
+          <ListItemText primary={syntax.name} secondary={syntax.description} />
+        </ListItemButton>
+      </ListItem>
+    )
+  }
+
+  const onOptionClick = (index) => {
+    const syntaxPath = `${syntax.path}/${syntax.syntaxes[index].path}`;
+    const plasmidsPath = `${syntax.path}/plasmids_${syntax.syntaxes[index].path}`;
+    onSyntaxClick(syntaxPath, plasmidsPath);
+  }
+
+  return (
+    <ListItem>
+      <Accordion>
+        <AccordionSummary sx={{ my: 0, py: 0 }} expandIcon={<ExpandMoreIcon />}>
+          <ListItemText sx={{ my: 0, py: 0 }} primary={syntax.name} secondary={syntax.description} />
+        </AccordionSummary>
+        <AccordionDetails>
+          <List sx={{ py: 0, my: 0 }}>
+            {syntax.syntaxes.map((syntax, index) => (
+              <ListItem key={syntax.path} sx={{ my: 0, py: 0 }}>
+                <ListItemButton sx={{ py: 0 }} onClick={() => onOptionClick(index)}>
+                  <ListItemText primary={syntax.name} secondary={syntax.description} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    </ListItem>
+    
+  )
+}
+
 function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
   const [syntaxes, setSyntaxes] = React.useState([]);
   const [connectAttempt, setConnectAttempt] = React.useState(0);
@@ -42,7 +85,7 @@ function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
       try {
         const { data } = await httpClient.get('index.json');
         setRequestStatus({ status: 'success' });
-        setSyntaxes(data);
+        setSyntaxes(data.sort((a, b) => a.name.localeCompare(b.name)));
       } catch {
         setRequestStatus({ status: 'error', message: 'Could not load syntaxes' });
       }
@@ -50,13 +93,13 @@ function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
     fetchData();
   }, [connectAttempt]);
 
-  const onSyntaxClick = React.useCallback(async (syntax) => {
+  const onSyntaxClick = React.useCallback(async (syntaxPath, plasmidsPath) => {
     setLoadError(null);
     let loadingErrorPart = 'syntax'
     try {
-      const { data: syntaxData } = await httpClient.get(`${syntax.path}/syntax.json`);
+      const { data: syntaxData } = await httpClient.get(syntaxPath);
       loadingErrorPart = 'plasmids'
-      const { data: plasmidsData } = await httpClient.get(`${syntax.path}/plasmids.json`);
+      const { data: plasmidsData } = await httpClient.get(plasmidsPath);
       onSyntaxSelect(syntaxData, plasmidsData);
       onClose();
     } catch {
@@ -94,11 +137,7 @@ function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
         <RequestStatusWrapper requestStatus={requestStatus} retry={() => setConnectAttempt((prev) => prev + 1)}>
           <List>
             {syntaxes.map((syntax) => (
-              <ListItem key={syntax.path}>
-                <ListItemButton onClick={() => {onSyntaxClick(syntax)}}>
-                  <ListItemText primary={syntax.name} secondary={syntax.description} />
-                </ListItemButton>
-              </ListItem>
+              <SyntaxListItem key={syntax.path} syntax={syntax} onSyntaxClick={onSyntaxClick} />
             ))}
           </List>
         </RequestStatusWrapper>

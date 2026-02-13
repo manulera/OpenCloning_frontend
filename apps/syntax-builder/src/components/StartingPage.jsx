@@ -35,11 +35,11 @@ function StartingPage({ setOverhangsStep }) {
     }
   }, [addDefaultPart, setOverhangsStep, fileInputRef, setExistingSyntaxDialogOpen]);
 
-  const onSyntaxSelect = React.useCallback(async (syntax, plasmids) => {
+  const onSyntaxSelect = React.useCallback(async (syntax) => {
     try {
       const file = new File([JSON.stringify(syntax)], 'syntax.json', { type: 'application/json' });
       await uploadData(file);
-      setLinkedPlasmids(plasmids);
+      setLinkedPlasmids([]);
     } catch (error) {
       setSubmissionError(error.message);
     }
