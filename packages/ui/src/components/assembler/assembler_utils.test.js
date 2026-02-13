@@ -32,10 +32,10 @@ describe('reverseComplementSimplifiedDigestFragment', () => {
 
 
 
-it('handles palyndromic fragments', () => {
+it('handles palindromic fragments', () => {
 
   const parts = [
-    {left_overhang: 'AATT', right_overhang: 'AGCT'}, // This part is palyndromic, should only be picked up in AATT-AGCT, not AGCT-AATT
+    {left_overhang: 'AATT', right_overhang: 'AGCT'}, // This part is palindromic, should only be picked up in AATT-AGCT, not AGCT-AATT
     {left_overhang: 'AGCT', right_overhang: 'GGAG'},
     {left_overhang: 'GGAG', right_overhang: 'AATT'},
   ]

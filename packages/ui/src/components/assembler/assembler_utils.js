@@ -101,7 +101,7 @@ export function getSimplifiedDigestFragments(sequenceData, enzymes) {
   return simplifiedDigestFragments.concat(simplifiedDigestFragmentsRc);
 }
 
-export function isFragmentPalyndromic(fragment) {
+export function isFragmentPalindromic(fragment) {
   return (
     (fragment.left.ovhg === getReverseComplementSequenceString(fragment.left.ovhg)) &&
     (fragment.right.ovhg === getReverseComplementSequenceString(fragment.right.ovhg))
@@ -119,7 +119,7 @@ export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
   simplifiedDigestFragments
     .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))
     .forEach(fragment => {
-      const graphForPaths = isFragmentPalyndromic(fragment) ? openCycleAtNode(graph, graph.nodes()[0]) : graph;
+      const graphForPaths = isFragmentPalindromic(fragment) ? openCycleAtNode(graph, graph.nodes()[0]) : graph;
       const paths = allSimplePaths(graphForPaths, fragment.left.ovhg, fragment.right.ovhg);
       if (paths.length > 0) {
         foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg, longestFeature: fragment.longestFeature});

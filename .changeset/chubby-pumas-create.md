@@ -4,4 +4,4 @@
 "syntax-builder": patch
 ---
 
-Assigning plasmids to categories handles palyndromic parts
+Assigning plasmids to categories handles palindromic parts
