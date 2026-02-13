@@ -1,6 +1,6 @@
 {
     "name": "@opencloning/utils",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "type": "module",
     "main": "./src/utils/index.js",
     "exports": {
