@@ -114,9 +114,9 @@ describe('openCycleAtNode', () => {
     graph.addEdge('C', 'B'); // Creates cycle
     
     expect(graph.inDegree('B')).toBe(2);
-    openCycleAtNode(graph, 'B');
-    expect(graph.inDegree('B')).toBe(0);
-    expect(graph.outDegree('B')).toBe(1);
+    const newGraph = openCycleAtNode(graph, 'B');
+    expect(newGraph.inDegree('B')).toBe(0);
+    expect(newGraph.outDegree('B')).toBe(1);
 
   });
 
@@ -127,9 +127,9 @@ describe('openCycleAtNode', () => {
     graph.addEdge('A', 'B');
     graph.addEdge('B', 'A'); // Cycle
     
-    openCycleAtNode(graph, 'A');
-    expect(graph.outDegree('A')).toBe(1);
-    expect(graph.hasEdge('A', 'B')).toBe(true);
+    const newGraph = openCycleAtNode(graph, 'A');
+    expect(newGraph.outDegree('A')).toBe(1);
+    expect(newGraph.hasEdge('A', 'B')).toBe(true);
   });
 
   it('handles node with no incoming edges', () => {
@@ -138,9 +138,9 @@ describe('openCycleAtNode', () => {
     graph.addNode('B');
     graph.addEdge('A', 'B');
     
-    openCycleAtNode(graph, 'A');
-    expect(graph.inDegree('A')).toBe(0);
-    expect(graph.hasEdge('A', 'B')).toBe(true);
+    const newGraph = openCycleAtNode(graph, 'A');
+    expect(newGraph.inDegree('A')).toBe(0);
+    expect(newGraph.hasEdge('A', 'B')).toBe(true);
   });
 });
 

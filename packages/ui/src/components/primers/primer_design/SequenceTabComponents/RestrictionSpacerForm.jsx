@@ -6,7 +6,7 @@ import { updateEditor } from '@teselagen/ove';
 import EnzymeMultiSelect from '../../../form/EnzymeMultiSelect';
 import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import { usePrimerDesign } from './PrimerDesignContext';
-import { isEnzymePalyndromic } from '@opencloning/utils/enzyme_utils';
+import { isEnzymePalindromic } from '@opencloning/utils/enzyme_utils';
 
 function RestrictionSpacerForm() {
   const { primerDesignSettings } = usePrimerDesign();
@@ -39,7 +39,7 @@ function RestrictionSpacerForm() {
           <FormControl sx={{ width: '10em', mt: 1.5, mr: 2 }}>
             <EnzymeMultiSelect value={leftEnzyme} setEnzymes={(v) => updateEnzymeSettings({ left_enzyme: v })} label="Left enzyme" multiple={false} />
           </FormControl>
-          {leftEnzyme && !isEnzymePalyndromic(leftEnzyme) && (
+          {leftEnzyme && !isEnzymePalindromic(leftEnzyme) && (
           <FormControlLabel
             control={<Checkbox checked={leftEnzymeInverted} onChange={(e) => updateEnzymeSettings({ left_enzyme_inverted: e.target.checked })} />}
             label="Invert site"
@@ -50,7 +50,7 @@ function RestrictionSpacerForm() {
           <FormControl sx={{ width: '10em', mt: 1.5, mr: 2 }}>
             <EnzymeMultiSelect value={rightEnzyme} setEnzymes={(v) => updateEnzymeSettings({ right_enzyme: v })} label="Right enzyme" multiple={false} />
           </FormControl>
-          {rightEnzyme && !isEnzymePalyndromic(rightEnzyme) && (
+          {rightEnzyme && !isEnzymePalindromic(rightEnzyme) && (
           <FormControlLabel
             control={<Checkbox checked={rightEnzymeInverted} onChange={(e) => updateEnzymeSettings({ right_enzyme_inverted: e.target.checked })} />}
             label="Invert site"

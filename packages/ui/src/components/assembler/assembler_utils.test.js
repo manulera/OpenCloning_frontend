@@ -1,6 +1,8 @@
-import { aliasedEnzymesByName, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getComplementSequenceString } from "@teselagen/sequence-utils";
-import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment, tripletsToTranslation, partDataToDisplayData, arrayCombinations } from "./assembler_utils";
+import { aliasedEnzymesByName, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getComplementSequenceString, getReverseComplementSequenceAndAnnotations } from "@teselagen/sequence-utils";
+import fs from 'fs';
+import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment, tripletsToTranslation, partDataToDisplayData, arrayCombinations, getSimplifiedDigestFragments } from "./assembler_utils";
 import { partsToEdgesGraph } from "./graph_utils";
+import { genbankToJson } from '@teselagen/bio-parsers';
 
 const sequenceBsaI  = 'tgggtctcaTACTagagtcacacaggactactaAATGagagacctac';
 const sequenceBsaI2 = 'tgggtctcaAATGagagtcacacaggactactaAGGTagagacctac'
@@ -27,6 +29,30 @@ describe('reverseComplementSimplifiedDigestFragment', () => {
     expect(simplifiedDigestFragments1).toEqual(simplifiedDigestFragments3);
   });
 });
+
+
+
+it('handles palindromic fragments', () => {
+
+  const parts = [
+    {left_overhang: 'AATT', right_overhang: 'AGCT'}, // This part is palindromic, should only be picked up in AATT-AGCT, not AGCT-AATT
+    {left_overhang: 'AGCT', right_overhang: 'GGAG'},
+    {left_overhang: 'GGAG', right_overhang: 'AATT'},
+  ]
+  // Read file
+  const sequence = 'tgggtctcaAATTagagtcacacaggactactaAGCTagagacctac'
+  const seqData = { sequence, circular: true };
+  const result = assignSequenceToSyntaxPart(seqData, [aliasedEnzymesByName["bsai"]], partsToEdgesGraph(parts));
+
+  expect(result).toEqual([{left_overhang: 'AATT', right_overhang: 'AGCT', longestFeature: null}]);
+
+  const seqDataRc = getReverseComplementSequenceAndAnnotations(seqData);
+  const resultRc = assignSequenceToSyntaxPart(seqDataRc, [aliasedEnzymesByName["bsai"]], partsToEdgesGraph(parts));
+
+  expect(resultRc).toEqual([{left_overhang: 'AATT', right_overhang: 'AGCT', longestFeature: null}]);
+
+});
+
 
 it('shows the meaning of forward and reverse', () => {
   const sequence = 'aaGGTCTCaTACTaaa'

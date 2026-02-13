@@ -40,9 +40,11 @@ export function partsToEdgesGraph(parts) {
 
 // Break cycles by removing incoming edges to a node
 export function openCycleAtNode(graph, cutNode) {
-  for (const edge of graph.inEdges(cutNode)) {
-    graph.dropEdge(edge);
+  const newGraph = graph.copy();
+  for (const edge of newGraph.inEdges(cutNode)) {
+    newGraph.dropEdge(edge);
   }
+  return newGraph;
 }
   
 // Convert DAG to MSA-like matrix (rows = paths, columns = topological generations)
@@ -142,8 +144,7 @@ function minimumCoveringRows(msa) {
 
 export function graphToMSA(graph) {
   if (graph.nodes().length === 0) return [];
-  const newGraph = graph.copy();
-  openCycleAtNode(newGraph, newGraph.nodes()[0]);
+  const newGraph = openCycleAtNode(graph, graph.nodes()[0]);
   return minimumCoveringRows(dagToMSA(newGraph));
 }
 

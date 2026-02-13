@@ -14,7 +14,7 @@ export function getEnzymeRecognitionSequence(enzyme) {
   return recognitionSeq.split('').map((base) => (base in ambiguousDnaBases ? ambiguousDnaBases[base] : base)).join('');
 }
 
-export function isEnzymePalyndromic(enzyme) {
+export function isEnzymePalindromic(enzyme) {
   const recognitionSeq = getEnzymeRecognitionSequence(enzyme);
   return recognitionSeq === reverseComplement(recognitionSeq);
 }

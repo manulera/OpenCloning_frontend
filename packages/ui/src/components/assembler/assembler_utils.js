@@ -1,6 +1,7 @@
 import { isRangeWithinRange } from '@teselagen/range-utils';
 import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from '@teselagen/sequence-utils';
 import { allSimplePaths } from 'graphology-simple-path';
+import { openCycleAtNode } from './graph_utils';
 
 export function tripletsToTranslation(triplets) {
   if (!triplets) return ''
@@ -100,6 +101,13 @@ export function getSimplifiedDigestFragments(sequenceData, enzymes) {
   return simplifiedDigestFragments.concat(simplifiedDigestFragmentsRc);
 }
 
+export function isFragmentPalindromic(fragment) {
+  return (
+    (fragment.left.ovhg === getReverseComplementSequenceString(fragment.left.ovhg)) &&
+    (fragment.right.ovhg === getReverseComplementSequenceString(fragment.right.ovhg))
+  )
+}
+
 export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
   // Something that is important to understand here is the meaning of forward and reverse.
   // It does not mean whether the overhang is 5' or 3', the value on the top strand is always
@@ -111,7 +119,8 @@ export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
   simplifiedDigestFragments
     .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))
     .forEach(fragment => {
-      const paths = allSimplePaths(graph, fragment.left.ovhg, fragment.right.ovhg);
+      const graphForPaths = isFragmentPalindromic(fragment) ? openCycleAtNode(graph, graph.nodes()[0]) : graph;
+      const paths = allSimplePaths(graphForPaths, fragment.left.ovhg, fragment.right.ovhg);
       if (paths.length > 0) {
         foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg, longestFeature: fragment.longestFeature});
       }
