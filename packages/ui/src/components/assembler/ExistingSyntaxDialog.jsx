@@ -2,7 +2,6 @@ import React from 'react'
 import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, ListItemButton, Alert, Button, Box, ButtonGroup, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import getHttpClient from '@opencloning/utils/getHttpClient';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
-import { useConfig } from '../../providers';
 import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
