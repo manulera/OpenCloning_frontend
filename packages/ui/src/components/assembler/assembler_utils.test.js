@@ -1,8 +1,8 @@
 import { aliasedEnzymesByName, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString, getComplementSequenceString, getReverseComplementSequenceAndAnnotations } from "@teselagen/sequence-utils";
 import fs from 'fs';
-import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment, tripletsToTranslation, partDataToDisplayData, arrayCombinations, getSimplifiedDigestFragments } from "./assembler_utils";
+import { assignSequenceToSyntaxPart, simplifyDigestFragment, reverseComplementSimplifiedDigestFragment, tripletsToTranslation, partDataToDisplayData, arrayCombinations, getFilesToExportFromAssembler } from "./assembler_utils";
 import { partsToEdgesGraph } from "./graph_utils";
-import { genbankToJson } from '@teselagen/bio-parsers';
+
 
 const sequenceBsaI  = 'tgggtctcaTACTagagtcacacaggactactaAATGagagacctac';
 const sequenceBsaI2 = 'tgggtctcaAATGagagtcacacaggactactaAGGTagagacctac'
@@ -257,3 +257,57 @@ describe('arrayCombinations', () => {
     expect(arrayCombinations([[1, 2], [3, 4], [5, 6]])).toEqual([[1, 3, 5], [1, 3, 6], [1, 4, 5], [1, 4, 6], [2, 3, 5], [2, 3, 6], [2, 4, 5], [2, 4, 6]]);
   });
 });
+
+
+const goldenGateCloningStrategy = JSON.parse(fs.readFileSync('apps/opencloning/public/examples/golden_gate.json', 'utf8'));
+const gatewayCloningStrategy = JSON.parse(fs.readFileSync('apps/opencloning/public/examples/gateway.json', 'utf8'));
+
+const dummyData = {
+  requestedAssemblies: [ goldenGateCloningStrategy, gatewayCloningStrategy],
+  expandedAssemblies: [[1, 5, 7], [1, 2, 3]],
+  plasmids: [
+    {id: 1, plasmid_name: 'p1'},
+    {id: 2, plasmid_name: 'p2'},
+    {id: 3, plasmid_name: 'p3'},
+    {id: 4, plasmid_name: 'p4'},
+    {id: 5, plasmid_name: 'p5'},
+    {id: 6, plasmid_name: 'p6'},
+    {id: 7, plasmid_name: 'p7'},
+  ],
+  currentCategories: [1, 2, 3],
+  categories: [
+    {id: 1, displayName: 'Category 1'},
+    {id: 2, displayName: 'Category 2'},
+    {id: 3, displayName: 'Category 3'},
+  ],
+  appInfo: {backendVersion: '0.5.1', schemaVersion: '0.4.9', frontendVersion: '__VERSION__'},
+};
+
+
+
+describe('getZipFileFromAssemblies', () => {
+  it('returns a zip file', () => {
+    const files = getFilesToExportFromAssembler(dummyData);
+    expect(files[0].name).toBe('assemblies.tsv');
+    expect(files[0].content).toBe('Assembly\tCategory 1\tCategory 2\tCategory 3\n1\tp1\tp5\tp7\n2\tp1\tp2\tp3');
+    expect(files[1].name).toBe('assemblies.csv');
+    expect(files[1].content).toBe('Assembly,Category 1,Category 2,Category 3\n1,p1,p5,p7\n2,p1,p2,p3');
+
+    const fileNames = ['001_p1+p5+p7', '002_p1+p2+p3'];
+    for (let i = 0; i < 2; i++) {
+      const fileIndex1 = i * 2 + 2;
+      const fileIndex2 = fileIndex1 + 1;
+      expect(files[fileIndex1].name).toBe(`${fileNames[i]}.json`);
+      const cloningStrategy = JSON.parse(files[fileIndex1].content);
+      expect(cloningStrategy.sequences).toEqual(dummyData.requestedAssemblies[i].sequences);
+      expect(cloningStrategy.sources).toEqual(dummyData.requestedAssemblies[i].sources);
+      expect(cloningStrategy.primers).toEqual(dummyData.requestedAssemblies[i].primers);
+
+      expect(files[fileIndex2].name).toBe(`${fileNames[i]}.gbk`);
+      const genbankContent = files[fileIndex2].content;
+      expect(genbankContent).toBe(dummyData.requestedAssemblies[i].sequences[dummyData.requestedAssemblies[i].sequences.length - 1].file_content);
+    }
+
+
+  })
+})

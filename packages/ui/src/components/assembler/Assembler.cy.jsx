@@ -3,6 +3,7 @@ import React from 'react';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { AssemblerComponent } from './Assembler';
 
+
 // Test config
 const testConfig = {
   backendUrl: 'http://localhost:8000',
@@ -32,6 +33,25 @@ const dummyResponse = {
       file_content: "LOCUS       name                       5 bp    DNA     linear   UNK 01-JAN-1980\nDEFINITION  description.\nACCESSION   id\nVERSION     id\nKEYWORDS    .\nSOURCE      .\n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\nORIGIN\n        1 aaaaa\n//"
     }
   ]
+}
+const dummyResponse2 = {
+  sources: [{
+    ...dummyResponse.sources[0],
+    id: 2,
+    type: 'RestrictionAndLigationSource',
+    input: [
+      {
+        sequence: 1,
+      },
+      {
+        sequence: 2,
+      }],
+  }
+  ],
+  sequences: [{
+    ...dummyResponse.sequences[0],
+    id: 2,
+  }],
 }
 
 // Test data
@@ -91,12 +111,15 @@ describe('<AssemblerComponent />', () => {
       win.localStorage.clear();
     });
 
+    const addAlertStub = cy.stub().as('addAlert')
     cy.mount(
       <ConfigProvider config={testConfig}>
         <AssemblerComponent
           plasmids={mockPlasmids}
           categories={mockCategories}
           assemblyEnzyme="assembly_enzyme"
+          addAlert={addAlertStub}
+          appInfo={{}}
         />
       </ConfigProvider>,
     );
@@ -203,6 +226,7 @@ describe('<AssemblerComponent />', () => {
     // Error should be cleared
     cy.get('.MuiAlert-colorError').should('not.exist');
   });
+
   it('works in normal case', () => {
     // Mock successful source fetching
     cy.intercept('POST', 'http://localhost:8000/repository_id*', {
@@ -217,19 +241,57 @@ describe('<AssemblerComponent />', () => {
       expect(req.body.source.restriction_enzymes).to.include('assembly_enzyme');
       req.reply({
         statusCode: 200,
-        body: dummyResponse,
+        body: dummyResponse2,
       });
     }).as('assemblySuccess');
 
     // Click submit button
     cy.get('[data-testid="assembler-submit-button"]').should('be.visible').click();
     cy.wait('@fetchSourceSuccess');
+    cy.wait('@assemblySuccess');
 
     // Check that the table displays the name
     cy.get('[data-testid="assembler-product-table"]').contains('Category 1').should('exist');
     cy.get('[data-testid="assembler-product-table"]').contains('Category 2').should('exist');
     cy.get('[data-testid="assembler-product-table"]').contains('Test Plasmid 1').should('exist');
     cy.get('[data-testid="assembler-product-table"]').contains('Test Plasmid 2').should('exist');
+
+    // Stub URL.createObjectURL before clicking (it's called with a Blob, not the filename)
+    cy.window().then((win) => {
+      cy.stub(win.URL, 'createObjectURL').callsFake((blob) => `blob:mock-${blob?.size ?? 0}`).as('createObjectURL');
+    });
+
+    // Click download assemblies button
+    cy.get('[data-testid="assembler-download-assemblies-button"]').click();
+
+    // Check that the download was triggered (createObjectURL receives the zip Blob)
+    
+    cy.get('@createObjectURL').should((stub) => {
+      expect(stub).to.have.been.calledOnce;
+      expect(stub.firstCall.args[0]).to.be.instanceOf(Blob);
+      expect(stub.firstCall.args[0].type).to.equal('application/zip');
+    });
+    
+    cy.get('@addAlert').should('have.not.been.called');
+
+  });
+  it('displays error message when downloading assemblies fails', () => {
+
+    cy.intercept('POST', 'http://localhost:8000/repository_id*', { statusCode: 200, body: dummyResponse }).as('fetchSourceSuccess');
+    cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', { statusCode: 200, body: dummyResponse }).as('assemblySuccess');
+
+    cy.get('[data-testid="assembler-submit-button"]').should('be.visible').click();
+    cy.wait('@fetchSourceSuccess');
+    cy.wait('@assemblySuccess');
+
+
+    cy.get('[data-testid="assembler-download-assemblies-button"]').click();
+
+    cy.get('@addAlert').should('have.been.calledOnce');
+    cy.get('@addAlert').should((stub) => {
+      expect(stub.firstCall.args[0].message).to.include('Error downloading assemblies:');
+      expect(stub.firstCall.args[0].severity).to.equal('error');
+    });
   });
 });
 
