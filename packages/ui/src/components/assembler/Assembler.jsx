@@ -196,10 +196,10 @@ function displayNameFromCategory(category) {
   if (category.name) {
     name = category.name
     if (category.info)
-      name += ` (${category.info}) `
+      name += ` (${category.info})`
   }
   if (category.left_name && category.right_name) {
-    name += `${category.left_name}_${category.right_name}`
+    name += ` (${category.left_name}_${category.right_name})`
   }
   if (name === '') {
     name = category.key
@@ -238,7 +238,7 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
   return newCategories
 }
 
-function LoadSyntaxButton({ setSyntax, addPlasmids }) {
+function LoadSyntaxButton({ setSyntax, addPlasmids, clearPlasmids }) {
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
   const httpClient = useHttpClient();
   const { staticContentPath } = useConfig();
@@ -249,6 +249,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
     try {
       await httpClient.post(url, syntax);
       setSyntax(syntax)
+      clearPlasmids()
       addPlasmids(plasmids)
     } catch (error) {
       addAlert({
@@ -256,7 +257,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
         severity: 'error',
       });
     }
-  }, [setSyntax, addPlasmids, httpClient, backendRoute, addAlert])
+  }, [setSyntax, addPlasmids, clearPlasmids, httpClient, backendRoute, addAlert])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
     {existingSyntaxDialogOpen && <ExistingSyntaxDialog staticContentPath={staticContentPath} onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
@@ -280,8 +281,12 @@ function Assembler() {
     })
   }, [])
 
-  const clearPlasmids = React.useCallback(() => {
+  const clearLoadedPlasmids = React.useCallback(() => {
     setPlasmids(prev => prev.filter((plasmid) => plasmid.type !== 'loadedFile'))
+  }, [])
+
+  const clearPlasmids = React.useCallback(() => {
+    setPlasmids([])
   }, [])
 
   return (
@@ -290,9 +295,9 @@ function Assembler() {
         The Assembler is experimental. Use with caution.
       </Alert>
       <ButtonGroup>
-        <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} />
+        <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} clearPlasmids={clearPlasmids} />
         {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
-        {syntax && <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>}
+        {syntax && <Button color="error" onClick={clearLoadedPlasmids}>Remove uploaded plasmids</Button>}
       </ButtonGroup>
       {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} assemblyEnzyme={syntax.assemblyEnzyme} />}
     </>
