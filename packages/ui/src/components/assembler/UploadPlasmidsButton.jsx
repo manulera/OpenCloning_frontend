@@ -26,6 +26,7 @@ function formatPlasmid(sequenceData) {
     key: `${left_overhang}-${right_overhang}`,
     sequenceData,
     genbankString: jsonToGenbank(sequenceData),
+    userUploaded: true,
   };
   
 }

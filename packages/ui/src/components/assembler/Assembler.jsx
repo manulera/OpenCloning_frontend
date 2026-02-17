@@ -109,7 +109,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
                 const { key, ...restProps } = props
                 const plasmid = plasmids.find((d) => d.id === option)
                 return (
-                  <MenuItem key={key} {...restProps} sx={{ backgroundColor: plasmid.type === 'loadedFile' ? 'success.light' : undefined }}>
+                  <MenuItem key={key} {...restProps} sx={{ backgroundColor: plasmid.userUploaded === true ? '#dcedc8' : undefined }}>
                     {formatItemName(plasmid)}
                   </MenuItem>
                 )}}
@@ -307,7 +307,7 @@ function Assembler() {
   }, [])
 
   const clearLoadedPlasmids = React.useCallback(() => {
-    setPlasmids(prev => prev.filter((plasmid) => plasmid.type !== 'loadedFile'))
+    setPlasmids(prev => prev.filter((plasmid) => plasmid.userUploaded !== true))
   }, [])
 
   const clearPlasmids = React.useCallback(() => {
