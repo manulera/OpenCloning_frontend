@@ -1,5 +1,20 @@
 # opencloning
 
+## 1.3.8
+
+### Patch Changes
+
+- [#631](https://github.com/manulera/OpenCloning_frontend/pull/631) [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f) Thanks [@manulera](https://github.com/manulera)! - Add links to assembler documentation and to create your own syntax in the builder
+
+- [#631](https://github.com/manulera/OpenCloning_frontend/pull/631) [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f) Thanks [@manulera](https://github.com/manulera)! - Add link to documentation for the Assembler, and add deprecation notice for MoClo templates
+
+- [#631](https://github.com/manulera/OpenCloning_frontend/pull/631) [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f) Thanks [@manulera](https://github.com/manulera)! - improve alignment of sequences in the AssemblerPart by improving css
+
+- Updated dependencies [[`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f), [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f), [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f)]:
+  - @opencloning/ui@1.4.7
+  - @opencloning/store@1.4.7
+  - @opencloning/utils@1.4.7
+
 ## 1.3.7
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # syntax-builder
 
+## 0.2.11
+
+### Patch Changes
+
+- [#631](https://github.com/manulera/OpenCloning_frontend/pull/631) [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f) Thanks [@manulera](https://github.com/manulera)! - improve alignment of sequences in the AssemblerPart by improving css
+
+- [#631](https://github.com/manulera/OpenCloning_frontend/pull/631) [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f) Thanks [@manulera](https://github.com/manulera)! - improve first page syntax builder w
+
+- Updated dependencies [[`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f), [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f), [`40dd956`](https://github.com/manulera/OpenCloning_frontend/commit/40dd956d0f6c729ad0690578bf232610a063523f)]:
+  - @opencloning/ui@1.4.7
+  - @opencloning/utils@1.4.7
+
 ## 0.2.10
 
 ### Patch Changes
