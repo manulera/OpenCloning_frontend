@@ -2,6 +2,9 @@ import { isRangeWithinRange } from '@teselagen/range-utils';
 import { getComplementSequenceString, getAminoAcidFromSequenceTriplet, getDigestFragmentsForRestrictionEnzymes, getReverseComplementSequenceString } from '@teselagen/sequence-utils';
 import { allSimplePaths } from 'graphology-simple-path';
 import { openCycleAtNode } from './graph_utils';
+import { downloadBlob, formatStateForJsonExport, getZipFileBlob } from '@opencloning/utils/readNwrite';
+import { getGraftSequenceId } from '@opencloning/utils/network';
+import { TextReader} from '@zip.js/zip.js';
 
 export function tripletsToTranslation(triplets) {
   if (!triplets) return ''
@@ -145,4 +148,46 @@ export function categoryFilter(category, categories, previousCategoryId) {
   }
   const previousCategory = categories.find((category) => category.id === previousCategoryId)
   return previousCategory?.right_overhang === category.left_overhang
+}
+
+export function getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo}) {
+  const files2Export = [];
+  const categoryNames = ['Assembly', ...currentCategories.map(categoryId => categories.find(c => c.id === categoryId).displayName)];
+  const assemblyNames = expandedAssemblies.map((assembly, index) => {
+    return [index + 1, ...assembly.map(part => plasmids.find(p => p.id === part).plasmid_name)];
+  });
+  for (const delimiter of ['\t', ',']) {
+    const tableHeader = categoryNames.join(delimiter);
+    const tableRows = assemblyNames.map(assemblyName => assemblyName.join(delimiter));
+    const table = [tableHeader, ...tableRows].join('\n');
+    const extension = delimiter === '\t' ? 'tsv' : 'csv';
+    files2Export.push({
+      name: `assemblies.${extension}`,
+      content: table,
+    });
+  }
+
+  for (let i = 0; i < requestedAssemblies.length; i++) {
+    const name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`;
+    const requestedAssembly = requestedAssemblies[i];
+    const jsonContent = formatStateForJsonExport({...requestedAssembly, appInfo});
+    files2Export.push({
+      name: `${name}.json`,
+      content: JSON.stringify(jsonContent, null, 2),
+    });
+    const finalSequenceId = getGraftSequenceId(requestedAssembly)
+    const finalSequence = requestedAssembly.sequences.find(s => s.id === finalSequenceId)
+    files2Export.push({
+      name: `${name}.gbk`,
+      content: finalSequence.file_content,
+    });
+  }
+  return files2Export;
+}
+
+export async function downloadAssemblerFilesAsZip(files) {
+  const files2write = files.map(({name, content}) => ({name, reader: new TextReader(content)}));
+
+  const blob = await getZipFileBlob(files2write);
+  downloadBlob(blob, 'assemblies.zip');
 }

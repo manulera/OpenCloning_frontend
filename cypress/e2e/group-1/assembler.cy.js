@@ -1,4 +1,5 @@
 import { changeTab } from '../common_functions';
+import { ZipReader, BlobReader } from '@zip.js/zip.js';
 
 describe('Test assembler functionality', () => {
   beforeEach(() => {
@@ -70,6 +71,22 @@ describe('Test assembler functionality', () => {
 
     cy.get('[data-testid="assembler-product-table"]', { timeout: 30000 }).should('be.visible');
     cy.get('[data-testid="assembler-product-table"] tr').should('have.length', 3);
+
+    cy.get('[data-testid="assembler-download-assemblies-button"]').click();
+    cy.readFile(`cypress/downloads/assemblies.zip`, null)
+      .then((fileContent) => {
+        const blob = new Blob([fileContent], { type: 'application/zip' });
+        const zipReader = new ZipReader(new BlobReader(blob));
+        cy.wrap(
+          zipReader.getEntries()
+            .then((entries) => {
+              const filenames = entries.map((entry) => entry.filename);
+              expect(filenames[0]).to.equal('assemblies.tsv');
+              expect(filenames[1]).to.equal('assemblies.csv');
+              expect(filenames.length).to.equal(6);
+            })
+            .finally(() => zipReader.close()),
+        )});
 
     // cy.get('[data-testid="category-select"]').last().click();
     cy.get('[data-testid="assembler-product-table-view-button"]').first().click();

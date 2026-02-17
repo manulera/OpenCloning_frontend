@@ -5,19 +5,20 @@ import {
 } from '@mui/material'
 import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useAssembler } from './useAssembler';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
 import AssemblerPart from './AssemblerPart';
 
 import useCombinatorialAssembly from './useCombinatorialAssembly';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 import error2String from '@opencloning/utils/error2String';
-import { categoryFilter } from './assembler_utils';
+import { categoryFilter, downloadAssemblerFilesAsZip, getFilesToExportFromAssembler } from './assembler_utils';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useHttpClient from '../../hooks/useHttpClient';
 import useAlerts from '../../hooks/useAlerts';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import { useConfig } from '../../providers';
+import { isEqual } from 'lodash-es';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
@@ -108,7 +109,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
                 const { key, ...restProps } = props
                 const plasmid = plasmids.find((d) => d.id === option)
                 return (
-                  <MenuItem key={key} {...restProps} sx={{ backgroundColor: plasmid.type === 'loadedFile' ? 'success.light' : undefined }}>
+                  <MenuItem key={key} {...restProps} sx={{ backgroundColor: plasmid.userUploaded === true ? '#dcedc8' : undefined }}>
                     {formatItemName(plasmid)}
                   </MenuItem>
                 )}}
@@ -123,7 +124,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
   )
 }
 
-export function AssemblerComponent({ plasmids, categories, assemblyEnzyme }) {
+export function AssemblerComponent({ plasmids, categories, assemblyEnzyme, addAlert, appInfo }) {
 
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('')
@@ -137,7 +138,7 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzyme }) {
   const { assembly, setCategory, setId, expandedAssemblies, assemblyComplete, canBeSubmitted, currentCategories } = useCombinatorialAssembly({ onValueChange: clearAssemblySelection, categories, plasmids })
   const { requestSources, requestAssemblies } = useAssembler()
 
-  const onSubmitAssembly = async () => {
+  const onSubmitAssembly = React.useCallback(async () => {
     clearAssemblySelection()
     const selectedPlasmids = assembly.map(({ plasmidIds }) => plasmidIds.map((id) => (plasmids.find((item) => item.id === id))))
 
@@ -159,7 +160,20 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzyme }) {
     } finally {
       setLoadingMessage(false)
     }
-  }
+  }, [assemblyEnzyme, assembly, plasmids, requestSources, requestAssemblies, clearAssemblySelection])
+
+  const onDownloadAssemblies = React.useCallback(async () => {
+    try {
+      const files = getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo})
+      await downloadAssemblerFilesAsZip(files);
+    } catch (error) {
+      console.error('Error downloading assemblies:', error);
+      addAlert({
+        message: `Error downloading assemblies: ${error.message}`,
+        severity: 'error',
+      });
+    }
+  }, [requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, addAlert])
 
   const options = React.useMemo(() => assemblyComplete ? assembly : [...assembly, { category: '', plasmidIds: [] }], [assembly, assemblyComplete])
 
@@ -171,17 +185,26 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzyme }) {
           <AssemblerBox key={index} {...{item, index, setCategory, setId, categories, plasmids, assembly}} />
         )}
       </Stack>
-      {canBeSubmitted && <>
-        <Button
-          sx={{ p: 2, px: 4, my: 2, fontSize: '1.2rem' }}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, my: 2 }}>
+        {canBeSubmitted && <>
+          <Button
+            sx={{ p: 2, fontSize: '1.2rem' }}
+            variant="contained"
+            color="primary"
+            data-testid="assembler-submit-button"
+            onClick={onSubmitAssembly}
+            disabled={Boolean(loadingMessage)}>
+            {loadingMessage ? <><CircularProgress /> {loadingMessage}</> : 'Submit'}
+          </Button>
+        </>}
+        {requestedAssemblies.length > 0 && <Button
+          color="success"
           variant="contained"
-          color="primary"
-          data-testid="assembler-submit-button"
-          onClick={onSubmitAssembly}
-          disabled={Boolean(loadingMessage)}>
-          {loadingMessage ? <><CircularProgress /> {loadingMessage}</> : 'Submit'}
-        </Button>
-      </>}
+          data-testid="assembler-download-assemblies-button"
+          sx={{ p: 2, fontSize: '1.2rem' }}
+          onClick={onDownloadAssemblies}>Download Assemblies
+        </Button>}
+      </Box>
       {errorMessage && <Alert severity="error" sx={{ my: 2, maxWidth: 300, margin: 'auto', fontSize: '1.2rem' }}>{errorMessage}</Alert>}
       {requestedAssemblies.length > 0 &&
         <AssemblerProductTable {...{requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories}} />
@@ -196,10 +219,10 @@ function displayNameFromCategory(category) {
   if (category.name) {
     name = category.name
     if (category.info)
-      name += ` (${category.info}) `
+      name += ` (${category.info})`
   }
   if (category.left_name && category.right_name) {
-    name += `${category.left_name}_${category.right_name}`
+    name += ` (${category.left_name}_${category.right_name})`
   }
   if (name === '') {
     name = category.key
@@ -238,7 +261,7 @@ function categoriesFromSyntaxAndPlasmids(syntax, plasmids) {
   return newCategories
 }
 
-function LoadSyntaxButton({ setSyntax, addPlasmids }) {
+function LoadSyntaxButton({ setSyntax, addPlasmids, clearPlasmids }) {
   const [existingSyntaxDialogOpen, setExistingSyntaxDialogOpen] = React.useState(false)
   const httpClient = useHttpClient();
   const { staticContentPath } = useConfig();
@@ -249,6 +272,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
     try {
       await httpClient.post(url, syntax);
       setSyntax(syntax)
+      clearPlasmids()
       addPlasmids(plasmids)
     } catch (error) {
       addAlert({
@@ -256,7 +280,7 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
         severity: 'error',
       });
     }
-  }, [setSyntax, addPlasmids, httpClient, backendRoute, addAlert])
+  }, [setSyntax, addPlasmids, clearPlasmids, httpClient, backendRoute, addAlert])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
     {existingSyntaxDialogOpen && <ExistingSyntaxDialog staticContentPath={staticContentPath} onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
@@ -268,6 +292,8 @@ function LoadSyntaxButton({ setSyntax, addPlasmids }) {
 function Assembler() {
   const [syntax, setSyntax] = React.useState(null);
   const [plasmids, setPlasmids] = React.useState([])
+  const { addAlert } = useAlerts();
+  const appInfo = useSelector(({ cloning }) => cloning.appInfo, isEqual);
 
   const categories = React.useMemo(() => {
     return categoriesFromSyntaxAndPlasmids(syntax, plasmids)
@@ -280,8 +306,12 @@ function Assembler() {
     })
   }, [])
 
+  const clearLoadedPlasmids = React.useCallback(() => {
+    setPlasmids(prev => prev.filter((plasmid) => plasmid.userUploaded !== true))
+  }, [])
+
   const clearPlasmids = React.useCallback(() => {
-    setPlasmids(prev => prev.filter((plasmid) => plasmid.type !== 'loadedFile'))
+    setPlasmids([])
   }, [])
 
   return (
@@ -290,11 +320,11 @@ function Assembler() {
         The Assembler is experimental. Use with caution.
       </Alert>
       <ButtonGroup>
-        <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} />
+        <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} clearPlasmids={clearPlasmids} />
         {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
-        {syntax && <Button color="error" onClick={clearPlasmids}>Remove uploaded plasmids</Button>}
+        {syntax && <Button color="error" onClick={clearLoadedPlasmids}>Remove uploaded plasmids</Button>}
       </ButtonGroup>
-      {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} assemblyEnzyme={syntax.assemblyEnzyme} />}
+      {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} assemblyEnzyme={syntax.assemblyEnzyme} addAlert={addAlert} appInfo={appInfo} />}
     </>
   )
 }
