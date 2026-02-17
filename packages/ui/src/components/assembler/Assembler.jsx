@@ -283,7 +283,12 @@ function LoadSyntaxButton({ setSyntax, addPlasmids, clearPlasmids }) {
   }, [setSyntax, addPlasmids, clearPlasmids, httpClient, backendRoute, addAlert])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
-    {existingSyntaxDialogOpen && <ExistingSyntaxDialog staticContentPath={staticContentPath} onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
+    {existingSyntaxDialogOpen && <ExistingSyntaxDialog
+      staticContentPath={staticContentPath}
+      onClose={() => setExistingSyntaxDialogOpen(false)}
+      onSyntaxSelect={onSyntaxSelect}
+      displayCreateYourOwnMessage={true}
+    />}
   </>
 }
 

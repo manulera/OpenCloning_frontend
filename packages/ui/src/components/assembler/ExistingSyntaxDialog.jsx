@@ -5,6 +5,7 @@ import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 
 const httpClient = getHttpClient();
 const baseURL = 'https://assets.opencloning.org/syntaxes/syntaxes/';
@@ -70,7 +71,7 @@ function SyntaxListItem({ syntax, onSyntaxClick }) {
   )
 }
 
-function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
+function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect, displayCreateYourOwnMessage = false }) {
   const [syntaxes, setSyntaxes] = React.useState([]);
   const [connectAttempt, setConnectAttempt] = React.useState(0);
   const [requestStatus, setRequestStatus] = React.useState({ status: 'loading' });
@@ -138,6 +139,10 @@ function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect }) {
             {syntaxes.map((syntax) => (
               <SyntaxListItem key={syntax.path} syntax={syntax} onSyntaxClick={onSyntaxClick} />
             ))}
+            {displayCreateYourOwnMessage && <ListItem>
+              <ListItemText primary="🔎 Can't find your favourite syntax?" secondary="Add it yourself! It's very easy!" />
+              <Button type="a" color="success" href="https://syntax.opencloning.org" target="_blank">Create a syntax</Button>
+            </ListItem>}
           </List>
         </RequestStatusWrapper>
         <Box sx={{ mb: 2 }}>
