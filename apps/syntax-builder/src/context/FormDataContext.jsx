@@ -21,7 +21,7 @@ const validateColor = (color) => {
 export const validateOverhang = (overhang, otherOverhang=null) => {
   if (!overhang) return 'Overhang is required'
   if (!/^[ACGTacgt]+$/.test(overhang)) return 'Only ACGT allowed'
-  if (overhang.length !== 4) return 'Must be exactly 4 bases'
+  if (overhang.length < 3) return 'Must be at least 3 bases'
   if (otherOverhang && overhang === otherOverhang) return 'Overhangs must be different'
   return ''
 }
