@@ -1,5 +1,17 @@
 # opencloning
 
+## 1.3.7
+
+### Patch Changes
+
+- [#629](https://github.com/manulera/OpenCloning_frontend/pull/629) [`8820965`](https://github.com/manulera/OpenCloning_frontend/commit/8820965e5a91ec29bb0c9788191123f996a8ecd8) Thanks [@manulera](https://github.com/manulera)! - \* improve category names + clear plasmids when loading new syntax
+  - improve handling of files uploaded by user or associated with kit
+  - Allow downloading the results from the Assembler.
+- Updated dependencies [[`8820965`](https://github.com/manulera/OpenCloning_frontend/commit/8820965e5a91ec29bb0c9788191123f996a8ecd8)]:
+  - @opencloning/ui@1.4.6
+  - @opencloning/store@1.4.6
+  - @opencloning/utils@1.4.6
+
 ## 1.3.6
 
 ### Patch Changes
