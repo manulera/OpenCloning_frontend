@@ -42,7 +42,7 @@ describe('App', () => {
     // The context includes: parts, setParts, addDefaultPart, syntaxName, setSyntaxName, etc.
 
     // Initially, StartingPage should be displayed
-    cy.contains('How would you like to start?').should('be.visible');
+    cy.contains('Choose a method to begin creating your parts').should('be.visible');
 
     // Click on "Defining parts from overhangs" option
     cy.contains('Defining parts from overhangs').click();
