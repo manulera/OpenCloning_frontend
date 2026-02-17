@@ -27,6 +27,8 @@ function SelectTemplateDialog({ onClose, open }) {
   return (
     <Dialog open={open} onClose={() => onClose('')} className="load-template-dialog">
       <DialogTitle>Load a template</DialogTitle>
+      <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem', mb: 2 }}>
+        MoClo templates will soon be replaced by the new Assembler. Go to the Assembler tab to learn more.</Alert>
       {!templates
       && (
       <DialogContent>
