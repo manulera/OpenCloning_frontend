@@ -1,5 +1,11 @@
 # syntax-builder
 
+## 0.3.0
+
+### Minor Changes
+
+- [#633](https://github.com/manulera/OpenCloning_frontend/pull/633) [`c38dce4`](https://github.com/manulera/OpenCloning_frontend/commit/c38dce4e97ebc126b21de8b29cbe213c884d91e5) Thanks [@manulera](https://github.com/manulera)! - Now allows overhangs of length >=3
+
 ## 0.2.11
 
 ### Patch Changes
