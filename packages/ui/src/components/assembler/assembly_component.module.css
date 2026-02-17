@@ -14,10 +14,6 @@
     min-height: 1em;
 }
 
-.overhang div {
-    padding-left: calc(2px + var(--border-width));
-    padding-right: 2px;
-}
 
 .container {
     display: flex;
@@ -57,19 +53,19 @@
 .overhang .watson {
     border-left: var(--border-width) var(--border-style) var(--border-color);
     border-bottom: var(--border-width) var(--border-style) var(--border-color);
-    padding-left: 2px;
 }
 
 .overhang .crick {
     border-right: var(--border-width) var(--border-style) var(--border-color);
 }
 
-.insideLeft {
-    margin-left: .2em;
+.inside .watson {
+    padding-bottom: var(--border-width);
 }
 
-.insideRight {
-    margin-right: .2em;
+.overhang {
+    padding-left: var(--border-width);
+    padding-right: var(--border-width);
 }
 
 .overhang.left .watson {
@@ -78,4 +74,13 @@
 
 .overhang.right .crick {
     font-weight: bold;
+}
+
+.overhang .top {
+    padding-left: var(--border-width);
+    padding-right: var(--border-width);
+}
+
+.overhang .crick {
+    padding-left: var(--border-width);
 }
