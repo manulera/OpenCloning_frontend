@@ -1,6 +1,6 @@
 {
   "name": "syntax-builder",
-  "version": "0.2.11",
+  "version": "0.3.0",
   "type": "module",
   "private": true,
   "scripts": {
