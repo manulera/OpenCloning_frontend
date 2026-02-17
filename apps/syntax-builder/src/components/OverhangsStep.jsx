@@ -93,10 +93,10 @@ function OverhangsField() {
     // Convert to uppercase and filter out anything that's not ACGT or newline
     value = value.toUpperCase().replace(/[^ACGT\n]/g, '');
 
-    // Process each line: limit to 4 characters per line
+    // Process each line: normalize per line without limiting length
     const rawLines = value.split('\n');
     const processedLines = rawLines.map((line) => {
-      return line.slice(0, 4);
+      return line.trim();
     });
     const processedValue = processedLines.join('\n');
 
@@ -176,7 +176,7 @@ function OverhangsField() {
       </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="body2" color="text.secondary">
-            Enter overhangs, one per line. Use empty lines to separate paths. Each overhang must be exactly 4 DNA bases (ACGT).
+            Enter overhangs, one per line. Use empty lines to separate paths. Each overhang must be at least 3 DNA bases (ACGT).
         </Typography>
       </Box>
       {errorMessage && (
