@@ -283,7 +283,12 @@ function LoadSyntaxButton({ setSyntax, addPlasmids, clearPlasmids }) {
   }, [setSyntax, addPlasmids, clearPlasmids, httpClient, backendRoute, addAlert])
   return <>
     <Button color="success" onClick={() => setExistingSyntaxDialogOpen(true)}>Load Syntax</Button>
-    {existingSyntaxDialogOpen && <ExistingSyntaxDialog staticContentPath={staticContentPath} onClose={() => setExistingSyntaxDialogOpen(false)} onSyntaxSelect={onSyntaxSelect}/>}
+    {existingSyntaxDialogOpen && <ExistingSyntaxDialog
+      staticContentPath={staticContentPath}
+      onClose={() => setExistingSyntaxDialogOpen(false)}
+      onSyntaxSelect={onSyntaxSelect}
+      displayCreateYourOwnMessage={true}
+    />}
   </>
 }
 
@@ -317,7 +322,7 @@ function Assembler() {
   return (
     <>
       <Alert severity="warning" sx={{ maxWidth: '400px', margin: 'auto', fontSize: '.9rem', mb: 2 }}>
-        The Assembler is experimental. Use with caution.
+        The Assembler is experimental. Use with caution. Visit <a href="https://docs.opencloning.org/assembler" target="_blank">the documentation</a> for more information.
       </Alert>
       <ButtonGroup>
         <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} clearPlasmids={clearPlasmids} />

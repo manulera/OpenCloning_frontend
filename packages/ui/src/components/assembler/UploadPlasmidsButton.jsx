@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Box } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Box, ButtonGroup } from '@mui/material';
 import { useConfig } from '../../providers';
 import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { usePlasmidsLogic } from './usePlasmidsLogic';
@@ -95,9 +95,9 @@ function UploadPlasmidsButton({ addPlasmids, syntax }) {
         },
       }}
     >
-      <DialogActions sx={{ justifyContent: 'center', position: 'sticky', top: 0, zIndex: 99, background: '#fff' }}>
-        <Button disabled={validPlasmids.length === 0} variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>
-        <Button variant="contained" color="error" onClick={() => setLinkedPlasmids([])}>Cancel</Button>
+      <DialogActions sx={{ justifyContent: 'center', position: 'sticky', top: 0, zIndex: 99, background: '#fff', py: 2 }}>
+        <Button sx={{ p: 1.5, fontSize: '1rem' }} disabled={validPlasmids.length === 0} variant="contained" color="success" onClick={handleImportValidPlasmids}>Import valid plasmids</Button>
+        <Button sx={{ p: 1.5, fontSize: '1rem' }} variant="contained" color="error" onClick={() => setLinkedPlasmids([])}>Cancel</Button>
       </DialogActions>
       {invalidPlasmids.length > 0 && (
         <Box data-testid="invalid-plasmids-box">
