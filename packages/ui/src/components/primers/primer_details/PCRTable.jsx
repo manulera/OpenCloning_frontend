@@ -25,7 +25,7 @@ export default function PCRTable({ pcrDetail }) {
       {heterodimer && (
       <>
         <TableSection
-          values={[['Tm (heterodimer)', `${formatMeltingTemperature(heterodimer.melting_temperature)} °C`], ['ΔG (heterodimer)', `${formatDeltaG(heterodimer.deltaG)} kcal/mol`]]}
+          values={[['Tm (heterodimer)', `${formatMeltingTemperature(heterodimer.melting_temperature)} °C`], ['ΔG (heterodimer)', `${formatDeltaG(heterodimer.deltaG)} cal/mol`]]}
         />
         <Primer3Figure figure={heterodimer.figure} />
       </>

@@ -30,7 +30,7 @@ export function PrimerInfoDialog({ primerDetails, open, onClose, pcrDetails }) {
                 title="Homodimer"
                 values={[
                   ['Tm (homodimer)', `${formatMeltingTemperature(primerDetails.homodimer.melting_temperature)} °C`],
-                  ['ΔG (homodimer)', `${formatDeltaG(primerDetails.homodimer.deltaG)} kcal/mol`],
+                  ['ΔG (homodimer)', `${formatDeltaG(primerDetails.homodimer.deltaG)} cal/mol`],
                 ]}
               />
               <Primer3Figure figure={primerDetails.homodimer.figure} />
@@ -42,7 +42,7 @@ export function PrimerInfoDialog({ primerDetails, open, onClose, pcrDetails }) {
                 title="Hairpin"
                 values={[
                   ['Tm (hairpin)', `${formatMeltingTemperature(primerDetails.hairpin.melting_temperature)} °C`],
-                  ['ΔG (hairpin)', `${formatDeltaG(primerDetails.hairpin.deltaG)} kcal/mol`],
+                  ['ΔG (hairpin)', `${formatDeltaG(primerDetails.hairpin.deltaG)} cal/mol`],
                 ]}
               />
               <Primer3Figure figure={primerDetails.hairpin.figure} />
