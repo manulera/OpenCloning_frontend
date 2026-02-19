@@ -42,7 +42,7 @@ describe('PCRTable', () => {
     });
 
     cy.contains('.pcr-table tr', 'ΔG (heterodimer)').within(() => {
-      cy.get('td').should('contain', '-5276 kcal/mol');
+      cy.get('td').should('contain', '-5276 cal/mol');
     });
 
     // Verify heterodimer figure exists

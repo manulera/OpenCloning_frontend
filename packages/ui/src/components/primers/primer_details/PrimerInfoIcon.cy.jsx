@@ -91,7 +91,7 @@ describe('PrimerInfoDialog Component', () => {
     cy.get('tr').eq(7).find('td').eq(0)
       .should('contain', 'ΔG (homodimer)');
     cy.get('tr').eq(7).find('td').eq(1)
-      .should('contain', '-100 kcal/mol');
+      .should('contain', '-100 cal/mol');
 
     // Hairpin section
     cy.get('tr').eq(9).should('contain', 'Hairpin');
@@ -102,7 +102,7 @@ describe('PrimerInfoDialog Component', () => {
     cy.get('tr').eq(11).find('td').eq(0)
       .should('contain', 'ΔG (hairpin)');
     cy.get('tr').eq(11).find('td').eq(1)
-      .should('contain', '-100 kcal/mol');
+      .should('contain', '-100 cal/mol');
     cy.get('.pcr-table').should('not.exist');
   });
 
