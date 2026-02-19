@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.4.8
+
+### Patch Changes
+
+- [#637](https://github.com/manulera/OpenCloning_frontend/pull/637) [`600d6e3`](https://github.com/manulera/OpenCloning_frontend/commit/600d6e341feb308fe62d22dc11d6b1e256dd43d4) Thanks [@manulera](https://github.com/manulera)! - Fix kcal > cal in thermodynamics
+
+- Updated dependencies []:
+  - @opencloning/store@1.4.8
+  - @opencloning/utils@1.4.8
+
 ## 1.4.7
 
 ### Patch Changes

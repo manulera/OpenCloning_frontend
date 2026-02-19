@@ -1,5 +1,13 @@
 # syntax-builder
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [[`600d6e3`](https://github.com/manulera/OpenCloning_frontend/commit/600d6e341feb308fe62d22dc11d6b1e256dd43d4)]:
+  - @opencloning/ui@1.4.8
+  - @opencloning/utils@1.4.8
+
 ## 0.3.0
 
 ### Minor Changes
