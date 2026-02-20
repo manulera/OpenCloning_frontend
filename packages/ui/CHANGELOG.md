@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.4.11
+
+### Patch Changes
+
+- [#644](https://github.com/manulera/OpenCloning_frontend/pull/644) [`27744a3`](https://github.com/manulera/OpenCloning_frontend/commit/27744a3e5cebd6d41cb11a76f3d4d367f5a4edc8) Thanks [@manulera](https://github.com/manulera)! - Fix graphToMSA
+
+- Updated dependencies []:
+  - @opencloning/store@1.4.11
+  - @opencloning/utils@1.4.11
+
 ## 1.4.10
 
 ### Patch Changes
