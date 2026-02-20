@@ -1,5 +1,16 @@
 # opencloning
 
+## 1.3.10
+
+### Patch Changes
+
+- [#640](https://github.com/manulera/OpenCloning_frontend/pull/640) [`2a8015b`](https://github.com/manulera/OpenCloning_frontend/commit/2a8015b63534c56dc7a7ae38b5fab7f14db1262d) Thanks [@manulera](https://github.com/manulera)! - Improve width of assembler plasmids dropdowns
+
+- Updated dependencies [[`2a8015b`](https://github.com/manulera/OpenCloning_frontend/commit/2a8015b63534c56dc7a7ae38b5fab7f14db1262d)]:
+  - @opencloning/ui@1.4.9
+  - @opencloning/store@1.4.9
+  - @opencloning/utils@1.4.9
+
 ## 1.3.9
 
 ### Patch Changes
