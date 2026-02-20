@@ -105,6 +105,11 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
               options={allowedPlasmids.map((item) => item.id)}
               getOptionLabel={(id) => formatItemName(plasmids.find((d) => d.id === id))}
               renderInput={(params) => <TextField {...params} label="Plasmids" />}
+              componentsProps={{
+                popper: {
+                  sx: { minWidth: 'max-content' },
+                },
+              }}
               renderOption={(props, option) => {
                 const { key, ...restProps } = props
                 const plasmid = plasmids.find((d) => d.id === option)
