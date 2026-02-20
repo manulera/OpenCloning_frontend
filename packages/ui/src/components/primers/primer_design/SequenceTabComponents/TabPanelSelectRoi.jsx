@@ -9,7 +9,7 @@ import TabPanel from '../../../navigation/TabPanel';
 import { usePrimerDesign } from './PrimerDesignContext';
 
 function TabPanelSelectRoi({ step, index }) {
-  const { selectedTab, rois, handleSelectRegion, sequenceIds, primerDesignSettings, designType } = usePrimerDesign();
+  const { selectedTab, rois, handleSelectRegion, handleNext, sequenceIds, primerDesignSettings, designType, isAmplified } = usePrimerDesign();
   const [error, setError] = React.useState('');
   const editorHasSelection = useSelector((state) => state.cloning.mainSequenceSelection.caretPosition !== undefined);
   const store = useStore();
@@ -21,18 +21,28 @@ function TabPanelSelectRoi({ step, index }) {
     stepCompletionToolTip = 'Select a region in the editor',
   } = step;
 
+  const notAmplified = !isAmplified[index];
+
   const mode = designType === 'gateway_bp' && index === 1 ? 'gateway_bp' : 'editor';
-  const allowStepCompletion = (mode === 'editor' && editorHasSelection) || (mode === 'gateway_bp' && primerDesignSettings.knownCombination);
+  const allowStepCompletion = notAmplified || (mode === 'editor' && editorHasSelection) || (mode === 'gateway_bp' && primerDesignSettings.knownCombination);
   const onStepCompletion = () => {
+    if (notAmplified) {
+      handleNext();
+      return;
+    }
     const selectedRegion = store.getState().cloning.mainSequenceSelection;
     setError(handleSelectRegion(index, selectedRegion, allowSinglePosition));
   };
 
+  const allRequiredRoisSelected = rois.every((region, i) => region !== null || !isAmplified[i]);
+
   return (
     <TabPanel value={selectedTab} index={index} className={`select-roi-tab-${index}`}>
-      <Alert severity="info">{description}</Alert>
+      {notAmplified
+        ? <Alert severity="info">The whole sequence will be used (not amplified by PCR). You can set orientation in the settings step.</Alert>
+        : <Alert severity="info">{description}</Alert>}
       {error && (<Alert severity="error">{error}</Alert>)}
-      {mode === 'editor' && (
+      {!notAmplified && mode === 'editor' && (
       <FormControl sx={{ py: 2 }}>
         <TextField
           label={inputLabel}
@@ -41,16 +51,16 @@ function TabPanelSelectRoi({ step, index }) {
         />
       </FormControl>
       )}
-      {mode === 'gateway_bp' && (
+      {!notAmplified && mode === 'gateway_bp' && (
         <GatewayRoiSelect id={id} />
       )}
       <StepNavigation
         isFirstStep={index === 0}
-        nextDisabled={(index === sequenceIds.length - 1) && rois.some((region) => region === null)}
+        nextDisabled={(index === sequenceIds.length - 1) && !allRequiredRoisSelected}
         nextToolTip="You must select all regions before proceeding"
         allowStepCompletion={allowStepCompletion}
-        stepCompletionText="Choose region"
-        stepCompletionToolTip={stepCompletionToolTip}
+        stepCompletionText={notAmplified ? 'Next' : 'Choose region'}
+        stepCompletionToolTip={notAmplified ? '' : stepCompletionToolTip}
         onStepCompletion={onStepCompletion}
       />
 

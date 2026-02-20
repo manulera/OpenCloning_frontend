@@ -52,14 +52,14 @@ export function getPrimerDesignObject({ sources, sequences }) {
   const outputSequences = sequences.filter((e) => e.type === 'TemplateSequence' && Boolean(e.primer_design));
   if (outputSequences.length === 0) {
     // return 'No primer design sequence templates found';
-    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
+    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [], assemblyInputsInOrder: [] };
   }
   const mockSequenceIds = outputSequences.map((s) => s.id);
 
   // Find the PCRs from which the mock sequences are outputs
   const pcrSources = sources.filter((s) => s.type === 'PCRSource' && mockSequenceIds.includes(s.id));
   if (pcrSources.length === 0) {
-    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
+    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [], assemblyInputsInOrder: [] };
   }
 
   // Find the template sequences for those PCRs
@@ -68,7 +68,7 @@ export function getPrimerDesignObject({ sources, sequences }) {
   // They should not be mock sequences
   if (templateSequences.some((ts) => ts.type === 'TemplateSequence')) {
     // return 'TemplateSequence input to final source is a TemplateSequence';
-    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
+    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [], assemblyInputsInOrder: [] };
   }
 
   // Find the source they are input to (there should be zero or one)
@@ -76,11 +76,11 @@ export function getPrimerDesignObject({ sources, sequences }) {
 
   if (finalSources.length === 0) {
     // return as is
-    return { finalSource: null, otherInputIds: [], pcrSources, outputSequences };
+    return { finalSource: null, otherInputIds: [], pcrSources, outputSequences, assemblyInputsInOrder: [] };
   }
   if (finalSources.length > 1) {
     // error
-    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
+    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [], assemblyInputsInOrder: [] };
   }
 
   const finalSource = finalSources[0];
@@ -91,10 +91,20 @@ export function getPrimerDesignObject({ sources, sequences }) {
   // There should be no TemplateSequence as an input that does not have primer_design set
   if (otherInputs.some((i) => i.type === 'TemplateSequence' && !Boolean(i.primer_design))) {
     // return 'TemplateSequence input to final source does not have primer_design set';
-    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [] };
+    return { finalSource: null, otherInputIds: [], pcrSources: [], outputSequences: [], assemblyInputsInOrder: [] };
   }
 
-  return { finalSource, otherInputIds, pcrSources, outputSequences };
+  // Build ordered assembly inputs for Gibson-like assemblies
+  const assemblyInputsInOrder = finalSource.input.map((inputItem) => {
+    const inputId = inputItem.sequence;
+    if (mockSequenceIds.includes(inputId)) {
+      const pcrSource = pcrSources.find((s) => s.id === inputId);
+      return { templateSequenceId: getPcrTemplateSequenceId(pcrSource), isAmplified: true };
+    }
+    return { templateSequenceId: inputId, isAmplified: false };
+  });
+
+  return { finalSource, otherInputIds, pcrSources, outputSequences, assemblyInputsInOrder };
 }
 
 const formatPrimer = (primer, position) => {

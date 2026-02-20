@@ -17,7 +17,7 @@ function PrimerDesigner() {
   const dispatch = useDispatch();
   const { setMainSequenceId } = cloningActions;
 
-  const { finalSource, otherInputIds, pcrSources, outputSequences } = useSelector((state) => getPrimerDesignObject(state.cloning), isEqual);
+  const { finalSource, otherInputIds, pcrSources, outputSequences, assemblyInputsInOrder } = useSelector((state) => getPrimerDesignObject(state.cloning), isEqual);
 
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
 
@@ -44,7 +44,7 @@ function PrimerDesigner() {
     component = <PrimerDesignSimplePair pcrSource={pcrSources[0]} />;
   }
   if (finalSource?.type === 'GibsonAssemblySource' || finalSource?.type === 'InFusionSource' || finalSource?.type === 'InVivoAssemblySource' || finalSource?.type === 'CreLoxRecombinationSource') {
-    component = <PrimerDesignGibsonAssembly pcrSources={pcrSources} />;
+    component = <PrimerDesignGibsonAssembly pcrSources={pcrSources} assemblyInputsInOrder={assemblyInputsInOrder} />;
   }
   if (finalSource?.type === 'HomologousRecombinationSource' && otherInputIds.length === 1 && pcrSources.length === 1) {
     component = (

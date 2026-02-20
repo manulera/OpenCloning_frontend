@@ -104,42 +104,48 @@ const reducer = {
   },
 
   addPCRsAndSubsequentSourcesForAssembly(state, action) {
-    // This is used by the PCR primer design for Gibson Assemblies. You pass a
-    // sourceId (PCR from which the primer design was started),
-    // and a list of templateIds to be amplified by PCR. Their outputs
-    // will be used as input for a subsequent assembly reaction.
+    // templateIds is the FULL ordered list of template sequence IDs.
+    // amplified[i] indicates whether templateIds[i] should go through PCR.
+    // Non-amplified templates are fed directly into the assembly.
+    // sourceId is the existing PCR source for position 0 (when amplified).
     const { sourceId, templateIds, sourceType, newSequence } = action.payload;
+    // If amplified is not provided, assume all templates are amplified
+    const amplified = action.payload.amplified || templateIds.map(() => true);
     const { sources, sequences } = state;
 
     if (sources.find((s) => s.id === sourceId) === undefined) {
       throw new Error('Source not found');
     }
-    const sources2update = [sourceId];
-    // Add the PCR sources
-    templateIds.forEach((templateId) => {
-      const nextId = getNextUniqueId(state);
-      const newSource = {
-        id: nextId,
-        input: [{ sequence: templateId }],
-        type: 'PCRSource',
-      };
-      sources.push(newSource);
-      sources2update.push(newSource.id);
-    });
+    // Remove the current source (a PCR), in case it was not amplified,
+    // TODO: this needs to be improved in the UI, but it's like this for now.
+    state.sources = state.sources.filter((s) => s.id !== sourceId);
 
-    // Add the output sequences
-    sources2update.forEach((id) => {
-      sequences.push({
-        ...newSequence,
-        id,
-      });
+    const pcrOutputIds = [];
+    const assemblyInputIds = [];
+
+    for (let i = 0; i < templateIds.length; i++) {
+      if (amplified[i]) {
+        const nextId = getNextUniqueId(state);
+        sources.push({
+          id: nextId,
+          input: [{ sequence: templateIds[i] }],
+          type: 'PCRSource',
+        });
+        pcrOutputIds.push(nextId);
+        assemblyInputIds.push(nextId);
+      } else {
+        assemblyInputIds.push(templateIds[i]);
+      }
+    }
+
+    pcrOutputIds.forEach((id) => {
+      sequences.push({ ...newSequence, id });
     });
 
     if (sourceType !== null) {
-      // Add the Assembly that takes the PCR outputs as input
       sources.push({
         id: getNextUniqueId(state),
-        input: sources2update.map((id) => ({ sequence: id })),
+        input: assemblyInputIds.map((id) => ({ sequence: id })),
         type: sourceType,
       });
     }

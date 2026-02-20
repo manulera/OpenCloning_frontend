@@ -17,7 +17,12 @@ function changeValueAtIndex(current, index, newValue) {
 
 const PrimerDesignContext = React.createContext();
 
-export function PrimerDesignProvider({ children, designType, sequenceIds, primerDesignSettings, steps }) {
+export function PrimerDesignProvider({ children, designType, sequenceIds, primerDesignSettings, steps, isAmplified: isAmplifiedProp }) {
+
+  const isAmplified = React.useMemo(
+    () => isAmplifiedProp || sequenceIds.map(() => true),
+    [isAmplifiedProp, sequenceIds],
+  );
 
   const templateSequenceIds = React.useMemo(() => {
     if (designType === 'homologous_recombination' || designType === 'gateway_bp') {
@@ -54,7 +59,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
   const httpClient = useHttpClient();
 
   const submissionPreventedMessage = React.useMemo(() => {
-    if (rois.some((region) => region === null)) {
+    if (rois.some((region, i) => region === null && isAmplified[i])) {
       return 'Not all regions have been selected';
     } if (primerDesignSettings.error) {
       return primerDesignSettings.error;
@@ -62,7 +67,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       return 'Spacer sequences not valid';
     }
     return '';
-  }, [rois, primerDesignSettings.error, spacers]);
+  }, [rois, isAmplified, primerDesignSettings.error, spacers]);
 
   React.useEffect(() => {
     // Clear any existing timeout
@@ -80,7 +85,11 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
           newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, extendedSpacers, circularAssembly, 'primer tail');
           newSequenceProduct.name = 'PCR product';
         } else if (designType === 'gibson_assembly') {
-          newSequenceProduct = joinSequencesIntoSingleSequence(sequences, rois.map((s) => s.selectionLayer), fragmentOrientations, spacers, circularAssembly);
+          const locations = rois.map((roi, i) => {
+            if (roi) return roi.selectionLayer;
+            return { start: 0, end: sequences[i].size - 1 };
+          });
+          newSequenceProduct = joinSequencesIntoSingleSequence(sequences, locations, fragmentOrientations, spacers, circularAssembly);
           newSequenceProduct.name = 'Gibson Assembly product';
         } else if (designType === 'homologous_recombination') {
           newSequenceProduct = simulateHomologousRecombination(sequences[0], sequences[1], rois, fragmentOrientations[0] === 'reverse', spacers);
@@ -227,7 +236,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       requestData = {
         pcr_templates: sequenceIds.map((id, index) => ({
           sequence: sequences.find((e) => e.id === id),
-          location: selectedRegion2SequenceLocation(rois[index], teselaJsonCache[id].size),
+          location: isAmplified[index]
+            ? selectedRegion2SequenceLocation(rois[index], teselaJsonCache[id].size)
+            : null,
           forward_orientation: fragmentOrientations[index] === 'forward',
         })),
         spacers,
@@ -294,7 +305,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
       setError(errorMessage);
       return true;
     }
-  }, [fragmentOrientations, rois, sequenceIds, templateSequenceIds, designType, circularAssembly, primerDesignSettings, spacers, store, httpClient, backendRoute, handleNext]);
+  }, [fragmentOrientations, rois, sequenceIds, templateSequenceIds, designType, circularAssembly, primerDesignSettings, spacers, store, httpClient, backendRoute, handleNext, isAmplified]);
 
   const addPrimers = useCallback(() => {
     const pcrSources = store.getState().cloning.sources.filter((source) => source.type === 'PCRSource');
@@ -302,14 +313,16 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     if (designType === 'ebic') {
       usedPCRSources = pcrSources.filter((source) => source.input.some((i) => i.sequence === templateSequenceIds[0]));
     } else {
-      usedPCRSources = templateSequenceIds.map((id) => pcrSources.find((source) => source.input.some((i) => i.sequence === id)));
+      const amplifiedTemplateIds = templateSequenceIds.filter((_, i) => isAmplified[i]);
+      usedPCRSources = amplifiedTemplateIds.map((id) => pcrSources.find((source) => source.input.some((i) => i.sequence === id)));
     }
 
+    const validPrimers = primers.filter((p) => p !== null);
     batch(() => {
       usedPCRSources.forEach((pcrSource, index) => {
         dispatch(addPrimersToPCRSource({
-          fwdPrimer: primers[index * 2],
-          revPrimer: primers[index * 2 + 1],
+          fwdPrimer: validPrimers[index * 2],
+          revPrimer: validPrimers[index * 2 + 1],
           sourceId: pcrSource.id,
         }));
       });
@@ -320,7 +333,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     onTabChange(null, 0);
     document.getElementById(`source-${usedPCRSources[0].id}`)?.scrollIntoView();
     updateStoreEditor('mainEditor', null);
-  }, [primers, dispatch, setMainSequenceId, setCurrentTab, onTabChange, updateStoreEditor, designType, templateSequenceIds, addPrimersToPCRSource, store]);
+  }, [primers, dispatch, setMainSequenceId, setCurrentTab, onTabChange, updateStoreEditor, designType, templateSequenceIds, isAmplified, addPrimersToPCRSource, store]);
 
   const value = React.useMemo(() => ({
     primers,
@@ -349,6 +362,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     templateSequenceNames,
     designType,
     steps,
+    isAmplified,
   }), [
     primers,
     error,
@@ -376,6 +390,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     templateSequenceNames,
     designType,
     steps,
+    isAmplified,
   ]);
 
   return (
