@@ -168,7 +168,10 @@ export function getFilesToExportFromAssembler({requestedAssemblies, expandedAsse
   }
 
   for (let i = 0; i < requestedAssemblies.length; i++) {
-    const name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`;
+    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`;
+    if (name.length > 255) {
+      name = `${String(i + 1).padStart(3, '0')}_construct`;
+    }
     const requestedAssembly = requestedAssemblies[i];
     const jsonContent = formatStateForJsonExport({...requestedAssembly, appInfo});
     files2Export.push({
