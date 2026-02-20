@@ -285,8 +285,8 @@ const dummyData = {
 
 
 
-describe('getZipFileFromAssemblies', () => {
-  it('returns a zip file', () => {
+describe('getFilesToExportFromAssembler', () => {
+  it('returns the correct files', () => {
     const files = getFilesToExportFromAssembler(dummyData);
     expect(files[0].name).toBe('assemblies.tsv');
     expect(files[0].content).toBe('Assembly\tCategory 1\tCategory 2\tCategory 3\n1\tp1\tp5\tp7\n2\tp1\tp2\tp3');
@@ -309,5 +309,16 @@ describe('getZipFileFromAssemblies', () => {
     }
 
 
+  })
+  it('changes name if file names are too long', () => {
+    const dummyData2 = {
+      ...dummyData,
+      plasmids: dummyData.plasmids.map(plasmid => ({...plasmid, plasmid_name: 'p1'.repeat(100)})),
+    }
+    const files = getFilesToExportFromAssembler(dummyData2);
+    expect(files[2].name).toBe('001_construct.json');
+    expect(files[3].name).toBe('001_construct.gbk');
+    expect(files[4].name).toBe('002_construct.json');
+    expect(files[5].name).toBe('002_construct.gbk');
   })
 })
