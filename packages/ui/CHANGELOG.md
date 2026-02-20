@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.4.10
+
+### Patch Changes
+
+- [#642](https://github.com/manulera/OpenCloning_frontend/pull/642) [`3028e98`](https://github.com/manulera/OpenCloning_frontend/commit/3028e98b60be89288327cc1b6dac87cb2479a3c7) Thanks [@manulera](https://github.com/manulera)! - When downloading from assembler, if name is too long change to id_construct
+
+- Updated dependencies []:
+  - @opencloning/store@1.4.10
+  - @opencloning/utils@1.4.10
+
 ## 1.4.9
 
 ### Patch Changes
