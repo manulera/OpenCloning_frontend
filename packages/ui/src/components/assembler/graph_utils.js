@@ -144,7 +144,12 @@ function minimumCoveringRows(msa) {
 
 export function graphToMSA(graph) {
   if (graph.nodes().length === 0) return [];
-  const newGraph = openCycleAtNode(graph, graph.nodes()[0]);
+  const firstNodeLeftOverhang = graph.nodes()[0].split('-')[0];
+  const nodesToRemove = graph.nodes().filter(node => node.split('-')[0] === firstNodeLeftOverhang);
+  let newGraph = graph;
+  for (const node of nodesToRemove) {
+    newGraph = openCycleAtNode(newGraph, node);
+  }
   return minimumCoveringRows(dagToMSA(newGraph));
 }
 
