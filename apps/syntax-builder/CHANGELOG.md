@@ -1,5 +1,17 @@
 # syntax-builder
 
+## 0.4.0
+
+### Minor Changes
+
+- [#648](https://github.com/manulera/OpenCloning_frontend/pull/648) [`800ebcd`](https://github.com/manulera/OpenCloning_frontend/commit/800ebcd4ed610ad89d538e1d59314977aae40583) Thanks [@manulera](https://github.com/manulera)! - Multiple enzymes can be used in the Assembler
+
+### Patch Changes
+
+- Updated dependencies [[`800ebcd`](https://github.com/manulera/OpenCloning_frontend/commit/800ebcd4ed610ad89d538e1d59314977aae40583)]:
+  - @opencloning/utils@1.5.0
+  - @opencloning/ui@1.5.0
+
 ## 0.3.4
 
 ### Patch Changes
