@@ -3,12 +3,42 @@ import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { localFilesHttpClient } from '@opencloning/ui/hooks/useServerStaticFiles';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import mocloSyntax from '../../../../../cypress/test_files/syntax/moclo_syntax.json';
-import { dummyIndex } from '../form/ServerStaticFileSelect.cy.jsx';
 
 mocloSyntax.overhangNames = {
   ...mocloSyntax.overhangNames,
   CCCT: 'CCCT_overhang',
   AACG: 'AACG_overhang',
+};
+mocloSyntax.assemblyEnzymes = ['BsaI'];
+
+export const dummyIndex = {
+  sequences: [
+    {
+      name: 'Example sequence 1',
+      path: 'example.fa',
+      categories: ['Test category'],
+    },
+    {
+      name: 'Example sequence 2',
+      path: 'example2.gb',
+      categories: ['Test category2'],
+    },
+    {
+      name: 'Example sequence 3',
+      path: 'example3.fa',
+      categories: ['Test category'],
+    },
+  ],
+  syntaxes: [
+    {
+      name: 'Example syntax 1',
+      path: 'example.json',
+    },
+    {
+      name: 'Example syntax 2',
+      path: 'example2.json',
+    },
+  ],
 };
 
 // Test config
@@ -20,7 +50,7 @@ const testConfig = {
   enablePlannotate: false,
 };
 
-describe('<UploadPlasmidsButton />', () => {
+describe.only('<UploadPlasmidsButton />', () => {
   beforeEach(() => {
     cy.window().then((win) => {
       win.localStorage.clear();

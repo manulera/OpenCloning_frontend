@@ -162,7 +162,6 @@ describe('assignSequenceToSyntaxPart', () => {
     ];
     for (const sequenceData of sequences) {
       const result = assignSequenceToSyntaxPart(sequenceData, enzymes, graph);
-      console.log(sequenceData.sequence);
       expect(result).toEqual([{left_overhang: 'TACT', right_overhang: 'AATG', longestFeature: null}]);
     }
 
