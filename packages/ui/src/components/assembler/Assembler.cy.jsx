@@ -117,7 +117,7 @@ describe('<AssemblerComponent />', () => {
         <AssemblerComponent
           plasmids={mockPlasmids}
           categories={mockCategories}
-          assemblyEnzyme="assembly_enzyme"
+          assemblyEnzymes={['assembly_enzyme']}
           addAlert={addAlertStub}
           appInfo={{}}
         />

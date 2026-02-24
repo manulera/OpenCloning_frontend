@@ -5,11 +5,22 @@ import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
 const INPUT_MIN_LENGTH = 3;
 const enzymeOptions = Object.values(aliasedEnzymesByName).map((e) => e.name);
 
-function EnzymeInput({ label = 'Enzyme', enzyme, setEnzyme, ...rest }) {
-  
-  const [inputValue, setInputValue] = React.useState(enzyme);
-  
-  // Filter options based on input (require at least 2 characters)
+function EnzymeInput({
+  label = 'Enzyme',
+  multiple = false,
+  value,
+  onChange,
+  ...rest
+}) {
+  const isMultiple = Boolean(multiple);
+  const currentValue = isMultiple
+    ? (Array.isArray(value) ? value : [])
+    : (value ?? '');
+
+  const [inputValue, setInputValue] = React.useState(
+    isMultiple ? '' : (currentValue || '')
+  );
+
   const filteredOptions = React.useMemo(() => {
     if (inputValue.length < INPUT_MIN_LENGTH) {
       return [];
@@ -22,9 +33,10 @@ function EnzymeInput({ label = 'Enzyme', enzyme, setEnzyme, ...rest }) {
 
   return (
     <Autocomplete
-      value={enzyme || null}
+      multiple={isMultiple}
+      value={isMultiple ? currentValue : (currentValue || null)}
       onChange={(event, newValue) => {
-        setEnzyme(newValue || '');
+        onChange(isMultiple ? newValue : (newValue || ''));
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
@@ -32,7 +44,7 @@ function EnzymeInput({ label = 'Enzyme', enzyme, setEnzyme, ...rest }) {
       inputValue={inputValue}
       options={filteredOptions}
       getOptionLabel={(option) => option}
-      isOptionEqualToValue={(option, value) => option === value}
+      isOptionEqualToValue={(option, val) => option === val}
       noOptionsText={inputValue.length < INPUT_MIN_LENGTH ? `Type at least ${INPUT_MIN_LENGTH} characters to search` : 'No options found'}
       renderInput={(params) => (
         <TextField
@@ -43,7 +55,7 @@ function EnzymeInput({ label = 'Enzyme', enzyme, setEnzyme, ...rest }) {
         />
       )}
     />
-  )
+  );
 }
 
-export default EnzymeInput
+export default EnzymeInput;

@@ -2,7 +2,7 @@ import React from 'react'
 import SectionWrapper from './SectionWrapper';
 import DoiInput from './form/DoiInput';
 import EnzymeInput from './form/EnzymeInput';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import OrcidInput from './form/OrcidInput';
 import { useFormData } from '../context/FormDataContext';
 import DebouncedTextField from './form/DebouncedTextField';
@@ -39,7 +39,7 @@ function addEntry(setFunction, index, value, type) {
 
 function GeneralInfo() {
   const {
-    assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme,
+    assemblyEnzymes, setAssemblyEnzymes, domesticationEnzyme, setDomesticationEnzyme,
     relatedDois, setRelatedDois,
     submitters, setSubmitters,
     syntaxName, setSyntaxName,
@@ -55,8 +55,8 @@ function GeneralInfo() {
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
         <Box sx={boxStyle}>
           <Typography variant="h6">Restriction enzymes</Typography>
-          <EnzymeInput label="Assembly enzyme" enzyme={assemblyEnzyme} setEnzyme={setAssemblyEnzyme} helperText=" " />
-          <EnzymeInput label="Domestication enzyme" enzyme={domesticationEnzyme} setEnzyme={setDomesticationEnzyme} helperText=" " />
+          <EnzymeInput multiple label="Assembly enzymes" value={assemblyEnzymes} onChange={setAssemblyEnzymes} helperText=" " />
+          <EnzymeInput label="Domestication enzyme" value={domesticationEnzyme} onChange={setDomesticationEnzyme} helperText=" " />
         </Box>
         <Box sx={boxStyle}>
           <Typography variant="h6">Related publications</Typography>

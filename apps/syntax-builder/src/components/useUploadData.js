@@ -2,6 +2,7 @@ import React from 'react'
 import { useFormData, defaultFields } from '../context/FormDataContext';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
 import { delimitedFileToJson } from '@opencloning/utils/fileParsers';
+import { normalizeSyntaxEnzymes } from '@opencloning/utils/normalizeSyntax';
 
 function validateSubmittedData(data) {
   if (!Array.isArray(data)) {
@@ -18,7 +19,7 @@ function validateSubmittedData(data) {
 }
 
 function useUploadData() {
-  const {setParts, setOverhangNames, setRelatedDois, setSubmitters, setAssemblyEnzyme, setDomesticationEnzyme, setSyntaxName} = useFormData();
+  const {setParts, setOverhangNames, setRelatedDois, setSubmitters, setAssemblyEnzymes, setDomesticationEnzyme, setSyntaxName} = useFormData();
 
   const uploadData = React.useCallback(async (file) => {
     if (file.name.endsWith('.tsv') || file.name.endsWith('.csv')) {
@@ -31,18 +32,18 @@ function useUploadData() {
       validateSubmittedData(parts);
       setParts(parts);
     } else if (file.name.endsWith('.json')) {
-      const data = JSON.parse(await readSubmittedTextFile(file));
+      const data = normalizeSyntaxEnzymes(JSON.parse(await readSubmittedTextFile(file)));
       setSyntaxName(data.syntaxName || '');
       setParts(data.parts || []);
       setOverhangNames(data.overhangNames || {});
       setRelatedDois(data.relatedDois ? [...data.relatedDois, ''] : ['']);
       setSubmitters(data.submitters ? [...data.submitters, ''] : ['']);
-      setAssemblyEnzyme(data.assemblyEnzyme || '');
+      setAssemblyEnzymes(data.assemblyEnzymes);
       setDomesticationEnzyme(data.domesticationEnzyme || '');
     } else {
       throw new Error('Invalid file type');
     }
-  }, [setParts, setOverhangNames, setRelatedDois, setSubmitters, setAssemblyEnzyme, setDomesticationEnzyme, setSyntaxName]);
+  }, [setParts, setOverhangNames, setRelatedDois, setSubmitters, setAssemblyEnzymes, setDomesticationEnzyme, setSyntaxName]);
 
   return { uploadData };
 }

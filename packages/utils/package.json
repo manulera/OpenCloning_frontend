@@ -19,7 +19,8 @@
         "./ncbiRequests": "./src/utils/ncbiRequests.js",
         "./other": "./src/utils/other.js",
         "./transformCoords": "./src/utils/transformCoords.js",
-        "./selectedRegionUtils": "./src/utils/selectedRegionUtils.js"
+        "./selectedRegionUtils": "./src/utils/selectedRegionUtils.js",
+        "./normalizeSyntax": "./src/utils/normalizeSyntax.js"
     },
     "repository": {
         "type": "git",

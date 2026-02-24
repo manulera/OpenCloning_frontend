@@ -62,7 +62,7 @@ export const useAssembler = () => {
   }, [ httpClient, backendRoute ])
 
 
-  const requestAssemblies = useCallback(async (requestedSources, enzyme='BsaI') => {
+  const requestAssemblies = useCallback(async (requestedSources, enzymes=['BsaI']) => {
 
     const assemblies = arrayCombinations(requestedSources);
     const output = []
@@ -76,7 +76,7 @@ export const useAssembler = () => {
       const requestData = {
         source: {
           type: 'RestrictionAndLigationSource',
-          restriction_enzymes: [enzyme],
+          restriction_enzymes: enzymes,
           id: assembly.length + 1,
         },
         sequences: assembly.map((p) => p.sequence),

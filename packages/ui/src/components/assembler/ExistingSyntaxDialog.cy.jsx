@@ -1,15 +1,6 @@
 import React from 'react';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 
-// Test config
-const testConfig = {
-  backendUrl: 'http://localhost:8000',
-  showAppBar: false,
-  noExternalRequests: false,
-  enableAssembler: true,
-  enablePlannotate: false,
-};
-
 const mockSyntaxes = [
   {
     path: 'test-syntax-1',
@@ -43,6 +34,7 @@ const mockSyntaxes = [
 const mockSyntaxData = {
   name: 'Test Syntax',
   parts: [],
+  assemblyEnzymes: ['BsmBI'],
 };
 
 const mockPlasmidsData = [
@@ -228,6 +220,7 @@ describe('<ExistingSyntaxDialog />', () => {
         { id: 1, name: 'Part 1' },
         { id: 2, name: 'Part 2' },
       ],
+      assemblyEnzymes: ['BsmBI'],
     };
 
     const tempFile = {

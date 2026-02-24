@@ -4,8 +4,8 @@ import getHttpClient from '@opencloning/utils/getHttpClient';
 import RequestStatusWrapper from '../form/RequestStatusWrapper';
 import ServerStaticFileSelect from '../form/ServerStaticFileSelect';
 import { readSubmittedTextFile } from '@opencloning/utils/readNwrite';
+import { normalizeSyntaxEnzymes } from '@opencloning/utils/normalizeSyntax';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
 
 const httpClient = getHttpClient();
 const baseURL = 'https://assets.opencloning.org/syntaxes/syntaxes/';
@@ -15,7 +15,7 @@ function LocalSyntaxDialog({ onClose, onSyntaxSelect }) {
 
   const onFileSelected = React.useCallback(async (file) => {
     const text = await readSubmittedTextFile(file);
-    const syntaxData = JSON.parse(text);
+    const syntaxData = normalizeSyntaxEnzymes(JSON.parse(text));
     onSyntaxSelect(syntaxData, []);
     onClose();
   }, [onSyntaxSelect, onClose]);
@@ -100,7 +100,7 @@ function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect, disp
       const { data: syntaxData } = await httpClient.get(syntaxPath);
       loadingErrorPart = 'plasmids'
       const { data: plasmidsData } = await httpClient.get(plasmidsPath);
-      onSyntaxSelect(syntaxData, plasmidsData);
+      onSyntaxSelect(normalizeSyntaxEnzymes(syntaxData), plasmidsData);
       onClose();
     } catch {
       setLoadError(`Failed to load ${loadingErrorPart} data. Please try again.`);
@@ -114,9 +114,8 @@ function ExistingSyntaxDialog({ staticContentPath, onClose, onSyntaxSelect, disp
 
     try {
       const text = await file.text();
-      const syntaxData = JSON.parse(text);
+      const syntaxData = normalizeSyntaxEnzymes(JSON.parse(text));
 
-      // Uploaded JSON files contain only syntax data, no plasmids
       onSyntaxSelect(syntaxData, []);
       onClose();
     } catch (error) {

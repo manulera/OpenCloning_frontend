@@ -150,6 +150,35 @@ describe('assignSequenceToSyntaxPart', () => {
     expect(type).toBe('misc_feature');
     expect(name).toBe('feature1');
   });
+
+  it('works with multiple enzymes', () => {
+    const enzymes = [aliasedEnzymesByName["bsmbi"], aliasedEnzymesByName["bsai"]];
+    const parts = [{left_overhang: 'TACT', right_overhang: 'AATG'}, {left_overhang: 'AATG', right_overhang: 'AGGT'}];
+    const graph = partsToEdgesGraph(parts);
+    // Works when both sites are of the same enzyme
+    const sequences = [
+      { sequence: 'AAggtctcaTACTagagtcacacaggactactaAATGagagaccAA', circular: true },
+      { sequence: 'AAcgtctcaTACTagagtcacacaggactactaAATGagagacgAA', circular: true },
+    ];
+    for (const sequenceData of sequences) {
+      const result = assignSequenceToSyntaxPart(sequenceData, enzymes, graph);
+      expect(result).toEqual([{left_overhang: 'TACT', right_overhang: 'AATG', longestFeature: null}]);
+    }
+
+    // Does not work when the sites are of different enzymes
+    const sequenceData2 = { sequence: 'AAcgtctcaTACTagagtcacacaggactactaAATGagagaccAA', circular: true };
+    const result2 = assignSequenceToSyntaxPart(sequenceData2, enzymes, graph);
+    expect(result2).toEqual([]);
+  });
+
+  it('Does not assign a plasmid with a single cut', () => {
+    const parts = [{left_overhang: 'TACT', right_overhang: 'AATG'}, {left_overhang: 'AATG', right_overhang: 'AGGT'}];
+    const graph = partsToEdgesGraph(parts);
+    const enzymes = [aliasedEnzymesByName["bsai"]];
+    const sequenceData = { sequence: 'tgggtctcaTACTagagtc', circular: true };
+    const result = assignSequenceToSyntaxPart(sequenceData, enzymes, graph);
+    expect(result).toEqual([]);
+  })
 });
 
 describe('tripletsToTranslation', () => {
