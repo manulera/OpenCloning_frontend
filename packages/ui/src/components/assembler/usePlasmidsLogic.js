@@ -8,11 +8,11 @@ import { aliasedEnzymesByName } from '@teselagen/sequence-utils';
  * Custom hook that manages plasmids state and logic
  * @param {Object} params - Dependencies from FormDataContext
  * @param {Array} params.parts - Array of parts
- * @param {string} params.assemblyEnzyme - Assembly enzyme name
+ * @param {string[]} params.assemblyEnzymes - Assembly enzyme names
  * @param {Object} params.overhangNames - Mapping of overhangs to names
  * @returns {Object} - { linkedPlasmids, setLinkedPlasmids, uploadPlasmids }
  */
-export function usePlasmidsLogic({ parts, assemblyEnzyme, overhangNames }) {
+export function usePlasmidsLogic({ parts, assemblyEnzymes, overhangNames }) {
   const [linkedPlasmids, setLinkedPlasmidsState] = React.useState([]);
 
   const graphForPlasmids = React.useMemo(() => partsToEdgesGraph(parts), [parts]);
@@ -22,7 +22,7 @@ export function usePlasmidsLogic({ parts, assemblyEnzyme, overhangNames }) {
   }, {}), [parts]);
 
   const assignPlasmids = React.useCallback((plasmids) => plasmids.map(plasmid => {
-    const enzymes = [aliasedEnzymesByName[assemblyEnzyme.toLowerCase()]];
+    const enzymes = assemblyEnzymes.map(name => aliasedEnzymesByName[name.toLowerCase()]);
     const correspondingParts = assignSequenceToSyntaxPart(plasmid, enzymes, graphForPlasmids);
     const correspondingPartsStr = correspondingParts.map(part => `${part.left_overhang}-${part.right_overhang}`);
     const correspondingPartsNames = correspondingParts.map(part => {
@@ -44,20 +44,20 @@ export function usePlasmidsLogic({ parts, assemblyEnzyme, overhangNames }) {
         longestFeature: correspondingParts.map(part => part.longestFeature)
       }
     };
-  }), [graphForPlasmids, partDictionary, assemblyEnzyme, overhangNames]);
+  }), [graphForPlasmids, partDictionary, assemblyEnzymes, overhangNames]);
 
   // Wrapper for setLinkedPlasmids that automatically assigns plasmids if enzyme is available
   const setLinkedPlasmids = React.useCallback((plasmids) => {
-    if (assemblyEnzyme && Array.isArray(plasmids) && plasmids.length > 0) {
+    if (assemblyEnzymes.length > 0 && Array.isArray(plasmids) && plasmids.length > 0) {
       setLinkedPlasmidsState(assignPlasmids(plasmids));
     } else {
       setLinkedPlasmidsState(plasmids);
     }
-  }, [assemblyEnzyme, assignPlasmids]);
+  }, [assemblyEnzymes, assignPlasmids]);
 
   // Update existing plasmids when enzyme or assignment logic changes
   React.useEffect(() => {
-    if (assemblyEnzyme) {
+    if (assemblyEnzymes.length > 0) {
       setLinkedPlasmidsState((prevLinkedPlasmids) => {
         if (prevLinkedPlasmids.length > 0) {
           return assignPlasmids(prevLinkedPlasmids);
@@ -65,7 +65,7 @@ export function usePlasmidsLogic({ parts, assemblyEnzyme, overhangNames }) {
         return prevLinkedPlasmids;
       });
     }
-  }, [assignPlasmids, assemblyEnzyme]); // Note: intentionally not including linkedPlasmids to avoid infinite loop
+  }, [assignPlasmids, assemblyEnzymes]); // Note: intentionally not including linkedPlasmids to avoid infinite loop
 
   const uploadPlasmids = React.useCallback(async (files) => {
     const plasmids = await Promise.all(files.map(async (file) => {

@@ -117,17 +117,28 @@ export function assignSequenceToSyntaxPart(sequenceData, enzymes, graph) {
   // used, which is convenient for classification within the syntax.
   // Instead, forward means whether the recognition site was forward or reverse when producing that cut.
   // see the test called "shows the meaning of forward and reverse" for more details.
-  const simplifiedDigestFragments = getSimplifiedDigestFragments(sequenceData, enzymes);
   const foundParts = [];
-  simplifiedDigestFragments
-    .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))
-    .forEach(fragment => {
-      const graphForPaths = isFragmentPalindromic(fragment) ? openCycleAtNode(graph, graph.nodes()[0]) : graph;
-      const paths = allSimplePaths(graphForPaths, fragment.left.ovhg, fragment.right.ovhg);
-      if (paths.length > 0) {
-        foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg, longestFeature: fragment.longestFeature});
-      }
-    });
+
+  // Enzymes are processed in order, so the first enzyme that finds a part is used.
+  // This is for syntaxes like GoldenBraid, that in the omega 1 assembly uses BsmBI
+  // for the backbone, and BtgZI for the parts.
+  // The order of the enzymes therefore matters, and in that case we put BsmBI first,
+  // because in principle domesticated parts should not have BsmBI recognition sites.
+  for (const enzyme of enzymes) {
+    const simplifiedDigestFragments = getSimplifiedDigestFragments(sequenceData, [enzyme]);
+    simplifiedDigestFragments
+      .filter(f => f.left.forward && !f.right.forward && graph.hasNode(f.left.ovhg) && graph.hasNode(f.right.ovhg))
+      .forEach(fragment => {
+        const graphForPaths = isFragmentPalindromic(fragment) ? openCycleAtNode(graph, graph.nodes()[0]) : graph;
+        const paths = allSimplePaths(graphForPaths, fragment.left.ovhg, fragment.right.ovhg);
+        if (paths.length > 0) {
+          foundParts.push({left_overhang: fragment.left.ovhg, right_overhang: fragment.right.ovhg, longestFeature: fragment.longestFeature});
+        }
+      });
+    if (foundParts.length > 0) {
+      break;
+    }
+  }
   return foundParts;
 }
 

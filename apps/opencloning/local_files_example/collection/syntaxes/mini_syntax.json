@@ -1,6 +1,6 @@
 {
     "syntaxName": "MoClo YSD",
-    "assemblyEnzyme": "BsaI",
+    "assemblyEnzymes": ["BsaI"],
     "domesticationEnzyme": "BsmBI",
     "relatedDois": [
       "10.1021/acssynbio.3c00743"

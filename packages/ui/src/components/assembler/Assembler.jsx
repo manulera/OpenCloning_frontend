@@ -129,7 +129,7 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
   )
 }
 
-export function AssemblerComponent({ plasmids, categories, assemblyEnzyme, addAlert, appInfo }) {
+export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addAlert, appInfo }) {
 
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('')
@@ -153,7 +153,7 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzyme, addAl
       const resp = await requestSources(selectedPlasmids)
       errorMessage = 'Error assembling sequences'
       setLoadingMessage('Assembling...')
-      const assemblies = await requestAssemblies(resp, assemblyEnzyme)
+      const assemblies = await requestAssemblies(resp, assemblyEnzymes)
       setRequestedAssemblies(assemblies)
     } catch (e) {
       if (e.assembly) {
@@ -165,7 +165,7 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzyme, addAl
     } finally {
       setLoadingMessage(false)
     }
-  }, [assemblyEnzyme, assembly, plasmids, requestSources, requestAssemblies, clearAssemblySelection])
+  }, [assemblyEnzymes, assembly, plasmids, requestSources, requestAssemblies, clearAssemblySelection])
 
   const onDownloadAssemblies = React.useCallback(async () => {
     try {
@@ -334,7 +334,7 @@ function Assembler() {
         {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
         {syntax && <Button color="error" onClick={clearLoadedPlasmids}>Remove uploaded plasmids</Button>}
       </ButtonGroup>
-      {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} assemblyEnzyme={syntax.assemblyEnzyme} addAlert={addAlert} appInfo={appInfo} />}
+      {syntax && <AssemblerComponent plasmids={plasmids} syntax={syntax} categories={categories} assemblyEnzymes={syntax.assemblyEnzymes} addAlert={addAlert} appInfo={appInfo} />}
     </>
   )
 }

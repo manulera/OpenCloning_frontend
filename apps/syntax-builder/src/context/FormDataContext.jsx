@@ -115,7 +115,7 @@ export function FormDataProvider({ children }) {
   const [problematicNodes, setProblematicNodes] = React.useState([]);
   const [relatedDois, setRelatedDois] = React.useState(['']);
   const [submitters, setSubmitters] = React.useState(['']);
-  const [assemblyEnzyme, setAssemblyEnzyme] = React.useState('BsaI');
+  const [assemblyEnzymes, setAssemblyEnzymes] = React.useState(['BsaI']);
   const [domesticationEnzyme, setDomesticationEnzyme] = React.useState('BsaI');
 
   const graph2 = React.useMemo(() => partsToEdgesGraph(parts), [parts]);
@@ -129,7 +129,7 @@ export function FormDataProvider({ children }) {
   // Plasmids logic - separated into its own hook for better organization
   const { linkedPlasmids, setLinkedPlasmids, uploadPlasmids } = usePlasmidsLogic({
     parts,
-    assemblyEnzyme,
+    assemblyEnzymes,
     overhangNames
   });
 
@@ -195,13 +195,13 @@ export function FormDataProvider({ children }) {
   const resetFormData = React.useCallback(() => {
     setParts([]);
     setOverhangNames({});
-    setAssemblyEnzyme('');
+    setAssemblyEnzymes([]);
     setDomesticationEnzyme('');
     setSyntaxName('');
     setRelatedDois(['']);
     setSubmitters(['']);
     setLinkedPlasmids([]);
-  }, [setParts, setOverhangNames, setAssemblyEnzyme, setDomesticationEnzyme, setSyntaxName, setRelatedDois, setSubmitters, setLinkedPlasmids]);
+  }, [setParts, setOverhangNames, setAssemblyEnzymes, setDomesticationEnzyme, setSyntaxName, setRelatedDois, setSubmitters, setLinkedPlasmids]);
 
 
   const value = React.useMemo(() => ({
@@ -209,8 +209,8 @@ export function FormDataProvider({ children }) {
     setRelatedDois,
     submitters,
     setSubmitters,
-    assemblyEnzyme,
-    setAssemblyEnzyme,
+    assemblyEnzymes,
+    setAssemblyEnzymes,
     domesticationEnzyme,
     setDomesticationEnzyme,
     parts,
@@ -230,7 +230,7 @@ export function FormDataProvider({ children }) {
     uploadPlasmids,
     mermaidString,
   }), [
-    relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzyme, setAssemblyEnzyme, domesticationEnzyme, setDomesticationEnzyme, parts, setParts,
+    relatedDois, setRelatedDois, submitters, setSubmitters, assemblyEnzymes, setAssemblyEnzymes, domesticationEnzyme, setDomesticationEnzyme, parts, setParts,
     resetFormData, graph, graphErrorMessage, problematicNodes, addDefaultPart, overhangNames, setOverhangNames, updateOverhangName, syntaxName, setSyntaxName,
     linkedPlasmids, setLinkedPlasmids, uploadPlasmids, mermaidString]);
 

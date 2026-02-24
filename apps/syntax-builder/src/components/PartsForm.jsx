@@ -217,7 +217,7 @@ export default function PartsForm() {
                 border: errorMessage ? '2px solid red' : '1px solid #ccc',
                 borderRadius: '4px'
               }} />
-              <span style={{ color: errorMessage ? 'red' : 'inherit' }}>{params.value}</span>
+              <span style={{ color: errorMessage ? 'red' : 'inherit', fontFamily: 'monospace' }}>{params.value}</span>
             </Box>
           </Tooltip>
         )
