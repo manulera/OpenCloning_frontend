@@ -7,7 +7,8 @@ import StepNavigation from './StepNavigation';
 import PrimerResultForm from './PrimerResultForm';
 
 function TabPanelResults() {
-  const { selectedTab, primers, addPrimers, setPrimers, handleBack, sequenceIds } = usePrimerDesign();
+  const { selectedTab, primers: allPrimers, addPrimers, setPrimers, handleBack, sequenceIds } = usePrimerDesign();
+  const primers = React.useMemo(() => allPrimers.filter((primer) => primer !== null), [allPrimers]);
   const existingPrimerNames = useSelector((state) => state.cloning.primers.map((p) => p.name), shallowEqual);
   const primersAreValid = primers.length && primers.every((primer) => primer.name && !existingPrimerNames.includes(primer.name));
   return (

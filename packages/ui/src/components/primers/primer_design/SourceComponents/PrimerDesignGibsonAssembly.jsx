@@ -1,22 +1,67 @@
-import { Button, FormControl } from '@mui/material';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, Tooltip, Typography } from '@mui/material';
+import { Info as InfoIcon } from '@mui/icons-material';
 import React from 'react';
-import { batch, useDispatch } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
+import { isEqual } from 'lodash-es';
 import MultipleInputsSelector from '../../../sources/MultipleInputsSelector';
 import { cloningActions } from '@opencloning/store/cloning';
 import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
 
+function AmplifySectionTitle() {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mb: 0.5, alignSelf: 'stretch' }}>
+      <Typography variant="caption" sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+        Amplify
+      </Typography>
+      <Tooltip
+        arrow
+        placement="top"
+        title="Checked sequences will be amplified by PCR with designed primers. Unchecked sequences are used directly in the assembly without amplification."
+      >
+        <InfoIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
+      </Tooltip>
+    </Box>
+  );
+}
+
+function isValidAmplifiedConfig(config) {
+  for (let i = 0; i < config.length - 1; i++) {
+    if (!config[i] && !config[i + 1]) return false;
+  }
+  if (config.length > 1 && !config[0] && !config[config.length - 1]) return false;
+  return true;
+}
+
 function PrimerDesignGibsonAssembly({ source, assemblyType }) {
   const [targets, setTargets] = React.useState(source.input.map(({ sequence }) => sequence));
+  const [amplified, setAmplified] = React.useState(() => source.input.map(() => true));
   const inputSequenceId = getPcrTemplateSequenceId(source);
 
+  const sequenceNames = useSelector(
+    ({ cloning }) => targets.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })),
+    isEqual,
+  );
+
   const onInputChange = (newInputSequenceIds) => {
-    // Prevent unsetting the input of the source
-    if (!newInputSequenceIds.includes(inputSequenceId)) {
-      setTargets( (prev) => [...prev, ...newInputSequenceIds]);
-    } else {
-      setTargets(newInputSequenceIds);
-    }
+    const newValue = newInputSequenceIds.includes(inputSequenceId) ? newInputSequenceIds : [...newInputSequenceIds, inputSequenceId];
+    setTargets(newValue);
+    setAmplified(Array(newValue.length).fill(true));
+  };
+
+  const handleAmplifiedToggle = (index) => {
+    setAmplified((prev) => {
+      const next = [...prev];
+      next[index] = !next[index];
+      return next;
+    });
+  };
+
+  const canToggleOff = (index) => {
+    if (!amplified[index]) return true;
+    const next = [...amplified];
+    next[index] = false;
+    return isValidAmplifiedConfig(next);
   };
 
   const { updateStoreEditor } = useStoreEditor();
@@ -31,13 +76,21 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
     };
 
     batch(() => {
-    // Slice from the second on
-      const newPCRTemplates = targets.slice(1);
-      dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: newPCRTemplates, sourceType: assemblyType }));
-      dispatch(setMainSequenceId(inputSequenceId));
-      updateStoreEditor('mainEditor', inputSequenceId);
+      console.log('targets', targets);
+      console.log('amplified', amplified);
+      console.log('inputSequenceId', inputSequenceId);
+      console.log('newSequence', newSequence);
+      dispatch(addPCRsAndSubsequentSourcesForAssembly({
+        sourceId: source.id,
+        newSequence,
+        templateIds: targets,
+        sourceType: assemblyType,
+        amplified,
+      }));
+      const firstAmplifiedId = targets.find((_, i) => amplified[i]) ?? inputSequenceId;
+      dispatch(setMainSequenceId(firstAmplifiedId));
+      updateStoreEditor('mainEditor', firstAmplifiedId);
       dispatch(setCurrentTab(3));
-      // Scroll to the top of the page after 300ms
       setTimeout(() => {
         document.querySelector('.tab-panels-container')?.scrollTo({ top: 0, behavior: 'instant' });
       }, 300);
@@ -53,6 +106,36 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
           onChange={onInputChange}
         />
       </FormControl>
+
+      {targets.length > 1 && (
+        <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <AmplifySectionTitle />
+          {targets.map((id, index) => {
+            const name = sequenceNames.find((s) => s.id === id)?.name || 'template';
+            const label = name !== 'name' ? `${id} - ${name}` : `${id}`;
+            return (
+              <FormControl key={id} sx={{ alignItems: 'flex-start', mb: 0.5 }}>
+                <FormControlLabel
+                  control={(
+                    <Checkbox
+                      checked={amplified[index]}
+                      onChange={() => handleAmplifiedToggle(index)}
+                      disabled={amplified[index] && !canToggleOff(index)}
+                      size="small"
+                    />
+                  )}
+                  label={(
+                    <Typography variant="body2" noWrap sx={{ minWidth: 0 }}>
+                      {label}
+                    </Typography>
+                  )}
+                  sx={{ mr: 0 }}
+                />
+              </FormControl>
+            );
+          })}
+        </Box>
+      )}
 
       <Button type="submit" variant="contained" color="success">
         Design primers

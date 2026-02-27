@@ -25,7 +25,7 @@ function PrimerDesignSourceForm({ source }) {
       };
 
       batch(() => {
-        dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: [], sourceType: null }));
+        dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: [inputSequenceId], sourceType: null }));
         dispatch(setMainSequenceId(inputSequenceId));
         updateStoreEditor('mainEditor', inputSequenceId);
         dispatch(setCurrentTab(3));

@@ -36,22 +36,43 @@ export function joinSequencesIntoSingleSequence(sequences, locations, orientatio
     }
   }
 
+  const isSpacer = [];
   for (let i = 0; i < sequences.length; i++) {
     sequences2join.push(sequences[i]);
+    isSpacer.push(false);
     locations2join.push(locations[i]);
     orientations2join.push(orientations[i]);
     if (spacerSequences[i]) {
       sequences2join.push(spacerSequences[i]);
+      isSpacer.push(true);
       locations2join.push({ start: 0, end: spacerSequences[i].sequence.length - 1 });
       orientations2join.push('forward');
     }
   }
 
+  let partIndex = 1;
   const fragments = sequences2join.map((sequence, index) => {
-    const seq = getSequenceDataBetweenRange(sequence, locations2join[index]);
+    let seq = getSequenceDataBetweenRange(sequence, locations2join[index]);
     if (orientations2join[index] === 'reverse') {
-      return getReverseComplementSequenceAndAnnotations(seq);
+      seq = getReverseComplementSequenceAndAnnotations(seq);
     }
+    let partName = `Part ${partIndex}`;
+    if (isSpacer[index]) {
+      partName = `Spacer`;
+    } else {
+      partIndex++;
+    }
+
+    const part = {
+      start: 0,
+      end: seq.sequence.length,
+      name: partName,
+      id: index,
+      forward: true,
+      strand: 1,
+      type: "misc_feature",
+    }
+    seq.parts.push(part);
     return seq;
   });
   // Concatenate all fragments
