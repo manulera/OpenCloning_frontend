@@ -3,6 +3,7 @@ import { FormControl, TextField, Box } from '@mui/material';
 import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import CollapsableLabel from './CollapsableLabel';
 import { usePrimerDesign } from './PrimerDesignContext';
+import { getSequenceLabel } from './utils/getSequenceLabel';
 
 function PrimerSpacerForm({ open = true }) {
   const { spacers, setSpacers, circularAssembly, templateSequenceNames, templateSequenceIds, isAmplified } = usePrimerDesign();
@@ -19,7 +20,7 @@ function PrimerSpacerForm({ open = true }) {
   const getSequenceName = (seqIndex) => {
     const name = sequenceNamesWrapped[seqIndex];
     const id = templateSequenceIdsWrapped[seqIndex];
-    return name && name !== 'name' ? `Seq. ${id} (${name})` : `Seq. ${id}`;
+    return getSequenceLabel(id, name);
   };
 
   const getSpacerLabel = (index) => {

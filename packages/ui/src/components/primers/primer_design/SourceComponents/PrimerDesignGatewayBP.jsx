@@ -1,27 +1,27 @@
 import { Button, Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import React from 'react';
-import { batch, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import SingleInputSelector from '../../../sources/SingleInputSelector';
 import { cloningActions } from '@opencloning/store/cloning';
-import useStoreEditor from '../../../../hooks/useStoreEditor';
 import LabelWithTooltip from '../../../form/LabelWithTooltip';
 import useGatewaySites from '../../../../hooks/useGatewaySites';
 import NoAttPSitesError from '../common/NoAttPSitesError';
 import RetryAlert from '../../../form/RetryAlert';
 import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
+import useNavigateAfterPrimerDesign from './useNavigateAfterPrimerDesign';
 
-const { addTemplateChildAndSubsequentSource, setCurrentTab, setMainSequenceId } = cloningActions;
+const { addTemplateChildAndSubsequentSource } = cloningActions;
 
 function PrimerDesignGatewayBP({ source }) {
   const [target, setTarget] = React.useState('');
   const [greedy, setGreedy] = React.useState(false);
+  const dispatch = useDispatch();
+  const inputSequenceId = getPcrTemplateSequenceId(source);
+  const navigateAfterDesign = useNavigateAfterPrimerDesign();
 
-  const { updateStoreEditor } = useStoreEditor();
   const { requestStatus, sites: sitesInTarget, attemptAgain } = useGatewaySites({ target, greedy });
   const nbOfAttPSites = sitesInTarget.filter((site) => site.siteName.startsWith('attP')).length;
-  const inputSequenceId = getPcrTemplateSequenceId(source);
 
-  const dispatch = useDispatch();
   const onSubmit = (event) => {
     event.preventDefault();
     const newSource = {
@@ -36,20 +36,14 @@ function PrimerDesignGatewayBP({ source }) {
       circular: false,
     };
 
-    batch(() => {
-      dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id }));
-      dispatch(setMainSequenceId(inputSequenceId));
-      updateStoreEditor('mainEditor', inputSequenceId);
-      dispatch(setCurrentTab(3));
-      // Scroll to the top of the page after 300ms
-      setTimeout(() => {
-        document.querySelector('.tab-panels-container')?.scrollTo({ top: 0, behavior: 'instant' });
-      }, 300);
-    });
+    navigateAfterDesign(
+      () => dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id })),
+      inputSequenceId,
+    );
   };
+
   return (
     <form onSubmit={onSubmit}>
-
       <FormControl fullWidth>
         <SingleInputSelector
           label="Donor vector"

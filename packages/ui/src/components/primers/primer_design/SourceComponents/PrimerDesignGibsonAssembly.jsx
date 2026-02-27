@@ -1,12 +1,15 @@
 import { Box, Button, Checkbox, FormControl, FormControlLabel, Tooltip, Typography } from '@mui/material';
 import { Info as InfoIcon } from '@mui/icons-material';
 import React from 'react';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { isEqual } from 'lodash-es';
 import MultipleInputsSelector from '../../../sources/MultipleInputsSelector';
 import { cloningActions } from '@opencloning/store/cloning';
-import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
+import useNavigateAfterPrimerDesign from './useNavigateAfterPrimerDesign';
+import { getSequenceLabel } from '../SequenceTabComponents/utils/getSequenceLabel';
+
+const { addPCRsAndSubsequentSourcesForAssembly } = cloningActions;
 
 function AmplifySectionTitle() {
   return (
@@ -37,6 +40,8 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
   const [targets, setTargets] = React.useState(source.input.map(({ sequence }) => sequence));
   const [amplified, setAmplified] = React.useState(() => source.input.map(() => true));
   const inputSequenceId = getPcrTemplateSequenceId(source);
+  const dispatch = useDispatch();
+  const navigateAfterDesign = useNavigateAfterPrimerDesign();
 
   const sequenceNames = useSelector(
     ({ cloning }) => targets.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })),
@@ -64,9 +69,6 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
     return isValidAmplifiedConfig(next);
   };
 
-  const { updateStoreEditor } = useStoreEditor();
-  const { addPCRsAndSubsequentSourcesForAssembly, setCurrentTab, setMainSequenceId } = cloningActions;
-  const dispatch = useDispatch();
   const onSubmit = (event) => {
     event.preventDefault();
     const newSequence = {
@@ -75,26 +77,17 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
       circular: false,
     };
 
-    batch(() => {
-      console.log('targets', targets);
-      console.log('amplified', amplified);
-      console.log('inputSequenceId', inputSequenceId);
-      console.log('newSequence', newSequence);
-      dispatch(addPCRsAndSubsequentSourcesForAssembly({
+    const firstAmplifiedId = targets.find((_, i) => amplified[i]) ?? inputSequenceId;
+    navigateAfterDesign(
+      () => dispatch(addPCRsAndSubsequentSourcesForAssembly({
         sourceId: source.id,
         newSequence,
         templateIds: targets,
         sourceType: assemblyType,
         amplified,
-      }));
-      const firstAmplifiedId = targets.find((_, i) => amplified[i]) ?? inputSequenceId;
-      dispatch(setMainSequenceId(firstAmplifiedId));
-      updateStoreEditor('mainEditor', firstAmplifiedId);
-      dispatch(setCurrentTab(3));
-      setTimeout(() => {
-        document.querySelector('.tab-panels-container')?.scrollTo({ top: 0, behavior: 'instant' });
-      }, 300);
-    });
+      })),
+      firstAmplifiedId,
+    );
   };
 
   return (
@@ -112,7 +105,7 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
           <AmplifySectionTitle />
           {targets.map((id, index) => {
             const name = sequenceNames.find((s) => s.id === id)?.name || 'template';
-            const label = name !== 'name' ? `${id} - ${name}` : `${id}`;
+            const label = getSequenceLabel(id, name);
             return (
               <FormControl key={id} sx={{ alignItems: 'flex-start', mb: 0.5 }}>
                 <FormControlLabel

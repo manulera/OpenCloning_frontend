@@ -1,18 +1,19 @@
 import { Alert, Button, FormControl } from '@mui/material';
 import React from 'react';
-import { batch, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import SingleInputSelector from '../../../sources/SingleInputSelector';
 import { cloningActions } from '@opencloning/store/cloning';
-import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
+import useNavigateAfterPrimerDesign from './useNavigateAfterPrimerDesign';
+
+const { addTemplateChildAndSubsequentSource } = cloningActions;
 
 function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
   const [target, setTarget] = React.useState('');
-
-  const { updateStoreEditor } = useStoreEditor();
-  const { addTemplateChildAndSubsequentSource, setCurrentTab, setMainSequenceId } = cloningActions;
   const dispatch = useDispatch();
   const inputSequenceId = getPcrTemplateSequenceId(source);
+  const navigateAfterDesign = useNavigateAfterPrimerDesign();
+
   const onSubmit = (event) => {
     event.preventDefault();
     const newSource = {
@@ -25,17 +26,12 @@ function PrimerDesignHomologousRecombination({ source, primerDesignType }) {
       circular: false,
     };
 
-    batch(() => {
-      dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id }));
-      dispatch(setMainSequenceId(inputSequenceId));
-      updateStoreEditor('mainEditor', inputSequenceId);
-      dispatch(setCurrentTab(3));
-      // Scroll to the top of the page after 300ms
-      setTimeout(() => {
-        document.querySelector('.tab-panels-container')?.scrollTo({ top: 0, behavior: 'instant' });
-      }, 300);
-    });
+    navigateAfterDesign(
+      () => dispatch(addTemplateChildAndSubsequentSource({ newSource, newSequence, sourceId: source.id })),
+      inputSequenceId,
+    );
   };
+
   return (
     <form onSubmit={onSubmit}>
       <Alert severity="info" icon={false} sx={{ textAlign: 'left' }}>
