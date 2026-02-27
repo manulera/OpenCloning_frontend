@@ -28,30 +28,27 @@ function AmplifySectionTitle() {
   );
 }
 
-function isValidAmplifiedConfig(config) {
-  for (let i = 0; i < config.length - 1; i++) {
-    if (!config[i] && !config[i + 1]) return false;
-  }
-  if (config.length > 1 && !config[0] && !config[config.length - 1]) return false;
-  return true;
-}
+export function GibsonAmplifyAndCircularControls({
+  targets,
+  sequenceNames,
+  amplified,
+  setAmplified,
+  circularAssembly,
+  setCircularAssembly,
+}) {
+  const isValidAmplifiedConfig = (config) => {
+    for (let i = 0; i < config.length - 1; i += 1) {
+      if (!config[i] && !config[i + 1]) return false;
+    }
+    if (circularAssembly && config.length > 1 && !config[0] && !config[config.length - 1]) return false;
+    return true;
+  };
 
-function PrimerDesignGibsonAssembly({ source, assemblyType }) {
-  const [targets, setTargets] = React.useState(source.input.map(({ sequence }) => sequence));
-  const [amplified, setAmplified] = React.useState(() => source.input.map(() => true));
-  const inputSequenceId = getPcrTemplateSequenceId(source);
-  const dispatch = useDispatch();
-  const navigateAfterDesign = useNavigateAfterPrimerDesign();
-
-  const sequenceNames = useSelector(
-    ({ cloning }) => targets.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })),
-    isEqual,
-  );
-
-  const onInputChange = (newInputSequenceIds) => {
-    const newValue = newInputSequenceIds.includes(inputSequenceId) ? newInputSequenceIds : [...newInputSequenceIds, inputSequenceId];
-    setTargets(newValue);
-    setAmplified(Array(newValue.length).fill(true));
+  const canToggleOff = (index) => {
+    if (!amplified[index]) return true;
+    const next = [...amplified];
+    next[index] = false;
+    return isValidAmplifiedConfig(next);
   };
 
   const handleAmplifiedToggle = (index) => {
@@ -62,52 +59,20 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
     });
   };
 
-  const canToggleOff = (index) => {
-    if (!amplified[index]) return true;
-    const next = [...amplified];
-    next[index] = false;
-    return isValidAmplifiedConfig(next);
-  };
-
-  const onSubmit = (event) => {
-    event.preventDefault();
-    const newSequence = {
-      type: 'TemplateSequence',
-      primer_design: 'gibson_assembly',
-      circular: false,
-    };
-
-    const firstAmplifiedId = targets.find((_, i) => amplified[i]) ?? inputSequenceId;
-    navigateAfterDesign(
-      () => dispatch(addPCRsAndSubsequentSourcesForAssembly({
-        sourceId: source.id,
-        newSequence,
-        templateIds: targets,
-        sourceType: assemblyType,
-        amplified,
-      })),
-      firstAmplifiedId,
-    );
-  };
+  React.useEffect(() => {
+    setAmplified(Array(targets.length).fill(true));
+  }, [targets, circularAssembly]);
 
   return (
-    <form onSubmit={onSubmit}>
-      <FormControl fullWidth>
-        <MultipleInputsSelector
-          inputSequenceIds={targets}
-          label="Input sequences (in order)"
-          onChange={onInputChange}
-        />
-      </FormControl>
-
+    <>
       {targets.length > 1 && (
-        <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <Box data-testid="amplify-section" sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <AmplifySectionTitle />
           {targets.map((id, index) => {
             const name = sequenceNames.find((s) => s.id === id)?.name || 'template';
             const label = getSequenceLabel(id, name);
             return (
-              <FormControl key={id} sx={{ alignItems: 'flex-start', mb: 0.5 }}>
+              <FormControl data-testid={`amplify-section-${index}`} key={id} sx={{ alignItems: 'flex-start', mb: 0.5 }}>
                 <FormControlLabel
                   control={(
                     <Checkbox
@@ -129,6 +94,84 @@ function PrimerDesignGibsonAssembly({ source, assemblyType }) {
           })}
         </Box>
       )}
+
+      <FormControl>
+        <FormControlLabel
+          control={(
+            <Checkbox
+              data-test="circular-assembly-checkbox"
+              disabled={targets.length === 1}
+              checked={circularAssembly}
+              onChange={(e) => setCircularAssembly(e.target.checked)}
+              name="circular-assembly"
+            />
+          )}
+          label={targets.length === 1 ? 'Circular assembly (only one sequence input)' : 'Circular assembly'}
+        />
+      </FormControl>
+    </>
+  );
+}
+
+function PrimerDesignGibsonAssembly({ source, assemblyType }) {
+  const [targets, setTargets] = React.useState(source.input.map(({ sequence }) => sequence));
+  const [amplified, setAmplified] = React.useState(() => source.input.map(() => true));
+  const [circularAssembly, setCircularAssembly] = React.useState(true);
+  const inputSequenceId = getPcrTemplateSequenceId(source);
+  const dispatch = useDispatch();
+  const navigateAfterDesign = useNavigateAfterPrimerDesign();
+
+  const sequenceNames = useSelector(
+    ({ cloning }) => targets.map((id) => ({ id, name: cloning.teselaJsonCache[id]?.name || 'template' })),
+    isEqual,
+  );
+
+  const onInputChange = (newInputSequenceIds) => {
+    const newValue = newInputSequenceIds.includes(inputSequenceId) ? newInputSequenceIds : [...newInputSequenceIds, inputSequenceId];
+    setTargets(newValue);
+    setAmplified(Array(newValue.length).fill(true));
+  };
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    const newSequence = {
+      type: 'TemplateSequence',
+      primer_design: 'gibson_assembly',
+      circular: false,
+    };
+
+    const firstAmplifiedId = targets.find((_, i) => amplified[i]) ?? inputSequenceId;
+    navigateAfterDesign(
+      () => dispatch(addPCRsAndSubsequentSourcesForAssembly({
+        sourceId: source.id,
+        newSequence,
+        templateIds: targets,
+        sourceType: assemblyType,
+        amplified,
+        circularAssembly,
+      })),
+      firstAmplifiedId,
+    );
+  };
+
+  return (
+    <form onSubmit={onSubmit}>
+      <FormControl fullWidth>
+        <MultipleInputsSelector
+          inputSequenceIds={targets}
+          label="Input sequences (in order)"
+          onChange={onInputChange}
+        />
+      </FormControl>
+
+      <GibsonAmplifyAndCircularControls
+        targets={targets}
+        sequenceNames={sequenceNames}
+        amplified={amplified}
+        setAmplified={setAmplified}
+        circularAssembly={circularAssembly}
+        setCircularAssembly={setCircularAssembly}
+      />
 
       <Button type="submit" variant="contained" color="success">
         Design primers

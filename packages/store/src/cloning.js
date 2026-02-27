@@ -139,11 +139,15 @@ const reducer = {
     });
 
     if (sourceType !== null) {
-      sources.push({
+      const assemblySource = {
         id: getNextUniqueId(state),
         input: assemblyInputIds.map((id) => ({ sequence: id })),
         type: sourceType,
-      });
+      };
+      if (action.payload.circularAssembly !== undefined) {
+        assemblySource.circular_assembly = action.payload.circularAssembly;
+      }
+      sources.push(assemblySource);
     }
   },
 

@@ -193,6 +193,9 @@ describe('Test primer designer functionality', () => {
     clickMultiSelectOption('Purpose of primers', 'Gibson Assembly', 'li');
     clickMultiSelectOption('Input sequences', 'NC_003424', 'li');
 
+    // Circular assembly checkbox should be ticked by default
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.checked');
+
     cy.get('button').contains('Design primers').click();
 
     // We should be now in the Sequence tab
@@ -242,11 +245,6 @@ describe('Test primer designer functionality', () => {
     cy.contains('svg g', 'ars1').should('have.class', 'ann-reverse');
     cy.get('table span').contains('Reverse').first().click({ force: true });
 
-    // Circular assembly checkbox should be ticked
-    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.checked');
-    // Untick it 
-    cy.get('span').contains('Circular assembly').click({ force: true });
-
     // Submit a high hybridization to get an error
     setInputValue('Min. hybridization length', '100000', '.primer-design');
     cy.get('button').contains('Design primers').click();
@@ -273,7 +271,7 @@ describe('Test primer designer functionality', () => {
       expect(interception.request.query.homology_length).to.equal('20');
       expect(interception.request.query.minimal_hybridization_length).to.equal('30');
       expect(interception.request.query.target_tm).to.equal('30');
-      expect(interception.request.query.circular).to.equal('false');
+      expect(interception.request.query.circular).to.equal('true');
       expect(interception.request.body.settings).to.deep.equal(defaultPrimerDesignSettings);
     });
 
@@ -281,9 +279,6 @@ describe('Test primer designer functionality', () => {
     setInputValue('Homology length', '3', '.primer-design');
     setInputValue('Min. hybridization length', '2', '.primer-design');
     setInputValue('Target hybridization Tm', '6', '.primer-design');
-    cy.get('span').contains('Circular assembly').click({ force: true });
-    updateSpacer(0, 'AAAAAAAAA');
-    updateSpacer(1, 'CCCCCCCCC');
 
     // Design the primers
     cy.get('.main-sequence-editor button').contains('Design primers').click();
@@ -327,14 +322,48 @@ describe('Test primer designer functionality', () => {
     cy.get('button').contains('Design primers').click();
     clickMultiSelectOption('Purpose of primers', 'Gibson Assembly', 'li');
     clickMultiSelectOption('Input sequences', 'name', 'li');
+    // With a single input, circular checkbox should be disabled but checked
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.disabled');
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.checked');
     cy.get('button').contains('Design primers').click();
     cy.get(`.veAxisTick[data-test="1"]`).first().click();
     cy.get(`.veAxisTick[data-test="10"]`).first().click({ shiftKey: true });
     cy.get('button').contains('Choose region').click();
     checkCurrentStep('Other settings');
-    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.disabled');
-    cy.get('span[data-test="circular-assembly-checkbox"] input').should('be.checked');
   });
+
+  it('Gibson assembly primer design - fragment not amplified', () => {
+    loadExample('Gibson assembly');
+    // Delete both sources that say "PCR with primers"
+    deleteSourceByContent('PCR with primers');
+    deleteSourceByContent('PCR with primers');
+    addSource('PCRSource');
+    // Click on design primers
+    cy.get('button').contains('Design primers').click();
+    clickMultiSelectOption('Purpose of primers', 'Gibson Assembly', 'li');
+    clickMultiSelectOption('Input sequences', 'NC_003424', 'li');
+    // Uncheck the fragment not amplified checkbox
+    cy.get('[data-testid="amplify-section"] input').eq(0).should('be.checked');
+    cy.get('[data-testid="amplify-section"] input').eq(1).should('be.checked');
+    cy.get('[data-testid="amplify-section"] input').eq(1).click();
+    cy.get('[data-testid="amplify-section"] input').eq(1).should('not.be.checked');
+    cy.get('button').contains('Design primers').click();
+    // Select feature on Seq 1
+    cy.contains('svg', 'ars1').click();
+    getBottomButton('Choose region', 0).click();
+    // Scroll to top
+    cy.get('h2').contains('Primer designer').scrollIntoView();
+    cy.contains('The whole sequence will be used (not amplified by PCR)').should('be.visible');
+    getBottomButton('Next', 1).click();
+    cy.get('.main-sequence-editor button').contains('Design primers').click();
+    cy.get('.primer-design-form label').filter(':contains("Sequence")').should('have.length', 2);
+    getBottomButton('Save primers', 3).click();
+    cy.get('button').filter(':contains("Perform PCR")').should('have.length', 1);
+    cy.get('button').contains('Perform PCR').click();
+    cy.get('li#source-11 button', {timeout: 20000}).contains('Submit').click();
+    cy.get('li#sequence-11').contains('5322 bps').should('exist')
+
+  })
 
   it('In-Fusion primer design', () => {
     loadExample('Gibson assembly');

@@ -3,7 +3,7 @@ import { PrimerDesignProvider } from './PrimerDesignContext';
 import PrimerDesignForm from './PrimerDesignForm';
 import usePrimerDesignSettings from './usePrimerDesignSettings';
 
-export default function PrimerDesignGibsonAssembly({ assemblyInputsInOrder }) {
+export default function PrimerDesignGibsonAssembly({ assemblyInputsInOrder, circularAssembly }) {
   const templateSequencesIds = React.useMemo(
     () => assemblyInputsInOrder.map((x) => x.templateSequenceId),
     [assemblyInputsInOrder],
@@ -27,6 +27,7 @@ export default function PrimerDesignGibsonAssembly({ assemblyInputsInOrder }) {
       primerDesignSettings={primerDesignSettings}
       steps={steps}
       isAmplified={isAmplified}
+      circularAssembly={circularAssembly}
     >
       <PrimerDesignForm />
     </PrimerDesignProvider>

@@ -11,7 +11,7 @@ import useDesignPrimers from './hooks/useDesignPrimers';
 
 const PrimerDesignContext = React.createContext();
 
-export function PrimerDesignProvider({ children, designType, sequenceIds, primerDesignSettings, steps, isAmplified: isAmplifiedProp }) {
+export function PrimerDesignProvider({ children, designType, sequenceIds, primerDesignSettings, steps, isAmplified: isAmplifiedProp, circularAssembly = false }) {
   const isAmplified = useMemo(
     () => isAmplifiedProp || sequenceIds.map(() => true),
     [isAmplifiedProp, sequenceIds],
@@ -25,11 +25,9 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
   }, [sequenceIds, designType]);
 
   const initialFragmentOrientationsLength = templateSequenceIds.length;
-  const initialCircularAssembly = designType === 'gibson_assembly';
-  const initialSpacersLength = initialCircularAssembly ? initialFragmentOrientationsLength : initialFragmentOrientationsLength + 1;
+  const initialSpacersLength = circularAssembly ? initialFragmentOrientationsLength : initialFragmentOrientationsLength + 1;
 
   const [fragmentOrientations, setFragmentOrientations] = useState(Array(initialFragmentOrientationsLength).fill('forward'));
-  const [circularAssembly, setCircularAssembly] = useState(initialCircularAssembly);
 
   const store = useStore();
   const sequenceNames = useSelector((state) => sequenceIds.map((id) => state.cloning.teselaJsonCache[id].name), isEqual);
@@ -37,8 +35,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
 
   const { spacers, setSpacers, spacersAreValid } = useSpacers({
     initialLength: initialSpacersLength,
-    circularAssembly,
-    templateSequenceIdsLength: templateSequenceIds.length,
   });
 
   const { selectedTab, onTabChange, handleNext, handleBack } = useTabNavigation({ sequenceIds });
@@ -109,7 +105,6 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     submissionPreventedMessage,
     addPrimers,
     circularAssembly,
-    setCircularAssembly,
     templateSequenceIds,
     templateSequenceNames,
     designType,
@@ -121,7 +116,7 @@ export function PrimerDesignProvider({ children, designType, sequenceIds, primer
     sequenceIds, fragmentOrientations, circularAssembly, spacers,
     setFragmentOrientations, setSpacers, handleFragmentOrientationChange,
     sequenceNames, primerDesignSettings, submissionPreventedMessage,
-    addPrimers, setCircularAssembly, templateSequenceIds, templateSequenceNames,
+    addPrimers, templateSequenceIds, templateSequenceNames,
     designType, steps, isAmplified,
   ]);
 
