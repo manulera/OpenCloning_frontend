@@ -1,5 +1,17 @@
 # @opencloning/ui
 
+## 1.5.1
+
+### Patch Changes
+
+- [#651](https://github.com/manulera/OpenCloning_frontend/pull/651) [`b5c89e2`](https://github.com/manulera/OpenCloning_frontend/commit/b5c89e23aa1065319cb07a9ac48a26693dd0a21a) Thanks [@manulera](https://github.com/manulera)! - Big refactor of Primer designer for better maintainability
+
+- [#651](https://github.com/manulera/OpenCloning_frontend/pull/651) [`b5c89e2`](https://github.com/manulera/OpenCloning_frontend/commit/b5c89e23aa1065319cb07a9ac48a26693dd0a21a) Thanks [@manulera](https://github.com/manulera)! - Allow primer design of Gibson and similar assembly methods to include fragments that are not amplified. Similar to what the NEBuilder planner does, where not all products are amplified. Perhaps in the future it would be useful to also allow the option to restore the restriction sites on the edge.
+
+- Updated dependencies [[`b5c89e2`](https://github.com/manulera/OpenCloning_frontend/commit/b5c89e23aa1065319cb07a9ac48a26693dd0a21a)]:
+  - @opencloning/store@1.5.1
+  - @opencloning/utils@1.5.1
+
 ## 1.5.0
 
 ### Minor Changes
