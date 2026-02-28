@@ -3,9 +3,10 @@ import { FormControl, TextField, Box } from '@mui/material';
 import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import CollapsableLabel from './CollapsableLabel';
 import { usePrimerDesign } from './PrimerDesignContext';
+import { getSequenceLabel } from './utils/getSequenceLabel';
 
 function PrimerSpacerForm({ open = true }) {
-  const { spacers, setSpacers, circularAssembly, templateSequenceNames, templateSequenceIds } = usePrimerDesign();
+  const { spacers, setSpacers, circularAssembly, templateSequenceNames, templateSequenceIds, isAmplified } = usePrimerDesign();
 
   const fragmentCount = templateSequenceIds.length;
 
@@ -19,7 +20,7 @@ function PrimerSpacerForm({ open = true }) {
   const getSequenceName = (seqIndex) => {
     const name = sequenceNamesWrapped[seqIndex];
     const id = templateSequenceIdsWrapped[seqIndex];
-    return name && name !== 'name' ? `Seq. ${id} (${name})` : `Seq. ${id}`;
+    return getSequenceLabel(id, name);
   };
 
   const getSpacerLabel = (index) => {
@@ -40,6 +41,9 @@ function PrimerSpacerForm({ open = true }) {
         <Box>
           {spacers.map((spacer, index) => {
             const error = stringIsNotDNA(spacer) ? 'Invalid DNA sequence' : '';
+            const isFirstSpacerDisabled = !circularAssembly && index === 0 && !isAmplified[0];
+            const isLastSpacerDisabled = !circularAssembly && index === fragmentCount && !isAmplified[fragmentCount - 1];
+            const disabled = isFirstSpacerDisabled || isLastSpacerDisabled;
             return (
               <FormControl key={index} fullWidth sx={{ mb: 2 }}>
                 <TextField
@@ -48,12 +52,12 @@ function PrimerSpacerForm({ open = true }) {
                   onChange={(e) => handleSpacerChange(index, e.target.value)}
                   variant="outlined"
                   size="small"
+                  disabled={disabled}
                   inputProps={{
                     id: 'sequence',
                   }}
-                    // Error if not DNA
                   error={error !== ''}
-                  helperText={error}
+                  helperText={disabled ? 'Not editable (adjacent fragment is not amplified)' : error}
                 />
               </FormControl>
             );

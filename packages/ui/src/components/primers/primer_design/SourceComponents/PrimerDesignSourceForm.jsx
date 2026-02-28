@@ -1,22 +1,22 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
-
-import { batch, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PrimerDesignHomologousRecombination from './PrimerDesignHomologousRecombination';
 import PrimerDesignGibsonAssembly from './PrimerDesignGibsonAssembly';
 import { cloningActions } from '@opencloning/store/cloning';
-import useStoreEditor from '../../../../hooks/useStoreEditor';
 import PrimerDesignGatewayBP from './PrimerDesignGatewayBP';
 import { getPcrTemplateSequenceId } from '@opencloning/store/cloning_utils';
+import useNavigateAfterPrimerDesign from './useNavigateAfterPrimerDesign';
+
+const { addPCRsAndSubsequentSourcesForAssembly } = cloningActions;
 
 function PrimerDesignSourceForm({ source }) {
   const [primerDesignType, setPrimerDesignType] = React.useState('');
-  const { updateStoreEditor } = useStoreEditor();
-  const { addPCRsAndSubsequentSourcesForAssembly, setMainSequenceId, setCurrentTab } = cloningActions;
   const dispatch = useDispatch();
   const inputSequenceId = getPcrTemplateSequenceId(source);
+  const navigateAfterDesign = useNavigateAfterPrimerDesign();
+
   React.useEffect(() => {
-    // Here the user does not have to select anything else
     if (primerDesignType === 'restriction_ligation' || primerDesignType === 'simple_pair') {
       const newSequence = {
         type: 'TemplateSequence',
@@ -24,16 +24,10 @@ function PrimerDesignSourceForm({ source }) {
         circular: false,
       };
 
-      batch(() => {
-        dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: [], sourceType: null }));
-        dispatch(setMainSequenceId(inputSequenceId));
-        updateStoreEditor('mainEditor', inputSequenceId);
-        dispatch(setCurrentTab(3));
-        // Scroll to the top of the page after 300ms
-        setTimeout(() => {
-          document.querySelector('.tab-panels-container')?.scrollTo({ top: 0, behavior: 'instant' });
-        }, 300);
-      });
+      navigateAfterDesign(
+        () => dispatch(addPCRsAndSubsequentSourcesForAssembly({ sourceId: source.id, newSequence, templateIds: [inputSequenceId], sourceType: null })),
+        inputSequenceId,
+      );
     }
   }, [primerDesignType]);
 

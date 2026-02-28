@@ -1,11 +1,12 @@
 import { FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import React from 'react';
 import { usePrimerDesign } from './PrimerDesignContext';
+import { getSequenceLabel } from './utils/getSequenceLabel';
 
 function OrientationPicker({ id, index }) {
   const { designType, fragmentOrientations, handleFragmentOrientationChange, templateSequenceNames } = usePrimerDesign();
   const sequenceName = templateSequenceNames[index];
-  let label = sequenceName && sequenceName !== 'name' ? `Seq. ${id} (${sequenceName})` : `Seq. ${id}`;
+  let label = getSequenceLabel(id, sequenceName);
   if (designType === 'homologous_recombination') {
     label = 'Orientation of insert';
   }

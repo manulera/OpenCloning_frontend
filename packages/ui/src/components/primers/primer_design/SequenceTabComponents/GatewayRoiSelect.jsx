@@ -1,6 +1,5 @@
 import { Alert, Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
-import { getReverseComplementSequenceString as reverseComplement } from '@teselagen/sequence-utils';
 import { isEqual } from 'lodash-es';
 import { parseFeatureLocation } from '@teselagen/bio-parsers';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,30 +8,9 @@ import useStoreEditor from '../../../../hooks/useStoreEditor';
 import { cloningActions } from '@opencloning/store/cloning';
 import { usePrimerDesign } from './PrimerDesignContext';
 import RequestStatusWrapper from '../../../form/RequestStatusWrapper';
+import knownGatewayCombinations from './utils/knownGatewayCombinations';
 
-const knownCombinations = [
-  {
-    siteNames: ['attP4', 'attP1'],
-    spacers: ['GGGGACAACTTTGTATAGAAAAGTTGNN', reverseComplement('GGGGACTGCTTTTTTGTACAAACTTGN')],
-    orientation: [true, true],
-    message: 'Primers tails designed based on pDONR™ P4-P1R',
-    translationFrame: [4, 6],
-  },
-  {
-    siteNames: ['attP1', 'attP2'],
-    spacers: ['GGGGACAAGTTTGTACAAAAAAGCAGGCTNN', reverseComplement('GGGGACCACTTTGTACAAGAAAGCTGGGTN')],
-    orientation: [true, false],
-    message: 'Primers tails designed based on pDONR™ 221',
-    translationFrame: [4, 6],
-  },
-  {
-    siteNames: ['attP2', 'attP3'],
-    spacers: ['GGGGACAGCTTTCTTGTACAAAGTGGNN', reverseComplement('GGGGACAACTTTGTATAATAAAGTTGN')],
-    orientation: [false, false],
-    message: 'Primers tails designed based on pDONR™ P2R-P3',
-    translationFrame: [4, 6],
-  },
-];
+const { setMainSequenceSelection } = cloningActions;
 
 function SiteSelect({ donorSites, site, setSite, label }) {
   return (
@@ -56,8 +34,6 @@ function SiteSelect({ donorSites, site, setSite, label }) {
     </FormControl>
   );
 }
-
-const { setMainSequenceSelection } = cloningActions;
 
 function GatewayRoiSelect({ id, greedy = false }) {
   const [leftSite, setLeftSite] = React.useState(null);
@@ -104,14 +80,14 @@ function GatewayRoiSelect({ id, greedy = false }) {
       const selection = { selectionLayer, caretPosition: -1 };
       const siteNames = [newLeftSite.siteName, newRightSite.siteName];
       const orientation = [newLeftSite.location.includes('(+)'), newRightSite.location.includes('(+)')];
-      const knownCombinationForward = knownCombinations.find(({ siteNames: knownSites, orientation: knownOrientation }) => isEqual(knownSites, siteNames) && isEqual(knownOrientation, orientation));
+      const knownCombinationForward = knownGatewayCombinations.find(({ siteNames: knownSites, orientation: knownOrientation }) => isEqual(knownSites, siteNames) && isEqual(knownOrientation, orientation));
       if (knownCombinationForward) {
         handleKnownCombinationChange(knownCombinationForward, selection);
         return;
       }
       const siteNamesReverse = [newRightSite.siteName, newLeftSite.siteName];
       const orientationReverse = [!newRightSite.location.includes('(+)'), !newLeftSite.location.includes('(+)')];
-      const knownCombinationReverse = knownCombinations.find(({ siteNames: knownSites, orientation: knownOrientation }) => isEqual(knownSites, siteNamesReverse) && isEqual(knownOrientation, orientationReverse));
+      const knownCombinationReverse = knownGatewayCombinations.find(({ siteNames: knownSites, orientation: knownOrientation }) => isEqual(knownSites, siteNamesReverse) && isEqual(knownOrientation, orientationReverse));
       if (knownCombinationReverse) {
         handleKnownCombinationChange(knownCombinationReverse, selection);
         return;
@@ -123,7 +99,6 @@ function GatewayRoiSelect({ id, greedy = false }) {
   const onSiteSelectLeft = React.useCallback((site) => {
     setLeftSite(site);
     if (rightSite === null || isEqual(rightSite, site)) {
-      // Find the first different one
       const differentSite = donorSites.find(({ location }) => location !== site.location);
       setRightSite(differentSite);
       checkKnownCombination(site, differentSite);
@@ -135,7 +110,6 @@ function GatewayRoiSelect({ id, greedy = false }) {
   const onSiteSelectRight = React.useCallback((site) => {
     setRightSite(site);
     if (leftSite === null || isEqual(leftSite, site)) {
-      // Find the first different one
       const differentSite = donorSites.find(({ location }) => location !== site.location);
       setLeftSite(differentSite);
       checkKnownCombination(differentSite, site);

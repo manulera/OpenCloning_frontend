@@ -12,12 +12,13 @@ import PrimerDesignGatewayBP from './PrimerDesignGatewayBP';
 import PrimerDesignEBIC from './PrimerDesignEBIC';
 import PrimerDesignRestriction from './PrimerDesignRestriction';
 
+const { setMainSequenceId } = cloningActions;
+
 function PrimerDesigner() {
   const { updateStoreEditor } = useStoreEditor();
   const dispatch = useDispatch();
-  const { setMainSequenceId } = cloningActions;
 
-  const { finalSource, otherInputIds, pcrSources, outputSequences } = useSelector((state) => getPrimerDesignObject(state.cloning), isEqual);
+  const { finalSource, otherInputIds, pcrSources, outputSequences, assemblyInputsInOrder } = useSelector((state) => getPrimerDesignObject(state.cloning), isEqual);
 
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
 
@@ -36,36 +37,30 @@ function PrimerDesigner() {
   const showPrimerDesigner = [...templateSequencesIds, ...otherInputIds].includes(mainSequenceId);
 
   let component = null;
-  // Check conditions for different types of primer design
   if (finalSource === null && pcrSources.length === 1 && outputSequences[0].primer_design === 'restriction_ligation') {
     component = <PrimerDesignRestriction pcrSource={pcrSources[0]} />;
-  }
-  if (finalSource === null && pcrSources.length === 1 && outputSequences[0].primer_design === 'simple_pair') {
+  } else if (finalSource === null && pcrSources.length === 1 && outputSequences[0].primer_design === 'simple_pair') {
     component = <PrimerDesignSimplePair pcrSource={pcrSources[0]} />;
-  }
-  if (finalSource?.type === 'GibsonAssemblySource' || finalSource?.type === 'InFusionSource' || finalSource?.type === 'InVivoAssemblySource' || finalSource?.type === 'CreLoxRecombinationSource') {
-    component = <PrimerDesignGibsonAssembly pcrSources={pcrSources} />;
-  }
-  if (finalSource?.type === 'HomologousRecombinationSource' && otherInputIds.length === 1 && pcrSources.length === 1) {
+  } else if (finalSource?.type === 'GibsonAssemblySource' || finalSource?.type === 'InFusionSource' || finalSource?.type === 'InVivoAssemblySource') {
+    component = <PrimerDesignGibsonAssembly assemblyInputsInOrder={assemblyInputsInOrder} circularAssembly={finalSource.circular_assembly} />;
+  } else if (finalSource?.type === 'HomologousRecombinationSource' && otherInputIds.length === 1 && pcrSources.length === 1) {
     component = (
       <PrimerDesignHomologousRecombination
         homologousRecombinationTargetId={otherInputIds[0]}
         pcrSource={pcrSources[0]}
       />
     );
-  }
-  if (finalSource?.type === 'GatewaySource' && otherInputIds.length === 1 && pcrSources.length === 1 && outputSequences[0].primer_design === 'gateway_bp') {
+  } else if (finalSource?.type === 'GatewaySource' && otherInputIds.length === 1 && pcrSources.length === 1 && outputSequences[0].primer_design === 'gateway_bp') {
     component = <PrimerDesignGatewayBP donorVectorId={otherInputIds[0]} pcrSource={pcrSources[0]} />;
-  }
-  if (finalSource?.type === 'RestrictionAndLigationSource' && outputSequences.every((outputSequence) => outputSequence.primer_design === 'ebic')) {
+  } else if (finalSource?.type === 'RestrictionAndLigationSource' && outputSequences.every((outputSequence) => outputSequence.primer_design === 'ebic')) {
     component = <PrimerDesignEBIC pcrSources={pcrSources} />;
   }
   return (
     <>
       {!showPrimerDesigner && (
-      <div>
-        <Button sx={{ mb: 4 }} variant="contained" color="success" onClick={openPrimerDesigner}>Open primer designer</Button>
-      </div>
+        <div>
+          <Button sx={{ mb: 4 }} variant="contained" color="success" onClick={openPrimerDesigner}>Open primer designer</Button>
+        </div>
       )}
       <Box className="primer-design" sx={{ display: showPrimerDesigner ? 'auto' : 'none', width: '60%', minWidth: '600px', margin: 'auto', border: 1, borderRadius: 2, overflow: 'hidden', borderColor: 'primary.main', marginBottom: 5 }}>
         <Box sx={{ margin: 'auto', display: 'flex', height: 'auto', borderBottom: 2, borderColor: 'primary.main', backgroundColor: 'primary.main' }}>
