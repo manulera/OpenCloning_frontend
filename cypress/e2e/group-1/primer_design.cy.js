@@ -253,6 +253,7 @@ describe('Test primer designer functionality', () => {
     setInputValue('Min. hybridization length', '2', '.primer-design');
 
     // Add spacers
+    cy.get('.primer-spacer-form input').should('have.length', 2);
     updateSpacer(0, 'AAAAAAAAA');
     updateSpacer(1, 'CCCCCCCCC');
 
@@ -364,6 +365,43 @@ describe('Test primer designer functionality', () => {
     cy.get('li#sequence-11').contains('5322 bps').should('exist')
 
   })
+
+  it('Gibson assembly primer design - linear assembly', () => {
+    loadExample('Gibson assembly');
+    // Delete both sources that say "PCR with primers"
+    deleteSourceByContent('PCR with primers');
+    deleteSourceByContent('PCR with primers');
+    addSource('PCRSource');
+    // Click on design primers
+    cy.get('button').contains('Design primers').click();
+    clickMultiSelectOption('Purpose of primers', 'Gibson Assembly', 'li');
+    clickMultiSelectOption('Input sequences', 'NC_003424', 'li');
+    // Uncheck the circular assembly checkbox
+    cy.get('span[data-test="circular-assembly-checkbox"] input').click();
+    cy.get('span[data-test="circular-assembly-checkbox"] input').should('not.be.checked');
+    cy.get('button').contains('Design primers').click();
+    // Select feature on Seq 1
+    cy.contains('svg', 'ars1').click();
+    getBottomButton('Choose region', 0).click();
+    cy.contains('svg', 'ase1').first().click();
+    getBottomButton('Choose region', 1).click();
+    cy.get('.primer-spacer-form input').should('have.length', 3);
+    updateSpacer(0, 'aaaa');
+    updateSpacer(1, 'cccc');
+    updateSpacer(2, 'gggg');
+    cy.get('.primer-spacer-form input').should('have.length', 3);
+    cy.get('button').contains('Design primers').click();
+    cy.get('.primer-design-form input').should('have.length', 8);
+    cy.get('.primer-design-form input').eq(1).invoke('val').should('match', /aaaa/);
+    cy.get('.primer-design-form input').eq(3).invoke('val').should('match', /[ACGT]+gggg[ACGT]+/);
+    cy.get('.primer-design-form input').eq(5).invoke('val').should('match', /[ACGT]+cccc[ACGT]+/);
+    cy.get('.primer-design-form input').eq(7).invoke('val').should('match', /TTTT/);
+    cy.get('button').contains('Save primers').click();
+    cy.get('button').contains('Perform PCR').first().click();
+    cy.get('button').contains('Perform PCR').first().click();
+    cy.get('li#source-12 button', {timeout: 20000}).contains('Submit').click();
+    cy.get('li#sequence-12').contains('3334 bps').should('exist')
+  });
 
   it('In-Fusion primer design', () => {
     loadExample('Gibson assembly');
