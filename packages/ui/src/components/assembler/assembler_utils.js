@@ -7,6 +7,8 @@ import { getGraftSequenceId } from '@opencloning/utils/network';
 import { TextReader} from '@zip.js/zip.js';
 import { editGenbankSequenceNameFromTextContent } from '@opencloning/utils';
 
+export const MAX_OUTPUT_NAME_LENGTH = 250;
+
 export function tripletsToTranslation(triplets) {
   if (!triplets) return ''
   return triplets.map(triplet =>
@@ -166,21 +168,24 @@ export function getDefaultAssemblyOutputName(assemblyIndex, expandedAssemblies, 
   const assembly = expandedAssemblies[assemblyIndex];
   const plasmidNames = assembly.map(part => plasmids.find(p => p.id === part)?.plasmid_name ?? '');
   let name = `${String(assemblyIndex + 1).padStart(3, '0')}_${plasmidNames.join('+')}`.replaceAll('/', '_').replaceAll(' ', '_');
-  if (name.length > 255) {
+  if (name.length > MAX_OUTPUT_NAME_LENGTH) {
     name = `${String(assemblyIndex + 1).padStart(3, '0')}_construct`;
   }
   return name;
 }
 
-function sanitizeOutputName(name) {
+export function sanitizeOutputName(name) {
   let sanitized = name.replaceAll('/', '_').replaceAll(' ', '_');
-  if (sanitized.length > 255) {
-    sanitized = sanitized.slice(0, 255);
+  if (sanitized.length > MAX_OUTPUT_NAME_LENGTH) {
+    sanitized = sanitized.slice(0, MAX_OUTPUT_NAME_LENGTH);
   }
   return sanitized;
 }
 
 export function getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, outputNames}) {
+  if (outputNames.length !== requestedAssemblies.length) {
+    throw new Error('outputNames must be the same length as requestedAssemblies');
+  }
   const files2Export = [];
   const categoryNames = ['Assembly', 'Name', ...currentCategories.map(categoryId => categories.find(c => c.id === categoryId).displayName)];
   const assemblyNames = expandedAssemblies.map((assembly, index) => {
@@ -200,7 +205,7 @@ export function getFilesToExportFromAssembler({requestedAssemblies, expandedAsse
 
   for (let i = 0; i < requestedAssemblies.length; i++) {
     const name = sanitizeOutputName(outputNames[i]);
-    const requestedAssembly = requestedAssemblies[i];
+    const requestedAssembly = JSON.parse(JSON.stringify(requestedAssemblies[i]));
     const jsonContent = formatStateForJsonExport({...requestedAssembly, appInfo});
     const finalSequenceId = getGraftSequenceId(requestedAssembly)
     const finalSequence = requestedAssembly.sequences.find(s => s.id === finalSequenceId)

@@ -18,7 +18,7 @@ import EditTextDialog from '../form/EditTextDialog';
 import useCombinatorialAssembly from './useCombinatorialAssembly';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 import error2String from '@opencloning/utils/error2String';
-import { categoryFilter, downloadAssemblerFilesAsZip, getFilesToExportFromAssembler, getDefaultAssemblyOutputName } from './assembler_utils';
+import { categoryFilter, downloadAssemblerFilesAsZip, getFilesToExportFromAssembler, getDefaultAssemblyOutputName, MAX_OUTPUT_NAME_LENGTH, sanitizeOutputName } from './assembler_utils';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useHttpClient from '../../hooks/useHttpClient';
 import useAlerts from '../../hooks/useAlerts';
@@ -30,8 +30,6 @@ import { graphToMSA, partsToGraph } from './graph_utils';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
-
-const MAX_OUTPUT_NAME_LENGTH = 250;
 
 function formatItemName(item) {
   // Fallback in case the item is not found (while updating list)
@@ -66,7 +64,7 @@ function AssemblerProductTable({
 
   const handleEditSave = (newValue) => {
     if (editDialog.rowIndex !== null) {
-      onOutputNameChange(editDialog.rowIndex, newValue);
+      onOutputNameChange(editDialog.rowIndex, sanitizeOutputName(newValue));
     }
     setEditDialog({ open: false, rowIndex: null, value: '' });
   };
@@ -238,7 +236,7 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addA
 
   const namesAreUnique = new Set(assemblyOutputNames).size === assemblyOutputNames.length;
   const namesNonEmpty = assemblyOutputNames.length > 0 && assemblyOutputNames.every((n) => n.trim().length > 0);
-  const namesNotTooLong = assemblyOutputNames.every((n) => n.length <= 255);
+  const namesNotTooLong = assemblyOutputNames.every((n) => n.length <= MAX_OUTPUT_NAME_LENGTH);
   const canDownload = requestedAssemblies.length > 0 && namesAreUnique && namesNonEmpty && namesNotTooLong;
 
   const onSubmitAssembly = React.useCallback(async () => {
