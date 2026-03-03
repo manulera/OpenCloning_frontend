@@ -1,5 +1,17 @@
 # @opencloning/utils
 
+## 1.5.3
+
+### Patch Changes
+
+- [#655](https://github.com/manulera/OpenCloning_frontend/pull/655) [`b34e83f`](https://github.com/manulera/OpenCloning_frontend/commit/b34e83f0b8813de7744d3d71ad779be0df2f75cf) Thanks [@manulera](https://github.com/manulera)! - Changes to Assembler naming:
+
+  - Handle slashes in downloaded file names (were being turned into subfolders)
+  - Allow users to change names of outputs in assembler
+
+- Updated dependencies []:
+  - @opencloning/store@1.5.3
+
 ## 1.5.2
 
 ### Patch Changes
