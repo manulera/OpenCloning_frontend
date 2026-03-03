@@ -42,7 +42,6 @@ function isRowInvalid(rowIndex, assemblyOutputNames) {
   const name = assemblyOutputNames[rowIndex] ?? '';
   const trimmed = name.trim();
   const isEmpty = trimmed.length === 0;
-  console.log(name, name.length)
   const isTooLong = name.length > MAX_OUTPUT_NAME_LENGTH;
   const isDuplicate = assemblyOutputNames.filter((n) => n === name).length > 1;
   return isEmpty || isTooLong || isDuplicate;

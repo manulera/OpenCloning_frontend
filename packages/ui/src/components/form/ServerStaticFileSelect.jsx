@@ -75,7 +75,6 @@ function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequ
   const label = type === 'sequence' ? 'Sequence' : 'Syntax';
 
   const onOptionsChange = React.useCallback((event, value) => {
-    console.log('onOptionsChange', value);
     if (multiple && type === 'sequence') {
       if (value.includes('__all__')) {
         const allSequences = options.filter((option) => option !== '__all__');
