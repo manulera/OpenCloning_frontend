@@ -179,7 +179,7 @@ export function getFilesToExportFromAssembler({requestedAssemblies, expandedAsse
   }
 
   for (let i = 0; i < requestedAssemblies.length; i++) {
-    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`;
+    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`.replaceAll('/', '_');
     if (name.length > 255) {
       name = `${String(i + 1).padStart(3, '0')}_construct`;
     }
