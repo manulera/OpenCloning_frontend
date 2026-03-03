@@ -5,6 +5,7 @@ import { openCycleAtNode } from './graph_utils';
 import { downloadBlob, formatStateForJsonExport, getZipFileBlob } from '@opencloning/utils/readNwrite';
 import { getGraftSequenceId } from '@opencloning/utils/network';
 import { TextReader} from '@zip.js/zip.js';
+import { editGenbankSequenceNameFromTextContent } from '@opencloning/utils';
 
 export function tripletsToTranslation(triplets) {
   if (!triplets) return ''
@@ -179,18 +180,22 @@ export function getFilesToExportFromAssembler({requestedAssemblies, expandedAsse
   }
 
   for (let i = 0; i < requestedAssemblies.length; i++) {
-    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`.replaceAll('/', '_');
+    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`.replaceAll('/', '_').replaceAll(' ', '_');
     if (name.length > 255) {
       name = `${String(i + 1).padStart(3, '0')}_construct`;
     }
     const requestedAssembly = requestedAssemblies[i];
     const jsonContent = formatStateForJsonExport({...requestedAssembly, appInfo});
+    const finalSequenceId = getGraftSequenceId(requestedAssembly)
+    const finalSequence = requestedAssembly.sequences.find(s => s.id === finalSequenceId)
+    finalSequence.file_content = editGenbankSequenceNameFromTextContent(finalSequence.file_content, name);
+    const finalSource = requestedAssembly.sources.find(s => s.id === finalSequenceId)
+    finalSource.output_name = name;
     files2Export.push({
       name: `${name}.json`,
       content: JSON.stringify(jsonContent, null, 2),
     });
-    const finalSequenceId = getGraftSequenceId(requestedAssembly)
-    const finalSequence = requestedAssembly.sequences.find(s => s.id === finalSequenceId)
+
     files2Export.push({
       name: `${name}.gbk`,
       content: finalSequence.file_content,

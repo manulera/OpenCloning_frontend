@@ -240,3 +240,10 @@ export function ebicTemplateAnnotation(templateSequence, roi, {max_inside, max_o
 
   return tidyUpSequenceData(annotatedSequence);
 }
+
+export function editGenbankSequenceNameFromTextContent(genbankContent, newName) {
+  const lines = genbankContent.split('\n');
+  const locusLine = lines[0].replace(/(?<=^LOCUS\s+)[^\s]+/, newName.replaceAll('/', '_').replaceAll(' ', '_'));
+  lines[0] = locusLine;
+  return lines.join('\n');
+}

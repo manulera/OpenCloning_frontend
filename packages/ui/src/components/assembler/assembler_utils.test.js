@@ -331,10 +331,15 @@ describe('getFilesToExportFromAssembler', () => {
       expect(cloningStrategy.sequences).toEqual(dummyData.requestedAssemblies[i].sequences);
       expect(cloningStrategy.sources).toEqual(dummyData.requestedAssemblies[i].sources);
       expect(cloningStrategy.primers).toEqual(dummyData.requestedAssemblies[i].primers);
+      expect(cloningStrategy.sources[cloningStrategy.sources.length - 1].output_name).toBe(fileNames[i]);
+      const firstline = cloningStrategy.sequences[cloningStrategy.sequences.length - 1].file_content.split('\n')[0];
+      expect(firstline).toContain(fileNames[i]);
 
       expect(files[fileIndex2].name).toBe(`${fileNames[i]}.gbk`);
       const genbankContent = files[fileIndex2].content;
       expect(genbankContent).toBe(dummyData.requestedAssemblies[i].sequences[dummyData.requestedAssemblies[i].sequences.length - 1].file_content);
+      const firstline2 = genbankContent.split('\n')[0];
+      expect(firstline2).toContain(fileNames[i]);
     }
 
 
