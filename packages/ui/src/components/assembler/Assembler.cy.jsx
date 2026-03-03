@@ -239,6 +239,9 @@ describe('<AssemblerComponent />', () => {
       expect(req.body).to.have.property('source');
       expect(req.body.source).to.have.property('restriction_enzymes');
       expect(req.body.source.restriction_enzymes).to.include('assembly_enzyme');
+      // Check that the value of the sort_by_recognition_sites was set in the request query
+      expect(req.query).to.have.property('sort_by_recognition_sites');
+      expect(req.query.sort_by_recognition_sites).to.equal('true');
       req.reply({
         statusCode: 200,
         body: dummyResponse2,
