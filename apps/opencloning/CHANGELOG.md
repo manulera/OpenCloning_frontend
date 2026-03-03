@@ -1,5 +1,14 @@
 # opencloning
 
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies [[`e529568`](https://github.com/manulera/OpenCloning_frontend/commit/e5295684d62b25954e6095fc63fa7c9e65551fb6)]:
+  - @opencloning/ui@1.5.2
+  - @opencloning/store@1.5.2
+  - @opencloning/utils@1.5.2
+
 ## 1.4.1
 
 ### Patch Changes
