@@ -11,7 +11,6 @@ import SectionWrapper from './SectionWrapper';
 function OverhangsPreview() {
 
   const { graph, parts } = useFormData();
-  console.log(parts);
 
   const [mode, setMode] = React.useState('detailed');
   const msa = React.useMemo(() => graph ? graphToMSA(graph) : [], [graph])
