@@ -1,6 +1,11 @@
 import React from 'react'
 import {
-  Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, ButtonGroup
+  Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, ButtonGroup,
+  DialogTitle,
+  Dialog,
+  DialogContent,
+  FormControlLabel,
+  Switch
 } from '@mui/material'
 import { Clear as ClearIcon, Edit as EditIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
@@ -20,6 +25,8 @@ import useAlerts from '../../hooks/useAlerts';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import { useConfig } from '../../providers';
 import { isEqual } from 'lodash-es';
+import SyntaxOverviewTable from './SyntaxOverviewTable';
+import { graphToMSA, partsToGraph } from './graph_utils';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
@@ -402,6 +409,35 @@ function LoadSyntaxButton({ setSyntax, addPlasmids, clearPlasmids }) {
 }
 
 
+function SyntaxOverviewButton({ syntax }) {
+  const [open, setOpen] = React.useState(false)
+  const [mode, setMode] = React.useState('detailed')
+  const msa = React.useMemo(() => syntax ? graphToMSA(partsToGraph(syntax.parts)) : [], [syntax])
+  return <>
+    <Button color="success" onClick={() => setOpen(true)} data-testid="assembler-syntax-overview-button">Syntax Overview</Button>
+    {open && <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      fullWidth
+      maxWidth="xl"
+      PaperProps={{ sx: { height: '90vh' } }}
+    >
+      <DialogTitle>Syntax overview</DialogTitle>
+      <DialogContent>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={mode === 'detailed'}
+              onChange={(e) => setMode(e.target.checked ? 'detailed' : 'compact')}
+            />
+          }
+          label={mode === 'compact' ? 'Compact' : 'Detailed'}
+        />
+        <SyntaxOverviewTable msa={msa} mode={mode} parts={syntax.parts} />
+      </DialogContent>
+    </Dialog>}
+  </>
+}
 
 function Assembler() {
   const [syntax, setSyntax] = React.useState(null);
@@ -435,6 +471,7 @@ function Assembler() {
       </Alert>
       <ButtonGroup>
         <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} clearPlasmids={clearPlasmids} />
+        {syntax && <SyntaxOverviewButton syntax={syntax} />}
         {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
         {syntax && <Button color="error" onClick={clearLoadedPlasmids}>Remove uploaded plasmids</Button>}
       </ButtonGroup>

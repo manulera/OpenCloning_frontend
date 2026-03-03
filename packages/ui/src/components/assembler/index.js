@@ -8,3 +8,4 @@ export { partsToGraph, graphToMSA, graphHasCycle, partsToEdgesGraph, GRAPH_SPACE
 export { usePlasmidsLogic } from './usePlasmidsLogic.js';
 export { default as PlasmidSyntaxTable } from './PlasmidSyntaxTable.jsx';
 export { default as ExistingSyntaxDialog } from './ExistingSyntaxDialog.jsx';
+export { default as SyntaxOverviewTable } from './SyntaxOverviewTable.jsx';

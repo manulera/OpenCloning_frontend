@@ -180,4 +180,19 @@ describe('Test assembler functionality', () => {
     cy.wait('@validateSyntaxError');
 
   });
+
+  it('displays syntax overview correctly and can switch between detailed and compact mode', () => {
+    changeTab('Assembler');
+    cy.get('button').contains('Load Syntax').click();
+    cy.get('div[role="dialog"]').contains('Load an existing syntax').should('be.visible');
+    cy.get('div[role="dialog"] li').contains('MoClo', { matchCase: false }).click();
+
+    cy.get('[data-testid="assembler-syntax-overview-button"]').click();
+    cy.get('[role="dialog"]').should('be.visible');
+    cy.get('[role="dialog"]').contains('Yeast marker').should('exist');
+    cy.get('label').contains('Detailed').click();
+    cy.get('[role="dialog"]').contains('Yeast marker').should('not.exist');
+    cy.get('label').contains('Compact').should('be.visible');
+
+  });
 });
