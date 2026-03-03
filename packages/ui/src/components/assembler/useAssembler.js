@@ -71,6 +71,7 @@ export const useAssembler = () => {
       const config = {
         params: {
           circular_only: true,
+          sort_by_recognition_sites: true,
         }
       }
       const requestData = {
