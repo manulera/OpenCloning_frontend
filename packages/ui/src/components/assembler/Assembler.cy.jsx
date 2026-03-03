@@ -150,27 +150,6 @@ describe('<AssemblerComponent />', () => {
     cy.get('li').contains('Test Plasmid 2').click();
   });
 
-  const setupTwoAssemblies = () => {
-    cy.window().then((win) => { win.localStorage.clear(); });
-    const addAlertStub = cy.stub().as('addAlert');
-    cy.mount(
-      <ConfigProvider config={testConfig}>
-        <AssemblerComponent
-          plasmids={mockPlasmids}
-          categories={mockCategories}
-          assemblyEnzymes={['assembly_enzyme']}
-          addAlert={addAlertStub}
-          appInfo={{}}
-        />
-      </ConfigProvider>,
-    );
-    cy.get('[data-testid="plasmid-select"]').first().within(() => { cy.get('input').click(); });
-    cy.get('li').contains('Test Plasmid 1').click();
-    cy.get('li').contains('Test Plasmid 3').click();
-    cy.get('[data-testid="plasmid-select"]').eq(1).within(() => { cy.get('input').click(); });
-    cy.get('li').contains('Test Plasmid 2').click();
-  };
-
   it('displays error when fetching sequence for a plasmid fails', () => {
     // Intercept the requestSources call (POST to addgene endpoint)
     cy.intercept('POST', 'http://localhost:8000/repository_id*', {
@@ -333,7 +312,8 @@ describe('<AssemblerComponent />', () => {
   });
 
   it('disables download when output names have duplicates', () => {
-    setupTwoAssemblies();
+    cy.get('[data-testid="plasmid-select"]').first().within(() => { cy.get('input').click(); });
+    cy.get('li').contains('Test Plasmid 3').click();
     cy.intercept('POST', 'http://localhost:8000/repository_id*', { statusCode: 200, body: dummyResponse }).as('fetchSourceSuccess');
     cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', { statusCode: 200, body: dummyResponse2 }).as('assemblySuccess');
 
