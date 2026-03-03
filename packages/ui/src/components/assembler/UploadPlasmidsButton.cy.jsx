@@ -50,7 +50,7 @@ const testConfig = {
   enablePlannotate: false,
 };
 
-describe.only('<UploadPlasmidsButton />', () => {
+describe('<UploadPlasmidsButton />', () => {
   beforeEach(() => {
     cy.window().then((win) => {
       win.localStorage.clear();
@@ -58,6 +58,7 @@ describe.only('<UploadPlasmidsButton />', () => {
   });
 
   it('calls addPlasmids with correctly formatted valid plasmid', () => {
+    cy.viewport(1200, 800);
     const addPlasmidsSpy = cy.spy().as('addPlasmidsSpy');
 
     cy.mount(
@@ -92,24 +93,24 @@ describe.only('<UploadPlasmidsButton />', () => {
     cy.get('[data-testid="invalid-plasmids-box"]').contains('Contains multiple parts')
     cy.get('[data-testid="invalid-plasmids-box"]').contains('locus.gb')
 
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(1).find('td').eq(0).should('contain', 'pYTK002')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(1).find('td').eq(1).should('contain', 'pYTK002.gb')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(1).find('td').eq(2).should('contain', 'CCCT-AACG (CCCT_overhang-AACG_overhang)')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(1).find('td').eq(3).should('contain', '1')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(1).find('td').eq(4).should('contain', 'ConS')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(1).then(($el) => {
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(1).find('[role="gridcell"]').eq(0).should('contain', 'pYTK002')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(1).find('[role="gridcell"]').eq(1).should('contain', 'pYTK002.gb')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(1).find('[role="gridcell"]').eq(2).should('contain', 'CCCT-AACG (CCCT_overhang-AACG_overhang)')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(1).find('[role="gridcell"]').eq(3).should('contain', '1')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(1).find('[role="gridcell"]').eq(4).should('contain', 'ConS')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(1).then(($el) => {
       const bgColor = window.getComputedStyle($el[0]).backgroundColor;
       cy.wrap(bgColor).should('equal', 'rgb(132, 197, 222)');
     });
 
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(0).should('contain', 'pYTK095')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(1).should('contain', 'pYTK095.gb')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(2).should('contain', 'TACA-CCCT (TACA-CCCT_overhang)')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(3).should('contain', 'Spans multiple parts')
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(2).find('td').eq(4).should('contain', 'AmpR')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(3).find('[role="gridcell"]').eq(0).should('contain', 'pYTK095')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(3).find('[role="gridcell"]').eq(1).should('contain', 'pYTK095.gb')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(3).find('[role="gridcell"]').eq(2).should('contain', 'TACA-CCCT (TACA-CCCT_overhang)')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(3).find('[role="gridcell"]').eq(3).should('contain', 'Spans multiple parts')
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(3).find('[role="gridcell"]').eq(4).should('contain', 'AmpR')
 
     // No features
-    cy.get('[data-testid="valid-plasmids-box"] tr').eq(3).find('td').eq(4).should('contain', '-');
+    cy.get('[data-testid="valid-plasmids-box"] [role="row"]').eq(2).find('[role="gridcell"]').eq(4).should('contain', '-');
 
     // Click the import button
     cy.contains('button', 'Import valid plasmids').click();

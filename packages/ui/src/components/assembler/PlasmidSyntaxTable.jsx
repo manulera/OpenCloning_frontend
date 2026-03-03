@@ -29,7 +29,7 @@ function PlasmidSyntaxTable({ plasmids, maxHeight = 500 }) {
     }
 
     return {
-      id: plasmid.id ?? index,
+      id: index,
       name,
       fileName,
       correspondingParts,
