@@ -1,9 +1,6 @@
 import React from 'react'
 import { Upload as UploadIcon } from '@mui/icons-material'
-import { 
-  TableContainer,
-  Button
-} from '@mui/material'
+import { Box, Button } from '@mui/material'
 import { useLinkedPlasmids } from '../context/FormDataContext';
 import SectionWrapper from './SectionWrapper';
 import { PlasmidSyntaxTable } from '@opencloning/ui/components/assembler';
@@ -22,17 +19,9 @@ function LinkedPlasmidsTable() {
   const { linkedPlasmids: plasmids, uploadPlasmids } = useLinkedPlasmids()
   return (
     <SectionWrapper title="Linked plasmids" actions={<UploadPlasmidsButton onFileChange={uploadPlasmids} />}>
-      <TableContainer 
-        sx={{ 
-          maxHeight: 600,
-          overflow: 'auto',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 1
-        }}
-      >
-        <PlasmidSyntaxTable plasmids={plasmids} />
-      </TableContainer>
+      <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, overflow: 'hidden' }}>
+        <PlasmidSyntaxTable plasmids={plasmids} maxHeight={600} />
+      </Box>
     </SectionWrapper>
   )
 }
