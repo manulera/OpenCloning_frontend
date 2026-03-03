@@ -25,6 +25,7 @@
         "@emotion/styled": "^11.14.0",
         "@mui/icons-material": "^5.15.17",
         "@mui/material": "^5.15.17",
+        "@mui/x-data-grid": "^8.25.0",
         "@opencloning/store": "workspace:*",
         "@opencloning/utils": "workspace:*",
         "@teselagen/bio-parsers": "^0.4.34",

@@ -1,74 +1,155 @@
 import React from 'react'
 import {
-  Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, Table,
-  TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ButtonGroup
+  Alert, Autocomplete, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, ButtonGroup,
+  DialogTitle,
+  Dialog,
+  DialogContent,
+  FormControlLabel,
+  Switch
 } from '@mui/material'
-import { Clear as ClearIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Clear as ClearIcon, Edit as EditIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { useAssembler } from './useAssembler';
 import { useDispatch, useSelector } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
 import AssemblerPart from './AssemblerPart';
+import EditTextDialog from '../form/EditTextDialog';
 
 import useCombinatorialAssembly from './useCombinatorialAssembly';
 import ExistingSyntaxDialog from './ExistingSyntaxDialog';
 import error2String from '@opencloning/utils/error2String';
-import { categoryFilter, downloadAssemblerFilesAsZip, getFilesToExportFromAssembler } from './assembler_utils';
+import { categoryFilter, downloadAssemblerFilesAsZip, getFilesToExportFromAssembler, getDefaultAssemblyOutputName, MAX_OUTPUT_NAME_LENGTH, sanitizeOutputName } from './assembler_utils';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useHttpClient from '../../hooks/useHttpClient';
 import useAlerts from '../../hooks/useAlerts';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import { useConfig } from '../../providers';
 import { isEqual } from 'lodash-es';
+import SyntaxOverviewTable from './SyntaxOverviewTable';
+import { graphToMSA, partsToGraph } from './graph_utils';
 
 
 const { setState: setCloningState, setCurrentTab: setCurrentTabAction } = cloningActions;
-
 
 function formatItemName(item) {
   // Fallback in case the item is not found (while updating list)
   return item ? `${item.plasmid_name}` : '-'
 }
 
-function AssemblerProductTable({ requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories }) {
+function isRowInvalid(rowIndex, assemblyOutputNames) {
+  const name = assemblyOutputNames[rowIndex] ?? '';
+  const trimmed = name.trim();
+  const isEmpty = trimmed.length === 0;
+  const isTooLong = name.length > MAX_OUTPUT_NAME_LENGTH;
+  const isDuplicate = assemblyOutputNames.filter((n) => n === name).length > 1;
+  return isEmpty || isTooLong || isDuplicate;
+}
 
-  const dispatch = useDispatch()
+function AssemblerProductTable({
+  requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories,
+  assemblyOutputNames, onOutputNameChange,
+}) {
+  const dispatch = useDispatch();
+  const [editDialog, setEditDialog] = React.useState({ open: false, rowIndex: null, value: '' });
+
   const handleViewAssembly = (index) => {
-    const newState = requestedAssemblies[index]
-    dispatch(setCloningState(newState))
-    dispatch(setCurrentTabAction(0))
-  }
+    const newState = requestedAssemblies[index];
+    dispatch(setCloningState(newState));
+    dispatch(setCurrentTabAction(0));
+  };
+
+  const handleEdit = (rowIndex) => () => {
+    setEditDialog({ open: true, rowIndex, value: assemblyOutputNames[rowIndex] ?? '' });
+  };
+
+  const handleEditSave = (newValue) => {
+    if (editDialog.rowIndex !== null) {
+      onOutputNameChange(editDialog.rowIndex, sanitizeOutputName(newValue));
+    }
+    setEditDialog({ open: false, rowIndex: null, value: '' });
+  };
+
+  const rows = expandedAssemblies.map((parts, rowIndex) => ({
+    id: rowIndex,
+    outputName: assemblyOutputNames[rowIndex] ?? '',
+    rowIndex,
+    parts,
+  }));
+
+  const columns = [
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: '',
+      width: 60,
+      getActions: (params) => [
+        <GridActionsCellItem
+          key="view"
+          icon={<VisibilityIcon />}
+          label="View"
+          onClick={() => handleViewAssembly(params.row.rowIndex)}
+          data-testid="assembler-product-table-view-button"
+        />,
+      ],
+    },
+    {
+      field: 'outputName',
+      headerName: 'Output name',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+          <Box sx={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {params.value || 'Click to edit...'}
+          </Box>
+          <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(params.row.rowIndex)(); }} data-testid="assembler-product-table-edit-button">
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    },
+    ...currentCategories.map((categoryId, idx) => {
+      const category = categories.find((c) => c.id === categoryId);
+      return {
+        field: `category_${categoryId}`,
+        headerName: category?.displayName ?? '',
+        flex: 1,
+        valueGetter: (value, row) => formatItemName(plasmids.find((d) => d.id === row.parts[idx])),
+      };
+    }),
+  ];
+
   return (
-    <TableContainer sx={{ '& td': { fontSize: '1.2rem' }, '& th': { fontSize: '1.2rem' } }}>
-      <Table size="small" data-testid="assembler-product-table">
-        <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox" />
-            {currentCategories.map(category => (
-              <TableCell key={category} sx={{ fontWeight: 'bold' }}>
-                {categories.find((c) => c.id === category)?.displayName}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {expandedAssemblies.map((parts, rowIndex) => (
-            <TableRow key={rowIndex}>
-              <TableCell padding="checkbox">
-                <IconButton data-testid="assembler-product-table-view-button" onClick={() => handleViewAssembly(rowIndex)} size="small">
-                  <VisibilityIcon />
-                </IconButton>
-              </TableCell>
-              {parts.map((part, colIndex) => (
-                <TableCell key={colIndex}>
-                  {formatItemName(plasmids.find((d) => d.id === part))}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  )
+    <Box data-testid="assembler-product-table" sx={{ '& .MuiDataGrid-cell': { fontSize: '1.2rem' }, '& .MuiDataGrid-columnHeader': { fontSize: '1.2rem', fontWeight: 'bold' } }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        getRowClassName={(params) => (isRowInvalid(params.row.rowIndex, assemblyOutputNames) ? 'error-row' : '')}
+        density="compact"
+        disableRowSelectionOnClick
+        disableColumnSorting
+        disableColumnFilter
+        disableColumnMenu
+        hideFooter
+        autoHeight
+        sx={{
+          '& .error-row': {
+            backgroundColor: 'rgba(255, 0, 0, 0.15)',
+            '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.25)' },
+          },
+        }}
+      />
+      <EditTextDialog
+        open={editDialog.open}
+        value={editDialog.value}
+        onClose={() => setEditDialog({ open: false, rowIndex: null, value: '' })}
+        onSave={handleEditSave}
+        title="Edit Output Name"
+        placeholder="Enter output name..."
+        maxLength={MAX_OUTPUT_NAME_LENGTH}
+      />
+    </Box>
+  );
 }
 
 function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, assembly }) {
@@ -132,16 +213,31 @@ function AssemblerBox({ item, index, setCategory, setId, categories, plasmids, a
 export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addAlert, appInfo }) {
 
   const [requestedAssemblies, setRequestedAssemblies] = React.useState([])
+  const [assemblyOutputNames, setAssemblyOutputNames] = React.useState([])
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loadingMessage, setLoadingMessage] = React.useState('')
 
   const clearAssemblySelection = React.useCallback(() => {
     setRequestedAssemblies([])
+    setAssemblyOutputNames([])
     setErrorMessage('')
   }, [])
 
   const { assembly, setCategory, setId, expandedAssemblies, assemblyComplete, canBeSubmitted, currentCategories } = useCombinatorialAssembly({ onValueChange: clearAssemblySelection, categories, plasmids })
   const { requestSources, requestAssemblies } = useAssembler()
+
+  const onOutputNameChange = React.useCallback((index, name) => {
+    setAssemblyOutputNames((prev) => {
+      const next = [...prev];
+      next[index] = name;
+      return next;
+    });
+  }, []);
+
+  const namesAreUnique = new Set(assemblyOutputNames).size === assemblyOutputNames.length;
+  const namesNonEmpty = assemblyOutputNames.length > 0 && assemblyOutputNames.every((n) => n.trim().length > 0);
+  const namesNotTooLong = assemblyOutputNames.every((n) => n.length <= MAX_OUTPUT_NAME_LENGTH);
+  const canDownload = requestedAssemblies.length > 0 && namesAreUnique && namesNonEmpty && namesNotTooLong;
 
   const onSubmitAssembly = React.useCallback(async () => {
     clearAssemblySelection()
@@ -155,6 +251,11 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addA
       setLoadingMessage('Assembling...')
       const assemblies = await requestAssemblies(resp, assemblyEnzymes)
       setRequestedAssemblies(assemblies)
+      if (expandedAssemblies && expandedAssemblies.length > 0) {
+        setAssemblyOutputNames(
+          expandedAssemblies.map((_, i) => getDefaultAssemblyOutputName(i, expandedAssemblies, plasmids)),
+        )
+      }
     } catch (e) {
       if (e.assembly) {
         errorMessage = (<><div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{error2String(e)}</div><div>Error assembling {e.assembly.map((p) => formatItemName(p.plasmid)).join(', ')}</div></>)
@@ -169,7 +270,9 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addA
 
   const onDownloadAssemblies = React.useCallback(async () => {
     try {
-      const files = getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo})
+      const files = getFilesToExportFromAssembler({
+        requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, outputNames: assemblyOutputNames,
+      });
       await downloadAssemblerFilesAsZip(files);
     } catch (error) {
       console.error('Error downloading assemblies:', error);
@@ -178,7 +281,7 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addA
         severity: 'error',
       });
     }
-  }, [requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, addAlert])
+  }, [requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, addAlert, assemblyOutputNames])
 
   const options = React.useMemo(() => assemblyComplete ? assembly : [...assembly, { category: '', plasmidIds: [] }], [assembly, assemblyComplete])
 
@@ -207,12 +310,17 @@ export function AssemblerComponent({ plasmids, categories, assemblyEnzymes, addA
           variant="contained"
           data-testid="assembler-download-assemblies-button"
           sx={{ p: 2, fontSize: '1.2rem' }}
-          onClick={onDownloadAssemblies}>Download Assemblies
+          onClick={onDownloadAssemblies}
+          disabled={!canDownload}
+          title={!canDownload ? 'Output names must be unique, non-empty, and at most 255 characters' : ''}>Download Assemblies
         </Button>}
       </Box>
       {errorMessage && <Alert severity="error" sx={{ my: 2, maxWidth: 300, margin: 'auto', fontSize: '1.2rem' }}>{errorMessage}</Alert>}
       {requestedAssemblies.length > 0 &&
-        <AssemblerProductTable {...{requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories}} />
+        <AssemblerProductTable {...{
+          requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories,
+          assemblyOutputNames, onOutputNameChange,
+        }} />
       }
 
     </Box >
@@ -298,6 +406,35 @@ function LoadSyntaxButton({ setSyntax, addPlasmids, clearPlasmids }) {
 }
 
 
+function SyntaxOverviewButton({ syntax }) {
+  const [open, setOpen] = React.useState(false)
+  const [mode, setMode] = React.useState('detailed')
+  const msa = React.useMemo(() => syntax ? graphToMSA(partsToGraph(syntax.parts)) : [], [syntax])
+  return <>
+    <Button color="success" onClick={() => setOpen(true)} data-testid="assembler-syntax-overview-button">Syntax Overview</Button>
+    {open && <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      fullWidth
+      maxWidth="xl"
+      PaperProps={{ sx: { height: '90vh' } }}
+    >
+      <DialogTitle>Syntax overview</DialogTitle>
+      <DialogContent>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={mode === 'detailed'}
+              onChange={(e) => setMode(e.target.checked ? 'detailed' : 'compact')}
+            />
+          }
+          label={mode === 'compact' ? 'Compact' : 'Detailed'}
+        />
+        <SyntaxOverviewTable msa={msa} mode={mode} parts={syntax.parts} />
+      </DialogContent>
+    </Dialog>}
+  </>
+}
 
 function Assembler() {
   const [syntax, setSyntax] = React.useState(null);
@@ -331,6 +468,7 @@ function Assembler() {
       </Alert>
       <ButtonGroup>
         <LoadSyntaxButton setSyntax={setSyntax} addPlasmids={addPlasmids} clearPlasmids={clearPlasmids} />
+        {syntax && <SyntaxOverviewButton syntax={syntax} />}
         {syntax && <UploadPlasmidsButton addPlasmids={addPlasmids} syntax={syntax} />}
         {syntax && <Button color="error" onClick={clearLoadedPlasmids}>Remove uploaded plasmids</Button>}
       </ButtonGroup>

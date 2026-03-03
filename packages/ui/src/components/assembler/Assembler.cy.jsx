@@ -84,6 +84,20 @@ const mockPlasmids = [
       repository_id: '67890',
     },
   },
+  {
+    id: 3,
+    plasmid_name: 'Test Plasmid 3',
+    left_overhang: 'CCCT',
+    right_overhang: 'AACG',
+    key: 'CCCT-AACG',
+    type: 'AddgeneIdSource',
+    source: {
+      id: 3,
+      type: 'AddgeneIdSource',
+      input: [],
+      repository_id: '11111',
+    },
+  },
 ];
 
 const mockCategories = [
@@ -295,6 +309,56 @@ describe('<AssemblerComponent />', () => {
       expect(stub.firstCall.args[0].message).to.include('Error downloading assemblies:');
       expect(stub.firstCall.args[0].severity).to.equal('error');
     });
+  });
+
+  it('disables download when output names have duplicates', () => {
+    cy.get('[data-testid="plasmid-select"]').first().within(() => { cy.get('input').click(); });
+    cy.get('li').contains('Test Plasmid 3').click();
+    cy.intercept('POST', 'http://localhost:8000/repository_id*', { statusCode: 200, body: dummyResponse }).as('fetchSourceSuccess');
+    cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', { statusCode: 200, body: dummyResponse2 }).as('assemblySuccess');
+
+    cy.get('[data-testid="assembler-submit-button"]').should('be.visible').click();
+    cy.wait('@fetchSourceSuccess');
+    cy.wait('@assemblySuccess');
+
+    cy.get('[data-testid="assembler-product-table"]').should('exist');
+    cy.get('[data-testid="assembler-download-assemblies-button"]').should('not.be.disabled');
+
+    cy.get('[data-testid="assembler-product-table-edit-button"]').first().click();
+    cy.get('[role="dialog"]').find('input').clear().type('duplicate_name');
+    cy.get('[role="dialog"]').contains('Save').click();
+
+    cy.get('[data-testid="assembler-product-table-edit-button"]').last().click();
+    cy.get('[role="dialog"]').find('input').clear().type('duplicate_name');
+    cy.get('[role="dialog"]').contains('Save').click();
+
+    cy.get('[data-testid="assembler-download-assemblies-button"]').should('be.disabled');
+  });
+
+  it('disables download when output name is empty', () => {
+    cy.intercept('POST', 'http://localhost:8000/repository_id*', { statusCode: 200, body: dummyResponse }).as('fetchSourceSuccess');
+    cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', { statusCode: 200, body: dummyResponse2 }).as('assemblySuccess');
+
+    cy.get('[data-testid="assembler-submit-button"]').should('be.visible').click();
+    cy.wait('@fetchSourceSuccess');
+    cy.wait('@assemblySuccess');
+
+    cy.get('[data-testid="assembler-product-table-edit-button"]').first().click();
+    cy.get('[role="dialog"]').find('input').clear();
+    cy.get('[role="dialog"]').contains('Save').click();
+
+    cy.get('[data-testid="assembler-download-assemblies-button"]').should('be.disabled');
+  });
+
+  it('enables download when output names are valid and unique', () => {
+    cy.intercept('POST', 'http://localhost:8000/repository_id*', { statusCode: 200, body: dummyResponse }).as('fetchSourceSuccess');
+    cy.intercept('POST', 'http://localhost:8000/restriction_and_ligation*', { statusCode: 200, body: dummyResponse2 }).as('assemblySuccess');
+
+    cy.get('[data-testid="assembler-submit-button"]').should('be.visible').click();
+    cy.wait('@fetchSourceSuccess');
+    cy.wait('@assemblySuccess');
+
+    cy.get('[data-testid="assembler-download-assemblies-button"]').should('not.be.disabled');
   });
 });
 

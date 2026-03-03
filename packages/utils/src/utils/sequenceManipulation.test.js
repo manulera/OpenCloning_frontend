@@ -1,4 +1,4 @@
-import { syncChromatogramDataWithAlignment } from './sequenceManipulation';
+import { editGenbankSequenceNameFromTextContent, syncChromatogramDataWithAlignment } from './sequenceManipulation';
 import teselaJson from '../../../../cypress/test_files/example_chromatogram.json';
 import { getReverseComplementSequenceString } from '@teselagen/sequence-utils';
 
@@ -35,4 +35,24 @@ describe('syncChromatogramDataWithAlignment', () => {
     expect(result).toEqual(exampleChromatogramData);
   });
 
+});
+
+
+const exampleGenbankContent = `LOCUS       name                      6317 bp    DNA     circular SYN 03-MAR-2026
+DEFINITION  description.
+ACCESSION   id
+VERSION     id
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+  .
+FEATURES             Location/Qualifiers
+ORIGIN
+        1 attcaaaaat atgcaaaaaa cag
+//`;
+describe('editGenbankSequenceNameFromTextContent', () => {
+  it('replaces the sequence name', () => {
+    const result = editGenbankSequenceNameFromTextContent(exampleGenbankContent, 'hello/world bye');
+    expect(result).to.equal(exampleGenbankContent.replaceAll('name', 'hello_world_bye'));
+  });
 });

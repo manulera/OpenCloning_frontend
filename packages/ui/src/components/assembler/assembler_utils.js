@@ -5,6 +5,9 @@ import { openCycleAtNode } from './graph_utils';
 import { downloadBlob, formatStateForJsonExport, getZipFileBlob } from '@opencloning/utils/readNwrite';
 import { getGraftSequenceId } from '@opencloning/utils/network';
 import { TextReader} from '@zip.js/zip.js';
+import { editGenbankSequenceNameFromTextContent } from '@opencloning/utils';
+
+export const MAX_OUTPUT_NAME_LENGTH = 250;
 
 export function tripletsToTranslation(triplets) {
   if (!triplets) return ''
@@ -161,11 +164,33 @@ export function categoryFilter(category, categories, previousCategoryId) {
   return previousCategory?.right_overhang === category.left_overhang
 }
 
-export function getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo}) {
+export function getDefaultAssemblyOutputName(assemblyIndex, expandedAssemblies, plasmids) {
+  const assembly = expandedAssemblies[assemblyIndex];
+  const plasmidNames = assembly.map(part => plasmids.find(p => p.id === part)?.plasmid_name ?? '');
+  let name = `${String(assemblyIndex + 1).padStart(3, '0')}_${plasmidNames.join('+')}`.replaceAll('/', '_').replaceAll(' ', '_');
+  if (name.length > MAX_OUTPUT_NAME_LENGTH) {
+    name = `${String(assemblyIndex + 1).padStart(3, '0')}_construct`;
+  }
+  return name;
+}
+
+export function sanitizeOutputName(name) {
+  let sanitized = name.replaceAll('/', '_').replaceAll(' ', '_');
+  if (sanitized.length > MAX_OUTPUT_NAME_LENGTH) {
+    sanitized = sanitized.slice(0, MAX_OUTPUT_NAME_LENGTH);
+  }
+  return sanitized;
+}
+
+export function getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, outputNames}) {
+  if (outputNames.length !== requestedAssemblies.length) {
+    throw new Error('outputNames must be the same length as requestedAssemblies');
+  }
   const files2Export = [];
-  const categoryNames = ['Assembly', ...currentCategories.map(categoryId => categories.find(c => c.id === categoryId).displayName)];
+  const categoryNames = ['Assembly', 'Name', ...currentCategories.map(categoryId => categories.find(c => c.id === categoryId).displayName)];
   const assemblyNames = expandedAssemblies.map((assembly, index) => {
-    return [index + 1, ...assembly.map(part => plasmids.find(p => p.id === part).plasmid_name)];
+    const plasmidNames = assembly.map(part => plasmids.find(p => p.id === part).plasmid_name);
+    return [index + 1, outputNames[index], ...plasmidNames];
   });
   for (const delimiter of ['\t', ',']) {
     const tableHeader = categoryNames.join(delimiter);
@@ -179,18 +204,19 @@ export function getFilesToExportFromAssembler({requestedAssemblies, expandedAsse
   }
 
   for (let i = 0; i < requestedAssemblies.length; i++) {
-    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`;
-    if (name.length > 255) {
-      name = `${String(i + 1).padStart(3, '0')}_construct`;
-    }
-    const requestedAssembly = requestedAssemblies[i];
+    const name = sanitizeOutputName(outputNames[i]);
+    const requestedAssembly = JSON.parse(JSON.stringify(requestedAssemblies[i]));
     const jsonContent = formatStateForJsonExport({...requestedAssembly, appInfo});
+    const finalSequenceId = getGraftSequenceId(requestedAssembly)
+    const finalSequence = requestedAssembly.sequences.find(s => s.id === finalSequenceId)
+    finalSequence.file_content = editGenbankSequenceNameFromTextContent(finalSequence.file_content, name);
+    const finalSource = requestedAssembly.sources.find(s => s.id === finalSequenceId)
+    finalSource.output_name = name;
     files2Export.push({
       name: `${name}.json`,
       content: JSON.stringify(jsonContent, null, 2),
     });
-    const finalSequenceId = getGraftSequenceId(requestedAssembly)
-    const finalSequence = requestedAssembly.sequences.find(s => s.id === finalSequenceId)
+
     files2Export.push({
       name: `${name}.gbk`,
       content: finalSequence.file_content,

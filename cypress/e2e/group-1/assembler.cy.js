@@ -70,9 +70,15 @@ describe('Test assembler functionality', () => {
     cy.get('[data-testid="assembler-submit-button"]').click();
 
     cy.get('[data-testid="assembler-product-table"]', { timeout: 30000 }).should('be.visible');
-    cy.get('[data-testid="assembler-product-table"] tr').should('have.length', 3);
+    cy.get('[data-testid="assembler-product-table-view-button"]').should('have.length', 2);
 
+    // Change name of the second assembly
+    cy.get('[data-testid="assembler-product-table-edit-button"]').last().click();
+    cy.get('[role="dialog"]').find('input').clear();
+    cy.get('[role="dialog"]').find('input').type('new_name');
+    cy.get('[role="dialog"]').contains('Save').click();
     cy.get('[data-testid="assembler-download-assemblies-button"]').click();
+
     cy.readFile(`cypress/downloads/assemblies.zip`, null)
       .then((fileContent) => {
         const blob = new Blob([fileContent], { type: 'application/zip' });
@@ -83,6 +89,10 @@ describe('Test assembler functionality', () => {
               const filenames = entries.map((entry) => entry.filename);
               expect(filenames[0]).to.equal('assemblies.tsv');
               expect(filenames[1]).to.equal('assemblies.csv');
+              expect(filenames[2]).to.equal('001_pYTK002_(ConS)+pYTK048_(Spacer)+pYTK067_(Con1)+pYTK095_(AmpR).json');
+              expect(filenames[3]).to.equal('001_pYTK002_(ConS)+pYTK048_(Spacer)+pYTK067_(Con1)+pYTK095_(AmpR).gbk');
+              expect(filenames[4]).to.equal('new_name.json');
+              expect(filenames[5]).to.equal('new_name.gbk');
               expect(filenames.length).to.equal(6);
             })
             .finally(() => zipReader.close()),
@@ -168,6 +178,21 @@ describe('Test assembler functionality', () => {
     cy.get('button').contains('Load Syntax').click();
     cy.get('[role="dialog"] input[type="file"]').selectFile(dummyFile, { force: true });
     cy.wait('@validateSyntaxError');
+
+  });
+
+  it('displays syntax overview correctly and can switch between detailed and compact mode', () => {
+    changeTab('Assembler');
+    cy.get('button').contains('Load Syntax').click();
+    cy.get('div[role="dialog"]').contains('Load an existing syntax').should('be.visible');
+    cy.get('div[role="dialog"] li').contains('MoClo', { matchCase: false }).click();
+
+    cy.get('[data-testid="assembler-syntax-overview-button"]').click();
+    cy.get('[role="dialog"]').should('be.visible');
+    cy.get('[role="dialog"]').contains('Yeast marker').should('exist');
+    cy.get('label').contains('Detailed').click();
+    cy.get('[role="dialog"]').contains('Yeast marker').should('not.exist');
+    cy.get('label').contains('Compact').should('be.visible');
 
   });
 });

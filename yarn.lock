@@ -1924,6 +1924,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.0"
     "@mui/icons-material": "npm:^5.15.17"
     "@mui/material": "npm:^5.15.17"
+    "@mui/x-data-grid": "npm:^8.25.0"
     "@opencloning/store": "workspace:*"
     "@opencloning/utils": "workspace:*"
     "@teselagen/bio-parsers": "npm:^0.4.34"
