@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.5.2
+
+### Patch Changes
+
+- [#653](https://github.com/manulera/OpenCloning_frontend/pull/653) [`e529568`](https://github.com/manulera/OpenCloning_frontend/commit/e5295684d62b25954e6095fc63fa7c9e65551fb6) Thanks [@manulera](https://github.com/manulera)! - Assembler - pass sort_by_recognition_sites=true to restriction & ligation endpoint
+
+- Updated dependencies []:
+  - @opencloning/store@1.5.2
+  - @opencloning/utils@1.5.2
+
 ## 1.5.1
 
 ### Patch Changes
