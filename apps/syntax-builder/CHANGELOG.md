@@ -1,5 +1,15 @@
 # syntax-builder
 
+## 0.4.4
+
+### Patch Changes
+
+- [#657](https://github.com/manulera/OpenCloning_frontend/pull/657) [`36f5e08`](https://github.com/manulera/OpenCloning_frontend/commit/36f5e08a0dc346842ec922706735362929b5ac84) Thanks [@manulera](https://github.com/manulera)! - Plasmid syntax tables showing which part is contained in each plasmid can now be sorted
+
+- Updated dependencies [[`36f5e08`](https://github.com/manulera/OpenCloning_frontend/commit/36f5e08a0dc346842ec922706735362929b5ac84)]:
+  - @opencloning/ui@1.5.4
+  - @opencloning/utils@1.5.4
+
 ## 0.4.3
 
 ### Patch Changes
