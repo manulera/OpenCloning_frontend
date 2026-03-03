@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react'
-import { Box, Button, Alert, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tooltip } from '@mui/material'
+import { Box, Button, Alert, Tooltip } from '@mui/material'
 import { Delete as DeleteIcon, Download as DownloadIcon, AddCircle as AddCircleIcon, CopyAll as CopyIcon } from '@mui/icons-material'
 import { useDownloadData } from './useDownloadData'
 import { useFormData, validatePart, validateField } from '../context/FormDataContext'
 import { DataGrid, GridActionsCellItem, useGridApiRef } from '@mui/x-data-grid'
-import { getSvgByGlyph } from '@opencloning/ui/components/assembler'
+import { getSvgByGlyph, EditTextDialog } from '@opencloning/ui/components/assembler'
 import GlyphEditCell from './GlyphEditCell'
 import SectionWrapper from './SectionWrapper'
 
@@ -12,37 +12,6 @@ import SectionWrapper from './SectionWrapper'
 const isPartProblematic = (part, problematicNodes) => {
   if (!problematicNodes || problematicNodes.length === 0) return false
   return problematicNodes.includes(`${part.left_overhang}-${part.right_overhang}`)
-}
-
-// Info cell dialog for long text editing
-function InfoEditDialog({ open, value, onClose, onSave }) {
-  const [tempValue, setTempValue] = React.useState(value || '')
-  
-  React.useEffect(() => {
-    if (open) setTempValue(value || '')
-  }, [open, value])
-  
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Edit Info Text</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          multiline
-          rows={6}
-          fullWidth
-          value={tempValue}
-          onChange={(e) => setTempValue(e.target.value.replace(/\n/g, ''))}
-          placeholder="Enter info text..."
-          sx={{ mt: 1 }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={() => onSave(tempValue)} variant="contained">Save</Button>
-      </DialogActions>
-    </Dialog>
-  )
 }
 
 export default function PartsForm() {
@@ -273,11 +242,14 @@ export default function PartsForm() {
         }}
       />
       
-      <InfoEditDialog
+      <EditTextDialog
         open={infoDialog.open}
         value={infoDialog.value}
         onClose={() => setInfoDialog({ open: false, rowId: null, value: '' })}
         onSave={handleInfoSave}
+        title="Edit Info Text"
+        placeholder="Enter info text..."
+        multiline
       />
     </SectionWrapper>
   )

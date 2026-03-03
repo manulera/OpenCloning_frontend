@@ -162,11 +162,30 @@ export function categoryFilter(category, categories, previousCategoryId) {
   return previousCategory?.right_overhang === category.left_overhang
 }
 
-export function getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo}) {
+export function getDefaultAssemblyOutputName(assemblyIndex, expandedAssemblies, plasmids) {
+  const assembly = expandedAssemblies[assemblyIndex];
+  const plasmidNames = assembly.map(part => plasmids.find(p => p.id === part)?.plasmid_name ?? '');
+  let name = `${String(assemblyIndex + 1).padStart(3, '0')}_${plasmidNames.join('+')}`.replaceAll('/', '_').replaceAll(' ', '_');
+  if (name.length > 255) {
+    name = `${String(assemblyIndex + 1).padStart(3, '0')}_construct`;
+  }
+  return name;
+}
+
+function sanitizeOutputName(name) {
+  let sanitized = name.replaceAll('/', '_').replaceAll(' ', '_');
+  if (sanitized.length > 255) {
+    sanitized = sanitized.slice(0, 255);
+  }
+  return sanitized;
+}
+
+export function getFilesToExportFromAssembler({requestedAssemblies, expandedAssemblies, plasmids, currentCategories, categories, appInfo, outputNames}) {
   const files2Export = [];
-  const categoryNames = ['Assembly', ...currentCategories.map(categoryId => categories.find(c => c.id === categoryId).displayName)];
+  const categoryNames = ['Assembly', 'Name', ...currentCategories.map(categoryId => categories.find(c => c.id === categoryId).displayName)];
   const assemblyNames = expandedAssemblies.map((assembly, index) => {
-    return [index + 1, ...assembly.map(part => plasmids.find(p => p.id === part).plasmid_name)];
+    const plasmidNames = assembly.map(part => plasmids.find(p => p.id === part).plasmid_name);
+    return [index + 1, outputNames[index], ...plasmidNames];
   });
   for (const delimiter of ['\t', ',']) {
     const tableHeader = categoryNames.join(delimiter);
@@ -180,10 +199,7 @@ export function getFilesToExportFromAssembler({requestedAssemblies, expandedAsse
   }
 
   for (let i = 0; i < requestedAssemblies.length; i++) {
-    let name = `${String(i + 1).padStart(3, '0')}_${assemblyNames[i].slice(1).join('+')}`.replaceAll('/', '_').replaceAll(' ', '_');
-    if (name.length > 255) {
-      name = `${String(i + 1).padStart(3, '0')}_construct`;
-    }
+    const name = sanitizeOutputName(outputNames[i]);
     const requestedAssembly = requestedAssemblies[i];
     const jsonContent = formatStateForJsonExport({...requestedAssembly, appInfo});
     const finalSequenceId = getGraftSequenceId(requestedAssembly)
