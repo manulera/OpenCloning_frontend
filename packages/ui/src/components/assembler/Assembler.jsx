@@ -416,6 +416,7 @@ function SyntaxOverviewButton({ syntax }) {
       open={open}
       onClose={() => setOpen(false)}
       fullWidth
+      fullScreen
       maxWidth="xl"
       PaperProps={{ sx: { height: '90vh' } }}
     >
