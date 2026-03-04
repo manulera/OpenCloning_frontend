@@ -1,5 +1,11 @@
 # opencloning
 
+## 1.4.6
+
+### Patch Changes
+
+- [#662](https://github.com/manulera/OpenCloning_frontend/pull/662) [`8f51251`](https://github.com/manulera/OpenCloning_frontend/commit/8f51251e4dc39535bd037dfa67748b599a483ee9) Thanks [@manulera](https://github.com/manulera)! - Syntax overview full screen
+
 ## 1.4.5
 
 ### Patch Changes
