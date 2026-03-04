@@ -1,4 +1,4 @@
-import { changeTab, clickMultiSelectOption, manuallyTypeSequence, selectOptionShould } from "../common_functions";
+import { changeTab, manuallyTypeSequence, selectOptionShould } from "../common_functions";
 import defaultConfig from '../../../apps/opencloning/public/config.dev.json';
 
 
@@ -86,7 +86,7 @@ describe('test that configuration works', () => {
     changeTab('Assembler');
     cy.get('button').contains('Load Syntax').click();
     cy.get('button').contains('Load syntax from local server').should('not.exist');
-    cy.get('li').contains('MoClo').click();
+    cy.get('li').contains('MoClo YTK').click();
     cy.get('button').contains('Add Plasmids').should('exist');
     cy.get('button').contains('Load Plasmids from Local Server').should('not.exist');
   });
