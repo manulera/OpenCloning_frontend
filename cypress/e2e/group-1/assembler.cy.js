@@ -23,10 +23,10 @@ describe('Test assembler functionality', () => {
     
     // Wait for syntaxes to load and find MoClo syntax
     cy.get('div[role="dialog"] li', { timeout: 10000 }).should('have.length.greaterThan', 0);
-    cy.get('div[role="dialog"] li').contains('MoClo', { matchCase: false }).should('exist');
+    cy.get('div[role="dialog"] li').contains('MoClo YTK', { matchCase: false }).should('exist');
     
     // Click on the MoClo syntax
-    cy.get('div[role="dialog"] li').contains('MoClo', { matchCase: false }).click();
+    cy.get('div[role="dialog"] li').contains('MoClo YTK', { matchCase: false }).click();
     
     // Wait for the syntax to load (dialog should close and assembler component should appear)
     cy.get('div[role="dialog"]').should('not.exist');
@@ -122,7 +122,7 @@ describe('Test assembler functionality', () => {
     // Load MoClo syntax
     cy.get('button').contains('Load Syntax').click();
     cy.get('div[role="dialog"]').contains('Load an existing syntax').should('be.visible');
-    cy.get('div[role="dialog"] li').contains('MoClo', { matchCase: false }).click();
+    cy.get('div[role="dialog"] li').contains('MoClo YTK', { matchCase: false }).click();
     cy.get('div[role="dialog"]').should('not.exist');
 
     // Remove plasmids
@@ -185,7 +185,7 @@ describe('Test assembler functionality', () => {
     changeTab('Assembler');
     cy.get('button').contains('Load Syntax').click();
     cy.get('div[role="dialog"]').contains('Load an existing syntax').should('be.visible');
-    cy.get('div[role="dialog"] li').contains('MoClo', { matchCase: false }).click();
+    cy.get('div[role="dialog"] li').contains('MoClo YTK', { matchCase: false }).click();
 
     cy.get('[data-testid="assembler-syntax-overview-button"]').click();
     cy.get('[role="dialog"]').should('be.visible');
