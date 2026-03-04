@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.5.5
+
+### Patch Changes
+
+- [#659](https://github.com/manulera/OpenCloning_frontend/pull/659) [`f69d0d6`](https://github.com/manulera/OpenCloning_frontend/commit/f69d0d6b5c4558b502bf13f20fac9fa183cfc8f2) Thanks [@manulera](https://github.com/manulera)! - Non-virtualized syntax table for Ctrl+F to work even
+
+- Updated dependencies []:
+  - @opencloning/store@1.5.5
+  - @opencloning/utils@1.5.5
+
 ## 1.5.4
 
 ### Patch Changes
