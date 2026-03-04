@@ -123,6 +123,7 @@ function PlasmidSyntaxTable({ plasmids, maxHeight = 500 }) {
         density="compact"
         disableRowSelectionOnClick
         disableColumnFilter
+        disableVirtualization
         disableColumnMenu
         hideFooter
         initialState={{
