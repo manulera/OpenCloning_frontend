@@ -64,6 +64,7 @@ function SourceTypeSelector({ source }) {
     options.push(<MenuItem key="InVivoAssemblySource" value="InVivoAssemblySource">In vivo assembly</MenuItem>);
     options.push(<MenuItem key="GatewaySource" value="GatewaySource">Gateway</MenuItem>);
     options.push(<MenuItem key="CreLoxRecombinationSource" value="CreLoxRecombinationSource">Cre/Lox recombination</MenuItem>);
+    options.push(<MenuItem key="RecombinaseSource" value="RecombinaseSource">Recombinase</MenuItem>);
   }
 
   // Sort options by text content

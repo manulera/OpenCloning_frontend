@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Alert, Button, Dialog, DialogContent } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogContent, DialogTitle, Divider, Typography } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { enzymesInRestrictionEnzymeDigestionSource } from '@opencloning/utils/sourceFunctions';
 import PlannotateAnnotationReport from '../annotation/PlannotateAnnotationReport';
@@ -161,6 +161,50 @@ function RepositoryIdMessage({ source }) {
 
 function GatewayMessage({ source }) {
   return `Gateway ${source.reaction_type} reaction`;
+}
+
+function RecombinaseMessage({ source }) {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const recombinases = source.recombinases || [];
+  return (
+    <>
+      <Box>
+        Recombinase reaction
+      </Box>
+      <Button onClick={() => setDialogOpen(true)}>
+        See info
+      </Button>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Recombinase details</DialogTitle>
+        <DialogContent dividers>
+          {recombinases.map((r, i) => (
+            <Box key={`${r.site1}-${r.site2}-${i}`}>
+              {i > 0 && <Divider sx={{ my: 2 }} />}
+              <Box sx={{ py: 1 }}>
+                {r.name && (
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                    {r.name}
+                  </Typography>
+                )}
+                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', fontSize: '0.9em' }}>
+                  <Box component="span" sx={{ color: 'text.secondary', fontFamily: 'inherit', fontWeight: 500 }}>
+                    {r.site1_name || 'site1'}:
+                  </Box>
+                  {' '}{r.site1}
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace', fontSize: '0.9em', mt: 0.5 }}>
+                  <Box component="span" sx={{ color: 'text.secondary', fontFamily: 'inherit', fontWeight: 500 }}>
+                    {r.site2_name || 'site2'}:
+                  </Box>
+                  {' '}{r.site2}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 }
 
 function PlannotateAnnotationMessage({ source }) {
@@ -338,6 +382,7 @@ function FinishedSource({ sourceId }) {
     case 'OverlapExtensionPCRLigationSource': message = 'Overlap extension PCR ligation'; break;
     case 'InFusionSource': message = 'In-Fusion assembly of fragments'; break;
     case 'CreLoxRecombinationSource': message = 'Cre/Lox recombination'; break;
+    case 'RecombinaseSource': message = <RecombinaseMessage source={source} />; break;
     case 'InVivoAssemblySource': message = 'In vivo assembly of fragments'; break;
     case 'RestrictionEnzymeDigestionSource': {
       const uniqueEnzymes = enzymesInRestrictionEnzymeDigestionSource(source);
