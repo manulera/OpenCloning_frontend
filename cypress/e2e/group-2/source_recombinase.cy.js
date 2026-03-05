@@ -11,6 +11,7 @@ describe('Recombinase', () => {
     addLane();
     manuallyTypeSequence('cccCCaaGCtttaaa', true);
     addSource('RecombinaseSource');
+
     setInputValue('Site 1', 'AAaaTTC', 'div.assembly');
     setInputValue('Site 2', 'CCaaGC', 'div.assembly');
     cy.get('div.assembly button').contains('Add recombinase').click();
@@ -24,6 +25,7 @@ describe('Recombinase', () => {
     addLane();
     manuallyTypeSequence('tagatatca');
     addSource('RecombinaseSource');
+
     setInputValue('Site 1', 'AAaaTTC', 'div.assembly');
     setInputValue('Site 2', 'CCaaGC', 'div.assembly');
     cy.get('div.assembly button').contains('Add recombinase').click();
