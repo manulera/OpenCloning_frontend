@@ -80,6 +80,8 @@ function Source({ sourceId }) {
       specificSource = <SourceAssembly {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'CreLoxRecombinationSource':
       specificSource = <SourceAssembly {...{ source, requestStatus, sendPostRequest }} />; break;
+    case 'RecombinaseSource':
+      specificSource = <SourceAssembly {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'HomologousRecombinationSource':
       specificSource = <SourceHomologousRecombination {...{ source, requestStatus, sendPostRequest }} />; break;
     case 'PCRSource':

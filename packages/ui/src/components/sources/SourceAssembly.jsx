@@ -8,6 +8,7 @@ import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import { classNameToEndPointMap } from '@opencloning/utils/sourceFunctions';
 import { cloningActions } from '@opencloning/store/cloning';
 import LabelWithTooltip from '../form/LabelWithTooltip';
+import RecombinaseList from './RecombinaseList';
 
 const helpSingleSite = 'Even if input sequences contain multiple att sites '
   + '(typically 2), a product could be generated where only one site recombines. '
@@ -25,6 +26,8 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const [bluntLigation, setBluntLigation] = React.useState(false);
   const [gatewaySettings, setGatewaySettings] = React.useState({ greedy: false, reactionType: null, onlyMultiSite: true });
   const [enzymes, setEnzymes] = React.useState([]);
+  const [recombinases, setRecombinases] = React.useState([]);
+  const [reverseRecombinase, setReverseRecombinase] = React.useState(false);
 
   const dispatch = useDispatch();
 
@@ -45,6 +48,7 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const preventSubmit = (
     (assemblyType === 'RestrictionAndLigationSource' && enzymes.length === 0)
     || (assemblyType === 'GatewaySource' && gatewaySettings.reactionType === null)
+    || (assemblyType === 'RecombinaseSource' && recombinases.length === 0)
     || inputContainsTemplates
   );
 
@@ -90,6 +94,11 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
       sendPostRequest({ endpoint: 'gateway', requestData, config, source });
     } else if (assemblyType === 'CreLoxRecombinationSource') {
       sendPostRequest({ endpoint: 'cre_lox_recombination', requestData, source });
+    } else if (assemblyType === 'RecombinaseSource') {
+      if (recombinases.length === 0) { return; }
+      requestData.source.recombinases = recombinases;
+      const config = { params: { reverse_recombinase: reverseRecombinase } };
+      sendPostRequest({ endpoint: 'recombinase', requestData, config, source });
     } else {
       const config = { params: {
         allow_partial_overlap: allowPartialOverlap,
@@ -120,22 +129,38 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
         </FormControl>
         { ['GibsonAssemblySource', 'OverlapExtensionPCRLigationSource', 'InFusionSource', 'InVivoAssemblySource'].includes(assemblyType) && (
         // I don't really understand why fullWidth is required here
-        <FormControl fullWidth>
-          <TextField
-            label="Minimal homology length"
-            value={minimalHomology}
-            onChange={(e) => { setMinimalHomology(e.target.value); }}
-            type="number"
-            defaultValue={20}
-            InputProps={{
-              endAdornment: <InputAdornment position="end">bp</InputAdornment>,
-              sx: { '& input': { textAlign: 'center' } },
-            }}
-          />
-        </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              label="Minimal homology length"
+              value={minimalHomology}
+              onChange={(e) => { setMinimalHomology(e.target.value); }}
+              type="number"
+              defaultValue={20}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">bp</InputAdornment>,
+                sx: { '& input': { textAlign: 'center' } },
+              }}
+            />
+          </FormControl>
         )}
         { (assemblyType === 'RestrictionAndLigationSource') && (
-        <EnzymeMultiSelect setEnzymes={setEnzymes} />
+          <EnzymeMultiSelect setEnzymes={setEnzymes} />
+        )}
+        { (assemblyType === 'RecombinaseSource') && (
+          <>
+            <RecombinaseList recombinases={recombinases} setRecombinases={setRecombinases} />
+            <FormControl fullWidth style={{ textAlign: 'left' }}>
+              <FormControlLabel
+                control={<Checkbox checked={reverseRecombinase} onChange={() => setReverseRecombinase(!reverseRecombinase)} />}
+                label={(
+                  <LabelWithTooltip
+                    label="Reverse reaction"
+                    tooltip="Include the reverse reaction of each recombinase (e.g. excision in addition to integration)"
+                  />
+                )}
+              />
+            </FormControl>
+          </>
         )}
         { (assemblyType === 'GatewaySource') && (
           <>
@@ -181,9 +206,9 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
           </FormControl>
         )}
         { (assemblyType === 'LigationSource') && (
-        <FormControl fullWidth style={{ textAlign: 'left' }}>
-          <FormControlLabel control={<Checkbox checked={bluntLigation} onChange={flipBluntLigation} />} label="Blunt ligation" />
-        </FormControl>
+          <FormControl fullWidth style={{ textAlign: 'left' }}>
+            <FormControlLabel control={<Checkbox checked={bluntLigation} onChange={flipBluntLigation} />} label="Blunt ligation" />
+          </FormControl>
         )}
 
         {!preventSubmit && (

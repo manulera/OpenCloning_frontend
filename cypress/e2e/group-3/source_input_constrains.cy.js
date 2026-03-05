@@ -19,6 +19,7 @@ const multiInputOptions = [
   'InFusionSource',
   'InVivoAssemblySource',
   'CreLoxRecombinationSource',
+  'RecombinaseSource',
 ];
 
 const allOptions = [...singleInputOptions, ...multiInputOptions];
