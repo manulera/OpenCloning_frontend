@@ -1,5 +1,16 @@
 # opencloning
 
+## 1.4.7
+
+### Patch Changes
+
+- [#665](https://github.com/manulera/OpenCloning_frontend/pull/665) [`d3477f1`](https://github.com/manulera/OpenCloning_frontend/commit/d3477f1354b92b61cb8f4299b4a9648b67f26ab0) Thanks [@manulera](https://github.com/manulera)! - Add support for user-defined recombinases
+
+- Updated dependencies [[`d3477f1`](https://github.com/manulera/OpenCloning_frontend/commit/d3477f1354b92b61cb8f4299b4a9648b67f26ab0)]:
+  - @opencloning/utils@1.5.6
+  - @opencloning/ui@1.5.6
+  - @opencloning/store@1.5.6
+
 ## 1.4.6
 
 ### Patch Changes

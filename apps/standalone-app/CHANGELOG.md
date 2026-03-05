@@ -1,5 +1,14 @@
 # standalone-app
 
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies [[`d3477f1`](https://github.com/manulera/OpenCloning_frontend/commit/d3477f1354b92b61cb8f4299b4a9648b67f26ab0)]:
+  - @opencloning/utils@1.5.6
+  - @opencloning/ui@1.5.6
+  - @opencloning/store@1.5.6
+
 ## 0.1.25
 
 ### Patch Changes
