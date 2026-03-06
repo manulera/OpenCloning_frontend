@@ -1,5 +1,11 @@
 # @opencloning/store
 
+## 1.7.0
+
+### Minor Changes
+
+- [#670](https://github.com/manulera/OpenCloning_frontend/pull/670) [`2943c1c`](https://github.com/manulera/OpenCloning_frontend/commit/2943c1c3a8b29a7081841d8ca9e2b36a2ad14a61) Thanks [@manulera](https://github.com/manulera)! - Fix import structure
+
 ## 1.6.0
 
 ### Patch Changes
