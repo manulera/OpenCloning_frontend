@@ -5,7 +5,7 @@ import getHttpClient from '@opencloning/utils/getHttpClient';
 import { MainAppBar, OpenCloning, useUrlParamsLoader, useInitializeApp } from '@opencloning/ui/components';
 import { useConfig } from '@opencloning/ui/hooks/useConfig';
 import { eLabFTWInterface } from '@opencloning/opencloning-elabftw';
-import { createDummyInterface } from '@opencloning/ui/dummy';
+import DummyInterface from '@opencloning/ui/components/dummy';
 
 // Create a basic HTTP client for loading config (doesn't require backendUrl)
 const configHttpClient = getHttpClient([]);
@@ -63,7 +63,7 @@ function App() {
     if (dbName === 'elabftw') {
       return eLabFTWInterface;
     }
-    if (dbName === 'dummy') return createDummyInterface();
+    if (dbName === 'dummy') return DummyInterface;
     return null;
   }, [config]);
 
