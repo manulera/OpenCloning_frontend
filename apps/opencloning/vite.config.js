@@ -16,6 +16,8 @@ export default ({ mode }) => {
     configFileName = 'config.prod.json';
   } else if (mode === 'development' && env.VITE_ELABFTW_API_READ_KEY) {
     configFileName = 'config.elabftw.json';
+  } else if (mode === 'development' && env.VITE_USE_OPENCLONING_DB) {
+    configFileName = 'config.opencloningdb.json';
   } else {
     configFileName = 'config.dev.json';
   }
@@ -24,9 +26,11 @@ export default ({ mode }) => {
     logLevel: env.VITE_LOG_LEVEL,
     resolve: {
       alias: {
+        '@opencloning/ui/dummy': resolve(__dirname, '../../packages/ui/src/components/dummy/DummyInterface.js'),
         '@opencloning/ui': resolve(__dirname, '../../packages/ui/src'),
         '@opencloning/store': resolve(__dirname, '../../packages/store/src'),
         '@opencloning/utils': resolve(__dirname, '../../packages/utils/src/utils'),
+        '@opencloning/opencloning-elabftw': resolve(__dirname, '../../packages/opencloning-elabftw/src'),
       },
     },
     plugins: [

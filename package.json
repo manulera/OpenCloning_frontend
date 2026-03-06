@@ -8,6 +8,7 @@
         "packages/*"
     ],
     "resolutions": {
+        "@opencloning/opencloning-elabftw": "workspace:*",
         "@opencloning/store": "workspace:*",
         "@opencloning/ui": "workspace:*",
         "@opencloning/utils": "workspace:*"

@@ -3,7 +3,7 @@ import ELabFTWCategorySelect from './ELabFTWCategorySelect';
 import ELabFTWResourceSelect from './ELabFTWResourceSelect';
 import ELabFTWFileSelect from './ELabFTWFileSelect';
 import { getFileFromELabFTW } from './utils';
-import RetryAlert from '../form/RetryAlert';
+import RetryAlert from '@opencloning/ui/components/form/RetryAlert';
 
 function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   const [category, setCategory] = React.useState(null);

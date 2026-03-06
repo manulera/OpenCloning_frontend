@@ -1,7 +1,7 @@
 import { Button, CircularProgress } from '@mui/material';
 import React from 'react';
 import { eLabFTWHttpClient, readHeaders } from './common';
-import RetryAlert from '../form/RetryAlert';
+import RetryAlert from '@opencloning/ui/components/form/RetryAlert';
 import { getFileFromELabFTW } from './utils';
 
 function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {

@@ -1,7 +1,7 @@
 import React from 'react';
-import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
+import GetRequestMultiSelect from '@opencloning/ui/components/form/GetRequestMultiSelect';
+import RequestStatusWrapper from '@opencloning/ui/components/form/RequestStatusWrapper';
 import { eLabFTWHttpClient, getELabFTWVersion, readHeaders } from './common';
-import RequestStatusWrapper from '../form/RequestStatusWrapper';
 
 function ELabFTWCategorySelect({ setCategory, label = 'Resource category', ...rest }) {
   const [eLabFTWVersion, setELabFTWVersion] = React.useState(null);

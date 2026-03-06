@@ -1,5 +1,5 @@
 import React from 'react';
-import GetRequestMultiSelect from '../form/GetRequestMultiSelect';
+import GetRequestMultiSelect from '@opencloning/ui/components/form/GetRequestMultiSelect';
 import { eLabFTWHttpClient, readHeaders } from './common';
 
 function ELabFTWFileSelect({ itemId, setFileInfo, ...rest }) {

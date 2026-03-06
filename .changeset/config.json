@@ -11,7 +11,8 @@
     [
       "@opencloning/ui",
       "@opencloning/store",
-      "@opencloning/utils"
+      "@opencloning/utils",
+      "@opencloning/opencloning-elabftw"
     ]
   ],
   "linked": [],

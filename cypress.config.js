@@ -58,6 +58,7 @@ export default defineConfig({
               '@opencloning/ui': resolve(__dirname, 'packages/ui/src'),
               '@opencloning/store': resolve(__dirname, 'packages/store/src'),
               '@opencloning/utils': resolve(__dirname, 'packages/utils/src/utils'),
+              '@opencloning/opencloning-elabftw': resolve(__dirname, 'packages/opencloning-elabftw/src'),
             },
           },
           plugins: [

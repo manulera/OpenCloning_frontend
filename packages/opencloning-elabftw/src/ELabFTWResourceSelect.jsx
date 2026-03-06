@@ -1,5 +1,5 @@
 import React from 'react';
-import PostRequestSelect from '../form/PostRequestSelect';
+import PostRequestSelect from '@opencloning/ui/components/form/PostRequestSelect';
 import { eLabFTWHttpClient, readHeaders } from './common';
 
 function ELabFTWResourceSelect({ setResource, categoryId, ...rest }) {

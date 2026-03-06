@@ -47,5 +47,4 @@ function SubmitToDatabaseComponent({ id, setSubmissionData, resourceType }) {
     </>
   );
 }
-
 export default SubmitToDatabaseComponent;

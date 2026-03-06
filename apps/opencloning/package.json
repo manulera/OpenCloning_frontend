@@ -10,6 +10,7 @@
         "test": "vitest"
     },
     "dependencies": {
+        "@opencloning/opencloning-elabftw": "workspace:*",
         "@opencloning/store": "workspace:*",
         "@opencloning/ui": "workspace:*",
         "@opencloning/utils": "workspace:*",

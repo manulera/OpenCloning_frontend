@@ -7,7 +7,7 @@ ALL_FILES="$ALL_FILES $(find apps -name "*.js" -o -name "*.jsx" | grep -v "test.
 
 FILES_WITH_AXIOS=$(grep -l "import.*axios\|axios.*import" $ALL_FILES)
 
-ACCEPTED_FILES="packages/ui/src/components/eLabFTW/common.js packages/utils/src/utils/getHttpClient.js"
+ACCEPTED_FILES="packages/utils/src/utils/getHttpClient.js packages/opencloning-elabftw/src/common.js"
 
 for file in $FILES_WITH_AXIOS; do
   if ! echo "$ACCEPTED_FILES" | grep -q "$file"; then
