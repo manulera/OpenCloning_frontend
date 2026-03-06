@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
-import { localFilesHttpClient } from '@opencloning/ui/hooks/useServerStaticFiles';
+import { localFilesHttpClient } from '@opencloning/ui/hooks';
 import UploadPlasmidsButton from './UploadPlasmidsButton';
 import mocloSyntax from '../../../../../cypress/test_files/syntax/moclo_syntax.json';
 

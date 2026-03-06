@@ -3,7 +3,7 @@ import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import getHttpClient from '@opencloning/utils/getHttpClient';
 import { MainAppBar, OpenCloning, useUrlParamsLoader, useInitializeApp } from '@opencloning/ui/components';
-import { useConfig } from '@opencloning/ui/hooks/useConfig';
+import { useConfig } from '@opencloning/ui/hooks';
 import { eLabFTWInterface } from '@opencloning/opencloning-elabftw';
 import DummyInterface from '@opencloning/ui/components/dummy';
 
