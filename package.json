@@ -1,4 +1,5 @@
 {
+    "license": "MIT",
     "name": "open-cloning-workspace",
     "version": "0.4.26",
     "type": "module",
