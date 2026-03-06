@@ -1,5 +1,16 @@
 # standalone-app
 
+## 0.1.27
+
+### Patch Changes
+
+- [#668](https://github.com/manulera/OpenCloning_frontend/pull/668) [`dd0df39`](https://github.com/manulera/OpenCloning_frontend/commit/dd0df39c5fbf65feaab09f90d123e3776efed6bd) Thanks [@manulera](https://github.com/manulera)! - Added LICENSE to package.json
+
+- Updated dependencies [[`dd0df39`](https://github.com/manulera/OpenCloning_frontend/commit/dd0df39c5fbf65feaab09f90d123e3776efed6bd), [`dd0df39`](https://github.com/manulera/OpenCloning_frontend/commit/dd0df39c5fbf65feaab09f90d123e3776efed6bd)]:
+  - @opencloning/ui@1.6.0
+  - @opencloning/store@1.6.0
+  - @opencloning/utils@1.6.0
+
 ## 0.1.26
 
 ### Patch Changes
