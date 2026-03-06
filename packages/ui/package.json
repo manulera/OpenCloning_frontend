@@ -1,4 +1,5 @@
 {
+    "license": "MIT",
     "name": "@opencloning/ui",
     "version": "1.5.6",
     "type": "module",
@@ -11,7 +12,13 @@
         ".": "./src/index.js",
         "./components": "./src/components/index.js",
         "./components/assembler": "./src/components/assembler/index.js",
+        "./components/dummy": "./src/components/dummy/index.js",
+        "./components/form/GetRequestMultiSelect": "./src/components/form/GetRequestMultiSelect.jsx",
+        "./components/form/RetryAlert": "./src/components/form/RetryAlert.jsx",
+        "./components/form/RequestStatusWrapper": "./src/components/form/RequestStatusWrapper.jsx",
+        "./components/form/PostRequestSelect": "./src/components/form/PostRequestSelect.jsx",
         "./providers/ConfigProvider": "./src/providers/index.js",
+        "./providers/DatabaseContext": "./src/providers/DatabaseContext.jsx",
         "./hooks/useConfig": "./src/hooks/useConfig.js",
         "./standalone": "./src/StandAloneOpenCloning.js"
     },

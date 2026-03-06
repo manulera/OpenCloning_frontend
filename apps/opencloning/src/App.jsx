@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
+import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import getHttpClient from '@opencloning/utils/getHttpClient';
 import { MainAppBar, OpenCloning, useUrlParamsLoader, useInitializeApp } from '@opencloning/ui/components';
 import { useConfig } from '@opencloning/ui/hooks/useConfig';
+import { eLabFTWInterface } from '@opencloning/opencloning-elabftw';
+import DummyInterface from '@opencloning/ui/components/dummy';
 
 // Create a basic HTTP client for loading config (doesn't require backendUrl)
 const configHttpClient = getHttpClient([]);
@@ -55,13 +58,24 @@ function App() {
     loadConfig();
   }, []);
 
+  const database = useMemo(() => {
+    const dbName = config?.database;
+    if (dbName === 'elabftw') {
+      return eLabFTWInterface;
+    }
+    if (dbName === 'dummy') return DummyInterface;
+    return null;
+  }, [config]);
+
   if (config === null) {
     return <div className="loading-state-message">{message}</div>;
   }
 
   return (
     <ConfigProvider config={config}>
-      <AppContent />
+      <DatabaseProvider value={database}>
+        <AppContent />
+      </DatabaseProvider>
     </ConfigProvider>
   );
 }

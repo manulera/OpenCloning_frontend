@@ -26,6 +26,7 @@ export default defineConfig({
       'packages/store',
       'packages/utils',
       'packages/ui',
+      'packages/opencloning-elabftw',
       'apps/syntax-builder',
     ],
   },
