@@ -1,5 +1,13 @@
 # @opencloning/opencloning-elabftw
 
+## 1.7.0
+
+### Patch Changes
+
+- Updated dependencies [[`2943c1c`](https://github.com/manulera/OpenCloning_frontend/commit/2943c1c3a8b29a7081841d8ca9e2b36a2ad14a61)]:
+  - @opencloning/utils@1.7.0
+  - @opencloning/ui@1.7.0
+
 ## 1.6.0
 
 ### Minor Changes
