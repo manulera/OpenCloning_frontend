@@ -6,10 +6,4 @@ export default defineConfig({
   test: {
     ...testConfig,
   },
-  resolve: {
-    alias: {
-      '@opencloning/store': resolve(__dirname, './src'),
-      '@opencloning/utils': resolve(__dirname, '../utils/src/utils'),
-    },
-  },
 });
