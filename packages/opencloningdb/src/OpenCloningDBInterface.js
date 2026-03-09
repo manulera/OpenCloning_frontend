@@ -16,7 +16,8 @@ async function submitSequenceToDatabase({ submissionData, substate, id }) {
   // selectedSequence.name = submissionData.title;
   // substateCopy.description = '';
   // console.log(substateCopy);
-  return await openCloningDBHttpClient.post('/sequence', substate);
+  const { sources, primers, sequences } = substate;
+  return await openCloningDBHttpClient.post('/sequence', { sources, primers, sequences });
 }
 
 async function getPrimer(databaseId) {
