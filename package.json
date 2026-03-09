@@ -10,6 +10,7 @@
     ],
     "resolutions": {
         "@opencloning/opencloning-elabftw": "workspace:*",
+        "@opencloning/opencloningdb": "workspace:*",
         "@opencloning/store": "workspace:*",
         "@opencloning/ui": "workspace:*",
         "@opencloning/utils": "workspace:*"
