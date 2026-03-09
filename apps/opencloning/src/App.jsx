@@ -6,6 +6,7 @@ import { MainAppBar, OpenCloning, useUrlParamsLoader, useInitializeApp } from '@
 import { useConfig } from '@opencloning/ui/hooks';
 import { eLabFTWInterface } from '@opencloning/opencloning-elabftw';
 import DummyInterface from '@opencloning/ui/components/dummy';
+import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 
 // Create a basic HTTP client for loading config (doesn't require backendUrl)
 const configHttpClient = getHttpClient([]);
@@ -60,11 +61,10 @@ function App() {
 
   const database = useMemo(() => {
     const dbName = config?.database;
-    if (dbName === 'elabftw') {
-      return eLabFTWInterface;
-    }
-    if (dbName === 'dummy') return DummyInterface;
-    return null;
+    if (dbName === 'elabftw') return eLabFTWInterface;
+    else if (dbName === 'opencloningdb') return OpenCloningDBInterface;
+    else if (dbName === 'dummy') return DummyInterface;
+    else return null;
   }, [config]);
 
   if (config === null) {
