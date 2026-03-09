@@ -1,4 +1,5 @@
 import { Save as SaveIcon, Link as LinkIcon } from '@mui/icons-material';
+import GetPrimerComponent from './GetPrimerComponent';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import { baseUrl, openCloningDBHttpClient } from './common';
 import LoadHistoryComponent from './LoadHistoryComponent';
@@ -33,7 +34,7 @@ export default {
   // Component for selecting and loading sequence files from the database
   GetSequenceFileAndDatabaseIdComponent,
   // Component for selecting and loading primers from the database
-  GetPrimerComponent: null,
+  GetPrimerComponent,
   // Component for submitting resources to the database
   SubmitToDatabaseComponent,
   // Component for handling primers not yet in database
