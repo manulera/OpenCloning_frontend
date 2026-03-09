@@ -24,6 +24,16 @@ async function getPrimer(databaseId) {
   return { name: response.data.name, database_id: databaseId, sequence: response.data.sequence };
 }
 
+async function submitPrimerToDatabase({ submissionData, primer }) {
+  const payload = {
+    id: 0,
+    name: submissionData.title,
+    sequence: primer.sequence,
+  };
+  const response = await openCloningDBHttpClient.post('/primer', payload);
+  return response.data.id;
+}
+
 export default {
   // Name of the database interface
   name: 'OpenCloningDB',
@@ -40,7 +50,7 @@ export default {
   // Component for handling primers not yet in database
   PrimersNotInDatabaseComponent,
   // Function to submit a primer to the database
-  submitPrimerToDatabase: null,
+  submitPrimerToDatabase,
   // Function to submit a sequence and its history to the database
   submitSequenceToDatabase,
   // Function to validate submission data
