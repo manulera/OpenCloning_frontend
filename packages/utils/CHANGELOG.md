@@ -1,5 +1,14 @@
 # @opencloning/utils
 
+## 1.7.1
+
+### Patch Changes
+
+- [#672](https://github.com/manulera/OpenCloning_frontend/pull/672) [`cfe95f5`](https://github.com/manulera/OpenCloning_frontend/commit/cfe95f5d79a4f147646d46d51b19a155941b2ad8) Thanks [@manulera](https://github.com/manulera)! - Ignore header case when importing primers from tabular file
+
+- Updated dependencies []:
+  - @opencloning/store@1.7.1
+
 ## 1.7.0
 
 ### Minor Changes
