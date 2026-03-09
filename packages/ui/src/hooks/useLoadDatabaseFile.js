@@ -53,7 +53,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
           const sequence = cloningStrategy.sequences.find((e) => e.id === cloningSource.id);
           const seq = convertToTeselaJson(sequence);
           const databaseName = await database.getSequenceName(seqDatabaseId);
-          if (seq.name !== databaseName) {
+          if (databaseName && (seq.name !== databaseName)) {
             seq.name = databaseName;
             const genbank = jsonToGenbank(seq);
             sequence.file_content = genbank;
