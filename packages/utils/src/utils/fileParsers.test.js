@@ -155,6 +155,16 @@ describe('delimitedFileToJson', () => {
       { name: 'primer1', sequence: 'ATGC' }
     ]);
   });
+
+  it('ignores header case if parameter is passed', async () => {
+    let file = createFile('Name,Sequence\nprimer1,ATGC', 'test.csv');
+    let result = await delimitedFileToJson(file, ['name', 'sequence'], true);
+    expect(result).toEqual([
+      { name: 'primer1', sequence: 'ATGC' }
+    ]);
+    file = createFile('Name,Sequence\nprimer1,ATGC', 'test.csv');
+    await expect(delimitedFileToJson(file, ['name', 'sequence'])).rejects.toThrow('Headers missing: name, sequence');
+  });
 });
 
 describe('primersFromTextFile', () => {
@@ -234,6 +244,15 @@ describe('primersFromTextFile', () => {
 
     const result = await primersFromTextFile(file, []);
     
+    expect(result).toEqual([
+      { name: 'primer1', sequence: 'ATGC', error: '' }
+    ]);
+  });
+  it('ignores header case', async () => {
+    const file = createFile('Name,Sequence\nprimer1,ATGC', 'test.csv');
+
+    const result = await primersFromTextFile(file, []);
+
     expect(result).toEqual([
       { name: 'primer1', sequence: 'ATGC', error: '' }
     ]);

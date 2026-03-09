@@ -1,7 +1,7 @@
 import { stringIsNotDNA } from '@opencloning/store/cloning_utils';
 import { readSubmittedTextFile } from './readNwrite';
 
-export async function delimitedFileToJson(fileUploaded, requiredHeaders = []) {
+export async function delimitedFileToJson(fileUploaded, requiredHeaders = [], ignoreHeaderCase = false) {
 
   const fileContent = await readSubmittedTextFile(fileUploaded);
   const allLines = fileContent.split(/\r\n|\r|\n/);
@@ -26,7 +26,10 @@ export async function delimitedFileToJson(fileUploaded, requiredHeaders = []) {
     throw new Error('File is empty');
   }
 
-  const headers = lines[0].split(delimiter);
+  let headers = lines[0].split(delimiter).map((header) => header.trim());
+  if (ignoreHeaderCase) {
+    headers = headers.map((header) => header.toLowerCase());
+  }
 
   const missingHeaders = requiredHeaders.filter(
     (header) => !headers.includes(header),
@@ -51,7 +54,7 @@ export async function delimitedFileToJson(fileUploaded, requiredHeaders = []) {
 };
 
 export const primersFromTextFile = async (fileUploaded, existingNames) => {
-  const primers = await delimitedFileToJson(fileUploaded, ['name', 'sequence']);
+  const primers = await delimitedFileToJson(fileUploaded, ['name', 'sequence'], true);
   return primers.map((primer) => {
     if (existingNames.includes(primer.name)) {
       return { ...primer, error: 'existing' };
