@@ -25,14 +25,18 @@ function AppLayout() {
     <>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" sx={{ mr: 4 }}>
-            OpenCloning Database
+          <Typography variant="h6" sx={{ mr: 4, color: 'white' }}>
+            OpenCloning
           </Typography>
           <Tabs
             value={currentTab}
             onChange={(_, newValue) => navigate(newValue)}
             textColor="inherit"
-            indicatorColor="secondary"
+            TabIndicatorProps={{
+              sx: {
+                backgroundColor: 'white',
+              },
+            }}
           >
             <Tab label="Sequences" value="/sequences" />
             <Tab label="Primers" value="/primers" />
