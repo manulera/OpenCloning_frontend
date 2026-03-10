@@ -17,7 +17,15 @@ async function submitSequenceToDatabase({ submissionData, substate, id }) {
   // substateCopy.description = '';
   // console.log(substateCopy);
   const { sources, primers, sequences } = substate;
-  return await openCloningDBHttpClient.post('/sequence', { sources, primers, sequences });
+  const { data } = await openCloningDBHttpClient.post('/sequence', { sources, primers, sequences });
+
+  const primerIds = new Set(primers.map((p) => p.id));
+  const sequenceIds = new Set(sequences.map((s) => s.id));
+
+  const primerMappings = data.mappings.filter(({localId}) => primerIds.has(localId));
+  const sequenceMappings = data.mappings.filter(({localId}) => sequenceIds.has(localId));
+
+  return { databaseId: data.id, primerMappings, sequenceMappings };
 }
 
 async function getPrimer(databaseId) {
@@ -93,4 +101,6 @@ export default {
   getSequencingFiles,
   // Autoload sequencing files (Boolean)
   autoloadSequencingFiles: true,
+  // Omit unsaved intermediates disclaimer (Boolean)
+  omitUnsavedIntermediatesDisclaimer: true,
 };
