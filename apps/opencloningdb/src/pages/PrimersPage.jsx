@@ -13,7 +13,9 @@ import {
   CircularProgress,
   Alert,
   Typography,
+  IconButton,
 } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
 
 function PrimersPage() {
@@ -49,19 +51,25 @@ function PrimersPage() {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Sequence</TableCell>
+              <TableCell padding="none" width={48} />
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((primer) => (
-              <TableRow
-                key={primer.id}
-                hover
-                sx={{ cursor: 'pointer' }}
-                onClick={() => navigate(`/primers/${primer.id}`)}
-              >
+              <TableRow key={primer.id} hover>
                 <TableCell>{primer.id}</TableCell>
-                <TableCell>{primer.name ?? '—'}</TableCell>
+                <TableCell
+                  sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => navigate(`/primers/${primer.id}`)}
+                >
+                  {primer.name ?? '—'}
+                </TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
+                <TableCell padding="none">
+                  <IconButton size="small" onClick={() => {}} aria-label="Add">
+                    <AddIcon fontSize="small" />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
