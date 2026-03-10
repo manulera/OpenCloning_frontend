@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,11 +18,29 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import { cloningActions } from '@opencloning/store/cloning';
+import useAlerts from '@opencloning/ui/hooks/useAlerts';
+
+const { addPrimer } = cloningActions;
 
 function PrimersPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { addAlert } = useAlerts();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+
+  const handleAddPrimer = async (primerId) => {
+    try {
+      const { data: primer } = await openCloningDBHttpClient.get(`/primer/${primerId}`);
+      dispatch(addPrimer({ name: primer.name, sequence: primer.sequence, database_id: primerId }));
+    } catch (error) {
+      addAlert({
+        message: error?.response?.data?.detail || error?.message || 'Failed to add primer',
+        severity: 'error',
+      });
+    }
+  };
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['primers', { page: page + 1, size: rowsPerPage }],
@@ -66,7 +85,7 @@ function PrimersPage() {
                 </TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
                 <TableCell padding="none">
-                  <IconButton size="small" onClick={() => {}} aria-label="Add">
+                  <IconButton size="small" onClick={() => handleAddPrimer(primer.id)} aria-label="Add">
                     <AddIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
