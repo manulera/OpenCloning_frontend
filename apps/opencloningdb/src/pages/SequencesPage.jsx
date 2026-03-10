@@ -13,7 +13,9 @@ import {
   CircularProgress,
   Alert,
   Typography,
+  IconButton,
 } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
 
 function SequencesPage() {
@@ -48,18 +50,24 @@ function SequencesPage() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
+              <TableCell padding="none" width={48} />
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((seq) => (
-              <TableRow
-                key={seq.id}
-                hover
-                sx={{ cursor: 'pointer' }}
-                onClick={() => navigate(`/sequences/${seq.id}`)}
-              >
+              <TableRow key={seq.id} hover>
                 <TableCell>{seq.id}</TableCell>
-                <TableCell>{seq.name ?? '—'}</TableCell>
+                <TableCell
+                  sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => navigate(`/sequences/${seq.id}`)}
+                >
+                  {seq.name ?? '—'}
+                </TableCell>
+                <TableCell padding="none">
+                  <IconButton size="small" onClick={() => {}} aria-label="Add">
+                    <AddIcon fontSize="small" />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
