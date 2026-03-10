@@ -9,7 +9,7 @@ description: Points to where backend API endpoints are documented. Use when look
 
 The backend API endpoints are documented at:
 
-**http://localhost:8000/docs**
+**http://localhost:8000/openapi.json**
 
 This is the primary OpenCloning backend API. Use it when you need to:
 - Look up request/response schemas

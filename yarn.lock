@@ -2231,6 +2231,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.90.20":
+  version: 5.90.20
+  resolution: "@tanstack/query-core@npm:5.90.20"
+  checksum: 10/25e38f4382442bc15e0f6cce8d787e9df8d8822c61d3f3e9427e89e01b1e2506f848292e086dae29aeb55f8ce71b097c34221f3c5eda37fb4a688b5ceca5d1b3
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.62.0":
+  version: 5.90.21
+  resolution: "@tanstack/react-query@npm:5.90.21"
+  dependencies:
+    "@tanstack/query-core": "npm:5.90.20"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10/5bb4b6be7ac34a7423aca60484f1e35a0c7f8b2f86ef6656a3b6757943417561a50d9a159e2bff9d97a57a82ecec920df067b507c2ec6488beb286635b25e518
+  languageName: node
+  linkType: hard
+
 "@teselagen/bio-parsers@npm:0.4.34, @teselagen/bio-parsers@npm:^0.4.34":
   version: 0.4.34
   resolution: "@teselagen/bio-parsers@npm:0.4.34"
@@ -8851,6 +8869,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.0"
     "@mui/material": "npm:^5.15.17"
     "@opencloning/opencloningdb": "workspace:*"
+    "@tanstack/react-query": "npm:^5.62.0"
     "@vitejs/plugin-react": "npm:^4.6.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
