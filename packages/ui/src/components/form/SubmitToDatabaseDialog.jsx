@@ -58,10 +58,10 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
       } else if (resourceType === 'sequence') {
         const substate = getSubState(store.getState(), id, true);
         let databaseId;
-        let primerMappings = [];
-        let sequenceMappings = [];
+        let primerMappings;
+        let sequenceMappings;
         try {
-          ({ databaseId, primerMappings, sequenceMappings } = await database.submitSequenceToDatabase({ submissionData, substate, id }));
+          ({ databaseId, primerMappings = [], sequenceMappings = [] } = await database.submitSequenceToDatabase({ submissionData, substate, id }));
         } catch (error) {
           console.error(error);
           setErrorMessage(error.message);
