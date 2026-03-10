@@ -4,22 +4,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
+import CloningPage from './pages/CloningPage';
 import SequenceDetailPage from './pages/SequenceDetailPage';
 import PrimerDetailPage from './pages/PrimerDetailPage';
 
 const queryClient = new QueryClient();
 
+const TABS = ['/sequences', '/primers', '/cloning'];
+
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const currentTab = ['/sequences', '/primers'].includes(location.pathname)
-    ? location.pathname
-    : location.pathname.startsWith('/sequences')
-      ? '/sequences'
-      : location.pathname.startsWith('/primers')
-        ? '/primers'
-        : '/sequences';
+  const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   return (
     <>
@@ -40,12 +37,14 @@ function AppLayout() {
           >
             <Tab label="Sequences" value="/sequences" />
             <Tab label="Primers" value="/primers" />
+            <Tab label="Cloning" value="/cloning" />
           </Tabs>
         </Toolbar>
       </AppBar>
       <Box sx={{ p: 3 }}>
         <Routes>
           <Route path="/" element={<Navigate to="/sequences" replace />} />
+          <Route path="/cloning" element={<CloningPage />} />
           <Route path="/sequences" element={<SequencesPage />} />
           <Route path="/sequences/:id" element={<SequenceDetailPage />} />
           <Route path="/primers" element={<PrimersPage />} />
