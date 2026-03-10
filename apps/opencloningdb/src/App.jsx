@@ -1,44 +1,63 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link as RouterLink } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Link as MuiLink } from '@mui/material';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
+import SequenceDetailPage from './pages/SequenceDetailPage';
+import PrimerDetailPage from './pages/PrimerDetailPage';
 
-function NavLink({ to, children }) {
-  return (
-    <MuiLink component={RouterLink} to={to} color="inherit" sx={{ mx: 2 }}>
-      {children}
-    </MuiLink>
-  );
-}
+const queryClient = new QueryClient();
 
 function AppLayout() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const currentTab = ['/sequences', '/primers'].includes(location.pathname)
+    ? location.pathname
+    : location.pathname.startsWith('/sequences')
+      ? '/sequences'
+      : location.pathname.startsWith('/primers')
+        ? '/primers'
+        : '/sequences';
+
   return (
     <>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" sx={{ mr: 4 }}>
             OpenCloning Database
           </Typography>
-          <NavLink to="/sequences">Sequences</NavLink>
-          <NavLink to="/primers">Primers</NavLink>
+          <Tabs
+            value={currentTab}
+            onChange={(_, newValue) => navigate(newValue)}
+            textColor="inherit"
+            indicatorColor="secondary"
+          >
+            <Tab label="Sequences" value="/sequences" />
+            <Tab label="Primers" value="/primers" />
+          </Tabs>
         </Toolbar>
       </AppBar>
-      <main style={{ padding: 24 }}>
+      <Box sx={{ p: 3 }}>
         <Routes>
           <Route path="/" element={<Navigate to="/sequences" replace />} />
           <Route path="/sequences" element={<SequencesPage />} />
+          <Route path="/sequences/:id" element={<SequenceDetailPage />} />
           <Route path="/primers" element={<PrimersPage />} />
+          <Route path="/primers/:id" element={<PrimerDetailPage />} />
         </Routes>
-      </main>
+      </Box>
     </>
   );
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppLayout />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AppLayout />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
