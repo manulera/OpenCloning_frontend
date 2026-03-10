@@ -17,11 +17,29 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
+import useAlerts from '@opencloning/ui/hooks/useAlerts';
 
 function SequencesPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const { addAlert } = useAlerts();
+  const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
+  const { loadDatabaseFile } = useLoadDatabaseFile({ source: null, sendPostRequest: null, setHistoryFileError });
+
+  const handleAddSequence = async (seqId) => {
+    try {
+      const { data: sequence } = await openCloningDBHttpClient.get(`/sequence/${seqId}`);
+      const source = { id: 1, input: [], database_id: seqId, type: 'DatabaseSource' };
+      sequence.id = 1;
+      const cloningStrategy = { sources: [source], sequences: [sequence], primers: [] };
+      const file = new File([JSON.stringify(cloningStrategy)], 'cloning_strategy.json', { type: 'application/json' });
+      await loadDatabaseFile(file, seqId);
+    } catch (error) {
+      setHistoryFileError(error?.response?.data?.detail || error?.message || 'Failed to add sequence');
+    }
+  };
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['sequences', { page: page + 1, size: rowsPerPage }],
@@ -64,7 +82,7 @@ function SequencesPage() {
                   {seq.name ?? '—'}
                 </TableCell>
                 <TableCell padding="none">
-                  <IconButton size="small" onClick={() => {}} aria-label="Add">
+                  <IconButton size="small" onClick={() => handleAddSequence(seq.id)} aria-label="Add">
                     <AddIcon fontSize="small" />
                   </IconButton>
                 </TableCell>

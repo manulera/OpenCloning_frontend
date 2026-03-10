@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
+import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
+import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
+import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
 import CloningPage from './pages/CloningPage';
@@ -9,6 +12,13 @@ import SequenceDetailPage from './pages/SequenceDetailPage';
 import PrimerDetailPage from './pages/PrimerDetailPage';
 
 const queryClient = new QueryClient();
+
+const config = {
+  backendUrl: 'http://localhost:8000',
+  showAppBar: false,
+  enableAssembler: false,
+  enablePlannotate: false,
+};
 
 const TABS = ['/sequences', '/primers', '/cloning'];
 
@@ -59,7 +69,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppLayout />
+        <ConfigProvider config={config}>
+          <DatabaseProvider value={OpenCloningDBInterface}>
+            <AppLayout />
+          </DatabaseProvider>
+        </ConfigProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
