@@ -68,6 +68,10 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
       }
       // This one won't have the source.id deleted
       const prevState = store.getState().cloning;
+      const { backendVersion, schemaVersion, frontendVersion } = prevState.appInfo;
+      cloningStrategy.backend_version = backendVersion;
+      cloningStrategy.schema_version = schemaVersion;
+      cloningStrategy.frontend_version = frontendVersion;
       cloningStrategy = await validateState(cloningStrategy);
 
       batch(() => {
