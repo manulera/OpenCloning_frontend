@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useStore } from 'react-redux';
 import { Editor, updateEditor } from '@teselagen/ove';
 import { Paper, IconButton } from '@mui/material';
-import {FullscreenIcon, FullscreenExitIcon} from '@mui/icons-material';
+import {Fullscreen as FullscreenIcon, FullscreenExit as FullscreenExitIcon} from '@mui/icons-material';
 import defaultMainEditorProps from '../config/defaultMainEditorProps';
 
 const EDITOR_NAME = 'sequenceViewer';
