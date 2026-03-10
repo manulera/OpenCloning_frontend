@@ -20,6 +20,7 @@
         "./providers/ConfigProvider": "./src/providers/index.js",
         "./providers/DatabaseContext": "./src/providers/DatabaseContext.jsx",
         "./hooks": "./src/hooks/index.js",
+        "./components/SequenceViewer": "./src/components/SequenceViewer.jsx",
         "./standalone": "./src/StandAloneOpenCloning.js"
     },
     "repository": {
