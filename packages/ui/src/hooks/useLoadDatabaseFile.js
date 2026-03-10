@@ -76,7 +76,7 @@ export default function useLoadDatabaseFile({ source, sendPostRequest, setHistor
 
       batch(() => {
         // Replace the source with the new one if called from a source
-        if (!ancestors) {
+        if (!ancestors && source) {
           dispatch(deleteSourceAndItsChildren(source.id));
         }
         const cloningState = store.getState().cloning;
