@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -6,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TableSortLabel,
+  TablePagination,
   Paper,
   CircularProgress,
   Alert,
@@ -15,51 +17,25 @@ import {
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
 
 function SequencesPage() {
-  const [sequences, setSequences] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [orderBy, setOrderBy] = useState('id');
-  const [order, setOrder] = useState('asc');
+  const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    openCloningDBHttpClient
-      .get('/sequences')
-      .then(({ data }) => {
-        if (!cancelled) {
-          setSequences(Array.isArray(data) ? data : []);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err?.response?.data?.detail || err?.message || 'Failed to load sequences');
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['sequences', { page: page + 1, size: rowsPerPage }],
+    queryFn: async () => {
+      const { data: res } = await openCloningDBHttpClient.get('/sequences', {
+        params: { page: page + 1, size: rowsPerPage },
       });
-    return () => { cancelled = true; };
-  }, []);
-
-  const handleSort = (column) => {
-    const isAsc = orderBy === column && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(column);
-  };
-
-  const sortedSequences = [...sequences].sort((a, b) => {
-    const aVal = a[orderBy] ?? '';
-    const bVal = b[orderBy] ?? '';
-    const cmp = typeof aVal === 'number' && typeof bVal === 'number'
-      ? aVal - bVal
-      : String(aVal).localeCompare(String(bVal));
-    return order === 'asc' ? cmp : -cmp;
+      return res;
+    },
+    placeholderData: keepPreviousData,
   });
 
-  if (loading) return <CircularProgress />;
-  if (error) return <Alert severity="error">{error}</Alert>;
+  const items = data?.items ?? [];
+
+  if (isLoading && !data) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequences'}</Alert>;
 
   return (
     <>
@@ -70,35 +46,36 @@ function SequencesPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'id'}
-                  direction={orderBy === 'id' ? order : 'asc'}
-                  onClick={() => handleSort('id')}
-                >
-                  ID
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'name'}
-                  direction={orderBy === 'name' ? order : 'asc'}
-                  onClick={() => handleSort('name')}
-                >
-                  Name
-                </TableSortLabel>
-              </TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedSequences.map((seq) => (
-              <TableRow key={seq.id}>
+            {items.map((seq) => (
+              <TableRow
+                key={seq.id}
+                hover
+                sx={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/sequences/${seq.id}`)}
+              >
                 <TableCell>{seq.id}</TableCell>
                 <TableCell>{seq.name ?? '—'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={data?.total ?? 0}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50]}
+        />
       </TableContainer>
     </>
   );

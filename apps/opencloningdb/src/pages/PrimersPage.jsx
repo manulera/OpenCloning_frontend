@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -6,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TableSortLabel,
+  TablePagination,
   Paper,
   CircularProgress,
   Alert,
@@ -15,51 +17,25 @@ import {
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
 
 function PrimersPage() {
-  const [primers, setPrimers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [orderBy, setOrderBy] = useState('id');
-  const [order, setOrder] = useState('asc');
+  const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    openCloningDBHttpClient
-      .get('/primers')
-      .then(({ data }) => {
-        if (!cancelled) {
-          setPrimers(Array.isArray(data) ? data : []);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err?.response?.data?.detail || err?.message || 'Failed to load primers');
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['primers', { page: page + 1, size: rowsPerPage }],
+    queryFn: async () => {
+      const { data: res } = await openCloningDBHttpClient.get('/primers', {
+        params: { page: page + 1, size: rowsPerPage },
       });
-    return () => { cancelled = true; };
-  }, []);
-
-  const handleSort = (column) => {
-    const isAsc = orderBy === column && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(column);
-  };
-
-  const sortedPrimers = [...primers].sort((a, b) => {
-    const aVal = a[orderBy] ?? '';
-    const bVal = b[orderBy] ?? '';
-    const cmp = typeof aVal === 'number' && typeof bVal === 'number'
-      ? aVal - bVal
-      : String(aVal).localeCompare(String(bVal));
-    return order === 'asc' ? cmp : -cmp;
+      return res;
+    },
+    placeholderData: keepPreviousData,
   });
 
-  if (loading) return <CircularProgress />;
-  if (error) return <Alert severity="error">{error}</Alert>;
+  const items = data?.items ?? [];
+
+  if (isLoading && !data) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load primers'}</Alert>;
 
   return (
     <>
@@ -70,38 +46,19 @@ function PrimersPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'id'}
-                  direction={orderBy === 'id' ? order : 'asc'}
-                  onClick={() => handleSort('id')}
-                >
-                  ID
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'name'}
-                  direction={orderBy === 'name' ? order : 'asc'}
-                  onClick={() => handleSort('name')}
-                >
-                  Name
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'sequence'}
-                  direction={orderBy === 'sequence' ? order : 'asc'}
-                  onClick={() => handleSort('sequence')}
-                >
-                  Sequence
-                </TableSortLabel>
-              </TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Sequence</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedPrimers.map((primer) => (
-              <TableRow key={primer.id}>
+            {items.map((primer) => (
+              <TableRow
+                key={primer.id}
+                hover
+                sx={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/primers/${primer.id}`)}
+              >
                 <TableCell>{primer.id}</TableCell>
                 <TableCell>{primer.name ?? '—'}</TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
@@ -109,6 +66,18 @@ function PrimersPage() {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={data?.total ?? 0}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50]}
+        />
       </TableContainer>
     </>
   );
