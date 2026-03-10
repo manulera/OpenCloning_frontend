@@ -35,6 +35,26 @@ async function submitPrimerToDatabase({ submissionData, primer }) {
   return response.data.id;
 }
 
+async function getSequencingFiles(databaseId) {
+  // Returns array of { name, getFile } where getFile is async and returns the file content
+  try {
+    const resp = await openCloningDBHttpClient.get(`/sequence/${databaseId}/sequencing_files`);
+    const files = resp.data || [];
+    return files.map((fileInfo) => ({
+      name: fileInfo.original_name,
+      getFile: async () => {
+        const downloadResp = await openCloningDBHttpClient.get(`/sequencing_files/${fileInfo.id}/download`, {
+          responseType: 'blob',
+        });
+        return new File([downloadResp.data], fileInfo.original_name);
+      },
+    }));
+  } catch (e) {
+    console.error(e);
+    throw new Error(e.response?.data?.detail || e.message || 'Error getting sequencing files');
+  }
+}
+
 export default {
   // Name of the database interface
   name: 'OpenCloningDB',
@@ -70,5 +90,7 @@ export default {
   // Function to get the name of a sequence from the database
   getSequenceName: () => {},
   // Function to get the sequencing files from the database, see docs for what the return value should be
-  getSequencingFiles: () => {},
+  getSequencingFiles,
+  // Autoload sequencing files (Boolean)
+  autoloadSequencingFiles: true,
 };
