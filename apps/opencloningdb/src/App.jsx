@@ -29,7 +29,7 @@ function AppLayout() {
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ mr: 4, color: 'white' }}>
@@ -51,7 +51,10 @@ function AppLayout() {
           </Tabs>
         </Toolbar>
       </AppBar>
-      <Box sx={{ p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flex: 1, minHeight: 0, overflowY: 'auto', p: 3 }}
+      >
         <Routes>
           <Route path="/" element={<Navigate to="/sequences" replace />} />
           <Route path="/cloning" element={<CloningPage />} />
@@ -61,7 +64,7 @@ function AppLayout() {
           <Route path="/primers/:id" element={<PrimerDetailPage />} />
         </Routes>
       </Box>
-    </>
+    </Box>
   );
 }
 
