@@ -19,6 +19,7 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
 import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
+import SequenceTypeChip from '../components/SequenceTypeChip';
 
 function SequencesPage() {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ function SequencesPage() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
               <TableCell padding="none" width={48} />
             </TableRow>
           </TableHead>
@@ -80,6 +82,9 @@ function SequencesPage() {
                   onClick={() => navigate(`/sequences/${seq.id}`)}
                 >
                   {seq.name ?? '—'}
+                </TableCell>
+                <TableCell>
+                  <SequenceTypeChip sequenceType={seq.sequence_type} />
                 </TableCell>
                 <TableCell padding="none">
                   <IconButton size="small" onClick={() => handleAddSequence(seq.id)} aria-label="Add">
