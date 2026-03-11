@@ -67,7 +67,7 @@ function SequencesPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
+              <TableCell>UID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
               <TableCell padding="none" width={48} />
@@ -76,7 +76,7 @@ function SequencesPage() {
           <TableBody>
             {items.map((seq) => (
               <TableRow key={seq.id} hover>
-                <TableCell>{seq.id}</TableCell>
+                <TableCell>{seq.uids?.length ? seq.uids.join(', ') : seq.uid ?? '—'}</TableCell>
                 <TableCell
                   sx={{ cursor: 'pointer', textDecoration: 'underline' }}
                   onClick={() => navigate(`/sequences/${seq.id}`)}

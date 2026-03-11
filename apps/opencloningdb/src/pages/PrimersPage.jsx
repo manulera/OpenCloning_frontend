@@ -67,7 +67,7 @@ function PrimersPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
+              <TableCell>UID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Sequence</TableCell>
               <TableCell padding="none" width={48} />
@@ -76,7 +76,7 @@ function PrimersPage() {
           <TableBody>
             {items.map((primer) => (
               <TableRow key={primer.id} hover>
-                <TableCell>{primer.id}</TableCell>
+                <TableCell>{primer.uid ?? '—'}</TableCell>
                 <TableCell
                   sx={{ cursor: 'pointer', textDecoration: 'underline' }}
                   onClick={() => navigate(`/primers/${primer.id}`)}
