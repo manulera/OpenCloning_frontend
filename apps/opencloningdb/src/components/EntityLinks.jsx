@@ -25,6 +25,14 @@ export function SequenceLink({ id, name, sx }) {
   );
 }
 
+export function SequenceInLineLink({ sequence_id, name, sx }) {
+  return (
+    <NavigateLink to={`/sequences/${sequence_id}`} sx={sx}>
+      {name}
+    </NavigateLink>
+  );
+}
+
 export function PrimerLink({ id, name, sx }) {
   return (
     <NavigateLink to={`/primers/${id}`} sx={sx}>
@@ -33,10 +41,10 @@ export function PrimerLink({ id, name, sx }) {
   );
 }
 
-export function LineLink({ id, name, sx }) {
+export function LineLink({ id, uid, sx }) {
   return (
     <NavigateLink to={`/lines/${id}`} sx={sx}>
-      {name ?? `Line ${id}`}
+      {uid ?? `Line ${id}`}
     </NavigateLink>
   );
 }
@@ -52,6 +60,6 @@ export function CommaSeparatorWrapper({ children }) {
       ))}
     </React.Fragment>
   );
-
+}
 
 
