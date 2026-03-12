@@ -17,7 +17,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { cloningActions } from '@opencloning/store/cloning';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
 
@@ -32,7 +32,7 @@ function PrimersPage() {
 
   const handleAddPrimer = async (primerId) => {
     try {
-      const { data: primer } = await openCloningDBHttpClient.get(`/primer/${primerId}`);
+      const { data: primer } = await openCloningDBHttpClient.get(endpoints.primer(primerId));
       dispatch(addPrimer({ name: primer.name, sequence: primer.sequence, database_id: primerId }));
     } catch (error) {
       addAlert({
@@ -45,7 +45,7 @@ function PrimersPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['primers', { page: page + 1, size: rowsPerPage }],
     queryFn: async () => {
-      const { data: res } = await openCloningDBHttpClient.get('/primers', {
+      const { data: res } = await openCloningDBHttpClient.get(endpoints.primers, {
         params: { page: page + 1, size: rowsPerPage },
       });
       return res;

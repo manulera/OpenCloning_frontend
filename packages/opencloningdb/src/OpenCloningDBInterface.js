@@ -2,6 +2,7 @@ import { Save as SaveIcon, Link as LinkIcon } from '@mui/icons-material';
 import GetPrimerComponent from './GetPrimerComponent';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
 import { baseUrl, openCloningDBHttpClient } from './common';
+import endpoints from './endpoints';
 import LoadHistoryComponent from './LoadHistoryComponent';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
 import PrimersNotInDatabaseComponent from './PrimersNotInDatabaseComponent';
@@ -17,7 +18,7 @@ async function submitSequenceToDatabase({ submissionData, substate, id }) {
   // substateCopy.description = '';
   // console.log(substateCopy);
   const { sources, primers, sequences } = substate;
-  const { data } = await openCloningDBHttpClient.post('/sequence', { sources, primers, sequences });
+  const { data } = await openCloningDBHttpClient.post(endpoints.postSequence, { sources, primers, sequences });
 
   const primerIds = new Set(primers.map((p) => p.id));
   const sequenceIds = new Set(sequences.map((s) => s.id));
@@ -29,7 +30,7 @@ async function submitSequenceToDatabase({ submissionData, substate, id }) {
 }
 
 async function getPrimer(databaseId) {
-  const response = await openCloningDBHttpClient.get(`/primer/${databaseId}`);
+  const response = await openCloningDBHttpClient.get(endpoints.primer(databaseId));
   return { name: response.data.name, database_id: databaseId, sequence: response.data.sequence };
 }
 
@@ -39,19 +40,19 @@ async function submitPrimerToDatabase({ submissionData, primer }) {
     name: submissionData.title,
     sequence: primer.sequence,
   };
-  const response = await openCloningDBHttpClient.post('/primer', payload);
+  const response = await openCloningDBHttpClient.post(endpoints.postPrimer, payload);
   return response.data.id;
 }
 
 async function getSequencingFiles(databaseId) {
   // Returns array of { name, getFile } where getFile is async and returns the file content
   try {
-    const resp = await openCloningDBHttpClient.get(`/sequence/${databaseId}/sequencing_files`);
+    const resp = await openCloningDBHttpClient.get(endpoints.sequenceSequencingFiles(databaseId));
     const files = resp.data || [];
     return files.map((fileInfo) => ({
       name: fileInfo.original_name,
       getFile: async () => {
-        const downloadResp = await openCloningDBHttpClient.get(`/sequencing_files/${fileInfo.id}/download`, {
+        const downloadResp = await openCloningDBHttpClient.get(endpoints.sequencingFileDownload(fileInfo.id), {
           responseType: 'blob',
         });
         return new File([downloadResp.data], fileInfo.original_name);

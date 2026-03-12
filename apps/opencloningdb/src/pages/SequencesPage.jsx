@@ -16,7 +16,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import SequenceTypeChip from '../components/SequenceTypeChip';
@@ -31,7 +31,7 @@ function SequencesPage() {
 
   const handleAddSequence = async (seqId) => {
     try {
-      const { data: sequence } = await openCloningDBHttpClient.get(`/sequence/${seqId}`);
+      const { data: sequence } = await openCloningDBHttpClient.get(endpoints.sequenceTextFile(seqId));
       const source = { id: 1, input: [], database_id: seqId, type: 'DatabaseSource' };
       sequence.id = 1;
       const cloningStrategy = { sources: [source], sequences: [sequence], primers: [] };
@@ -45,7 +45,7 @@ function SequencesPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['sequences', { page: page + 1, size: rowsPerPage }],
     queryFn: async () => {
-      const { data: res } = await openCloningDBHttpClient.get('/sequences', {
+      const { data: res } = await openCloningDBHttpClient.get(endpoints.sequences, {
         params: { page: page + 1, size: rowsPerPage },
       });
       return res;
