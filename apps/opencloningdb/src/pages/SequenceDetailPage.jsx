@@ -11,12 +11,14 @@ function SequenceDetailPage() {
   const navigate = useNavigate();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['sequence', id],
+    queryKey: ['sequence', id, 'cloning_strategy'],
     queryFn: async () => {
       const { data: res } = await openCloningDBHttpClient.get(`/sequence/${id}/cloning_strategy`);
       return res;
     },
   });
+
+  
 
   const sequenceData = useMemo(() => {
     if (!data?.sequences?.length) return null;
