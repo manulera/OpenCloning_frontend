@@ -15,9 +15,9 @@ import {
   TableRow,
   Paper,
   Chip,
-  Link,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { SequenceLink, LineLink } from '../components/EntityLinks';
 
 function LineDetailPage() {
   const { id } = useParams();
@@ -52,14 +52,7 @@ function LineDetailPage() {
           {items.map((seq) => (
             <TableRow key={seq.id}>
               <TableCell>
-                <Link
-                  component="button"
-                  variant="body2"
-                  onClick={() => navigate(`/sequences/${seq.sequence_id}`)}
-                  sx={{ textAlign: 'left', textDecoration: 'underline' }}
-                >
-                  {seq.name ?? `Sequence ${seq.sequence_id}`}
-                </Link>
+                <SequenceLink id={seq.sequence_id} name={seq.name} />
               </TableCell>
               <TableCell>
                 {seq.tags?.length ? (
@@ -113,15 +106,7 @@ function LineDetailPage() {
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {parentIds.map((parentId) => (
-              <Link
-                key={parentId}
-                component="button"
-                variant="body2"
-                onClick={() => navigate(`/lines/${parentId}`)}
-                sx={{ textDecoration: 'underline' }}
-              >
-                Line {parentId}
-              </Link>
+              <LineLink key={parentId} id={parentId} />
             ))}
           </Box>
         </Box>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Typography, Button, CircularProgress, Alert, Box, Chip, Link, List, ListItem } from '@mui/material';
+import { Typography, Button, CircularProgress, Alert, Box, Chip, List, ListItem } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { SequenceLink } from '../components/EntityLinks';
 import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
 
@@ -82,14 +83,7 @@ function SequenceDetailPage() {
             <List>
               {parentSequences.map((parent) => (
                 <ListItem key={parent.id}>
-                  <Link
-                    component="button"
-                    variant="body2"
-                    onClick={() => navigate(`/sequences/${parent.id}`)}
-                    sx={{ textDecoration: 'underline' }}
-                  >
-                    {parent.name ?? `Sequence ${parent.id}`}
-                  </Link>
+                  <SequenceLink id={parent.id} name={parent.name} />
                 </ListItem>
               ))}
             </List>
