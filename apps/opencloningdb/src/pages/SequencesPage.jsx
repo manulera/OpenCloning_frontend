@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
   Table,
@@ -21,11 +22,12 @@ import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import SequenceTypeChip from '../components/SequenceTypeChip';
 import { CommaSeparatorWrapper, SequenceLink } from '../components/EntityLinks';
 import TagChip from '../components/TagChip';
+import { parseBoolean, parseString, parseIntArray } from '../utils/query_utils';
 
 function SequencesPage() {
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [searchParams] = useSearchParams();
   const { addAlert } = useAlerts();
   const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: null, sendPostRequest: null, setHistoryFileError });
@@ -43,11 +45,23 @@ function SequencesPage() {
     }
   };
 
+
+  const filters = {
+    tags: parseIntArray(searchParams.getAll('tags')),
+    instantiated: parseBoolean(searchParams.get('instantiated')),
+    sequence_type: parseString(searchParams.get('sequence_type')),
+    name: parseString(searchParams.get('name')),
+  };
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['sequences', { page: page + 1, size: rowsPerPage }],
+    queryKey: ['sequences', { page: page + 1, size: rowsPerPage, ...filters }],
     queryFn: async () => {
       const { data: res } = await openCloningDBHttpClient.get(endpoints.sequences, {
-        params: { page: page + 1, size: rowsPerPage },
+        params: {
+          page: page + 1,
+          size: rowsPerPage,
+          ...filters,
+        },
       });
       return res;
     },
@@ -55,8 +69,6 @@ function SequencesPage() {
   });
 
   const items = data?.items ?? [];
-
-  console.log('items', items);
 
   if (isLoading && !data) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequences'}</Alert>;
