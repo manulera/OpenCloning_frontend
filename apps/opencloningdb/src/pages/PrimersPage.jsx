@@ -20,6 +20,7 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { cloningActions } from '@opencloning/store/cloning';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
+import { PrimerLink } from '../components/EntityLinks';
 
 const { addPrimer } = cloningActions;
 
@@ -77,11 +78,8 @@ function PrimersPage() {
             {items.map((primer) => (
               <TableRow key={primer.id} hover>
                 <TableCell>{primer.uid ?? '—'}</TableCell>
-                <TableCell
-                  sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                  onClick={() => navigate(`/primers/${primer.id}`)}
-                >
-                  {primer.name ?? '—'}
+                <TableCell>
+                  <PrimerLink id={primer.id} name={primer.name} />
                 </TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
                 <TableCell padding="none">

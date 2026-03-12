@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import SequenceTypeChip from '../components/SequenceTypeChip';
+import { SequenceLink, LineLink, CommaSeparatorWrapper } from '../components/EntityLinks';
 
 function LinesPage() {
   const navigate = useNavigate();
@@ -86,35 +87,22 @@ function LinesPage() {
                 );
               return (
                 <TableRow key={line.id} hover>
-                  <TableCell
-                    sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                    onClick={() => navigate(`/lines/${line.id}`)}
-                  >
-                    {line.uid ?? '—'}
+                  <TableCell>
+                    <LineLink id={line.id} name={line.uid} />
                   </TableCell>
                   <TableCell>{renderSeqCell(alleles, false)}</TableCell>
                   <TableCell>{renderSeqCell(plasmids, true)}</TableCell>
-                <TableCell>
-                  {line.parent_ids?.length ? (
-                    line.parent_ids.map((pid, i) => (
-                      <React.Fragment key={pid}>
-                        {i > 0 && ', '}
-                        <Typography
-                          component="span"
-                          sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/lines/${pid}`);
-                          }}
-                        >
-                          {pid}
-                        </Typography>
-                      </React.Fragment>
-                    ))
-                  ) : (
-                    '—'
-                  )}
-                </TableCell>
+                  <TableCell>
+                    {line.parent_ids?.length ? (
+                      <CommaSeparatorWrapper>
+                        {line.parent_ids.map((parentId) => (
+                          <LineLink key={parentId} id={parentId} />
+                        ))}
+                      </CommaSeparatorWrapper>
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
                 </TableRow>
               );
             })}

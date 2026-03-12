@@ -20,6 +20,7 @@ import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import SequenceTypeChip from '../components/SequenceTypeChip';
+import { SequenceLink } from '../components/EntityLinks';
 
 function SequencesPage() {
   const navigate = useNavigate();
@@ -77,11 +78,8 @@ function SequencesPage() {
             {items.map((seq) => (
               <TableRow key={seq.id} hover>
                 <TableCell>{seq.uids?.length ? seq.uids.join(', ') : seq.uid ?? '—'}</TableCell>
-                <TableCell
-                  sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                  onClick={() => navigate(`/sequences/${seq.id}`)}
-                >
-                  {seq.name ?? '—'}
+                <TableCell>
+                  <SequenceLink id={seq.id} name={seq.name} />
                 </TableCell>
                 <TableCell>
                   <SequenceTypeChip sequenceType={seq.sequence_type} />
