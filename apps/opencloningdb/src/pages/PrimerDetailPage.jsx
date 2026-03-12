@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Paper, Typography, Button, CircularProgress, Alert } from '@mui/material';
-import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 
 function PrimerDetailPage() {
   const { id } = useParams();
@@ -11,7 +11,7 @@ function PrimerDetailPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['primer', id],
     queryFn: async () => {
-      const { data: res } = await openCloningDBHttpClient.get(`/primer/${id}`);
+      const { data: res } = await openCloningDBHttpClient.get(endpoints.primer(id));
       return res;
     },
   });

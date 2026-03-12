@@ -15,7 +15,7 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import SequenceTypeChip from '../components/SequenceTypeChip';
 
 function LinesPage() {
@@ -26,7 +26,7 @@ function LinesPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['lines', { page: page + 1, size: rowsPerPage }],
     queryFn: async () => {
-      const { data: res } = await openCloningDBHttpClient.get('/lines', {
+      const { data: res } = await openCloningDBHttpClient.get(endpoints.lines, {
         params: { page: page + 1, size: rowsPerPage },
       });
       return res;
