@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -20,10 +19,11 @@ import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import SequenceTypeChip from '../components/SequenceTypeChip';
-import { SequenceLink } from '../components/EntityLinks';
+import { CommaSeparatorWrapper, SequenceLink } from '../components/EntityLinks';
+import TagChip from '../components/TagChip';
 
 function SequencesPage() {
-  const navigate = useNavigate();
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const { addAlert } = useAlerts();
@@ -56,6 +56,8 @@ function SequencesPage() {
 
   const items = data?.items ?? [];
 
+  console.log('items', items);
+
   if (isLoading && !data) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequences'}</Alert>;
 
@@ -71,18 +73,30 @@ function SequencesPage() {
               <TableCell>UID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
+              <TableCell>Tags</TableCell>
               <TableCell padding="none" width={48} />
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((seq) => (
               <TableRow key={seq.id} hover>
-                <TableCell>{seq.uids?.length ? seq.uids.join(', ') : seq.uid ?? '—'}</TableCell>
+                <TableCell>{seq.sample_uids?.join(', ') ?? '—'}</TableCell>
                 <TableCell>
                   <SequenceLink id={seq.id} name={seq.name} />
                 </TableCell>
                 <TableCell>
                   <SequenceTypeChip sequenceType={seq.sequence_type} />
+                </TableCell>
+                <TableCell>
+                  {seq.tags?.length ? (
+                    <CommaSeparatorWrapper>
+                      {seq.tags.map((tag) => (
+                        <TagChip key={tag.id} tag={tag} />
+                      ))}
+                    </CommaSeparatorWrapper>
+                  ) : (
+                    '—'
+                  )}
                 </TableCell>
                 <TableCell padding="none">
                   <IconButton size="small" onClick={() => handleAddSequence(seq.id)} aria-label="Add">
