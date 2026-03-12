@@ -182,3 +182,13 @@ export const mergeStates = (newState, oldState, skipPrimers = false) => {
   }
   return { mergedState, idShift };
 };
+
+export function getParentSequencesFromSource(source, sequences) {
+  const parentSequenceIds = source.input.map(({sequence}) => sequence);
+  return sequences.filter((sequence) => parentSequenceIds.includes(sequence.id));
+}
+
+export function getParentSourcesFromSource(source, sources) {
+  const parentSourceIds = source.input.map(({sequence}) => sequence);
+  return sources.filter((source) => parentSourceIds.includes(source.id));
+}

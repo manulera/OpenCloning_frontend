@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import PrimerSelect from './PrimerSelect';
 import { openCloningDBHttpClient } from './common';
+import endpoints from './endpoints';
 import { Box } from '@mui/material';
 
 function GetPrimerComponent({ setPrimer, setError, existingDatabaseIds }) {
@@ -11,7 +12,7 @@ function GetPrimerComponent({ setPrimer, setError, existingDatabaseIds }) {
       return;
     }
     try {
-      const response = await openCloningDBHttpClient.get(`/primer/${selectedPrimer.id}`);
+      const response = await openCloningDBHttpClient.get(endpoints.primer(selectedPrimer.id));
       const primer = response.data;
       /* database_id matches API primer model */
       /* eslint-disable-next-line camelcase */

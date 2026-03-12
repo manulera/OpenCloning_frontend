@@ -1,12 +1,13 @@
 import React from 'react';
 import SequenceSelect from './SequenceSelect';
 import { openCloningDBHttpClient } from './common';
+import endpoints from './endpoints';
 
 function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   const onSequenceSelect = async (selectedSequence) => {
     const selectedId = selectedSequence.id;
     try {
-      const response = await openCloningDBHttpClient.get(`/sequence/${selectedId}`);
+      const response = await openCloningDBHttpClient.get(endpoints.sequenceTextFile(selectedId));
       const sequence = response.data;
       const source = { id: 1, input: [], database_id: selectedId, type: 'DatabaseSource' };
       sequence.id = 1;

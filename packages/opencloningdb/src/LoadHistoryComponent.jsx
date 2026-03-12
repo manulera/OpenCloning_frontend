@@ -2,9 +2,10 @@ import { Button, CircularProgress } from '@mui/material';
 import React from 'react';
 import { openCloningDBHttpClient } from './common';
 import RetryAlert from '@opencloning/ui/components/form/RetryAlert';
+import endpoints from './endpoints';
 
 function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
-  const url = `/sequence/${databaseId}/cloning_strategy`;
+  const url = endpoints.sequenceCloningStrategy(databaseId);
   const [error, setError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [retry, setRetry] = React.useState(0);

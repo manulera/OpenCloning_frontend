@@ -17,7 +17,7 @@ import {
   Chip,
   Link,
 } from '@mui/material';
-import { openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 
 function LineDetailPage() {
   const { id } = useParams();
@@ -26,7 +26,7 @@ function LineDetailPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['line', id],
     queryFn: async () => {
-      const { data: res } = await openCloningDBHttpClient.get(`/line/${id}`);
+      const { data: res } = await openCloningDBHttpClient.get(endpoints.line(id));
       return res;
     },
   });
