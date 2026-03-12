@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -13,14 +12,25 @@ import {
   CircularProgress,
   Alert,
   Typography,
-  Box,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import SequenceTypeChip from '../components/SequenceTypeChip';
-import { SequenceLink, LineLink, CommaSeparatorWrapper } from '../components/EntityLinks';
+import { LineLink, CommaSeparatorWrapper, SequenceInLineLink } from '../components/EntityLinks';
+
+function SeqCell({ sils }) {
+  return (
+    sils.length ? (
+      <CommaSeparatorWrapper>
+        {sils.map((sil) => (
+          <SequenceInLineLink key={sil.id} {...sil} />
+        ))}
+      </CommaSeparatorWrapper>
+    ) : (
+      '—'
+    )
+  );
+}
 
 function LinesPage() {
-  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
@@ -52,57 +62,19 @@ function LinesPage() {
               <TableCell>UID</TableCell>
               <TableCell>Genotype</TableCell>
               <TableCell>Plasmids</TableCell>
-              <TableCell>Parents</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((line) => {
               const alleles = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'allele') ?? [];
               const plasmids = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'plasmid') ?? [];
-              const renderSeqCell = (sils, showType = false) =>
-                sils.length ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-                    {sils.map((sil) => (
-                      <Box
-                        key={sil.id}
-                        component="span"
-                        sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, mr: 1 }}
-                      >
-                        <Typography
-                          component="span"
-                          sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/sequences/${sil.sequence_id}`);
-                          }}
-                        >
-                          {sil.name ?? sil.sequence_id}
-                        </Typography>
-                        {showType && <SequenceTypeChip sequenceType={sil.sequence_type} />}
-                      </Box>
-                    ))}
-                  </Box>
-                ) : (
-                  '—'
-                );
               return (
                 <TableRow key={line.id} hover>
                   <TableCell>
-                    <LineLink id={line.id} name={line.uid} />
+                    <LineLink {...line} />
                   </TableCell>
-                  <TableCell>{renderSeqCell(alleles, false)}</TableCell>
-                  <TableCell>{renderSeqCell(plasmids, true)}</TableCell>
-                  <TableCell>
-                    {line.parent_ids?.length ? (
-                      <CommaSeparatorWrapper>
-                        {line.parent_ids.map((parentId) => (
-                          <LineLink key={parentId} id={parentId} />
-                        ))}
-                      </CommaSeparatorWrapper>
-                    ) : (
-                      '—'
-                    )}
-                  </TableCell>
+                  <TableCell><SeqCell sils={alleles} /></TableCell>
+                  <TableCell><SeqCell sils={plasmids} /></TableCell>
                 </TableRow>
               );
             })}

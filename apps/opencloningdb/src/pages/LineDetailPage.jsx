@@ -27,7 +27,9 @@ function LineDetailPage() {
     queryKey: ['line', id],
     queryFn: async () => {
       const { data: res } = await openCloningDBHttpClient.get(endpoints.line(id));
-      return res;
+      const parentLinesData = await Promise.all(res.parent_ids.map((parentId) => openCloningDBHttpClient.get(endpoints.line(parentId))));
+      const parentLines = parentLinesData?.map((r) => r.data) ?? [];
+      return { ...res, parentLines };
     },
   });
 
@@ -37,7 +39,7 @@ function LineDetailPage() {
   const sequences = data?.sequences_in_line ?? [];
   const alleles = sequences.filter((s) => s.sequence_type === 'allele');
   const plasmids = sequences.filter((s) => s.sequence_type === 'plasmid');
-  const parentIds = data?.parent_ids ?? [];
+  const {parentLines } = data;
 
   const renderSeqTable = (items) => (
     <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
@@ -99,20 +101,20 @@ function LineDetailPage() {
         </Box>
       )}
 
-      {parentIds.length > 0 && (
+      {parentLines.length > 0 && (
         <Box>
           <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
             Parent lines
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {parentIds.map((parentId) => (
-              <LineLink key={parentId} id={parentId} />
+            {parentLines.map((parentLine) => (
+              <LineLink key={parentLine.id} {...parentLine} />
             ))}
           </Box>
         </Box>
       )}
 
-      {alleles.length === 0 && plasmids.length === 0 && parentIds.length === 0 && (
+      {alleles.length === 0 && plasmids.length === 0 && parentLines.length === 0 && (
         <Typography color="text.secondary">No genotype, plasmids, or parents for this line.</Typography>
       )}
     </>
