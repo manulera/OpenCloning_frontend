@@ -10,6 +10,8 @@ import PrimersPage from './pages/PrimersPage';
 import CloningPage from './pages/CloningPage';
 import SequenceDetailPage from './pages/SequenceDetailPage';
 import PrimerDetailPage from './pages/PrimerDetailPage';
+import LinesPage from './pages/LinesPage';
+import LineDetailPage from './pages/LineDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -20,7 +22,7 @@ const config = {
   enablePlannotate: false,
 };
 
-const TABS = ['/sequences', '/primers', '/cloning'];
+const TABS = ['/sequences', '/primers', '/lines', '/cloning'];
 
 function AppLayout() {
   const location = useLocation();
@@ -47,6 +49,7 @@ function AppLayout() {
           >
             <Tab label="Sequences" value="/sequences" />
             <Tab label="Primers" value="/primers" />
+            <Tab label="Lines" value="/lines" />
             <Tab label="Cloning" value="/cloning" />
           </Tabs>
         </Toolbar>
@@ -62,6 +65,8 @@ function AppLayout() {
           <Route path="/sequences/:id" element={<SequenceDetailPage />} />
           <Route path="/primers" element={<PrimersPage />} />
           <Route path="/primers/:id" element={<PrimerDetailPage />} />
+          <Route path="/lines" element={<LinesPage />} />
+          <Route path="/lines/:id" element={<LineDetailPage />} />
         </Routes>
       </Box>
     </Box>
