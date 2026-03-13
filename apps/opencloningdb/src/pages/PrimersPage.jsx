@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -20,13 +19,13 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { cloningActions } from '@opencloning/store/cloning';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
-import { PrimerLink } from '../components/EntityLinks';
+import { CommaSeparatorWrapper, PrimerLink } from '../components/EntityLinks';
+import TagChip from '../components/TagChip';
 
 const { addPrimer } = cloningActions;
 
 function PrimersPage() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { addAlert } = useAlerts();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -70,6 +69,7 @@ function PrimersPage() {
             <TableRow>
               <TableCell>UID</TableCell>
               <TableCell>Name</TableCell>
+              <TableCell>Tags</TableCell>
               <TableCell>Sequence</TableCell>
               <TableCell padding="none" width={48} />
             </TableRow>
@@ -80,6 +80,17 @@ function PrimersPage() {
                 <TableCell>{primer.uid ?? '—'}</TableCell>
                 <TableCell>
                   <PrimerLink id={primer.id} name={primer.name} />
+                </TableCell>
+                <TableCell>
+                  {primer.tags?.length ? (
+                    <CommaSeparatorWrapper>
+                      {primer.tags.map((tag) => (
+                        <TagChip key={tag.id} tag={tag} />
+                      ))}
+                    </CommaSeparatorWrapper>
+                  ) : (
+                    '—'
+                  )}
                 </TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
                 <TableCell padding="none">

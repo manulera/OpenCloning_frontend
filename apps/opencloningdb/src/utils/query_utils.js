@@ -30,10 +30,11 @@ export function parseIntArray(values) {
     return undefined;
   }
 
-  return values
+  const parsed = values
     .flatMap((value) => String(value).split(','))
     .map((v) => parseInt(v, 10))
     .filter((v) => Number.isFinite(v));
+  return parsed.length ? parsed : undefined;
 }
 
 export function parseStringArray(values) {
@@ -41,7 +42,8 @@ export function parseStringArray(values) {
     return undefined;
   }
 
-  return values.map((v) => String(v).trim()).filter((v) => v !== '');
+  const trimmed = values.map((v) => String(v).trim()).filter((v) => v !== '');
+  return trimmed.length ? trimmed : undefined
 }
 
 export const VALID_SEQUENCE_TYPES = ['locus', 'allele', 'plasmid', 'pcr_product', 'restriction_fragment', 'linear_dna'];
@@ -69,17 +71,12 @@ export const SEQUENCE_TYPE_LABELS = {
  * Single source of truth for sequence query params.
  */
 export function parseSequenceParams(searchParams) {
-  const name = parseString(searchParams.get('name'));
-  const tags = parseIntArray(searchParams.getAll('tags'));
-  const sequence_types = searchParams
-    .getAll('sequence_types')
-    .filter((t) => VALID_SEQUENCE_TYPES.includes(t));
-  const instantiated = parseBoolean(searchParams.get('instantiated'));
   return {
-    name,
-    tags: tags?.length ? tags : undefined,
-    sequence_types: sequence_types?.length ? sequence_types : undefined,
-    instantiated,
+    sample_uids: parseStringArray(searchParams.getAll('sample_uids')),
+    name: parseString(searchParams.get('name')),
+    tags: parseIntArray(searchParams.getAll('tags')),
+    sequence_types: parseStringArray(searchParams.getAll('sequence_types'))?.filter((t) => VALID_SEQUENCE_TYPES.includes(t)),
+    instantiated: parseBoolean(searchParams.get('instantiated')),
   };
 }
 
@@ -93,13 +90,13 @@ export function applySequenceParamsToSearchParams(params, nextParams) {
   const keys = ['name', 'tags', 'sequence_types', 'instantiated'];
   keys.forEach((key) => nextParams.delete(key));
 
-  if (params.name != null && String(params.name).trim() !== '') {
-    nextParams.set('name', String(params.name).trim());
+  if (params.name) {
+    nextParams.set('name');
   }
-  if (Array.isArray(params.tags) && params.tags.length > 0) {
+  if (params.tags) {
     params.tags.forEach((id) => nextParams.append('tags', String(id)));
   }
-  if (Array.isArray(params.sequence_types) && params.sequence_types.length > 0) {
+  if (params.sequence_types) {
     params.sequence_types.forEach((t) => nextParams.append('sequence_types', t));
   }
   if (params.instantiated === true || params.instantiated === false) {
