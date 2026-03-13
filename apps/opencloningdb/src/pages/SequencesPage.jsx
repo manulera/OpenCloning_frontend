@@ -29,22 +29,34 @@ import TagMultiSelect from '../components/TagMultiSelect';
 import SequenceTypeMultiSelect from '../components/SequenceTypeMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 
+const MIN_WIDTH = 200;
+
 function SequenceQueryFields({ pendingParams, setPendingParams }) {
   return (
     <>
+      <SearchBar
+        label="UID"
+        placeholder="Search by UID"
+        value={pendingParams.sample_uids ?? ''}
+        onChange={(value) => setPendingParams((p) => ({ ...p, sample_uids: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
+      />
       <SearchBar
         label="Name"
         placeholder="Search by name"
         value={pendingParams.name ?? ''}
         onChange={(value) => setPendingParams((p) => ({ ...p, name: value }))}
-      />
-      <TagMultiSelect
-        value={pendingParams.tags ?? []}
-        onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
       />
       <SequenceTypeMultiSelect
         value={pendingParams.sequence_types ?? []}
         onChange={(value) => setPendingParams((p) => ({ ...p, sequence_types: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
+      />
+      <TagMultiSelect
+        value={pendingParams.tags ?? []}
+        onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
       />
       <Button variant="contained" color="primary" type="submit">
         Search
