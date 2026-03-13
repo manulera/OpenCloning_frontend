@@ -1,32 +1,29 @@
-import React, { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { QuerySelect } from '@opencloning/ui';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import ChipMultiSelect from './ChipMultiSelect';
 
-function TagMultiSelect({ value, onChange, label = 'Tags', ...rest }) {
-  const { data: tagsData, isLoading } = useQuery({
-    queryKey: ['tags'],
-    queryFn: async () => {
-      const { data } = await openCloningDBHttpClient.get(endpoints.tags);
-      return data;
-    },
-  });
+const TAG_QUERY = {
+  queryKey: ['tags'],
+  queryFn: async () => {
+    const { data } = await openCloningDBHttpClient.get(endpoints.tags);
+    return data;
+  },
+};
 
-  const options = useMemo(() => {
-    if (!Array.isArray(tagsData)) return [];
-    return tagsData.map((tag) => ({ id: tag.id, label: tag.name }));
-  }, [tagsData]);
-
+function TagMultiSelect({ onChange, label = 'Tags', ...rest }) {
+  const onChange2 = React.useCallback((tagObjects) => onChange(tagObjects.map((t) => t.id)), [onChange]);
   return (
-    <ChipMultiSelect
+    <QuerySelect
+      query={TAG_QUERY}
       label={label}
-      options={options}
-      value={value ?? []}
-      onChange={onChange}
-      loading={isLoading}
+      getOptionLabel={(tag) => tag.name}
+      getOptionKey={(tag) => tag.id}
+      onChange={onChange2}
+      inputProps={{size: 'small'}}
       {...rest}
     />
   );
 }
 
 export default TagMultiSelect;
+

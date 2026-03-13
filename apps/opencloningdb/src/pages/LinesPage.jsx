@@ -66,6 +66,7 @@ function LinesQueryFields({ pendingParams, setPendingParams }) {
         sx={{ minWidth: MIN_WIDTH * 1.5 }}
       />
       <TagMultiSelect
+        size="small"
         value={pendingParams.tags ?? []}
         onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
         sx={{ minWidth: MIN_WIDTH }}

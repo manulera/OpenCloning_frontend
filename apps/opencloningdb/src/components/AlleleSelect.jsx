@@ -22,6 +22,7 @@ function AlleleSelect({ onChange, label = 'Alleles', multiple = true, ...rest })
       label={label}
       multiple={multiple}
       getOptionLabel={(seq) => seq.name ?? `Sequence ${seq.id}`}
+      getOptionKey={(seq) => seq.id}
       onChange={onChange}
       autocompleteProps={autocompleteProps}
       {...rest}
