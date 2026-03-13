@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
@@ -23,7 +22,7 @@ import { parseLinesParams, applyLinesParamsToSearchParams } from '../utils/query
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
-import TagChip from '../components/TagChip';
+import TagChipList from '../components/TagChipList';
 
 function SeqCell({ sils }) {
   return (
@@ -164,15 +163,7 @@ function LinesPage() {
                   </TableCell>
                   <TableCell><SeqCell sils={alleles} /></TableCell>
                   <TableCell><SeqCell sils={plasmids} /></TableCell>
-                  <TableCell>{line.tags?.length ? (
-                    <CommaSeparatorWrapper>
-                      {line.tags.map((tag) => (
-                        <TagChip key={tag.id} tag={tag} />
-                      ))}
-                    </CommaSeparatorWrapper>
-                  ) : (
-                    '—'
-                  )}</TableCell>
+                  <TableCell><TagChipList tags={line.tags} /></TableCell>
                 </TableRow>
               );
             })}

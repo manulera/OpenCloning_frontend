@@ -14,16 +14,43 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
+  DialogContent,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { SequenceLink, LineLink } from '../components/EntityLinks';
+import TagChipList from '../components/TagChipList';
+import { Dialog, DialogTitle } from '@mui/material';
+import AlleleSelect from '../components/AlleleSelect';
+import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
+
+function TransformationDialog({ line, open, onClose }) {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Transformation of {line.uid ?? `Line ${line.id}`}</DialogTitle>
+      <DialogContent>
+        <AlleleSelect multiple onChange={(alleles) => { console.log(alleles); }} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TransformButton({ line }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+        Transformation
+      </Button>
+      <TransformationDialog line={line} open={open} onClose={() => setOpen(false)} />
+    </>
+  );
+}
 
 function LineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useQuery({
+  const { data: line, isLoading, error } = useQuery({
     queryKey: ['line', id],
     queryFn: async () => {
       const { data: res } = await openCloningDBHttpClient.get(endpoints.line(id));
@@ -36,10 +63,10 @@ function LineDetailPage() {
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load line'}</Alert>;
 
-  const sequences = data?.sequences_in_line ?? [];
+  const sequences = line?.sequences_in_line ?? [];
   const alleles = sequences.filter((s) => s.sequence_type === 'allele');
   const plasmids = sequences.filter((s) => s.sequence_type === 'plasmid');
-  const {parentLines } = data;
+  const {parentLines } = line;
 
   const renderSeqTable = (items) => (
     <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
@@ -57,15 +84,7 @@ function LineDetailPage() {
                 <SequenceLink id={seq.sequence_id} name={seq.name} />
               </TableCell>
               <TableCell>
-                {seq.tags?.length ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {seq.tags.map((tag) => (
-                      <Chip key={tag.id} label={tag.name} size="small" variant="outlined" />
-                    ))}
-                  </Box>
-                ) : (
-                  '—'
-                )}
+                <TagChipList tags={seq.tags} />
               </TableCell>
             </TableRow>
           ))}
@@ -77,11 +96,21 @@ function LineDetailPage() {
   return (
     <>
       <Button onClick={() => navigate('/lines')} sx={{ mb: 2 }}>
-        Back to Lines
+        <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> Back to Lines
       </Button>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        {data.uid ?? `Line ${data.id}`}
+        {line.uid ?? `Line ${line.id}`}
       </Typography>
+      <Box sx={{ mb: 3 }}>
+        <TransformButton line={line} />
+      </Box>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+          Tags
+        </Typography>
+        <TagChipList tags={line.tags} />
+      </Box>
+
 
       {alleles.length > 0 && (
         <Box sx={{ mb: 3 }}>

@@ -6,6 +6,7 @@ import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { SequenceLink } from '../components/EntityLinks';
 import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
+import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
 
 
 function SequenceDetailPage() {
@@ -43,7 +44,7 @@ function SequenceDetailPage() {
   return (
     <>
       <Button onClick={() => navigate('/sequences')} sx={{ mb: 2 }}>
-        Back to Sequences
+      <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> Back to Sequences
       </Button>
       <Typography variant="h5" sx={{ mb: 2 }}>
         {sequenceInDb?.name}

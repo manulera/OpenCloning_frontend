@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Paper, Typography, Button, CircularProgress, Alert } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
 
 function PrimerDetailPage() {
   const { id } = useParams();
@@ -22,7 +23,7 @@ function PrimerDetailPage() {
   return (
     <>
       <Button onClick={() => navigate('/primers')} sx={{ mb: 2 }}>
-        Back to Primers
+        <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> Back to Primers
       </Button>
       <Typography variant="h5" sx={{ mb: 2 }}>
         {data.name ?? `Primer ${data.id}`}
