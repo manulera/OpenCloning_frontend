@@ -7,6 +7,7 @@ export default function QueryStatusWrapper({
   queryResult,
   loadingMessage = 'Loading...',
   errorMessage = 'Could not load options',
+  renderIfLoading = false,
 }) {
   const { isLoading, isError, refetch } = queryResult;
 
@@ -18,7 +19,7 @@ export default function QueryStatusWrapper({
     );
   }
 
-  if (isLoading) {
+  if (isLoading && !renderIfLoading) {
     return (
       <Alert severity="info" icon={<CircularProgress color="inherit" size="1em" />}>
         {loadingMessage}
