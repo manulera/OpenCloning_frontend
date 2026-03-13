@@ -32,7 +32,7 @@ export function useQueryParamsForm(parse, applyToSearchParams) {
  * Form wrapper that submits pending params to the URL on submit.
  * Renders children with (pendingParams, setPendingParams) so you can plug in your fields.
  */
-export function UrlParamsForm({ parse, applyToSearchParams, component, sx = {} }) {
+export function UrlParamsForm({ parse, applyToSearchParams, component, value, sx = {} }) {
   const { pendingParams, setPendingParams, submitToUrl } = useQueryParamsForm(
     parse,
     applyToSearchParams
@@ -49,7 +49,7 @@ export function UrlParamsForm({ parse, applyToSearchParams, component, sx = {} }
       onSubmit={handleSubmit}
       sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'nowrap', alignItems: 'center', ...sx }}
     >
-      {component({ pendingParams, setPendingParams })}
+      {component({ pendingParams, setPendingParams, value })}
     </Box>
   );
 }
