@@ -140,3 +140,40 @@ export function applyPrimersParamsToSearchParams(params, nextParams) {
     nextParams.set('has_uid', params.has_uid ? 'true' : 'false');
   }
 }
+
+/**
+ * Parse URL search params into line filter object.
+ * Single source of truth for line query params.
+ */
+export function parseLinesParams(searchParams) {
+  return {
+    tags: parseIntArray(searchParams.getAll('tags')),
+    genotype: parseString(searchParams.get('genotype')),
+    plasmid: parseString(searchParams.get('plasmid')),
+    uid: parseString(searchParams.get('uid')),
+  };
+}
+
+/**
+ * Write line filter params into URLSearchParams (mutates nextParams).
+ * Removes 'page' so search resets to first page.
+ */
+export function applyLinesParamsToSearchParams(params, nextParams) {
+  nextParams.delete('page');
+
+  const keys = ['tags', 'genotype', 'plasmid', 'uid'];
+  keys.forEach((key) => nextParams.delete(key));
+
+  if (params.genotype) {
+    nextParams.set('genotype', params.genotype);
+  }
+  if (params.plasmid) {
+    nextParams.set('plasmid', params.plasmid);
+  }
+  if (params.uid) {
+    nextParams.set('uid', params.uid);
+  }
+  if (params.tags) {
+    params.tags.forEach((id) => nextParams.append('tags', String(id)));
+  }
+}
