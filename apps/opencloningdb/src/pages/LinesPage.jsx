@@ -23,7 +23,6 @@ import { parseLinesParams, applyLinesParamsToSearchParams } from '../utils/query
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
-import AlleleSelect from '../components/AlleleSelect';
 import TagChip from '../components/TagChip';
 
 function SeqCell({ sils }) {
