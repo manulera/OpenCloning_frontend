@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
@@ -14,21 +15,58 @@ import {
   Alert,
   Typography,
   IconButton,
+  Button,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { cloningActions } from '@opencloning/store/cloning';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
+import { parsePrimersParams, applyPrimersParamsToSearchParams } from '../utils/query_utils';
 import { CommaSeparatorWrapper, PrimerLink } from '../components/EntityLinks';
 import TagChip from '../components/TagChip';
+import SearchBar from '../components/SearchBar';
+import TagMultiSelect from '../components/TagMultiSelect';
+import { UrlParamsForm } from '../components/urlParamsForm';
 
 const { addPrimer } = cloningActions;
+
+const MIN_WIDTH = 200;
+
+function PrimerQueryFields({ pendingParams, setPendingParams }) {
+  return (
+    <>
+      <SearchBar
+        label="UID"
+        placeholder="Search by UID"
+        value={pendingParams.uid ?? ''}
+        onChange={(value) => setPendingParams((p) => ({ ...p, uid: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
+      />
+      <SearchBar
+        label="Name"
+        placeholder="Search by name"
+        value={pendingParams.name ?? ''}
+        onChange={(value) => setPendingParams((p) => ({ ...p, name: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
+      />
+      <TagMultiSelect
+        value={pendingParams.tags ?? []}
+        onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
+        sx={{ minWidth: MIN_WIDTH }}
+      />
+      <Button variant="contained" color="primary" type="submit">
+        Search
+      </Button>
+    </>
+  );
+}
 
 function PrimersPage() {
   const dispatch = useDispatch();
   const { addAlert } = useAlerts();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [searchParams] = useSearchParams();
 
   const handleAddPrimer = async (primerId) => {
     try {
@@ -42,11 +80,20 @@ function PrimersPage() {
     }
   };
 
+  const filters = useMemo(
+    () => parsePrimersParams(searchParams),
+    [searchParams],
+  );
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['primers', { page: page + 1, size: rowsPerPage }],
+    queryKey: ['primers', { page: page + 1, size: rowsPerPage, ...filters }],
     queryFn: async () => {
       const { data: res } = await openCloningDBHttpClient.get(endpoints.primers, {
-        params: { page: page + 1, size: rowsPerPage },
+        params: {
+          page: page + 1,
+          size: rowsPerPage,
+          ...filters,
+        },
       });
       return res;
     },
@@ -63,6 +110,11 @@ function PrimersPage() {
       <Typography variant="h5" sx={{ mb: 2 }}>
         Primers
       </Typography>
+      <UrlParamsForm
+        parse={parsePrimersParams}
+        applyToSearchParams={applyPrimersParamsToSearchParams}
+        component={PrimerQueryFields}
+      />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
