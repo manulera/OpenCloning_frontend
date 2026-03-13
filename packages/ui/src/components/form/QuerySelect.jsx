@@ -19,6 +19,7 @@ export default function QuerySelect({
 }) {
   const queryResult = useQuery(query);
   const { data: options = [] } = queryResult;
+  const [inputValue, setInputValue] = React.useState('');
 
   return (
     <QueryStatusWrapper renderIfLoading={true} queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
@@ -33,6 +34,11 @@ export default function QuerySelect({
             getOptionKey={getOptionKey}
             defaultValue={multiple ? [] : ''}
             forcePopupIcon
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue, reason) => {
+              if (reason === 'reset') return;
+              setInputValue(newInputValue);
+            }}
             {...autocompleteProps}
             renderInput={(params) => (
               <TextField
