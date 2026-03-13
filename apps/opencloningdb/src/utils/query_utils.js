@@ -43,7 +43,7 @@ export function parseStringArray(values) {
   }
 
   const trimmed = values.map((v) => String(v).trim()).filter((v) => v !== '');
-  return trimmed.length ? trimmed : undefined
+  return trimmed.length ? trimmed : undefined;
 }
 
 export const VALID_SEQUENCE_TYPES = ['locus', 'allele', 'plasmid', 'pcr_product', 'restriction_fragment', 'linear_dna'];
@@ -101,5 +101,42 @@ export function applySequenceParamsToSearchParams(params, nextParams) {
   }
   if (params.instantiated === true || params.instantiated === false) {
     nextParams.set('instantiated', params.instantiated ? 'true' : 'false');
+  }
+}
+
+/**
+ * Parse URL search params into primer filter object.
+ * Single source of truth for primer query params.
+ */
+export function parsePrimersParams(searchParams) {
+  return {
+    tags: parseIntArray(searchParams.getAll('tags')),
+    name: parseString(searchParams.get('name')),
+    uid: parseString(searchParams.get('uid')),
+    has_uid: parseBoolean(searchParams.get('has_uid')),
+  };
+}
+
+/**
+ * Write primer filter params into URLSearchParams (mutates nextParams).
+ * Removes 'page' so search resets to first page.
+ */
+export function applyPrimersParamsToSearchParams(params, nextParams) {
+  nextParams.delete('page');
+
+  const keys = ['name', 'tags', 'uid', 'has_uid'];
+  keys.forEach((key) => nextParams.delete(key));
+
+  if (params.name) {
+    nextParams.set('name', params.name);
+  }
+  if (params.uid) {
+    nextParams.set('uid', params.uid);
+  }
+  if (params.tags) {
+    params.tags.forEach((id) => nextParams.append('tags', String(id)));
+  }
+  if (params.has_uid === true || params.has_uid === false) {
+    nextParams.set('has_uid', params.has_uid ? 'true' : 'false');
   }
 }
