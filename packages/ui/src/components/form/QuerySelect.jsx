@@ -12,14 +12,16 @@ export default function QuerySelect({
   multiple = true,
   autoComplete = true,
   getOptionLabel,
+  getOptionKey = getOptionLabel,
   autocompleteProps = {},
+  inputProps = {},
   ...rest
 }) {
   const queryResult = useQuery(query);
   const { data: options = [] } = queryResult;
 
   return (
-    <QueryStatusWrapper queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
+    <QueryStatusWrapper renderIfLoading={true} queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
       <FormControl {...rest}>
         {autoComplete ? (
           <Autocomplete
@@ -28,6 +30,7 @@ export default function QuerySelect({
             id="tags-standard"
             options={options}
             getOptionLabel={getOptionLabel}
+            getOptionKey={getOptionKey}
             defaultValue={multiple ? [] : ''}
             forcePopupIcon
             {...autocompleteProps}
@@ -35,6 +38,7 @@ export default function QuerySelect({
               <TextField
                 {...params}
                 label={label}
+                {...inputProps}
               />
             )}
           />
@@ -47,6 +51,7 @@ export default function QuerySelect({
               label={label}
               defaultValue={multiple ? [] : ''}
               error={options.length === 0}
+              inputProps={inputProps}
             >
               {options.map((option) => (
                 <MenuItem key={getOptionLabel(option)} value={getOptionLabel(option)}>
