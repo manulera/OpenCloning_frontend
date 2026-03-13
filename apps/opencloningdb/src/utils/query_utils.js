@@ -87,11 +87,14 @@ export function parseSequenceParams(searchParams) {
 export function applySequenceParamsToSearchParams(params, nextParams) {
   nextParams.delete('page');
 
-  const keys = ['name', 'tags', 'sequence_types', 'instantiated'];
+  const keys = ['name', 'sample_uids', 'tags', 'sequence_types', 'instantiated'];
   keys.forEach((key) => nextParams.delete(key));
 
   if (params.name) {
-    nextParams.set('name');
+    nextParams.set('name', params.name);
+  }
+  if (params.sample_uids) {
+    params.sample_uids.forEach((uid) => nextParams.append('sample_uids', uid));
   }
   if (params.tags) {
     params.tags.forEach((id) => nextParams.append('tags', String(id)));
