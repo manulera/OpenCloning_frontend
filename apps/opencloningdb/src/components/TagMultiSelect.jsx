@@ -10,16 +10,17 @@ const TAG_QUERY = {
   },
 };
 
-function TagMultiSelect({ onChange, label = 'Tags', ...rest }) {
-  const onChange2 = React.useCallback((tagObjects) => onChange(tagObjects.map((t) => t.id)), [onChange]);
+function TagMultiSelect({ onChange, label = 'Tags', value, ...rest }) {
   return (
     <QuerySelect
       query={TAG_QUERY}
       label={label}
       getOptionLabel={(tag) => tag.name}
       getOptionKey={(tag) => tag.id}
-      onChange={onChange2}
+      onChange={onChange}
+      value={value}
       inputProps={{size: 'small'}}
+      autoComplete={true}
       {...rest}
     />
   );
