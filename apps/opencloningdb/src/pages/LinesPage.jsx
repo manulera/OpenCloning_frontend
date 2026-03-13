@@ -24,6 +24,7 @@ import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import AlleleSelect from '../components/AlleleSelect';
+import TagChip from '../components/TagChip';
 
 function SeqCell({ sils }) {
   return (
@@ -39,7 +40,7 @@ function SeqCell({ sils }) {
   );
 }
 
-const MIN_WIDTH = 200;
+const MIN_WIDTH = 150;
 
 function LinesQueryFields({ pendingParams, setPendingParams }) {
   return (
@@ -53,14 +54,14 @@ function LinesQueryFields({ pendingParams, setPendingParams }) {
       />
       <SearchBar
         label="Genotype"
-        placeholder="Search by allele names (space = AND)"
+        placeholder="Search by allele names"
         value={pendingParams.genotype ?? ''}
         onChange={(value) => setPendingParams((p) => ({ ...p, genotype: value }))}
         sx={{ minWidth: MIN_WIDTH * 1.5 }}
       />
       <SearchBar
         label="Plasmid"
-        placeholder="Search by plasmid (space = AND)"
+        placeholder="Search by plasmid"
         value={pendingParams.plasmid ?? ''}
         onChange={(value) => setPendingParams((p) => ({ ...p, plasmid: value }))}
         sx={{ minWidth: MIN_WIDTH * 1.5 }}
@@ -75,22 +76,6 @@ function LinesQueryFields({ pendingParams, setPendingParams }) {
         Search
       </Button>
     </>
-  );
-}
-
-function LineTransformDialog({ selectedIds, setSelectedIds }) {
-  const onChange = (alleles) => {
-    console.log(alleles);
-  };
-  return (
-    <Dialog open={selectedIds.size > 0} onClose={() => setSelectedIds(new Set())}>
-      <DialogTitle>Transform Lines</DialogTitle>
-      <DialogContent>
-        <form >
-          <AlleleSelect onChange={onChange} />
-        </form>
-      </DialogContent>
-    </Dialog>
   );
 }
 
@@ -151,7 +136,6 @@ function LinesPage() {
       >
         Action{selectedIds.size > 0 ? ` (${selectedIds.size} selected)` : ''}
       </Button>
-      <LineTransformDialog selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
@@ -160,6 +144,7 @@ function LinesPage() {
               <TableCell>UID</TableCell>
               <TableCell>Genotype</TableCell>
               <TableCell>Plasmids</TableCell>
+              <TableCell>Tags</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,6 +165,15 @@ function LinesPage() {
                   </TableCell>
                   <TableCell><SeqCell sils={alleles} /></TableCell>
                   <TableCell><SeqCell sils={plasmids} /></TableCell>
+                  <TableCell>{line.tags?.length ? (
+                    <CommaSeparatorWrapper>
+                      {line.tags.map((tag) => (
+                        <TagChip key={tag.id} tag={tag} />
+                      ))}
+                    </CommaSeparatorWrapper>
+                  ) : (
+                    '—'
+                  )}</TableCell>
                 </TableRow>
               );
             })}
