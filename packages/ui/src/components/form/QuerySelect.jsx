@@ -9,6 +9,7 @@ export default function QuerySelect({
   loadingMessage = 'Loading...',
   errorMessage = 'Could not load options',
   onChange,
+  value,
   multiple = true,
   autoComplete = true,
   getOptionLabel,
@@ -21,19 +22,49 @@ export default function QuerySelect({
   const { data: options = [] } = queryResult;
   const [inputValue, setInputValue] = React.useState('');
 
+  const isOptionEqualToValue = React.useCallback((option, val) => getOptionKey(option) === getOptionKey(val), [getOptionKey]);
+
+  // Build a lookup map from key → option object
+  const optionsByKey = React.useMemo(
+    () => new Map(options.map((opt) => [getOptionKey(opt), opt])),
+    [options, getOptionKey],
+  );
+
+  // Resolve ID-based value to full option objects for Autocomplete,
+  // or keep as-is for Select (which works with IDs directly).
+  const resolvedValue = React.useMemo(() => {
+    if (value === undefined) return undefined;
+    if (!autoComplete) return value;
+    if (multiple) {
+      return (value || []).map((v) => optionsByKey.get(v)).filter(Boolean);
+    }
+    return optionsByKey.get(value) ?? null;
+  }, [value, autoComplete, multiple, optionsByKey]);
+
+  // Map selected objects back to IDs via getOptionKey
+  const handleAutocompleteChange = React.useCallback((event, newValue) => {
+    if (multiple) {
+      onChange(newValue.map((v) => getOptionKey(v)));
+    } else {
+      onChange(newValue ? getOptionKey(newValue) : null);
+    }
+    setInputValue('');
+  }, [onChange, multiple, getOptionKey]);
+
   return (
-    <QueryStatusWrapper renderIfLoading={true} queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
+    <QueryStatusWrapper renderIfLoading={autoComplete} queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
       <FormControl {...rest}>
         {autoComplete ? (
           <Autocomplete
             multiple={multiple}
-            onChange={(event, value) => { onChange(value); }}
+            onChange={handleAutocompleteChange}
             id="tags-standard"
             options={options}
             getOptionLabel={getOptionLabel}
             getOptionKey={getOptionKey}
-            defaultValue={multiple ? [] : ''}
+            value={resolvedValue !== undefined ? resolvedValue : (multiple ? [] : null)}
             forcePopupIcon
+            isOptionEqualToValue={isOptionEqualToValue}
             inputValue={inputValue}
             onInputChange={(event, newInputValue, reason) => {
               if (reason === 'reset') return;
@@ -54,13 +85,14 @@ export default function QuerySelect({
             <Select
               multiple={multiple}
               onChange={(event) => { onChange(event.target.value, options); }}
+              value={value !== undefined ? value : undefined}
               label={label}
-              defaultValue={multiple ? [] : ''}
+              defaultValue={value === undefined ? (multiple ? [] : '') : undefined}
               error={options.length === 0}
               inputProps={inputProps}
             >
               {options.map((option) => (
-                <MenuItem key={getOptionLabel(option)} value={getOptionLabel(option)}>
+                <MenuItem key={getOptionKey(option)} value={getOptionKey(option)}>
                   {getOptionLabel(option)}
                 </MenuItem>
               ))}
