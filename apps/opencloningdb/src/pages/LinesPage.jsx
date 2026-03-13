@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
@@ -14,6 +15,7 @@ import {
   Alert,
   Typography,
   Button,
+  Checkbox,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { LineLink, CommaSeparatorWrapper, SequenceInLineLink } from '../components/EntityLinks';
@@ -21,6 +23,7 @@ import { parseLinesParams, applyLinesParamsToSearchParams } from '../utils/query
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
+import AlleleSelect from '../components/AlleleSelect';
 
 function SeqCell({ sils }) {
   return (
@@ -74,9 +77,26 @@ function LinesQueryFields({ pendingParams, setPendingParams }) {
   );
 }
 
+function LineTransformDialog({ selectedIds, setSelectedIds }) {
+  const onChange = (alleles) => {
+    console.log(alleles);
+  };
+  return (
+    <Dialog open={selectedIds.size > 0} onClose={() => setSelectedIds(new Set())}>
+      <DialogTitle>Transform Lines</DialogTitle>
+      <DialogContent>
+        <form >
+          <AlleleSelect onChange={onChange} />
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function LinesPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [searchParams] = useSearchParams();
 
   const filters = useMemo(
@@ -101,6 +121,12 @@ function LinesPage() {
 
   const items = data?.items ?? [];
 
+  const toggleRow = (id) => setSelectedIds((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+
   if (isLoading && !data) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load lines'}</Alert>;
 
@@ -114,10 +140,22 @@ function LinesPage() {
         applyToSearchParams={applyLinesParamsToSearchParams}
         component={LinesQueryFields}
       />
+      <Button
+        variant="contained"
+        disabled={selectedIds.size === 0}
+        sx={{ mb: 1 }}
+        onClick={() => {
+          // TODO: implement action for selected lines
+        }}
+      >
+        Action{selectedIds.size > 0 ? ` (${selectedIds.size} selected)` : ''}
+      </Button>
+      <LineTransformDialog selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox" />
               <TableCell>UID</TableCell>
               <TableCell>Genotype</TableCell>
               <TableCell>Plasmids</TableCell>
@@ -129,6 +167,13 @@ function LinesPage() {
               const plasmids = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'plasmid') ?? [];
               return (
                 <TableRow key={line.id} hover>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      size="small"
+                      checked={selectedIds.has(line.id)}
+                      onChange={() => toggleRow(line.id)}
+                    />
+                  </TableCell>
                   <TableCell>
                     <LineLink {...line} />
                   </TableCell>
@@ -143,11 +188,12 @@ function LinesPage() {
           component="div"
           count={data?.total ?? 0}
           page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
+          onPageChange={(_, newPage) => { setPage(newPage); setSelectedIds(new Set()); }}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
+            setSelectedIds(new Set());
           }}
           rowsPerPageOptions={[10, 25, 50]}
         />
