@@ -1,23 +1,8 @@
 import React from 'react';
 import { Chip } from '@mui/material';
+import { SEQUENCE_TYPE_COLORS, SEQUENCE_TYPE_LABELS } from '../utils/query_utils';
 
-const SEQUENCE_TYPE_COLORS = {
-  locus: { color: 'secondary.main' },
-  allele: { color: 'warning.main' },
-  plasmid: { color: 'primary.main' },
-  pcr_product: { color: '#dd2d4a' },
-  restriction_fragment: { color: 'success.main' },
-  linear_dna: { color: 'default.main' },
-};
 
-const SEQUENCE_TYPE_LABELS = {
-  locus: 'Locus',
-  allele: 'Allele',
-  plasmid: 'Plasmid',
-  pcr_product: 'PCR product',
-  restriction_fragment: 'Restriction fragment',
-  linear_dna: 'Linear DNA',
-};
 
 function SequenceTypeChip({ sequenceType }) {
   if (!sequenceType) return null;

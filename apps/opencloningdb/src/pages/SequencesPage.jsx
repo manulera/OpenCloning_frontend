@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
@@ -14,7 +14,6 @@ import {
   Alert,
   Typography,
   IconButton,
-  Box,
   Button,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
@@ -24,14 +23,40 @@ import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import SequenceTypeChip from '../components/SequenceTypeChip';
 import { CommaSeparatorWrapper, SequenceLink } from '../components/EntityLinks';
 import TagChip from '../components/TagChip';
-import { parseBoolean, parseString, parseIntArray } from '../utils/query_utils';
+import { parseSequenceParams, applySequenceParamsToSearchParams } from '../utils/query_utils';
 import SearchBar from '../components/SearchBar';
-import ChipMultiSelect from '../components/ChipMultiSelect';
+import TagMultiSelect from '../components/TagMultiSelect';
+import SequenceTypeMultiSelect from '../components/SequenceTypeMultiSelect';
+import { UrlParamsForm } from '../components/urlParamsForm';
+
+function SequenceQueryFields({ pendingParams, setPendingParams }) {
+  return (
+    <>
+      <SearchBar
+        label="Name"
+        placeholder="Search by name"
+        value={pendingParams.name ?? ''}
+        onChange={(value) => setPendingParams((p) => ({ ...p, name: value }))}
+      />
+      <TagMultiSelect
+        value={pendingParams.tags ?? []}
+        onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
+      />
+      <SequenceTypeMultiSelect
+        value={pendingParams.sequence_types ?? []}
+        onChange={(value) => setPendingParams((p) => ({ ...p, sequence_types: value }))}
+      />
+      <Button variant="contained" color="primary" type="submit">
+        Search
+      </Button>
+    </>
+  )}
+
 
 function SequencesPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { addAlert } = useAlerts();
   const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: null, sendPostRequest: null, setHistoryFileError });
@@ -50,31 +75,18 @@ function SequencesPage() {
   };
 
 
-  const appliedTags = useMemo(
-    () => parseIntArray(searchParams.getAll('tags')),
+  const filters = useMemo(
+    () => parseSequenceParams(searchParams),
     [searchParams],
   );
-  const appliedInstantiated = parseBoolean(searchParams.get('instantiated'));
-  const appliedSequenceType = parseString(searchParams.get('sequence_type'));
-  const appliedName = parseString(searchParams.get('name')) ?? '';
-
-  const filters = {
-    tags: appliedTags,
-    instantiated: appliedInstantiated,
-    sequence_type: appliedSequenceType,
-    name: appliedName || undefined,
+  const filtersForApi = {
+    ...filters,
+    name: filters.name || undefined,
+    tags: filters.tags,
+    sequence_types: filters.sequence_types,
+    instantiated: filters.instantiated,
   };
 
-  const [pendingName, setPendingName] = useState(appliedName);
-  const [pendingTagIds, setPendingTagIds] = useState(appliedTags);
-
-  useEffect(() => {
-    setPendingName(appliedName);
-  }, [appliedName]);
-
-  useEffect(() => {
-    setPendingTagIds(appliedTags);
-  }, [appliedTags]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['sequences', { page: page + 1, size: rowsPerPage, ...filters }],
@@ -83,7 +95,7 @@ function SequencesPage() {
         params: {
           page: page + 1,
           size: rowsPerPage,
-          ...filters,
+          ...filtersForApi,
         },
       });
       return res;
@@ -93,30 +105,6 @@ function SequencesPage() {
 
   const items = data?.items ?? [];
 
-
-  const onSearchSubmit = (event) => {
-    event.preventDefault();
-    const nextParams = new window.URLSearchParams(searchParams);
-
-    const cleanName = pendingName.trim();
-    if (cleanName) {
-      nextParams.set('name', cleanName);
-    } else {
-      nextParams.delete('name');
-    }
-
-    if (pendingTagIds.length) {
-      nextParams.delete('tags');
-      nextParams.set('tags', pendingTagIds.join(','));
-    } else {
-      nextParams.delete('tags');
-    }
-
-    nextParams.delete('page');
-
-    setSearchParams(nextParams);
-  };
-
   if (isLoading && !data) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequences'}</Alert>;
 
@@ -125,37 +113,11 @@ function SequencesPage() {
       <Typography variant="h5" sx={{ mb: 2 }}>
         Sequences
       </Typography>
-      <Box
-        component="form"
-        onSubmit={onSearchSubmit}
-        sx={{
-          mb: 2,
-          display: 'flex',
-          gap: 2,
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}
-      >
-        <SearchBar
-          label="Name"
-          placeholder="Search by name"
-          value={pendingName}
-          onChange={setPendingName}
-        />
-        <ChipMultiSelect
-          label="Tags"
-          options={tagOptions}
-          value={pendingTagIds}
-          onChange={setPendingTagIds}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-        >
-          Search
-        </Button>
-      </Box>
+      <UrlParamsForm
+        parse={parseSequenceParams}
+        applyToSearchParams={applySequenceParamsToSearchParams}
+        component={SequenceQueryFields}
+      />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
