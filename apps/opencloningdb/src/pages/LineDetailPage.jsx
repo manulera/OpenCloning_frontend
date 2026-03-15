@@ -15,6 +15,7 @@ import {
   TableRow,
   Paper,
   DialogContent,
+  FormControl,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { SequenceLink, LineLink } from '../components/EntityLinks';
@@ -22,13 +23,23 @@ import TagChipList from '../components/TagChipList';
 import { Dialog, DialogTitle } from '@mui/material';
 import AlleleSelect from '../components/AlleleSelect';
 import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
+import NewLineUID from '../components/NewLineUID';
 
 function TransformationDialog({ line, open, onClose }) {
+  const [alleles, setAlleles] = React.useState([]);
+  const [lineUID, setLineUID] = React.useState('');
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Transformation of {line.uid ?? `Line ${line.id}`}</DialogTitle>
       <DialogContent>
-        <AlleleSelect multiple onChange={(alleles) => { console.log(alleles); }} />
+        <FormControl fullWidth sx={{ mt: 1 }}>
+          <NewLineUID value={lineUID} onChange={setLineUID} />
+        </FormControl>
+        <FormControl fullWidth sx={{ mt: 1 }}>
+        <AlleleSelect multiple value={alleles} onChange={setAlleles} />
+        </FormControl>
+
       </DialogContent>
     </Dialog>
   );

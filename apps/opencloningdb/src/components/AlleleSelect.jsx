@@ -12,19 +12,21 @@ const getQuery = (name) => ({
   },
 });
 
-function AlleleSelect({ onChange, label = 'Alleles', multiple = true, ...rest }) {
-  const { query, autocompleteProps } = useDebouncedSearchQuery(getQuery);
+function AlleleSelect({ value, onChange, label = 'Alleles', multiple = true, ...rest }) {
+  const { query, autocompleteProps, clearInput } = useDebouncedSearchQuery(getQuery);
 
   return (
     <QuerySelect
-      sx={{ minWidth: 240, margin: 4 }}
       query={query}
       label={label}
       multiple={multiple}
       getOptionLabel={(seq) => seq.name ?? `Sequence ${seq.id}`}
       getOptionKey={(seq) => seq.id}
+      value={value}
       onChange={onChange}
+      autoComplete={true}
       autocompleteProps={autocompleteProps}
+      onClear={clearInput}
       {...rest}
     />
   );

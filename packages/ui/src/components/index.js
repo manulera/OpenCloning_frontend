@@ -5,4 +5,5 @@ export { default as useUrlParamsLoader } from '../hooks/useUrlParamsLoader';
 export { default as useInitializeApp } from '../hooks/useInitializeApp';
 export { default as QuerySelect } from './form/QuerySelect';
 export { default as QueryStatusWrapper } from './form/QueryStatusWrapper';
+export { default as TextFieldQueryValidated } from './form/TextFieldQueryValidated';
 export { default as useDebouncedSearchQuery } from '../hooks/useDebouncedSearchQuery';
