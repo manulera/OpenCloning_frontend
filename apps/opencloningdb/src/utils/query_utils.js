@@ -72,11 +72,12 @@ export const SEQUENCE_TYPE_LABELS = {
  */
 export function parseSequenceParams(searchParams) {
   return {
-    sample_uids: parseStringArray(searchParams.getAll('sample_uids')),
+    uid: parseString(searchParams.get('uid')),
     name: parseString(searchParams.get('name')),
     tags: parseIntArray(searchParams.getAll('tags')),
     sequence_types: parseStringArray(searchParams.getAll('sequence_types'))?.filter((t) => VALID_SEQUENCE_TYPES.includes(t)),
     instantiated: parseBoolean(searchParams.get('instantiated')),
+    with_uid: parseBoolean(searchParams.get('with_uid')),
   };
 }
 
@@ -87,14 +88,14 @@ export function parseSequenceParams(searchParams) {
 export function applySequenceParamsToSearchParams(params, nextParams) {
   nextParams.delete('page');
 
-  const keys = ['name', 'sample_uids', 'tags', 'sequence_types', 'instantiated'];
+  const keys = ['name', 'uid', 'tags', 'sequence_types', 'instantiated', 'with_uid'];
   keys.forEach((key) => nextParams.delete(key));
 
   if (params.name) {
     nextParams.set('name', params.name);
   }
-  if (params.sample_uids) {
-    params.sample_uids.forEach((uid) => nextParams.append('sample_uids', uid));
+  if (params.uid) {
+    nextParams.set('uid', params.uid);
   }
   if (params.tags) {
     params.tags.forEach((id) => nextParams.append('tags', String(id)));
@@ -105,6 +106,9 @@ export function applySequenceParamsToSearchParams(params, nextParams) {
   if (params.instantiated === true || params.instantiated === false) {
     nextParams.set('instantiated', params.instantiated ? 'true' : 'false');
   }
+  if (params.with_uid === true || params.with_uid === false) {
+    nextParams.set('with_uid', params.with_uid ? 'true' : 'false');
+  } 
 }
 
 /**

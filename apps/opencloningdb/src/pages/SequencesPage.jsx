@@ -15,6 +15,8 @@ import {
   Typography,
   IconButton,
   Button,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
@@ -37,8 +39,8 @@ function SequenceQueryFields({ pendingParams, setPendingParams }) {
       <SearchBar
         label="UID"
         placeholder="Search by UID"
-        value={pendingParams.sample_uids ?? ''}
-        onChange={(value) => setPendingParams((p) => ({ ...p, sample_uids: value }))}
+        value={pendingParams.uid ?? ''}
+        onChange={(value) => setPendingParams((p) => ({ ...p, uid: value }))}
         sx={{ minWidth: MIN_WIDTH }}
       />
       <SearchBar
@@ -57,6 +59,16 @@ function SequenceQueryFields({ pendingParams, setPendingParams }) {
         value={pendingParams.tags ?? []}
         onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
         sx={{ minWidth: MIN_WIDTH }}
+      />
+      <FormControlLabel
+        control={
+          <Switch
+            checked={pendingParams.with_uid ?? false}
+            onChange={(value) => setPendingParams((p) => ({ ...p, with_uid: !p.with_uid }))}
+          />
+        }
+        label="With UID"
+        labelPlacement="top"
       />
       <Button variant="contained" color="primary" type="submit">
         Search
@@ -93,10 +105,7 @@ function SequencesPage() {
   );
   const filtersForApi = {
     ...filters,
-    name: filters.name || undefined,
-    tags: filters.tags,
-    sequence_types: filters.sequence_types,
-    instantiated: filters.instantiated,
+    uid: filters.uid
   };
 
 
