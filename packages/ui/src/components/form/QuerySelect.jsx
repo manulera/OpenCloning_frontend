@@ -8,7 +8,7 @@ export default function QuerySelect({
   label,
   loadingMessage = 'Loading...',
   errorMessage = 'Could not load options',
-  onChange,
+  onChange = () => {},
   value,
   multiple = true,
   autoComplete = true,
@@ -16,40 +16,39 @@ export default function QuerySelect({
   getOptionKey = getOptionLabel,
   autocompleteProps = {},
   inputProps = {},
+  onClear = () => {},
   ...rest
 }) {
   const queryResult = useQuery(query);
   const { data: options = [] } = queryResult;
   const [inputValue, setInputValue] = React.useState('');
+  const [internalValue, setInternalValue] = React.useState(() => (multiple ? [] : null));
+
+  const isControlled = value !== undefined;
+  const effectiveValue = isControlled ? value : internalValue;
 
   const isOptionEqualToValue = React.useCallback((option, val) => getOptionKey(option) === getOptionKey(val), [getOptionKey]);
 
-  // Build a lookup map from key → option object
-  const optionsByKey = React.useMemo(
-    () => new Map(options.map((opt) => [getOptionKey(opt), opt])),
-    [options, getOptionKey],
+  // Selected + query options so selected items stay visible when typing
+  const displayOptions = React.useMemo(() => {
+    const selected = multiple ? (effectiveValue || []) : effectiveValue ? [effectiveValue] : [];
+    const allOptions = [...selected, ...options];
+    return allOptions.filter((obj, index, self) =>
+      index === self.findIndex((t) => getOptionKey(t) === getOptionKey(obj))
+    );
+  }, [effectiveValue, multiple, options, getOptionKey]);
+
+  const handleAutocompleteChange = React.useCallback(
+    (event, newValue) => {
+      if (!isControlled) setInternalValue(newValue);
+      onChange(newValue);
+      setInputValue('');
+      onClear();
+    },
+    [onChange, isControlled, onClear],
   );
 
-  // Resolve ID-based value to full option objects for Autocomplete,
-  // or keep as-is for Select (which works with IDs directly).
-  const resolvedValue = React.useMemo(() => {
-    if (value === undefined) return undefined;
-    if (!autoComplete) return value;
-    if (multiple) {
-      return (value || []).map((v) => optionsByKey.get(v)).filter(Boolean);
-    }
-    return optionsByKey.get(value) ?? null;
-  }, [value, autoComplete, multiple, optionsByKey]);
-
-  // Map selected objects back to IDs via getOptionKey
-  const handleAutocompleteChange = React.useCallback((event, newValue) => {
-    if (multiple) {
-      onChange(newValue.map((v) => getOptionKey(v)));
-    } else {
-      onChange(newValue ? getOptionKey(newValue) : null);
-    }
-    setInputValue('');
-  }, [onChange, multiple, getOptionKey]);
+  const autocompleteValue = effectiveValue !== undefined ? effectiveValue : (multiple ? [] : null);
 
   return (
     <QueryStatusWrapper renderIfLoading={autoComplete} queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
@@ -59,10 +58,10 @@ export default function QuerySelect({
             multiple={multiple}
             onChange={handleAutocompleteChange}
             id="tags-standard"
-            options={options}
+            options={displayOptions}
             getOptionLabel={getOptionLabel}
             getOptionKey={getOptionKey}
-            value={resolvedValue !== undefined ? resolvedValue : (multiple ? [] : null)}
+            value={autocompleteValue}
             forcePopupIcon
             isOptionEqualToValue={isOptionEqualToValue}
             inputValue={inputValue}
@@ -84,10 +83,21 @@ export default function QuerySelect({
             <InputLabel id={`select-${label.replaceAll(' ', '-')}`}>{label}</InputLabel>
             <Select
               multiple={multiple}
-              onChange={(event) => { onChange(event.target.value, options); }}
-              value={value !== undefined ? value : undefined}
+              onChange={(event) => {
+                const keys = event.target.value;
+                const keyList = multiple ? (Array.isArray(keys) ? keys : [keys]) : [keys];
+                const nextValue = multiple
+                  ? keyList.map((k) => options.find((o) => getOptionKey(o) === k)).filter(Boolean)
+                  : options.find((o) => getOptionKey(o) === keys) ?? null;
+                if (!isControlled) setInternalValue(nextValue);
+                onChange?.(nextValue);
+              }}
+              value={
+                multiple
+                  ? (effectiveValue || []).map((o) => getOptionKey(o))
+                  : effectiveValue ? getOptionKey(effectiveValue) : ''
+              }
               label={label}
-              defaultValue={value === undefined ? (multiple ? [] : '') : undefined}
               error={options.length === 0}
               inputProps={inputProps}
             >
