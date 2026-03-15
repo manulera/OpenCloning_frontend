@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Typography,
   Button,
@@ -25,21 +25,65 @@ import AlleleSelect from '../components/AlleleSelect';
 import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
 import NewLineUID from '../components/NewLineUID';
 
+
+
 function TransformationDialog({ line, open, onClose }) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [alleles, setAlleles] = React.useState([]);
   const [lineUID, setLineUID] = React.useState('');
+
+  const createLineMutation = useMutation({
+    mutationFn: async (body) => {
+      const { data } = await openCloningDBHttpClient.post(endpoints.postLine, body);
+      return data;
+    },
+    onSuccess: (data) => {
+      onClose();
+      queryClient.invalidateQueries({ queryKey: ['lines'] });
+      queryClient.invalidateQueries({ queryKey: ['line', line.id] });
+      navigate(`/lines/${data.id}`);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!lineUID || alleles.length === 0) return;
+    createLineMutation.mutate({
+      uid: lineUID,
+      allele_ids: alleles.map((a) => a.id),
+      plasmid_ids: [],
+      parent_ids: [line.id],
+    });
+  };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Transformation of {line.uid ?? `Line ${line.id}`}</DialogTitle>
       <DialogContent>
-        <FormControl fullWidth sx={{ mt: 1 }}>
-          <NewLineUID value={lineUID} onChange={setLineUID} />
-        </FormControl>
-        <FormControl fullWidth sx={{ mt: 1 }}>
-        <AlleleSelect multiple value={alleles} onChange={setAlleles} />
-        </FormControl>
-
+        <form onSubmit={handleSubmit}>
+          <FormControl fullWidth sx={{ mt: 1 }}>
+            <NewLineUID onChange={setLineUID} />
+          </FormControl>
+          <FormControl fullWidth sx={{ mt: 1 }}>
+            <AlleleSelect multiple value={alleles} onChange={setAlleles} />
+          </FormControl>
+          {createLineMutation.isError && (
+            <Alert severity="error" sx={{ mt: 1 }}>
+              {createLineMutation.error?.response?.data?.detail || createLineMutation.error?.message || 'Failed to create line'}
+            </Alert>
+          )}
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <Button
+              disabled={!lineUID || alleles.length === 0 || createLineMutation.isPending}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
+              {createLineMutation.isPending ? 'Creating…' : 'Submit'}
+            </Button>
+          </FormControl>
+        </form>
       </DialogContent>
     </Dialog>
   );

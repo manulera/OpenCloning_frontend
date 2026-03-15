@@ -20,19 +20,13 @@ export default function TextFieldQueryValidated({
   placeholder,
   getQuery,
   onChange,
-  value = '',
   debounceDelay = 500,
   successMessage = ' ',
   validatingMessage = 'Validating...',
   ...rest
 }) {
-  const [localValue, setLocalValue] = useState(value);
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    setLocalValue(value);
-    setDebouncedValue(value);
-  }, [value]);
+  const [localValue, setLocalValue] = useState('');
+  const [debouncedValue, setDebouncedValue] = useState('');
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedValue(localValue), debounceDelay);
@@ -44,31 +38,40 @@ export default function TextFieldQueryValidated({
     [getQuery, debouncedValue],
   );
 
-  console.log('debouncedValue', debouncedValue);
-  console.log('localValue', localValue);
-  const { data, isLoading, error, isSuccess } = useQuery({
+  const { data: validationError, isLoading, error, isSuccess } = useQuery({
     ...queryConfig,
     enabled: debouncedValue.length > 0 && (queryConfig.enabled !== false),
   });
+
 
   useEffect(() => {
     if (debouncedValue.length === 0) {
       onChange('');
       return;
     }
-    if (isSuccess && data !== undefined) {
-      onChange(data);
+    if (isSuccess && !validationError) {
+      onChange(debouncedValue);
     }
-    if (error) {
+    if (error || validationError) {
       onChange('');
     }
-  }, [debouncedValue, isSuccess, data, error, onChange]);
+  }, [debouncedValue, isSuccess, validationError, error, onChange]);
 
   const handleChange = (e) => {
+    onChange('');
     setLocalValue(e.target.value);
   };
 
-  const helperText = isLoading ? validatingMessage : (error?.message || (isSuccess && data !== undefined ? successMessage : ' '));
+  let helperText = ' ';
+  if (isLoading) {
+    helperText = validatingMessage;
+  } else if (validationError) {
+    helperText = validationError;
+  } else if (error) {
+    helperText = error.message;
+  } else if (isSuccess && !validationError) {
+    helperText = successMessage;
+  }
 
   return (
     <TextField
@@ -76,7 +79,7 @@ export default function TextFieldQueryValidated({
       placeholder={placeholder}
       value={localValue}
       onChange={handleChange}
-      error={!!error}
+      error={!!error || !!validationError}
       helperText={helperText}
       {...rest}
     />
