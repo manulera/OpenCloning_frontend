@@ -11,6 +11,7 @@ const endpoints = {
   postPrimer: '/primer',
   lines: '/lines',
   line: (id) => `/line/${id}`,
+  postLine: '/line',
   tags: '/tags',
 };
 

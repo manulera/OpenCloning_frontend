@@ -15,12 +15,11 @@ const getLineUIDExistsErrorQuery = (value) => ({
   },
 });
 
-function NewLineUID({ value, onChange }) {
+function NewLineUID({ onChange }) {
   return (
     <TextFieldQueryValidated
       label="New Line UID"
       placeholder="Enter a new line UID"
-      value={value}
       onChange={onChange}
       getQuery={getLineUIDExistsErrorQuery}
     />
