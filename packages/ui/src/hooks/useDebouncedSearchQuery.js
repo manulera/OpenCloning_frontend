@@ -27,5 +27,9 @@ export default function useDebouncedSearchQuery(getQuery, { minChars = 3, deboun
       : 'No results found',
   };
 
-  return { query, autocompleteProps };
+  const clearInput = () => {
+    setInput('');
+  };
+
+  return { query, autocompleteProps, clearInput };
 }
