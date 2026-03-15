@@ -21,7 +21,7 @@ import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { SequenceLink, LineLink } from '../components/EntityLinks';
 import TagChipList from '../components/TagChipList';
 import { Dialog, DialogTitle } from '@mui/material';
-import AlleleSelect from '../components/AlleleSelect';
+import SequenceSelect from '../components/SequenceSelect';
 import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
 import NewLineUID from '../components/NewLineUID';
 
@@ -32,6 +32,9 @@ function TransformationDialog({ line, open, onClose }) {
   const navigate = useNavigate();
   const [alleles, setAlleles] = React.useState([]);
   const [lineUID, setLineUID] = React.useState('');
+  const [plasmids, setPlasmids] = React.useState([]);
+
+  const anyTransormedSequence = alleles.length > 0 || plasmids.length > 0;
 
   const createLineMutation = useMutation({
     mutationFn: async (body) => {
@@ -48,11 +51,11 @@ function TransformationDialog({ line, open, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!lineUID || alleles.length === 0) return;
+    if (!lineUID || !anyTransormedSequence) return;
     createLineMutation.mutate({
       uid: lineUID,
       allele_ids: alleles.map((a) => a.id),
-      plasmid_ids: [],
+      plasmid_ids: plasmids.map((p) => p.id),
       parent_ids: [line.id],
     });
   };
@@ -66,7 +69,10 @@ function TransformationDialog({ line, open, onClose }) {
             <NewLineUID onChange={setLineUID} />
           </FormControl>
           <FormControl fullWidth sx={{ mt: 1 }}>
-            <AlleleSelect multiple value={alleles} onChange={setAlleles} />
+            <SequenceSelect multiple value={alleles} label="Alleles" onChange={setAlleles} sequenceTypes={['allele']} />
+          </FormControl>
+          <FormControl fullWidth sx={{ mt: 1 }}>
+            <SequenceSelect multiple value={plasmids} label="Plasmids" onChange={setPlasmids} sequenceTypes={['plasmid']} />
           </FormControl>
           {createLineMutation.isError && (
             <Alert severity="error" sx={{ mt: 1 }}>
@@ -75,7 +81,7 @@ function TransformationDialog({ line, open, onClose }) {
           )}
           <FormControl fullWidth sx={{ mt: 2 }}>
             <Button
-              disabled={!lineUID || alleles.length === 0 || createLineMutation.isPending}
+              disabled={!lineUID || !anyTransormedSequence || createLineMutation.isPending}
               type="submit"
               variant="contained"
               color="primary"
