@@ -63,8 +63,8 @@ function SequenceQueryFields({ pendingParams, setPendingParams }) {
       <FormControlLabel
         control={
           <Switch
-            checked={pendingParams.with_uid ?? false}
-            onChange={(value) => setPendingParams((p) => ({ ...p, with_uid: !p.with_uid }))}
+            checked={pendingParams.has_uid ?? false}
+            onChange={(value) => setPendingParams((p) => ({ ...p, has_uid: !p.has_uid }))}
           />
         }
         label="With UID"

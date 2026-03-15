@@ -77,7 +77,7 @@ export function parseSequenceParams(searchParams) {
     tags: parseIntArray(searchParams.getAll('tags')),
     sequence_types: parseStringArray(searchParams.getAll('sequence_types'))?.filter((t) => VALID_SEQUENCE_TYPES.includes(t)),
     instantiated: parseBoolean(searchParams.get('instantiated')),
-    with_uid: parseBoolean(searchParams.get('with_uid')),
+    has_uid: parseBoolean(searchParams.get('has_uid')),
   };
 }
 
@@ -88,7 +88,7 @@ export function parseSequenceParams(searchParams) {
 export function applySequenceParamsToSearchParams(params, nextParams) {
   nextParams.delete('page');
 
-  const keys = ['name', 'uid', 'tags', 'sequence_types', 'instantiated', 'with_uid'];
+  const keys = ['name', 'uid', 'tags', 'sequence_types', 'instantiated', 'has_uid'];
   keys.forEach((key) => nextParams.delete(key));
 
   if (params.name) {
@@ -106,8 +106,8 @@ export function applySequenceParamsToSearchParams(params, nextParams) {
   if (params.instantiated === true || params.instantiated === false) {
     nextParams.set('instantiated', params.instantiated ? 'true' : 'false');
   }
-  if (params.with_uid === true || params.with_uid === false) {
-    nextParams.set('with_uid', params.with_uid ? 'true' : 'false');
+  if (params.has_uid === true || params.has_uid === false) {
+    nextParams.set('has_uid', params.has_uid ? 'true' : 'false');
   } 
 }
 
