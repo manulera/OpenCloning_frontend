@@ -16,6 +16,8 @@ import {
   Typography,
   IconButton,
   Button,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
@@ -53,6 +55,16 @@ function PrimerQueryFields({ pendingParams, setPendingParams }) {
         value={pendingParams.tags ?? []}
         onChange={(value) => setPendingParams((p) => ({ ...p, tags: value }))}
         sx={{ minWidth: MIN_WIDTH }}
+      />
+      <FormControlLabel
+        control={
+          <Switch
+            checked={pendingParams.has_uid ?? false}
+            onChange={() => setPendingParams((p) => ({ ...p, has_uid: !p.has_uid }))}
+          />
+        }
+        label="With UID"
+        labelPlacement="top"
       />
       <Button variant="contained" color="primary" type="submit">
         Search
