@@ -7,7 +7,7 @@ import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
-import CloningPage from './pages/CloningPage';
+import DesignPage from './pages/DesignPage';
 import SequenceDetailPage from './pages/SequenceDetailPage';
 import PrimerDetailPage from './pages/PrimerDetailPage';
 import LinesPage from './pages/LinesPage';
@@ -22,7 +22,7 @@ const config = {
   enablePlannotate: false,
 };
 
-const TABS = ['/sequences', '/primers', '/lines', '/cloning'];
+const TABS = ['/sequences', '/primers', '/lines', '/design'];
 
 function AppLayout() {
   const location = useLocation();
@@ -50,14 +50,14 @@ function AppLayout() {
             <Tab label="Sequences" value="/sequences" />
             <Tab label="Primers" value="/primers" />
             <Tab label="Lines" value="/lines" />
-            <Tab label="Cloning" value="/cloning" />
+            <Tab label="Design" value="/design" />
           </Tabs>
         </Toolbar>
       </AppBar>
       
       <Routes>
         <Route path="/" element={<Navigate to="/sequences" replace />} />
-        <Route path="/cloning" element={<CloningPage />} />
+        <Route path="/design" element={<DesignPage />} />
         <Route path="/sequences" element={<SequencesPage />} />
         <Route path="/sequences/:id" element={<SequenceDetailPage />} />
         <Route path="/primers" element={<PrimersPage />} />
