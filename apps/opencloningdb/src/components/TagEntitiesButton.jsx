@@ -21,7 +21,6 @@ export default function TagEntitiesButton({ selectedEntities, entityType, label,
       <Button
         variant="contained"
         disabled={selectedEntities.length === 0}
-        sx={{ mb: 1 }}
         onClick={() => {
           setOpenDialog(true);
         }}

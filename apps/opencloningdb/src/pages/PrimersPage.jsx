@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
   Table,
   TableBody,
@@ -14,16 +13,12 @@ import {
   CircularProgress,
   Alert,
   Typography,
-  IconButton,
   Button,
   Switch,
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { cloningActions } from '@opencloning/store/cloning';
-import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import { parsePrimersParams, applyPrimersParamsToSearchParams } from '../utils/query_utils';
 import { PrimerLink } from '../components/EntityLinks';
 import SearchBar from '../components/SearchBar';
@@ -31,8 +26,9 @@ import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import TagChipList from '../components/TagChipList';
 import TagEntitiesButton from '../components/TagEntitiesButton';
-
-const { addPrimer } = cloningActions;
+import TopButtonSection from '../components/TopButtonSection';
+import AddToCloningButton from '../components/AddToCloningButton';
+import PageContainer from '../components/PageContainer';
 
 const MIN_WIDTH = 200;
 
@@ -76,25 +72,11 @@ function PrimerQueryFields({ pendingParams, setPendingParams }) {
 }
 
 function PrimersPage() {
-  const dispatch = useDispatch();
-  const { addAlert } = useAlerts();
-  const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [searchParams] = useSearchParams();
 
-  const handleAddPrimer = async (primerId) => {
-    try {
-      const { data: primer } = await openCloningDBHttpClient.get(endpoints.primer(primerId));
-      dispatch(addPrimer({ name: primer.name, sequence: primer.sequence, database_id: primerId }));
-    } catch (error) {
-      addAlert({
-        message: error?.response?.data?.detail || error?.message || 'Failed to add primer',
-        severity: 'error',
-      });
-    }
-  };
 
   const filters = useMemo(
     () => parsePrimersParams(searchParams),
@@ -131,7 +113,7 @@ function PrimersPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load primers'}</Alert>;
 
   return (
-    <>
+    <PageContainer>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Primers
       </Typography>
@@ -140,12 +122,17 @@ function PrimersPage() {
         applyToSearchParams={applyPrimersParamsToSearchParams}
         component={PrimerQueryFields}
       />
-      <TagEntitiesButton
-        selectedEntities={selectedPrimers}
-        entityType="input_entities"
-        label="Primers"
-        onSuccess={() => {setSelectedIds(new Set());}}
-      />
+      <TopButtonSection>
+        <TagEntitiesButton
+          selectedEntities={selectedPrimers}
+          entityType="input_entities"
+          label="Primers"
+          onSuccess={() => {setSelectedIds(new Set());}}
+        />
+        <AddToCloningButton selectedEntities={selectedPrimers} entityType="primer">
+          Add to Cloning Tab
+        </AddToCloningButton>
+      </TopButtonSection>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
@@ -155,7 +142,6 @@ function PrimersPage() {
               <TableCell>Name</TableCell>
               <TableCell>Tags</TableCell>
               <TableCell>Sequence</TableCell>
-              <TableCell padding="none" width={48} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -176,11 +162,6 @@ function PrimersPage() {
                   <TagChipList tags={primer.tags} />
                 </TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
-                <TableCell padding="none">
-                  <IconButton size="small" onClick={() => handleAddPrimer(primer.id)} aria-label="Add">
-                    <AddIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -198,7 +179,7 @@ function PrimersPage() {
           rowsPerPageOptions={[10, 25, 50]}
         />
       </TableContainer>
-    </>
+    </PageContainer>
   );
 }
 

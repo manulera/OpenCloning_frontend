@@ -54,21 +54,17 @@ function AppLayout() {
           </Tabs>
         </Toolbar>
       </AppBar>
-      <Box
-        component="main"
-        sx={{ flex: 1, minHeight: 0, overflowY: 'auto', p: 3 }}
-      >
-        <Routes>
-          <Route path="/" element={<Navigate to="/sequences" replace />} />
-          <Route path="/cloning" element={<CloningPage />} />
-          <Route path="/sequences" element={<SequencesPage />} />
-          <Route path="/sequences/:id" element={<SequenceDetailPage />} />
-          <Route path="/primers" element={<PrimersPage />} />
-          <Route path="/primers/:id" element={<PrimerDetailPage />} />
-          <Route path="/lines" element={<LinesPage />} />
-          <Route path="/lines/:id" element={<LineDetailPage />} />
-        </Routes>
-      </Box>
+      
+      <Routes>
+        <Route path="/" element={<Navigate to="/sequences" replace />} />
+        <Route path="/cloning" element={<CloningPage />} />
+        <Route path="/sequences" element={<SequencesPage />} />
+        <Route path="/sequences/:id" element={<SequenceDetailPage />} />
+        <Route path="/primers" element={<PrimersPage />} />
+        <Route path="/primers/:id" element={<PrimerDetailPage />} />
+        <Route path="/lines" element={<LinesPage />} />
+        <Route path="/lines/:id" element={<LineDetailPage />} />
+      </Routes>
     </Box>
   );
 }
