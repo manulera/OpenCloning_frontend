@@ -6,7 +6,10 @@ import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { SequenceLink } from '../components/EntityLinks';
 import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
-import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
+import ResourceDetailHeader from '../components/ResourceDetailHeader';
+import SequenceTypeChip from '../components/SequenceTypeChip';
+import DetailPageSection from '../components/DetailPageSection';
+import SequenceTable from '../components/SequenceTable';
 
 
 function SequenceDetailPage() {
@@ -24,16 +27,18 @@ function SequenceDetailPage() {
     queryFn: async () => {
       const { data: cloningStrategy } = await openCloningDBHttpClient.get(endpoints.sequenceCloningStrategy(id));
       const { data: sequenceInDb} = await openCloningDBHttpClient.get(endpoints.sequence(id));
+
+      const { data: children } = await openCloningDBHttpClient.get(endpoints.sequenceChildren(id));
       const parentSource = cloningStrategy.sources.find((source) => source.database_id === id);
 
       const sequenceModel = cloningStrategy.sequences.find((sequence) => sequence.id === parentSource.id);
       const parentSequenceIds = cloningStrategy.sources.map((source) => source.database_id).filter((dbId) => dbId !== id);
       const parentSequencesData = await Promise.all(parentSequenceIds.map((sequenceId) => openCloningDBHttpClient.get(endpoints.sequence(sequenceId))));
-      return { parentSequences : parentSequencesData.map((r) => r.data), parentSource, sequenceModel, sequenceInDb };
+      return { parentSequences : parentSequencesData.map((r) => r.data), parentSource, sequenceModel, sequenceInDb, children };
     },
     enabled: Boolean(id),
   });
-  const { parentSequences, parentSource, sequenceModel, sequenceInDb } = React.useMemo(() => data ?? {}, [data]);
+  const { parentSequences, parentSource, sequenceModel, sequenceInDb, children } = React.useMemo(() => data ?? {}, [data]);
   const sequenceData = React.useMemo(() => sequenceModel ? convertToTeselaJson(sequenceModel) : null, [sequenceModel]);
   const tags = React.useMemo(() => sequenceInDb?.tags ?? [], [sequenceInDb]);
 
@@ -43,57 +48,28 @@ function SequenceDetailPage() {
 
   return (
     <>
-      <Button onClick={() => navigate('/sequences')} sx={{ mb: 2 }}>
-      <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> Back to Sequences
-      </Button>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        {sequenceInDb?.name}
-      </Typography>
+      <ResourceDetailHeader
+        title={<> {sequenceInDb?.name} <SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} /></>}
+        tags={tags}
+        onBack={() => navigate('/sequences')}
+        backTitle="Back to Sequences" />
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-          Sequence details
-        </Typography>
-        <Typography color="text.secondary">Type: {sequenceInDb?.sequence_type ?? '—'}</Typography>
-      </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-          Tags
-        </Typography>
-        {tags.length > 0 ? (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {tags.map((tag) => (
-              <Chip key={tag.id} label={tag.name} size="small" variant="outlined" />
-            ))}
-          </Box>
-        ) : (
-          <Typography color="text.secondary">No tags for this sequence.</Typography>
-        )}
-      </Box>
-
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-          Parents
-        </Typography>
+      <DetailPageSection title="Provenance">
         <Typography color="text.secondary" sx={{ mb: 1 }}>
-          Parent source type: {parentSource?.type ?? '—'}
+          {parentSource.type}
         </Typography>
-        {parentSequences?.length > 0 ? (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            <List>
-              {parentSequences.map((parent) => (
-                <ListItem key={parent.id}>
-                  <SequenceLink id={parent.id} name={parent.name} />
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-        ) : (
-          <Typography color="text.secondary">No parents for this sequence.</Typography>
+        {parentSequences?.length > 0  && (
+          <SequenceTable sequences={parentSequences} />
         )}
-        
-      </Box>
+      </DetailPageSection>
+
+      {children?.length > 0 && (
+        <DetailPageSection title="Children">
+          <SequenceTable sequences={children} />
+        </DetailPageSection>
+      )}
+
 
       <Box sx={{ mt: 2 }}>
         {sequenceData ? (
