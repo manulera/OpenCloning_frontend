@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import {
   Table,
   TableBody,
@@ -18,17 +18,19 @@ import {
   Button,
   Switch,
   FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { cloningActions } from '@opencloning/store/cloning';
 import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import { parsePrimersParams, applyPrimersParamsToSearchParams } from '../utils/query_utils';
-import { CommaSeparatorWrapper, PrimerLink } from '../components/EntityLinks';
-import TagChip from '../components/TagChip';
+import { PrimerLink } from '../components/EntityLinks';
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
+import TagChipList from '../components/TagChipList';
+import TagEntitiesButton from '../components/TagEntitiesButton';
 
 const { addPrimer } = cloningActions;
 
@@ -76,8 +78,10 @@ function PrimerQueryFields({ pendingParams, setPendingParams }) {
 function PrimersPage() {
   const dispatch = useDispatch();
   const { addAlert } = useAlerts();
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [searchParams] = useSearchParams();
 
   const handleAddPrimer = async (primerId) => {
@@ -114,6 +118,15 @@ function PrimersPage() {
 
   const items = data?.items ?? [];
 
+  const toggleRow = (id) =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const selectedPrimers = items.filter((primer) => selectedIds.has(primer.id));
+
   if (isLoading && !data) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load primers'}</Alert>;
 
@@ -127,10 +140,17 @@ function PrimersPage() {
         applyToSearchParams={applyPrimersParamsToSearchParams}
         component={PrimerQueryFields}
       />
+      <TagEntitiesButton
+        selectedEntities={selectedPrimers}
+        entityType="input_entities"
+        label="Primers"
+        onSuccess={() => {setSelectedIds(new Set());}}
+      />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox" />
               <TableCell>UID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Tags</TableCell>
@@ -141,20 +161,19 @@ function PrimersPage() {
           <TableBody>
             {items.map((primer) => (
               <TableRow key={primer.id} hover>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    size="small"
+                    checked={selectedIds.has(primer.id)}
+                    onChange={() => toggleRow(primer.id)}
+                  />
+                </TableCell>
                 <TableCell>{primer.uid ?? '—'}</TableCell>
                 <TableCell>
                   <PrimerLink id={primer.id} name={primer.name} />
                 </TableCell>
                 <TableCell>
-                  {primer.tags?.length ? (
-                    <CommaSeparatorWrapper>
-                      {primer.tags.map((tag) => (
-                        <TagChip key={tag.id} tag={tag} />
-                      ))}
-                    </CommaSeparatorWrapper>
-                  ) : (
-                    '—'
-                  )}
+                  <TagChipList tags={primer.tags} />
                 </TableCell>
                 <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
                 <TableCell padding="none">
