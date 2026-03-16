@@ -9,9 +9,11 @@ function AppAlerts() {
   const { alerts } = useSelector((state) => state.cloning, isEqual);
   const { removeAlert } = useAlerts();
   return (
-    <div id="global-error-message-wrapper">
-      {alerts.map((alert, index) => (<Alert key={index} severity={alert.severity} onClose={() => { removeAlert(alert.message); }}>{alert.message}</Alert>))}
-      <ExternalServicesStatusCheck />
+    <div className="app-alerts-container" style={{ position: 'absolute' }}>
+      <div id="global-error-message-wrapper">
+        {alerts.map((alert, index) => (<Alert key={index} severity={alert.severity} onClose={() => { removeAlert(alert.message); }}>{alert.message}</Alert>))}
+        <ExternalServicesStatusCheck />
+      </div>
     </div>
   );
 }

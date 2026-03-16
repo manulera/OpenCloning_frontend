@@ -1,8 +1,8 @@
 import React from 'react';
 import { OpenCloning } from '@opencloning/ui';
 
-function CloningPage() {
+function DesignPage() {
   return <OpenCloning />;
 }
 
-export default CloningPage;
+export default DesignPage;

@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tabs } from '@mui/material';
-import { isEqual } from 'lodash-es';
 import DescriptionEditor from './DescriptionEditor';
 import PrimerList from './primers/PrimerList';
 import SettingsTab from './settings/SettingsTab';
@@ -44,7 +43,6 @@ function OpenCloning() {
 
   return (
     <div className="app-container" style={{ height: hasAppBar ? 'calc(100vh - 114px - 10px)' : '100vh' }}>
-      <AppAlerts />
       <Tabs
         variant={smallDevice ? 'scrollable' : 'standard'}
         scrollButtons={smallDevice ? 'auto' : false}
@@ -52,7 +50,7 @@ function OpenCloning() {
         centered={!smallDevice}
         value={currentTab}
         onChange={changeTab}
-        sx={{ pb: 3, pt: 1 }}
+        sx={{ pb: 2, pt: 1 }}
         id="opencloning-app-tabs"
       >
         <CustomTab label="Cloning" index={0} />
@@ -64,6 +62,7 @@ function OpenCloning() {
         {enableAssembler && <CustomTab label="Assembler" index={6} />}
       </Tabs>
       <div className="tab-panels-container" ref={tabPanelsRef}>
+        <AppAlerts />
         <TabPanel index={1} value={currentTab} className="primer-tab-pannel">
           <div className="primer-list-container">
             <PrimerList />
