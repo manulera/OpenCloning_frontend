@@ -12,6 +12,7 @@ const endpoints = {
   lines: '/lines',
   line: (id) => `/line/${id}`,
   lineTags: (id) => `/line/${id}/tags`,
+  inputEntityTags: (id) => `/input_entity/${id}/tags`,
   postLine: '/line',
   tags: '/tags',
 };
