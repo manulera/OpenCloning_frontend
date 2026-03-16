@@ -7,23 +7,17 @@ import {
   CircularProgress,
   Alert,
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   DialogContent,
   FormControl,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { SequenceLink, LineLink } from '../components/EntityLinks';
-import TagChipList from '../components/TagChipList';
+import { LineLink } from '../components/EntityLinks';
 import { Dialog, DialogTitle } from '@mui/material';
 import SequenceSelect from '../components/SequenceSelect';
-import {ArrowBack as ArrowBackIcon} from '@mui/icons-material';
 import NewLineUID from '../components/NewLineUID';
+import ResourceDetailHeader from '../components/ResourceDetailHeader';
+import SequenceTable from '../components/SequenceTable';
+import DetailPageSection from '../components/DetailPageSection';
 
 
 
@@ -129,79 +123,38 @@ function LineDetailPage() {
   const plasmids = sequences.filter((s) => s.sequence_type === 'plasmid');
   const {parentLines } = line;
 
-  const renderSeqTable = (items) => (
-    <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Tags</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items.map((seq) => (
-            <TableRow key={seq.id}>
-              <TableCell>
-                <SequenceLink id={seq.sequence_id} name={seq.name} />
-              </TableCell>
-              <TableCell>
-                <TagChipList tags={seq.tags} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-
   return (
     <>
-      <Button onClick={() => navigate('/lines')} sx={{ mb: 2 }}>
-        <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> Back to Lines
-      </Button>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        {line.uid ?? `Line ${line.id}`}
-      </Typography>
+      <ResourceDetailHeader
+        title={line.uid}
+        tags={line.tags}
+        onBack={() => navigate('/lines')}
+        backTitle="Back to Lines" />
+
       <Box sx={{ mb: 3 }}>
         <TransformButton line={line} />
       </Box>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-          Tags
-        </Typography>
-        <TagChipList tags={line.tags} />
-      </Box>
-
 
       {alleles.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-            Genotype
-          </Typography>
-          {renderSeqTable(alleles)}
-        </Box>
+        <DetailPageSection title="Genotype">
+          <SequenceTable sequences={alleles} showType={false} />
+        </DetailPageSection>
       )}
 
       {plasmids.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-            Plasmids
-          </Typography>
-          {renderSeqTable(plasmids)}
-        </Box>
+        <DetailPageSection title="Plasmids">
+          <SequenceTable sequences={plasmids} showType={false} />
+        </DetailPageSection>
       )}
 
       {parentLines.length > 0 && (
-        <Box>
-          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
-            Parent lines
-          </Typography>
+        <DetailPageSection title="Parent lines">
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {parentLines.map((parentLine) => (
               <LineLink key={parentLine.id} {...parentLine} />
             ))}
           </Box>
-        </Box>
+        </DetailPageSection>
       )}
 
       {alleles.length === 0 && plasmids.length === 0 && parentLines.length === 0 && (

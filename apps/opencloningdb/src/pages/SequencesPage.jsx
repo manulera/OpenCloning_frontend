@@ -13,19 +13,14 @@ import {
   CircularProgress,
   Alert,
   Typography,
-  IconButton,
   Button,
   Switch,
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
-import useAlerts from '@opencloning/ui/hooks/useAlerts';
 import SequenceTypeChip from '../components/SequenceTypeChip';
-import { CommaSeparatorWrapper, SequenceLink } from '../components/EntityLinks';
-import TagChip from '../components/TagChip';
+import { SequenceLink } from '../components/EntityLinks';
 import { parseSequenceParams, applySequenceParamsToSearchParams } from '../utils/query_utils';
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
@@ -33,6 +28,9 @@ import SequenceTypeMultiSelect from '../components/SequenceTypeMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import TagEntitiesButton from '../components/TagEntitiesButton';
 import TagChipList from '../components/TagChipList';
+import TopButtonSection from '../components/TopButtonSection';
+import AddToCloningButton from '../components/AddToCloningButton';
+import PageContainer from '../components/PageContainer';
 
 const MIN_WIDTH = 200;
 
@@ -85,22 +83,6 @@ function SequencesPage() {
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [searchParams] = useSearchParams();
-  const { addAlert } = useAlerts();
-  const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
-  const { loadDatabaseFile } = useLoadDatabaseFile({ source: null, sendPostRequest: null, setHistoryFileError });
-
-  const handleAddSequence = async (seqId) => {
-    try {
-      const { data: sequence } = await openCloningDBHttpClient.get(endpoints.sequenceTextFile(seqId));
-      const source = { id: 1, input: [], database_id: seqId, type: 'DatabaseSource' };
-      sequence.id = 1;
-      const cloningStrategy = { sources: [source], sequences: [sequence], primers: [] };
-      const file = new File([JSON.stringify(cloningStrategy)], 'cloning_strategy.json', { type: 'application/json' });
-      await loadDatabaseFile(file, seqId);
-    } catch (error) {
-      setHistoryFileError(error?.response?.data?.detail || error?.message || 'Failed to add sequence');
-    }
-  };
 
 
   const filters = useMemo(
@@ -111,7 +93,6 @@ function SequencesPage() {
     ...filters,
     uid: filters.uid
   };
-
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['sequences', { page: page + 1, size: rowsPerPage, ...filters }],
@@ -143,7 +124,7 @@ function SequencesPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequences'}</Alert>;
 
   return (
-    <>
+    <PageContainer>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Sequences
       </Typography>
@@ -152,12 +133,17 @@ function SequencesPage() {
         applyToSearchParams={applySequenceParamsToSearchParams}
         component={SequenceQueryFields}
       />
-      <TagEntitiesButton
-        selectedEntities={selectedSequences}
-        entityType="input_entities"
-        label="Sequences"
-        onSuccess={() => {setSelectedIds(new Set());}}
-      />
+      <TopButtonSection>
+        <TagEntitiesButton
+          selectedEntities={selectedSequences}
+          entityType="input_entities"
+          label="Sequences"
+          onSuccess={() => {setSelectedIds(new Set());}}
+        />
+        <AddToCloningButton selectedEntities={selectedSequences} entityType="sequence">
+          Add to Cloning Tab
+        </AddToCloningButton>
+      </TopButtonSection>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
@@ -167,7 +153,6 @@ function SequencesPage() {
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Tags</TableCell>
-              <TableCell padding="none" width={48} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -190,11 +175,6 @@ function SequencesPage() {
                 <TableCell>
                   <TagChipList tags={seq.tags} />
                 </TableCell>
-                <TableCell padding="none">
-                  <IconButton size="small" onClick={() => handleAddSequence(seq.id)} aria-label="Add">
-                    <AddIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -212,7 +192,7 @@ function SequencesPage() {
           rowsPerPageOptions={[10, 25, 50]}
         />
       </TableContainer>
-    </>
+    </PageContainer>
   );
 }
 

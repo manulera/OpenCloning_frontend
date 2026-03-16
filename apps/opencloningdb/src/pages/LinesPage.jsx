@@ -24,6 +24,8 @@ import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import TagChipList from '../components/TagChipList';
 import TagEntitiesButton from '../components/TagEntitiesButton';
+import TopButtonSection from '../components/TopButtonSection';
+import PageContainer from '../components/PageContainer';
 
 function SeqCell({ sils }) {
   return (
@@ -118,7 +120,7 @@ function LinesPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load lines'}</Alert>;
 
   return (
-    <>
+    <PageContainer>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Lines
       </Typography>
@@ -127,7 +129,9 @@ function LinesPage() {
         applyToSearchParams={applyLinesParamsToSearchParams}
         component={LinesQueryFields}
       />
-      <TagEntitiesButton onSuccess={() => setSelectedIds(new Set())} selectedEntities={selectedEntities} entityType="lines" label="Lines" />
+      <TopButtonSection>
+        <TagEntitiesButton onSuccess={() => setSelectedIds(new Set())} selectedEntities={selectedEntities} entityType="lines" label="Lines" />
+      </TopButtonSection>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
@@ -177,7 +181,7 @@ function LinesPage() {
           rowsPerPageOptions={[10, 25, 50]}
         />
       </TableContainer>
-    </>
+    </PageContainer>
   );
 }
 

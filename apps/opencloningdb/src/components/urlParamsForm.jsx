@@ -47,7 +47,7 @@ export function UrlParamsForm({ parse, applyToSearchParams, component, value, sx
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'nowrap', alignItems: 'center', ...sx }}
+      sx={{ minHeight: 65, mb: 2, display: 'flex', gap: 2, flexWrap: 'nowrap', alignItems: 'center', ...sx }}
     >
       {component({ pendingParams, setPendingParams, value })}
     </Box>
