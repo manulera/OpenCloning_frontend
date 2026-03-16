@@ -39,36 +39,50 @@ function TagEntitiesDialog({ selectedEntities, entityType, label, open, onClose,
 
   const attachTagsMutation = useMutation({
     mutationFn: async ({ entities, tagIds }) => {
-      // Currently only lines are supported on the backend
-      if (entityType !== 'lines') {
-        throw new Error(`Tagging not implemented for entity type: ${entityType}`);
-      }
       const requests = [];
       entities.forEach((entity) => {
         tagIds.forEach((tagId) => {
           // Skip if entity already has tag
-          if (entity.tags.some((t) => t.id === tagId)) {
+          if (entity.tags?.some((t) => t.id === tagId)) {
             return;
           }
-          requests.push(
-            openCloningDBHttpClient.post(endpoints.lineTags(entity.id), {
-              tag_id: tagId,
-            }),
-          );
+
+          let url;
+          if (entityType === 'lines') {
+            url = endpoints.lineTags(entity.id);
+          } else if (entityType === 'input_entities') {
+            url = endpoints.inputEntityTags(entity.id);
+          } else {
+            throw new Error(`Tagging not implemented for entity type: ${entityType}`);
+          }
+
+          const body = { tag_id: tagId };
+          requests.push(openCloningDBHttpClient.post(url, body));
         });
       });
 
       await Promise.all(requests);
     },
     onSuccess: (_data, variables) => {
-      // Refresh list and individual line queries if present
-      queryClient.invalidateQueries({ queryKey: ['lines'] });
-      variables.entities.forEach((entity) => {
-        queryClient.invalidateQueries({ queryKey: ['line', String(entity.id)] });
-      });
+      // Refresh queries depending on entity type
+      if (entityType === 'lines') {
+        queryClient.invalidateQueries({ queryKey: ['lines'] });
+        variables.entities.forEach((entity) => {
+          queryClient.invalidateQueries({ queryKey: ['line', String(entity.id)] });
+        });
+      } else if (entityType === 'input_entities') {
+        queryClient.invalidateQueries({ queryKey: ['sequences'] });
+        queryClient.invalidateQueries({ queryKey: ['primers'] });
+        variables.entities.forEach((entity) => {
+          queryClient.invalidateQueries({ queryKey: ['sequence', String(entity.id)] });
+          queryClient.invalidateQueries({ queryKey: ['primer', String(entity.id)] });
+        });
+      }
       setTags([]);
       onClose();
-      onSuccess();
+      if (onSuccess) {
+        onSuccess();
+      }
     },
   });
 
