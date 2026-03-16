@@ -23,6 +23,7 @@ import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import TagChipList from '../components/TagChipList';
+import TagEntitiesButton from '../components/TagEntitiesButton';
 
 function SeqCell({ sils }) {
   return (
@@ -111,6 +112,8 @@ function LinesPage() {
     return next;
   });
 
+  const selectedEntities = useMemo(() => items.filter((item) => selectedIds.has(item.id)), [items, selectedIds]);
+
   if (isLoading && !data) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load lines'}</Alert>;
 
@@ -124,16 +127,7 @@ function LinesPage() {
         applyToSearchParams={applyLinesParamsToSearchParams}
         component={LinesQueryFields}
       />
-      <Button
-        variant="contained"
-        disabled={selectedIds.size === 0}
-        sx={{ mb: 1 }}
-        onClick={() => {
-          // TODO: implement action for selected lines
-        }}
-      >
-        Action{selectedIds.size > 0 ? ` (${selectedIds.size} selected)` : ''}
-      </Button>
+      <TagEntitiesButton onSuccess={() => setSelectedIds(new Set())} selectedEntities={selectedEntities} entityType="lines" label="Lines" />
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
