@@ -6,6 +6,7 @@ import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
 import DetailPageSection from '../components/DetailPageSection';
+import PageContainer from '../components/PageContainer';
 
 function PrimerDetailPage() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ function PrimerDetailPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load primer'}</Alert>;
 
   return (
-    <>
+    <PageContainer>
       <ResourceDetailHeader
         title={`${primer.uid} - ${primer.name}`}
         tags={primer.tags}
@@ -41,7 +42,7 @@ function PrimerDetailPage() {
       <DetailPageSection title="Linked products">
         <SequenceTable sequences={products} />
       </DetailPageSection>
-    </>
+    </PageContainer>
   );
 }
 
