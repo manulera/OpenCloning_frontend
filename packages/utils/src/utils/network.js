@@ -104,10 +104,14 @@ export function getSequenceIdsThatAreInput(sources) {
   return sources.reduce((result, source) => result.concat(source.input.map(({sequence}) => sequence)), []);
 }
 
-export function getGraftSequenceId({ sources, sequences }) {
+export function getSequenceIdsThatAreNotInput(sequences, sources) {
   const sequenceIdsThatAreInput = getSequenceIdsThatAreInput(sources);
-  const allSequenceIds = sequences.map((seq) => seq.id);
-  const sequenceIdsThatAreNotInput = allSequenceIds.filter((sequenceId) => !sequenceIdsThatAreInput.includes(sequenceId));
+  return sequences.filter((sequence) => !sequenceIdsThatAreInput.includes(sequence.id)).map((sequence) => sequence.id);
+}
+
+export function getGraftSequenceId({ sources, sequences }) {
+  const allSequenceIds = new Set(sequences.map((seq) => seq.id));
+  const sequenceIdsThatAreNotInput = getSequenceIdsThatAreNotInput(sequences, sources);
   const sourcesWithoutOutput = sources.filter((source) => !allSequenceIds.includes(source.id));
   if (sourcesWithoutOutput.length === 0 && sequenceIdsThatAreNotInput.length === 1) {
     return sequenceIdsThatAreNotInput[0];
