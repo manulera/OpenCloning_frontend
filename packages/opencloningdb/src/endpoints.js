@@ -5,6 +5,7 @@ const endpoints = {
   sequenceCloningStrategy: (id) => `/sequence/${id}/cloning_strategy`,
   sequenceChildren: (id) => `/sequence/${id}/children`,
   sequenceSequencingFiles: (id) => `/sequence/${id}/sequencing_files`,
+  sequenceSearch: '/sequence/search',
   sequencingFileDownload: (id) => `/sequencing_files/${id}/download`,
   postSequence: '/sequence',
   primers: '/primers',
