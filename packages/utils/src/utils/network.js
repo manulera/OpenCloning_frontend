@@ -100,8 +100,12 @@ export const shiftState = (newState, oldState, skipPrimers = false) => {
   return shiftStateIds(newState, oldState, skipPrimers);
 };
 
+export function getSequenceIdsThatAreInput(sources) {
+  return sources.reduce((result, source) => result.concat(source.input.map(({sequence}) => sequence)), []);
+}
+
 export function getGraftSequenceId({ sources, sequences }) {
-  const sequenceIdsThatAreInput = sources.reduce((result, source) => result.concat(source.input.map(({sequence}) => sequence)), []);
+  const sequenceIdsThatAreInput = getSequenceIdsThatAreInput(sources);
   const allSequenceIds = sequences.map((seq) => seq.id);
   const sequenceIdsThatAreNotInput = allSequenceIds.filter((sequenceId) => !sequenceIdsThatAreInput.includes(sequenceId));
   const sourcesWithoutOutput = sources.filter((source) => !allSequenceIds.includes(source.id));

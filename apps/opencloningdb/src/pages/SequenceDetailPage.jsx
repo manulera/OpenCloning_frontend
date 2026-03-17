@@ -1,16 +1,15 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Typography, Button, CircularProgress, Alert, Box, Chip, List, ListItem } from '@mui/material';
+import { Typography, CircularProgress, Alert, Box } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { SequenceLink } from '../components/EntityLinks';
 import { convertToTeselaJson } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTypeChip from '../components/SequenceTypeChip';
 import DetailPageSection from '../components/DetailPageSection';
 import SequenceTable from '../components/SequenceTable';
-
+import PageContainer from '../components/PageContainer';
 
 function SequenceDetailPage() {
   const { id: idString } = useParams();
@@ -47,7 +46,12 @@ function SequenceDetailPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequence'}</Alert>;
 
   return (
-    <>
+    <PageContainer>
+      <Box sx={{ position: 'relative'}}>
+        <Box sx={{ position: 'absolute', top: 0, right: 0, fontFamily: 'monospace' }}>
+          {sequenceInDb?.seguid}
+        </Box>
+      </Box>
       <ResourceDetailHeader
         title={<> {sequenceInDb?.name} <SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} /></>}
         tags={tags}
@@ -78,7 +82,7 @@ function SequenceDetailPage() {
           <Alert severity="warning">Could not parse sequence for display.</Alert>
         )}
       </Box>
-    </>
+    </PageContainer>
   );
 }
 

@@ -64,6 +64,11 @@ async function getSequencingFiles(databaseId) {
   }
 }
 
+async function locateSequenceInDatabase(sequence) {
+  const response = await openCloningDBHttpClient.post(endpoints.sequenceSearch, sequence);
+  return response.data;
+}
+
 export default {
   // Name of the database interface
   name: 'OpenCloningDB',
@@ -104,4 +109,6 @@ export default {
   autoloadSequencingFiles: true,
   // Omit unsaved intermediates disclaimer (Boolean)
   omitUnsavedIntermediatesDisclaimer: true,
+  // Function to locate a sequence in the database
+  locateSequenceInDatabase,
 };

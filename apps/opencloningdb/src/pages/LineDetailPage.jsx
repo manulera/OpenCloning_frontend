@@ -18,6 +18,7 @@ import NewLineUID from '../components/NewLineUID';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
 import DetailPageSection from '../components/DetailPageSection';
+import PageContainer from '../components/PageContainer';
 
 
 
@@ -124,7 +125,7 @@ function LineDetailPage() {
   const {parentLines } = line;
 
   return (
-    <>
+    <PageContainer>
       <ResourceDetailHeader
         title={line.uid}
         tags={line.tags}
@@ -160,7 +161,7 @@ function LineDetailPage() {
       {alleles.length === 0 && plasmids.length === 0 && parentLines.length === 0 && (
         <Typography color="text.secondary">No genotype, plasmids, or parents for this line.</Typography>
       )}
-    </>
+    </PageContainer>
   );
 }
 

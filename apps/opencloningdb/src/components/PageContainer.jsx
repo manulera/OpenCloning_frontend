@@ -1,9 +1,9 @@
 import React from 'react'
 import { Box } from '@mui/material'
 
-function PageContainer({ children }) {
+function PageContainer({ children, ...rest }) {
   return (
-    <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', p: 3 }}>
+    <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', p: 3 }} {...rest}>
       {children}
     </Box>
   )
