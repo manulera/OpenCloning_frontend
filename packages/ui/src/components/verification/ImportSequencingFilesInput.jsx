@@ -7,7 +7,7 @@ function ImportSequencingFilesInput({ onFileChange, fileInputRef }) {
       type="file"
       accept={sequencingFileExtensions.map((ext) => `.${ext}`).join(', ')}
       multiple
-      onChange={(event) => onFileChange(Array.from(event.target.files))}
+      onChange={(event) => {onFileChange(Array.from(event.target.files)); fileInputRef.current.value = '';}}
       style={{ display: 'none' }}
       ref={fileInputRef}
     />

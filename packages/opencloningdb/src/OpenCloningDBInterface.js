@@ -1,3 +1,4 @@
+/* global FormData */
 import { Save as SaveIcon, Link as LinkIcon } from '@mui/icons-material';
 import GetPrimerComponent from './GetPrimerComponent';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
@@ -42,6 +43,31 @@ async function submitPrimerToDatabase({ submissionData, primer }) {
   };
   const response = await openCloningDBHttpClient.post(endpoints.postPrimer, payload);
   return response.data.id;
+}
+
+async function submitSequencingFileToDatabase({ databaseId, sequencingFiles }) {
+  const formData = new FormData();
+  sequencingFiles.forEach((file) => {
+    if (file) {
+      formData.append('files', file);
+    }
+  });
+
+  try {
+    const resp = await openCloningDBHttpClient.post(
+      endpoints.sequenceSequencingFiles(databaseId),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return resp.data;
+  } catch (e) {
+    console.error(e);
+    throw new Error(e.response?.data?.detail || e.message || 'Error submitting sequencing files');
+  }
 }
 
 async function getSequencingFiles(databaseId) {
@@ -111,4 +137,6 @@ export default {
   omitUnsavedIntermediatesDisclaimer: true,
   // Function to locate a sequence in the database
   locateSequenceInDatabase,
+  // Function to submit sequencing files to the database
+  submitSequencingFileToDatabase,
 };
