@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
+import { AppAlerts } from '@opencloning/ui/components';
 import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
@@ -12,6 +13,7 @@ import SequenceDetailPage from './pages/SequenceDetailPage';
 import PrimerDetailPage from './pages/PrimerDetailPage';
 import LinesPage from './pages/LinesPage';
 import LineDetailPage from './pages/LineDetailPage';
+import useAppAlerts from './hooks/useAppAlerts';
 
 const queryClient = new QueryClient();
 
@@ -27,7 +29,7 @@ const TABS = ['/sequences', '/primers', '/lines', '/design'];
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const { removeAlert } = useAppAlerts();
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   return (
@@ -54,7 +56,7 @@ function AppLayout() {
           </Tabs>
         </Toolbar>
       </AppBar>
-      
+      <AppAlerts reducerName="opencloningdb" removeAlert={removeAlert} />
       <Routes>
         <Route path="/" element={<Navigate to="/sequences" replace />} />
         <Route path="/design" element={<DesignPage />} />
