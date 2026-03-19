@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { SEQUENCE_TYPE_COLORS, SEQUENCE_TYPE_LABELS } from '../utils/query_utils';
 
 
