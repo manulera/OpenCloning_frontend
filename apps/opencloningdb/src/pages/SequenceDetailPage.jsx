@@ -161,13 +161,15 @@ function SequenceDetailPage() {
         </Box>
       </Box>
       <ResourceDetailHeader
-        title={<> {sequenceInDb?.name} <SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} /></>}
+        title={sequenceInDb?.name}
+        afterTitle={<SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} sx={{ fontSize: '1.2rem' }} />}
         tags={tags}
         onBack={() => navigate('/sequences')}
         backTitle="Back to Sequences" />
+        
 
       <TopButtonSection>
-        <AddToCloningButton selectedEntities={[sequenceModel]} entityType="sequence">
+        <AddToCloningButton selectedEntities={[sequenceModel]} entityType="sequence" size="small">
           Add to Design Tab
         </AddToCloningButton>
       </TopButtonSection>

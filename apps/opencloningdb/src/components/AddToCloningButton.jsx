@@ -9,7 +9,7 @@ import { cloningActions } from '@opencloning/store/cloning';
 
 const { addPrimer } = cloningActions;
 
-function AddToCloningButton({ selectedEntities, children, entityType }) {
+function AddToCloningButton({ selectedEntities, children, entityType, ...rest }) {
 
   const { addAlert } = useCloningAlerts();
   const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
@@ -40,7 +40,7 @@ function AddToCloningButton({ selectedEntities, children, entityType }) {
   };
 
   return (
-    <Button variant="contained" color="primary" onClick={handleAddEntities}>
+    <Button variant="contained" color="primary" onClick={handleAddEntities} {...rest}>
       {children}
     </Button>
   )

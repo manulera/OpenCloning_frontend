@@ -1,22 +1,24 @@
 import React from 'react';
-import { Chip } from '@mui/material';
+import { Chip, Typography } from '@mui/material';
 import { SEQUENCE_TYPE_COLORS, SEQUENCE_TYPE_LABELS } from '../utils/query_utils';
 
 
 
-function SequenceTypeChip({ sequenceType }) {
+function SequenceTypeChip({ sequenceType, ...rest }) {
   if (!sequenceType) return null;
 
   const config = SEQUENCE_TYPE_COLORS[sequenceType] ?? { color: 'default' };
   const label = SEQUENCE_TYPE_LABELS[sequenceType] ?? sequenceType;
 
+  const {sx, ...restRest} = rest;
   return (
-    <Chip
-      label={label}
-      sx={{ color: config.color }}
-      size="small"
-      variant="outlined"
-    />
+    <Typography
+      variant="body2"
+      sx={{ color: config.color, ...sx }}
+      {...restRest}
+    >
+      {label}
+    </Typography>
   );
 }
 
