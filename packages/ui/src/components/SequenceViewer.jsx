@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useStore } from 'react-redux';
-import { Editor, updateEditor } from '@teselagen/ove';
+import { Editor, updateEditor, addAlignment } from '@teselagen/ove';
 import { Paper, IconButton } from '@mui/material';
 import {Fullscreen as FullscreenIcon, FullscreenExit as FullscreenExitIcon} from '@mui/icons-material';
 import defaultMainEditorProps from '../config/defaultMainEditorProps';
+import { updatePanelsShownWithAlignment, removePanelFromShown } from '@opencloning/utils/alignmentUtils';
 
 const EDITOR_NAME = 'sequenceViewer';
 
@@ -18,7 +19,7 @@ const baseViewerProps = {
   },
 };
 
-function SequenceViewerContent({ sequenceData }) {
+function SequenceViewer({ sequenceData, alignmentData }) {
   const store = useStore();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -38,13 +39,27 @@ function SequenceViewerContent({ sequenceData }) {
 
   React.useEffect(() => {
     if (sequenceData && Object.keys(sequenceData).length > 0) {
-      updateEditor(store, EDITOR_NAME, {
+      const editorUpdate = {
         ...baseViewerProps,
         isFullscreen,
         sequenceData,
-      });
+      };
+
+      if (alignmentData) {
+        addAlignment(store, alignmentData);
+        const editorState = store.getState().VectorEditor?.[EDITOR_NAME];
+        const currentPanels = editorState?.panelsShown || [[]];
+        editorUpdate.panelsShown = updatePanelsShownWithAlignment(currentPanels);
+      } else {
+        const editorState = store.getState().VectorEditor?.[EDITOR_NAME];
+        if (editorState?.panelsShown) {
+          editorUpdate.panelsShown = removePanelFromShown(editorState.panelsShown, 'simpleAlignment');
+        }
+      }
+
+      updateEditor(store, EDITOR_NAME, editorUpdate);
     }
-  }, [sequenceData, store, isFullscreen]);
+  }, [sequenceData, store, isFullscreen, alignmentData]);
 
   if (!sequenceData || !sequenceData.sequence) {
     return null;
@@ -93,10 +108,6 @@ function SequenceViewerContent({ sequenceData }) {
       />
     </Paper>
   );
-}
-
-function SequenceViewer({ sequenceData }) {
-  return <SequenceViewerContent sequenceData={sequenceData} />;
 }
 
 export default React.memo(SequenceViewer);
