@@ -130,7 +130,7 @@ function PrimersPage() {
           onSuccess={() => {setSelectedIds(new Set());}}
         />
         <AddToCloningButton selectedEntities={selectedPrimers} entityType="primer">
-          Add to Cloning Tab
+          Add to Design Tab
         </AddToCloningButton>
       </TopButtonSection>
       <TableContainer component={Paper}>

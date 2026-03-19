@@ -141,7 +141,7 @@ function SequencesPage() {
           onSuccess={() => {setSelectedIds(new Set());}}
         />
         <AddToCloningButton selectedEntities={selectedSequences} entityType="sequence">
-          Add to Cloning Tab
+          Add to Design Tab
         </AddToCloningButton>
       </TopButtonSection>
       <TableContainer component={Paper}>
