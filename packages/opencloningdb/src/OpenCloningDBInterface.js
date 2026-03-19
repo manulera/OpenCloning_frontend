@@ -76,6 +76,7 @@ async function getSequencingFiles(databaseId) {
     const resp = await openCloningDBHttpClient.get(endpoints.sequenceSequencingFiles(databaseId));
     const files = resp.data || [];
     return files.map((fileInfo) => ({
+      id: fileInfo.id,
       name: fileInfo.original_name,
       getFile: async () => {
         const downloadResp = await openCloningDBHttpClient.get(endpoints.sequencingFileDownload(fileInfo.id), {
