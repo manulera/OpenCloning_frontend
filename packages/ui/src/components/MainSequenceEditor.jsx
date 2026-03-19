@@ -4,7 +4,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { getReverseComplementSequenceString, getSequenceDataBetweenRange } from '@teselagen/sequence-utils';
 import defaultMainEditorProps from '../config/defaultMainEditorProps';
 import { cloningActions } from '@opencloning/store/cloning';
-import useAlerts from '../hooks/useAlerts';
+import useCloningAlerts from '../hooks/useCloningAlerts';
 import { Alert, Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import useUpdateAnnotationInMainSequence from './annotation/useUpdateAnnotationInMainSequence';
@@ -57,7 +57,7 @@ function featureRightClickedOverride(items, { annotation }, props) {
 
 function MainSequenceEditor() {
   const dispatch = useDispatch();
-  const { addAlert } = useAlerts();
+  const { addAlert } = useCloningAlerts();
   const { updateStoreEditor } = useStoreEditor();
   const updateAnnotationInMainSequence = useUpdateAnnotationInMainSequence();
 

@@ -5,7 +5,7 @@ import useDatabase from '../hooks/useDatabase';
 import { batch, useDispatch, useStore } from 'react-redux';
 import { getSequenceIdsThatAreInput, getSequenceIdsThatAreNotInput, getSequencesNotInDatabase } from '@opencloning/utils/network';
 import { cloningActions } from '@opencloning/store/cloning';
-import useAlerts from '../hooks/useAlerts';
+import useCloningAlerts from '../hooks/useCloningAlerts';
 import { cloneDeep } from 'lodash-es';
 import useBackendRoute from '../hooks/useBackendRoute';
 import useHttpClient from '../hooks/useHttpClient';
@@ -21,7 +21,7 @@ function useLocateSequencesInDatabaseAction() {
   const httpClient = useHttpClient();
   const url = backendRoute('normalize_cloning_strategy');
 
-  const { addAlert } = useAlerts();
+  const { addAlert } = useCloningAlerts();
   const main = React.useCallback(async () => {
     const { sequences: seqState, sources: srcState, primers, description } = store.getState().cloning;
     let sequences = cloneDeep(seqState);

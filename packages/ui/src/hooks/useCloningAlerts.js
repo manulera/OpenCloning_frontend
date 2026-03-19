@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { cloningActions } from '@opencloning/store/cloning';
 
-export default function useAlerts() {
+export default function useCloningAlerts() {
   const dispatch = useDispatch();
 
   const addAlert = (alert) => {

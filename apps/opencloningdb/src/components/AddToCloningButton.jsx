@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { Button } from '@mui/material'
-import useAlerts from '@opencloning/ui/hooks/useAlerts';
+import useCloningAlerts from '@opencloning/ui/hooks/useCloningAlerts';
 import useLoadDatabaseFile from '@opencloning/ui/hooks/useLoadDatabaseFile';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { useDispatch } from 'react-redux';
@@ -11,7 +11,7 @@ const { addPrimer } = cloningActions;
 
 function AddToCloningButton({ selectedEntities, children, entityType }) {
 
-  const { addAlert } = useAlerts();
+  const { addAlert } = useCloningAlerts();
   const setHistoryFileError = (e) => addAlert({ message: e, severity: 'error' });
   const { loadDatabaseFile } = useLoadDatabaseFile({ source: null, sendPostRequest: null, setHistoryFileError });
   const dispatch = useDispatch();
