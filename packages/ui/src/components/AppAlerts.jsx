@@ -2,12 +2,10 @@ import { Alert } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import useCloningAlerts from '../hooks/useCloningAlerts';
 import ExternalServicesStatusCheck from './ExternalServicesStatusCheck';
 
-function AppAlerts() {
-  const { alerts } = useSelector((state) => state.cloning, isEqual);
-  const { removeAlert } = useCloningAlerts();
+function AppAlerts( { reducerName, removeAlert } ) {
+  const { alerts } = useSelector((state) => state[reducerName], isEqual);
   return (
     <div className="app-alerts-container" style={{ position: 'absolute' }}>
       <div id="global-error-message-wrapper">

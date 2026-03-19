@@ -18,17 +18,23 @@ const composeEnhancer = (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     }))
   || compose;
 
+const reducerMap = {
+  form,
+  tg_modalState,
+  VectorEditor: VectorEditor(),
+  cloning: cloningReducer,
+};
+
 const store = createStore(
-  combineReducers({
-    form,
-    tg_modalState,
-    VectorEditor: VectorEditor(),
-    cloning: cloningReducer,
-  }),
+  combineReducers(reducerMap),
   undefined,
   composeEnhancer(
     applyMiddleware(thunk, vectorEditorMiddleware), // your store should be redux-thunk connected for the VectorEditor component to work
   ),
 );
+
+export function extendStore(extraReducers) {
+  store.replaceReducer(combineReducers({ ...reducerMap, ...extraReducers }));
+}
 
 export default store;

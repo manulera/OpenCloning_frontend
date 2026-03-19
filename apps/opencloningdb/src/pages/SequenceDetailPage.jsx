@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Typography, CircularProgress, Alert, Box, ListItemButton, IconButton } from '@mui/material';
+import { Typography, CircularProgress, Alert, Box, IconButton } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { convertToTeselaJson, downloadBlob } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
@@ -17,16 +17,19 @@ import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon } from '@mui/icons-material';
 import DetailPageSectionAction from '../components/DetailPageSectionAction';
 import { ImportSequencingFilesInput } from '@opencloning/ui/components/verification';
+import useAppAlerts from '../hooks/useAppAlerts';
 
 const { getSequencingFiles } = OpenCloningDBInterface;
 
 function SequencingFileSectionActions( { sequencingFiles }) {
   const fileInputRef = React.useRef(null);
+  const { addAlert } = useAppAlerts();
   const sequencingFileNames = React.useMemo(() => sequencingFiles.map((file) => file.name), [sequencingFiles]);
   const handleFileChange = (files) => {
     for (const file of files) {
       if (sequencingFileNames.includes(file.name)) {
-        throw new Error(`File ${file.name} already exists`);
+        addAlert({ message: `File ${file.name} already exists`, severity: 'error' });
+        return;
       }
     }
   }

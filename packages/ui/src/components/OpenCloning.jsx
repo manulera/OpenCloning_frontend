@@ -13,6 +13,7 @@ import SequenceTab from './SequenceTab';
 import AppAlerts from './AppAlerts';
 import Assembler from './assembler/Assembler';
 import { useConfig } from '../hooks/useConfig';
+import useCloningAlerts from '../hooks/useCloningAlerts';
 
 const { setCurrentTab } = cloningActions;
 
@@ -22,6 +23,7 @@ function OpenCloning() {
   const tabPanelsRef = useRef(null);
   const [smallDevice, setSmallDevice] = useState(window.innerWidth < 600);
   const { showAppBar: hasAppBar, enableAssembler } = useConfig();
+  const { removeAlert } = useCloningAlerts();
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -62,7 +64,7 @@ function OpenCloning() {
         {enableAssembler && <CustomTab label="Assembler" index={6} />}
       </Tabs>
       <div className="tab-panels-container" ref={tabPanelsRef}>
-        <AppAlerts />
+        <AppAlerts reducerName="cloning" removeAlert={removeAlert} />
         <TabPanel index={1} value={currentTab} className="primer-tab-pannel">
           <div className="primer-list-container">
             <PrimerList />
