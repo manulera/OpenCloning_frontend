@@ -10,7 +10,7 @@ import SelectTemplateDialog from './SelectTemplateDialog';
 import FeedbackDialog from './FeedbackDialog';
 import { cloningActions } from '@opencloning/store/cloning';
 import VersionDialog from './VersionDialog';
-import useAlerts from '../../hooks/useAlerts';
+import useCloningAlerts from '../../hooks/useCloningAlerts';
 import DownloadCloningStrategyDialog from '../DownloadCloningStrategyDialog';
 import LoadCloningHistoryWrapper from '../LoadCloningHistoryWrapper';
 import useValidateState from '../../hooks/useValidateState';
@@ -31,7 +31,7 @@ function MainAppBar() {
   const httpClient = useHttpClient();
 
   const dispatch = useDispatch();
-  const { addAlert } = useAlerts();
+  const { addAlert } = useCloningAlerts();
   const validateState = useValidateState();
 
   // Hidden input field, used to load files.
