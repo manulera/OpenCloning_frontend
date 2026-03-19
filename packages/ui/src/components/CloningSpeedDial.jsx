@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, SpeedDial, SpeedDialAction } from '@mui/material'
-import { Add as AddIcon, Build as BuildIcon, Search as SearchIcon, PushPin as PushPinIcon } from '@mui/icons-material'
+import { Add as AddIcon, Build as BuildIcon, Search as SearchIcon, PushPin as PushPinIcon, Sync as SyncIcon } from '@mui/icons-material'
 import useDatabase from '../hooks/useDatabase';
 import { batch, useDispatch, useStore } from 'react-redux';
 import { getSequenceIdsThatAreInput, getSequenceIdsThatAreNotInput, getSequencesNotInDatabase } from '@opencloning/utils/network';
@@ -90,7 +90,7 @@ function CloningSpeedDial() {
     // <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
     <Box sx={{ position: 'fixed', bottom: 10, left: 10, zIndex: 1000 }}>
       <SpeedDial icon={<BuildIcon />} ariaLabel="Cloning tools" direction="up" >
-        { Boolean(database.locateSequenceInDatabase) && <SpeedDialAction icon={<PushPinIcon />} tooltipTitle="Locate sequences in database" onClick={locateSequencesInDatabaseAction} /> }
+        { Boolean(database.locateSequenceInDatabase) && <SpeedDialAction icon={<SyncIcon />} tooltipTitle="Synchronize sequences with database" onClick={locateSequencesInDatabaseAction} /> }
       </SpeedDial>
 
     </Box>

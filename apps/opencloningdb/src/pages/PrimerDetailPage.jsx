@@ -7,6 +7,8 @@ import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
 import DetailPageSection from '../components/DetailPageSection';
 import PageContainer from '../components/PageContainer';
+import TopButtonSection from '../components/TopButtonSection';
+import AddToCloningButton from '../components/AddToCloningButton';
 
 function PrimerDetailPage() {
   const { id } = useParams();
@@ -33,6 +35,11 @@ function PrimerDetailPage() {
         tags={primer.tags}
         onBack={() => navigate('/primers')}
         backTitle="Back to Primers" />
+      <TopButtonSection>
+        <AddToCloningButton selectedEntities={[primer]} entityType="primer">
+          Add to Design Tab
+        </AddToCloningButton>
+      </TopButtonSection>
       <DetailPageSection title="Sequence">
         <Typography sx={{ mt: 1, fontFamily: 'monospace' }}>{primer.sequence}</Typography>
       </DetailPageSection>

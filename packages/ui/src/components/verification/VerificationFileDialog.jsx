@@ -27,6 +27,7 @@ import LoadFromDatabaseButton from './LoadFromDatabaseButton';
 import { sequencingFileExtensions } from '@opencloning/utils/sequencingFileExtensions';
 import useHttpClient from '../../hooks/useHttpClient';
 import { getVerificationFileName } from '@opencloning/utils/readNwrite';
+import ImportSequencingFilesInput from './ImportSequencingFilesInput';
 
 const { addFile, removeFile: removeFileAction, removeFilesAssociatedToSequence, setMainSequenceId, setCurrentTab } = cloningActions;
 
@@ -165,14 +166,7 @@ export default function VerificationFileDialog({ id, dialogOpen, setDialogOpen }
     >
       <DialogTitle>Verification files</DialogTitle>
       <DialogContent>
-        <input
-          type="file"
-          accept={sequencingFileExtensions.map((ext) => `.${ext}`).join(', ')}
-          multiple
-          onChange={(event) => onFileChange(Array.from(event.target.files))}
-          style={{ display: 'none' }}
-          ref={fileInputRef}
-        />
+        <ImportSequencingFilesInput onFileChange={onFileChange} fileInputRef={fileInputRef} />
 
         {loadingMessage && (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
