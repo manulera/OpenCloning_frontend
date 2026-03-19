@@ -31,7 +31,7 @@ function AddToCloningButton({ selectedEntities, children, entityType }) {
         dispatch(addPrimer({ name: primer.name, sequence: primer.sequence, database_id: seqId }));
       }
     } catch (error) {
-      setHistoryFileError(error?.response?.data?.detail || error?.message || 'Failed to add to cloning tab');
+      setHistoryFileError(error?.response?.data?.detail || error?.message || 'Failed to add to design tab');
     }
   };
   const handleAddEntities = async () => {
