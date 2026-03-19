@@ -7,4 +7,3 @@ export { default as QuerySelect } from './form/QuerySelect';
 export { default as QueryStatusWrapper } from './form/QueryStatusWrapper';
 export { default as TextFieldQueryValidated } from './form/TextFieldQueryValidated';
 export { default as useDebouncedSearchQuery } from '../hooks/useDebouncedSearchQuery';
-export { default as AppAlerts } from './AppAlerts';

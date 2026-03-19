@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Typography, CircularProgress, Alert, Box, IconButton } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { convertToTeselaJson, downloadBlob } from '@opencloning/utils/readNwrite';
@@ -19,12 +19,28 @@ import DetailPageSectionAction from '../components/DetailPageSectionAction';
 import { ImportSequencingFilesInput } from '@opencloning/ui/components/verification';
 import useAppAlerts from '../hooks/useAppAlerts';
 
-const { getSequencingFiles } = OpenCloningDBInterface;
+const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInterface;
 
-function SequencingFileSectionActions( { sequencingFiles }) {
+function SequencingFileSectionActions( { sequencingFiles, databaseId }) {
   const fileInputRef = React.useRef(null);
   const { addAlert } = useAppAlerts();
+  const queryClient = useQueryClient();
   const sequencingFileNames = React.useMemo(() => sequencingFiles.map((file) => file.name), [sequencingFiles]);
+
+  const mutation = useMutation({
+    mutationFn: (files) => submitSequencingFileToDatabase({ databaseId, sequencingFiles: files }),
+    onSuccess: () => {
+      addAlert({ message: 'Sequencing files submitted successfully', severity: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['sequence', databaseId, 'cloning_strategy'] });
+    },
+    onError: (error) => {
+      addAlert({
+        message: error?.response?.data?.detail || error?.message || 'Error submitting sequencing files',
+        severity: 'error',
+      });
+    },
+  });
+
   const handleFileChange = (files) => {
     for (const file of files) {
       if (sequencingFileNames.includes(file.name)) {
@@ -32,7 +48,8 @@ function SequencingFileSectionActions( { sequencingFiles }) {
         return;
       }
     }
-  }
+    mutation.mutate(files);
+  };
   return (
     <>
       <ImportSequencingFilesInput onFileChange={handleFileChange} fileInputRef={fileInputRef} />
@@ -115,7 +132,9 @@ function SequenceDetailPage() {
         </DetailPageSection>
       )}
 
-      <DetailPageSection title="Sequencing files" actions={<SequencingFileSectionActions sequencingFiles={sequencingFiles} />}>
+      <DetailPageSection title="Sequencing files" actions={
+        <SequencingFileSectionActions sequencingFiles={sequencingFiles} databaseId={id} />
+      }>
         <List sx={{ margin: 0, paddingLeft: 2 }}>
           {sequencingFiles.map((file) => (
             <ListItem key={file.name} disableGutters sx={{ pl: 0 }}>
