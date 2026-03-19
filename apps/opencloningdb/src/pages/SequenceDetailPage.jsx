@@ -163,7 +163,7 @@ function SequenceDetailPage() {
       <ResourceDetailHeader
         title={sequenceInDb?.name}
         afterTitle={<SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} sx={{ fontSize: '1.2rem' }} />}
-        tags={tags}
+        tags={tags} entityId={id} entityType="input_entities"
         onBack={() => navigate('/sequences')}
         backTitle="Back to Sequences" />
         
