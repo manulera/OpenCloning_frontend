@@ -23,6 +23,7 @@
         "./hooks": "./src/hooks/index.js",
         "./hooks/useConfig": "./src/hooks/useConfig.js",
         "./hooks/useLoadDatabaseFile": "./src/hooks/useLoadDatabaseFile.js",
+        "./hooks/useAlerts": "./src/hooks/useAlerts.js",
         "./hooks/useCloningAlerts": "./src/hooks/useCloningAlerts.js",
         "./components/SequenceViewer": "./src/components/SequenceViewer.jsx",
         "./standalone": "./src/StandAloneOpenCloning.js"
