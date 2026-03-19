@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Typography, CircularProgress, Alert, Box, IconButton } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { convertToTeselaJson, downloadBlob } from '@opencloning/utils/readNwrite';
+import { convertToTeselaJson, downloadBlob, file2base64, getTeselaJsonFromBase64 } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTypeChip from '../components/SequenceTypeChip';
@@ -18,6 +18,7 @@ import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as Ad
 import DetailPageSectionAction from '../components/DetailPageSectionAction';
 import { ImportSequencingFilesInput } from '@opencloning/ui/components/verification';
 import useAppAlerts from '../hooks/useAppAlerts';
+import useSequencingAlignment from '@opencloning/ui/hooks/useSequencingAlignment';
 
 const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInterface;
 
@@ -49,7 +50,7 @@ function DeleteSequencingFileButton({ sequenceId, fileId }) {
   );
 }
 
-function SequencingFileSectionActions( { sequencingFiles, databaseId }) {
+function SequencingFileSectionActions({ sequencingFiles, databaseId, onSeeAlignments, alignmentLoading }) {
   const fileInputRef = React.useRef(null);
   const { addAlert } = useAppAlerts();
   const queryClient = useQueryClient();
@@ -83,7 +84,12 @@ function SequencingFileSectionActions( { sequencingFiles, databaseId }) {
       <ImportSequencingFilesInput onFileChange={handleFileChange} fileInputRef={fileInputRef} />
       <DetailPageSectionAction icon={<AddCircleIcon />} onClick={ () => fileInputRef.current?.click()} title="Add sequencing files" />
       {sequencingFiles?.length > 0 && (
-        <DetailPageSectionAction icon={<VisibilityIcon />} onClick={ () => {}} title="See alignments" />
+        <DetailPageSectionAction
+          icon={alignmentLoading ? <CircularProgress size={24} /> : <VisibilityIcon />}
+          onClick={onSeeAlignments}
+          title="See alignments"
+          disabled={alignmentLoading}
+        />
       )}
     </>
   )
@@ -93,6 +99,8 @@ function SequenceDetailPage() {
   const { id: idString } = useParams();
   const id = parseInt(idString);
   const navigate = useNavigate();
+  const { addAlert } = useAppAlerts();
+  const alignmentMutation = useSequencingAlignment({ onError: (e) => addAlert({ message: e?.message || 'Alignment failed', severity: 'error' }) });
   const onGetFile = async (fileGetter) => {
     const file = await fileGetter();
     downloadBlob(file, file.name);
@@ -123,6 +131,24 @@ function SequenceDetailPage() {
   const { parentSequences, parentSource, sequenceModel, sequenceInDb, children, sequencingFiles } = React.useMemo(() => data ?? {}, [data]);
   const sequenceData = React.useMemo(() => sequenceModel ? convertToTeselaJson(sequenceModel) : null, [sequenceModel]);
   const tags = React.useMemo(() => sequenceInDb?.tags ?? [], [sequenceInDb]);
+
+  const handleSeeAlignmentsMutation = useMutation({
+    mutationFn: async () => {
+      const parsedFiles = await Promise.all(sequencingFiles.map(async (file) => {
+        const fileBlob = await file.getFile();
+        const base64str = await file2base64(fileBlob);
+        const fileContent = await getTeselaJsonFromBase64(base64str, file.name);
+        return { fileName: file.name, fileContent };
+      }));
+      return parsedFiles;
+    },
+    onSuccess: (parsedFiles) => {
+      alignmentMutation.mutate({ sequenceModel, sequenceData, parsedFiles });
+    },
+    onError: (e) => {
+      addAlert({ message: e?.message || 'Failed to load sequencing files', severity: 'error' });
+    },
+  });
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequence'}</Alert>;
@@ -161,7 +187,12 @@ function SequenceDetailPage() {
       )}
 
       <DetailPageSection title="Sequencing files" actions={
-        <SequencingFileSectionActions sequencingFiles={sequencingFiles} databaseId={id} />
+        <SequencingFileSectionActions
+          sequencingFiles={sequencingFiles}
+          databaseId={id}
+          onSeeAlignments={() => handleSeeAlignmentsMutation.mutate()}
+          alignmentLoading={handleSeeAlignmentsMutation.isPending || alignmentMutation.isPending}
+        />
       }>
         <List sx={{ margin: 0, paddingLeft: 2 }}>
           {sequencingFiles.map((file) => (
@@ -178,7 +209,7 @@ function SequenceDetailPage() {
 
       <Box sx={{ mt: 2 }}>
         {sequenceData ? (
-          <SequenceViewer sequenceData={sequenceData} />
+          <SequenceViewer sequenceData={sequenceData} alignmentData={alignmentMutation.data ?? null} />
         ) : (
           <Alert severity="warning">Could not parse sequence for display.</Alert>
         )}
