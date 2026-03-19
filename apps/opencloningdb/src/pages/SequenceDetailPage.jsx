@@ -14,12 +14,40 @@ import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
 import { List, ListItem, ListItemText } from '@mui/material';
 import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
-import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon } from '@mui/icons-material';
+import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import DetailPageSectionAction from '../components/DetailPageSectionAction';
 import { ImportSequencingFilesInput } from '@opencloning/ui/components/verification';
 import useAppAlerts from '../hooks/useAppAlerts';
 
 const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInterface;
+
+function DeleteSequencingFileButton({ sequenceId, fileId }) {
+  const { addAlert } = useAppAlerts();
+  const queryClient = useQueryClient();
+
+  const deleteSequencingFileMutation = useMutation({
+    mutationFn: () => openCloningDBHttpClient.delete(endpoints.sequenceSequencingFileDelete(sequenceId, fileId)),
+    onSuccess: () => {
+      addAlert({ message: 'Sequencing file deleted successfully', severity: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['sequence', sequenceId, 'cloning_strategy'] });
+    },
+    onError: (error) => {
+      addAlert({
+        message: error?.response?.data?.detail || error?.message || 'Error deleting sequencing file',
+        severity: 'error',
+      });
+    },
+  });
+
+  return (
+    <IconButton
+      onClick={() => deleteSequencingFileMutation.mutate()}
+      disabled={deleteSequencingFileMutation.isLoading}
+    >
+      <DeleteIcon />
+    </IconButton>
+  );
+}
 
 function SequencingFileSectionActions( { sequencingFiles, databaseId }) {
   const fileInputRef = React.useRef(null);
@@ -138,6 +166,7 @@ function SequenceDetailPage() {
         <List sx={{ margin: 0, paddingLeft: 2 }}>
           {sequencingFiles.map((file) => (
             <ListItem key={file.name} disableGutters sx={{ pl: 0 }}>
+              <DeleteSequencingFileButton sequenceId={id} fileId={file.id} />
               <IconButton onClick={() => onGetFile(file.getFile)}><DownloadIcon /></IconButton>
               <ListItemText primary={file.name} />
             </ListItem>
