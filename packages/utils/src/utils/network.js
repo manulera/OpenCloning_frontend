@@ -112,7 +112,7 @@ export function getSequenceIdsThatAreNotInput(sequences, sources) {
 export function getGraftSequenceId({ sources, sequences }) {
   const allSequenceIds = new Set(sequences.map((seq) => seq.id));
   const sequenceIdsThatAreNotInput = getSequenceIdsThatAreNotInput(sequences, sources);
-  const sourcesWithoutOutput = sources.filter((source) => !allSequenceIds.includes(source.id));
+  const sourcesWithoutOutput = sources.filter((source) => !allSequenceIds.has(source.id));
   if (sourcesWithoutOutput.length === 0 && sequenceIdsThatAreNotInput.length === 1) {
     return sequenceIdsThatAreNotInput[0];
   }
@@ -199,4 +199,9 @@ export function getParentSequencesFromSource(source, sequences) {
 export function getParentSourcesFromSource(source, sources) {
   const parentSourceIds = source.input.map(({sequence}) => sequence);
   return sources.filter((source) => parentSourceIds.includes(source.id));
+}
+
+export function getSequencesNotInDatabase(sources, sequences) {
+  const sequenceIds = sources.filter((s) => !s.database_id).map((s) => s.id);
+  return sequences.filter((sequence) => sequenceIds.includes(sequence.id));
 }
