@@ -172,7 +172,7 @@ function SequenceDetailPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequence'}</Alert>;
 
   return (
-    <PageContainer sx={{p: 5}}>
+    <PageContainer>
       <Box sx={{ position: 'relative'}}>
         <Box sx={{ position: 'absolute', top: 0, right: 0, fontFamily: 'monospace' }}>
           {sequenceInDb?.seguid}
