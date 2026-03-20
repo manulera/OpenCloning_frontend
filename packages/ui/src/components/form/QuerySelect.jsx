@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Autocomplete, TextField, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
+import { Autocomplete, TextField, FormControl, FormHelperText, InputLabel, MenuItem, Select, Button } from '@mui/material';
 import QueryStatusWrapper from './QueryStatusWrapper';
+import { AddCircle as AddCircleIcon } from '@mui/icons-material';
 
 export default function QuerySelect({
   query,
@@ -17,6 +18,7 @@ export default function QuerySelect({
   autocompleteProps = {},
   inputProps = {},
   onClear = () => {},
+  noOptionsAction = null, // { label: string, onClick: () => void }
   ...rest
 }) {
   const queryResult = useQuery(query);
@@ -50,6 +52,16 @@ export default function QuerySelect({
 
   const autocompleteValue = effectiveValue !== undefined ? effectiveValue : (multiple ? [] : null);
 
+  const noOptionsText = React.useMemo(() => {
+    if (noOptionsAction) {
+      return <MenuItem onClick={() => noOptionsAction.onClick(inputValue)} value="">
+        <AddCircleIcon color="success" />
+        <em style={{ marginLeft: 8 }}>{noOptionsAction.label}</em>
+      </MenuItem>
+    }
+    return undefined;
+  }, [noOptionsAction, inputValue]);
+
   return (
     <QueryStatusWrapper renderIfLoading={autoComplete} queryResult={queryResult} loadingMessage={loadingMessage} errorMessage={errorMessage}>
       <FormControl {...rest}>
@@ -59,6 +71,7 @@ export default function QuerySelect({
             onChange={handleAutocompleteChange}
             id="tags-standard"
             options={displayOptions}
+            noOptionsText={noOptionsText}
             getOptionLabel={getOptionLabel}
             getOptionKey={getOptionKey}
             value={autocompleteValue}

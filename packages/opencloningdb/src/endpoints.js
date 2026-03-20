@@ -19,6 +19,7 @@ const endpoints = {
   inputEntityTags: (id) => `/input_entity/${id}/tags`,
   postLine: '/line',
   tags: '/tags',
+  postTag: '/tag',
 };
 
 export default endpoints;
