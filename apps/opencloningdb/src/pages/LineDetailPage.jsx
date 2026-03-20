@@ -9,14 +9,16 @@ import {
   Box,
   DialogContent,
   FormControl,
+  TableContainer,
+  Paper,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { LineLink } from '../components/EntityLinks';
 import { Dialog, DialogTitle } from '@mui/material';
 import SequenceSelect from '../components/SequenceSelect';
 import NewLineUID from '../components/NewLineUID';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
+import LinesTable from '../components/LinesTable';
 import DetailPageSection from '../components/DetailPageSection';
 import PageContainer from '../components/PageContainer';
 
@@ -133,7 +135,7 @@ function LineDetailPage() {
         backTitle="Back to Lines"
         entityId={id}
         entityType="lines"
-        />
+      />
 
       <Box sx={{ mb: 3 }}>
         <TransformButton line={line} />
@@ -153,11 +155,9 @@ function LineDetailPage() {
 
       {parentLines.length > 0 && (
         <DetailPageSection title="Parent lines">
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {parentLines.map((parentLine) => (
-              <LineLink key={parentLine.id} {...parentLine} />
-            ))}
-          </Box>
+          <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+            <LinesTable lines={parentLines} withCheckbox={false} />
+          </TableContainer>
         </DetailPageSection>
       )}
 
