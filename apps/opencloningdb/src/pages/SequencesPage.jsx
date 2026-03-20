@@ -2,12 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   TablePagination,
   Paper,
   CircularProgress,
@@ -16,21 +11,18 @@ import {
   Button,
   Switch,
   FormControlLabel,
-  Checkbox,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import SequenceTypeChip from '../components/SequenceTypeChip';
-import { SequenceLink } from '../components/EntityLinks';
 import { parseSequenceParams, applySequenceParamsToSearchParams } from '../utils/query_utils';
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import SequenceTypeMultiSelect from '../components/SequenceTypeMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import TagEntitiesButton from '../components/TagEntitiesButton';
-import TagChipList from '../components/TagChipList';
 import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
 import PageContainer from '../components/PageContainer';
+import SequenceTable from '../components/SequenceTable';
 
 const MIN_WIDTH = 200;
 
@@ -65,7 +57,7 @@ function SequenceQueryFields({ pendingParams, setPendingParams }) {
         control={
           <Switch
             checked={pendingParams.has_uid ?? false}
-            onChange={(value) => setPendingParams((p) => ({ ...p, has_uid: !p.has_uid }))}
+            onChange={(_, checked) => setPendingParams((p) => ({ ...p, has_uid: checked }))}
           />
         }
         label="With UID"
@@ -145,40 +137,14 @@ function SequencesPage() {
         </AddToCloningButton>
       </TopButtonSection>
       <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox" />
-              <TableCell>UID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Tags</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.map((seq) => (
-              <TableRow key={seq.id} hover>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    size="small"
-                    checked={selectedIds.has(seq.id)}
-                    onChange={() => toggleRow(seq.id)}
-                  />
-                </TableCell>
-                <TableCell>{seq.sample_uids?.join(', ') ?? '—'}</TableCell>
-                <TableCell>
-                  <SequenceLink id={seq.id} name={seq.name} />
-                </TableCell>
-                <TableCell>
-                  <SequenceTypeChip sequenceType={seq.sequence_type} />
-                </TableCell>
-                <TableCell>
-                  <TagChipList tags={seq.tags} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <SequenceTable
+          sequences={items}
+          showType={true}
+          showSampleUids={true}
+          withCheckbox={true}
+          selectedIds={selectedIds}
+          toggleRow={toggleRow}
+        />
         <TablePagination
           component="div"
           count={data?.total ?? 0}
