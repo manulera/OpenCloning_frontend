@@ -7,6 +7,7 @@ import { convertToTeselaJson, downloadBlob, file2base64, getTeselaJsonFromBase64
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTypeChip from '../components/SequenceTypeChip';
+import EditSequenceNameAndType from '../components/EditSequenceNameAndType';
 import DetailPageSection from '../components/DetailPageSection';
 import SequenceTable from '../components/SequenceTable';
 import PageContainer from '../components/PageContainer';
@@ -163,10 +164,15 @@ function SequenceDetailPage() {
       <ResourceDetailHeader
         title={sequenceInDb?.name}
         afterTitle={<SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} sx={{ fontSize: '1.2rem' }} />}
-        tags={tags} entityId={id} entityType="input_entities"
+        tags={tags}
+        entityId={id}
+        entityType="input_entities"
         onBack={() => navigate('/sequences')}
-        backTitle="Back to Sequences" />
-        
+        backTitle="Back to Sequences"
+        editorComponent={EditSequenceNameAndType}
+        editorComponentProps={{ sequenceData, sequenceInDb }}
+        editorIconToolTipText="Edit name and type"
+      />
 
       <TopButtonSection>
         <AddToCloningButton selectedEntities={[sequenceModel]} entityType="sequence" size="small">

@@ -1,10 +1,11 @@
 import React from 'react'
 import TagChip from './TagChip'
-import { Box, Chip } from '@mui/material';
+import { Box, Chip, Tooltip } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import useAppAlerts from '../hooks/useAppAlerts';
 import { Add as AddIcon } from '@mui/icons-material';
+import TagEntitiesDialog from './TagEntitiesDialog';
 
 
 
@@ -12,6 +13,7 @@ function TagChipList({tags, entityId=null, entityType=null}) {
   // If id is passed, it can edit the tags
   const { addAlert } = useAppAlerts();
   const queryClient = useQueryClient();
+  const [openDialog, setOpenDialog] = React.useState(false);
   const addTagMutation = useMutation({
     mutationFn: async (tagId) => {
       let url;
@@ -36,15 +38,36 @@ function TagChipList({tags, entityId=null, entityType=null}) {
     },
   });
 
+
+  const onSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: [entityType, entityId] });
+    queryClient.invalidateQueries({ queryKey: ['sequence', entityId, 'cloning_strategy'] });
+    queryClient.invalidateQueries({ queryKey: ['line', entityId] });
+    queryClient.invalidateQueries({ queryKey: ['primer', entityId] });
+    addAlert({ message: 'Tag added successfully', severity: 'success' });
+  };
   if (!tags?.length) return '—';
   return <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-    {tags.map((tag) => <TagChip key={tag.id} tag={tag} />)}
+    {tags.sort((a, b) => a.name.localeCompare(b.name)).map((tag) => <TagChip key={tag.id} tag={tag} />)}
     {entityId && entityType && (
-      <Chip
-        size="small"
-        label={<AddIcon fontSize="small" />}
-        onClick={() => addTagMutation.mutate(1)}
-      />
+      <>
+        <Tooltip title="Add tag" arrow placement="right">
+          <Chip
+            size="small"
+            label={<AddIcon fontSize="small" />}
+            onClick={() => setOpenDialog(true)}
+          />
+        </Tooltip>
+        <TagEntitiesDialog
+          selectedEntities={[{id: entityId}]}
+          entityType={entityType}
+          label="Tag"
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          onSuccess={onSuccess}
+          excludeTagIds={tags.map((tag) => tag.id)}
+        />
+      </>
     )}
   </Box>
 }
