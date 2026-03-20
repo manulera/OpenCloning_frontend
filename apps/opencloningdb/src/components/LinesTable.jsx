@@ -2,6 +2,7 @@ import React from 'react';
 import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { LineLink, CommaSeparatorWrapper, SequenceInLineLink } from './EntityLinks';
 import TagChipList from './TagChipList';
+import SelectAllCheckbox from './SelectAllCheckbox';
 
 function SeqCell({ sils }) {
   return (
@@ -18,11 +19,22 @@ function SeqCell({ sils }) {
 }
 
 function LinesTable({ lines = [], withCheckbox = false, selectedIds = new Set(), toggleRow = () => {} }) {
+  const ids = lines.map((line) => line.id);
+
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
-          {withCheckbox && <TableCell padding="checkbox" />}
+          {withCheckbox && (
+            <TableCell padding="checkbox">
+              <SelectAllCheckbox
+                ids={ids}
+                selectedIds={selectedIds}
+                toggleRow={toggleRow}
+                ariaLabel="select all lines"
+              />
+            </TableCell>
+          )}
           <TableCell>UID</TableCell>
           <TableCell>Genotype</TableCell>
           <TableCell>Plasmids</TableCell>
