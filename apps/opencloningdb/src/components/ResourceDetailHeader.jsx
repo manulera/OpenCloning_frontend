@@ -47,7 +47,7 @@ function ResourceDetailHeader({
       {belowTitle}
       {Array.isArray(tags) && (
         <Box sx={{ mb: 1 }}>
-          <TagChipList tags={tags} entityId={entityId} entityType={entityType} />
+          <TagChipList tags={tags} entityId={entityId} entityType={entityType} canDelete={true} />
         </Box>
       )}
     </>

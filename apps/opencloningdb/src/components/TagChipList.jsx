@@ -7,7 +7,7 @@ import TagEntitiesDialog from './TagEntitiesDialog';
 
 
 
-function TagChipList({tags, entityId=null, entityType=null}) {
+function TagChipList({tags, entityId=null, entityType=null, canDelete=false}) {
   // If id is passed, it can edit the tags
   const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -27,7 +27,7 @@ function TagChipList({tags, entityId=null, entityType=null}) {
   }, [entityId, entityType]);
   if (!Array.isArray(tags)) return <CircularProgress />;
   return <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-    {tags.sort((a, b) => a.name.localeCompare(b.name)).map((tag) => <TagChip key={tag.id} tag={tag} />)}
+    {tags.sort((a, b) => a.name.localeCompare(b.name)).map((tag) => <TagChip canDelete={canDelete} entityId={entityId} entityType={entityType} key={tag.id} tag={tag} />)}
     {tags.length === 0 && noTagsText}
     {entityId && entityType && (
       <>
