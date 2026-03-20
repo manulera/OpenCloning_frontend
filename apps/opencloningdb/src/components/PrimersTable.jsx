@@ -2,6 +2,7 @@ import React from 'react';
 import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { PrimerLink } from './EntityLinks';
 import TagChipList from './TagChipList';
+import SelectAllCheckbox from './SelectAllCheckbox';
 
 function PrimersTable({
   primers = [],
@@ -9,11 +10,22 @@ function PrimersTable({
   selectedIds = new Set(),
   toggleRow = () => {},
 }) {
+  const ids = primers.map((primer) => primer.id);
+
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
-          {withCheckbox && <TableCell padding="checkbox" />}
+          {withCheckbox && (
+            <TableCell padding="checkbox">
+              <SelectAllCheckbox
+                ids={ids}
+                selectedIds={selectedIds}
+                toggleRow={toggleRow}
+                ariaLabel="select all primers"
+              />
+            </TableCell>
+          )}
           <TableCell>UID</TableCell>
           <TableCell>Name</TableCell>
           <TableCell>Tags</TableCell>

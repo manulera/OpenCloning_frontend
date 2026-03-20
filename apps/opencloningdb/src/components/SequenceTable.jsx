@@ -3,6 +3,7 @@ import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@mui
 import { SequenceLink } from './EntityLinks';
 import TagChipList from './TagChipList';
 import SequenceTypeChip from './SequenceTypeChip';
+import SelectAllCheckbox from './SelectAllCheckbox';
 
 function SequenceTable({
   sequences = [],
@@ -12,11 +13,22 @@ function SequenceTable({
   selectedIds = new Set(),
   toggleRow = () => {},
 }) {
+  const ids = sequences.map((seq) => seq.id);
+
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
-          {withCheckbox && <TableCell padding="checkbox" />}
+          {withCheckbox && (
+            <TableCell padding="checkbox">
+              <SelectAllCheckbox
+                ids={ids}
+                selectedIds={selectedIds}
+                toggleRow={toggleRow}
+                ariaLabel="select all sequences"
+              />
+            </TableCell>
+          )}
           {showSampleUids && <TableCell>UID</TableCell>}
           <TableCell>Name</TableCell>
           {showType && <TableCell>Type</TableCell>}
