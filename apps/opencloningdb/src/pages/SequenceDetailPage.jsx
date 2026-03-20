@@ -215,6 +215,11 @@ function SequenceDetailPage() {
             </ListItem>
           ))}
         </List>
+        { sequencingFiles.length === 0 && (
+          <Typography color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            No sequencing files linked
+          </Typography>
+        )}
       </DetailPageSection>
 
 
