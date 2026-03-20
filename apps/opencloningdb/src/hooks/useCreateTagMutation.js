@@ -7,7 +7,7 @@ export default function useCreateTagMutation() {
   const queryClient = useQueryClient();
   const createTagMutation = useMutation({
     mutationFn: async (tagName) => {
-      const { data } = await openCloningDBHttpClient.post(endpoints.postTag, { name: tagName });
+      const { data } = await openCloningDBHttpClient.post(endpoints.tagPost, { name: tagName });
       return data;
     },
     onSuccess: (data) => {
