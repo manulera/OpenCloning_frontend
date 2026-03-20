@@ -34,7 +34,10 @@ function PrimerDetailPage() {
         title={`${primer.uid} - ${primer.name}`}
         tags={primer.tags}
         onBack={() => navigate('/primers')}
-        backTitle="Back to Primers" />
+        backTitle="Back to Primers"
+        entityId={id}
+        entityType="input_entities"
+      />
       <TopButtonSection>
         <AddToCloningButton selectedEntities={[primer]} entityType="primer">
           Add to Design Tab

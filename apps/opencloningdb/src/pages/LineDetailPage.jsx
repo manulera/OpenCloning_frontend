@@ -130,7 +130,10 @@ function LineDetailPage() {
         title={line.uid}
         tags={line.tags}
         onBack={() => navigate('/lines')}
-        backTitle="Back to Lines" />
+        backTitle="Back to Lines"
+        entityId={id}
+        entityType="lines"
+        />
 
       <Box sx={{ mb: 3 }}>
         <TransformButton line={line} />
