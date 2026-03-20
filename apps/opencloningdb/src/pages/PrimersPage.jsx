@@ -2,12 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   TablePagination,
   Paper,
   CircularProgress,
@@ -16,19 +11,17 @@ import {
   Button,
   Switch,
   FormControlLabel,
-  Checkbox,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { parsePrimersParams, applyPrimersParamsToSearchParams } from '../utils/query_utils';
-import { PrimerLink } from '../components/EntityLinks';
 import SearchBar from '../components/SearchBar';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
-import TagChipList from '../components/TagChipList';
 import TagEntitiesButton from '../components/TagEntitiesButton';
 import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
 import PageContainer from '../components/PageContainer';
+import PrimersTable from '../components/PrimersTable';
 
 const MIN_WIDTH = 200;
 
@@ -134,38 +127,12 @@ function PrimersPage() {
         </AddToCloningButton>
       </TopButtonSection>
       <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox" />
-              <TableCell>UID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Tags</TableCell>
-              <TableCell>Sequence</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.map((primer) => (
-              <TableRow key={primer.id} hover>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    size="small"
-                    checked={selectedIds.has(primer.id)}
-                    onChange={() => toggleRow(primer.id)}
-                  />
-                </TableCell>
-                <TableCell>{primer.uid ?? '—'}</TableCell>
-                <TableCell>
-                  <PrimerLink id={primer.id} name={primer.name} />
-                </TableCell>
-                <TableCell>
-                  <TagChipList tags={primer.tags} />
-                </TableCell>
-                <TableCell sx={{ fontFamily: 'monospace' }}>{primer.sequence ?? '—'}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <PrimersTable
+          primers={items}
+          withCheckbox={true}
+          selectedIds={selectedIds}
+          toggleRow={toggleRow}
+        />
         <TablePagination
           component="div"
           count={data?.total ?? 0}

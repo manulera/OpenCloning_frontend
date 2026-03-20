@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Typography, CircularProgress, Alert } from '@mui/material';
+import { Typography, CircularProgress, Alert, TableContainer, Paper } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
@@ -47,10 +47,14 @@ function PrimerDetailPage() {
         <Typography sx={{ mt: 1, fontFamily: 'monospace' }}>{primer.sequence}</Typography>
       </DetailPageSection>
       <DetailPageSection title="Linked templates">
-        <SequenceTable sequences={templates} />
+        <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+          <SequenceTable sequences={templates} />
+        </TableContainer>
       </DetailPageSection>
       <DetailPageSection title="Linked products">
-        <SequenceTable sequences={products} />
+        <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+          <SequenceTable sequences={products} />
+        </TableContainer>
       </DetailPageSection>
     </PageContainer>
   );

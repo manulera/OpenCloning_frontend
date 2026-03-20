@@ -143,13 +143,17 @@ function LineDetailPage() {
 
       {alleles.length > 0 && (
         <DetailPageSection title="Genotype">
-          <SequenceTable sequences={alleles} showType={false} />
+          <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+            <SequenceTable sequences={alleles} showType={false} />
+          </TableContainer>
         </DetailPageSection>
       )}
 
       {plasmids.length > 0 && (
         <DetailPageSection title="Plasmids">
-          <SequenceTable sequences={plasmids} showType={false} />
+          <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+            <SequenceTable sequences={plasmids} showType={false} />
+          </TableContainer>
         </DetailPageSection>
       )}
 
