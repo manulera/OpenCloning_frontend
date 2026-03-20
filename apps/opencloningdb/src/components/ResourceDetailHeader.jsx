@@ -45,7 +45,7 @@ function ResourceDetailHeader({
         )}
       </Box>
       {belowTitle}
-      {tags?.length > 0 && (
+      {Array.isArray(tags) && (
         <Box sx={{ mb: 1 }}>
           <TagChipList tags={tags} entityId={entityId} entityType={entityType} />
         </Box>
