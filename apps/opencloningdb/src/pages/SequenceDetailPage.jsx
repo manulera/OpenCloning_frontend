@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Typography, CircularProgress, Alert, Box, IconButton } from '@mui/material';
+import { Typography, CircularProgress, Alert, Box, IconButton, TableContainer, Paper } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { convertToTeselaJson, downloadBlob, file2base64, getTeselaJsonFromBase64 } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
@@ -184,13 +184,17 @@ function SequenceDetailPage() {
           {parentSource.type}
         </Typography>
         {parentSequences?.length > 0  && (
-          <SequenceTable sequences={parentSequences} />
+          <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+            <SequenceTable sequences={parentSequences} />
+          </TableContainer>
         )}
       </DetailPageSection>
 
       {children?.length > 0 && (
         <DetailPageSection title="Children">
-          <SequenceTable sequences={children} />
+          <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+            <SequenceTable sequences={children} />
+          </TableContainer>
         </DetailPageSection>
       )}
 
