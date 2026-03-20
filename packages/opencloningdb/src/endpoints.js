@@ -20,7 +20,9 @@ const endpoints = {
   inputEntityTags: (id) => `/input_entity/${id}/tags`,
   postLine: '/line',
   tags: '/tags',
-  postTag: '/tag',
+  tagPost: '/tag',
+  tagUnlinkLine: (lineId, tagId) => `/line/${lineId}/tags/${tagId}`,
+  tagUnlinkInputEntity: (inputEntityId, tagId) => `/input_entity/${inputEntityId}/tags/${tagId}`,
 };
 
 export default endpoints;
