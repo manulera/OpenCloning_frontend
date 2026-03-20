@@ -10,6 +10,7 @@ import SequenceTypeChip from '../components/SequenceTypeChip';
 import EditSequenceNameAndType from '../components/EditSequenceNameAndType';
 import DetailPageSection from '../components/DetailPageSection';
 import SequenceTable from '../components/SequenceTable';
+import PrimersTable from '../components/PrimersTable';
 import PageContainer from '../components/PageContainer';
 import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
@@ -20,6 +21,7 @@ import DetailPageSectionAction from '../components/DetailPageSectionAction';
 import { ImportSequencingFilesInput } from '@opencloning/ui/components/verification';
 import useAppAlerts from '../hooks/useAppAlerts';
 import useSequencingAlignment from '@opencloning/ui/hooks/useSequencingAlignment';
+import { QueryStatusWrapper } from '@opencloning/ui';
 
 const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInterface;
 
@@ -32,6 +34,7 @@ function DeleteSequencingFileButton({ sequenceId, fileId }) {
     onSuccess: () => {
       addAlert({ message: 'Sequencing file deleted successfully', severity: 'success' });
       queryClient.invalidateQueries({ queryKey: ['sequence', sequenceId, 'cloning_strategy'] });
+      queryClient.invalidateQueries({ queryKey: ['sequence', sequenceId, 'sequencing_files'] });
     },
     onError: (error) => {
       addAlert({
@@ -62,6 +65,7 @@ function SequencingFileSectionActions({ sequencingFiles, databaseId, onSeeAlignm
     onSuccess: () => {
       addAlert({ message: 'Sequencing files submitted successfully', severity: 'success' });
       queryClient.invalidateQueries({ queryKey: ['sequence', databaseId, 'cloning_strategy'] });
+      queryClient.invalidateQueries({ queryKey: ['sequence', databaseId, 'sequencing_files'] });
     },
     onError: (error) => {
       addAlert({
@@ -107,11 +111,7 @@ function SequenceDetailPage() {
     downloadBlob(file, file.name);
   }
 
-  const {
-    data: data,
-    isLoading: isLoading,
-    error: error,
-  } = useQuery({
+  const { data: data, isLoading: isLoading, error: error} = useQuery({
     retry: false,
     queryKey: ['sequence', id, 'cloning_strategy'],
     queryFn: async () => {
@@ -124,12 +124,29 @@ function SequenceDetailPage() {
       const sequenceModel = cloningStrategy.sequences.find((sequence) => sequence.id === parentSource.id);
       const parentSequenceIds = cloningStrategy.sources.map((source) => source.database_id).filter((dbId) => dbId !== id);
       const parentSequencesData = await Promise.all(parentSequenceIds.map((sequenceId) => openCloningDBHttpClient.get(endpoints.sequence(sequenceId))));
-      const sequencingFiles = await getSequencingFiles(id);
-      return { parentSequences : parentSequencesData.map((r) => r.data), parentSource, sequenceModel, sequenceInDb, children, sequencingFiles };
+      return { parentSequences : parentSequencesData.map((r) => r.data), parentSource, sequenceModel, sequenceInDb, children };
     },
     enabled: Boolean(id),
   });
-  const { parentSequences, parentSource, sequenceModel, sequenceInDb, children, sequencingFiles } = React.useMemo(() => data ?? {}, [data]);
+  const sequencingFilesQuery = useQuery({
+    retry: false,
+    queryKey: ['sequence', id, 'sequencing_files'],
+    queryFn: () => getSequencingFiles(id),
+    enabled: Boolean(id),
+  });
+  const primersQuery = useQuery({
+    retry: false,
+    queryKey: ['sequence', id, 'primers'],
+    queryFn: async () => {
+      const { data: primers } = await openCloningDBHttpClient.get(endpoints.sequencePrimers(id));
+      return { templates: primers.templates, products: primers.products };
+    },
+    enabled: Boolean(id),
+  });
+  const { data: primers } = primersQuery;
+
+  const { data: sequencingFiles = [] } = sequencingFilesQuery;
+  const { parentSequences, parentSource, sequenceModel, sequenceInDb, children } = React.useMemo(() => data ?? {}, [data]);
   const sequenceData = React.useMemo(() => sequenceModel ? convertToTeselaJson(sequenceModel) : null, [sequenceModel]);
   const tags = React.useMemo(() => sequenceInDb?.tags ?? [], [sequenceInDb]);
 
@@ -155,7 +172,7 @@ function SequenceDetailPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequence'}</Alert>;
 
   return (
-    <PageContainer>
+    <PageContainer sx={{p: 5}}>
       <Box sx={{ position: 'relative'}}>
         <Box sx={{ position: 'absolute', top: 0, right: 0, fontFamily: 'monospace' }}>
           {sequenceInDb?.seguid}
@@ -198,6 +215,17 @@ function SequenceDetailPage() {
         </DetailPageSection>
       )}
 
+      <QueryStatusWrapper queryResult={primersQuery}>
+        {primers.templates.length > 0 || primers.products.length > 0 && (
+          <DetailPageSection title="Linked primers">
+            <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
+              <PrimersTable primers={[...primers.templates, ...primers.products]} withCheckbox={false} />
+            </TableContainer>
+          </DetailPageSection>
+        )}
+      </QueryStatusWrapper>
+
+
       <DetailPageSection title="Sequencing files" actions={
         <SequencingFileSectionActions
           sequencingFiles={sequencingFiles}
@@ -206,24 +234,24 @@ function SequenceDetailPage() {
           alignmentLoading={handleSeeAlignmentsMutation.isPending || alignmentMutation.isPending}
         />
       }>
-        <List sx={{ margin: 0, paddingLeft: 2 }}>
-          {sequencingFiles.map((file) => (
-            <ListItem key={file.name} disableGutters sx={{ pl: 0 }}>
-              <DeleteSequencingFileButton sequenceId={id} fileId={file.id} />
-              <IconButton onClick={() => onGetFile(file.getFile)}><DownloadIcon /></IconButton>
-              <ListItemText primary={file.name} />
-            </ListItem>
-          ))}
-        </List>
-        { sequencingFiles.length === 0 && (
-          <Typography color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <QueryStatusWrapper queryResult={sequencingFilesQuery}>
+          <List sx={{ margin: 0, paddingLeft: 2 }}>
+            {sequencingFiles.map((file) => (
+              <ListItem key={file.name} disableGutters sx={{ pl: 0 }}>
+                <DeleteSequencingFileButton sequenceId={id} fileId={file.id} />
+                <IconButton onClick={() => onGetFile(file.getFile)}><DownloadIcon /></IconButton>
+                <ListItemText primary={file.name} />
+              </ListItem>
+            ))}
+          </List>
+          {sequencingFiles.length === 0 && (
+            <Typography color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             No sequencing files linked
-          </Typography>
-        )}
+            </Typography>
+          )}
+        </QueryStatusWrapper>
       </DetailPageSection>
-
-
-
+      
       <Box sx={{ mt: 2 }}>
         {sequenceData ? (
           <SequenceViewer sequenceData={sequenceData} alignmentData={alignmentMutation.data ?? null} />

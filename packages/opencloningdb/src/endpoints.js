@@ -4,6 +4,7 @@ const endpoints = {
   sequenceTextFile: (id) => `/sequence/${id}/text_file_sequence`,
   sequenceCloningStrategy: (id) => `/sequence/${id}/cloning_strategy`,
   sequenceChildren: (id) => `/sequence/${id}/children`,
+  sequencePrimers: (id) => `/sequence/${id}/primers`,
   sequenceSequencingFiles: (id) => `/sequence/${id}/sequencing_files`,
   sequenceSearch: '/sequence/search',
   sequencingFileDownload: (id) => `/sequencing_files/${id}/download`,
