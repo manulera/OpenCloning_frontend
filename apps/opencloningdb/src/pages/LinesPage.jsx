@@ -26,20 +26,7 @@ import TagChipList from '../components/TagChipList';
 import TagEntitiesButton from '../components/TagEntitiesButton';
 import TopButtonSection from '../components/TopButtonSection';
 import PageContainer from '../components/PageContainer';
-
-function SeqCell({ sils }) {
-  return (
-    sils.length ? (
-      <CommaSeparatorWrapper>
-        {sils.map((sil) => (
-          <SequenceInLineLink key={sil.id} {...sil} />
-        ))}
-      </CommaSeparatorWrapper>
-    ) : (
-      '—'
-    )
-  );
-}
+import LinesTable from '../components/LinesTable';
 
 const MIN_WIDTH = 150;
 
@@ -133,40 +120,7 @@ function LinesPage() {
         <TagEntitiesButton onSuccess={() => setSelectedIds(new Set())} selectedEntities={selectedEntities} entityType="lines" label="Lines" />
       </TopButtonSection>
       <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox" />
-              <TableCell>UID</TableCell>
-              <TableCell>Genotype</TableCell>
-              <TableCell>Plasmids</TableCell>
-              <TableCell>Tags</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items.map((line) => {
-              const alleles = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'allele') ?? [];
-              const plasmids = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'plasmid') ?? [];
-              return (
-                <TableRow key={line.id} hover>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      size="small"
-                      checked={selectedIds.has(line.id)}
-                      onChange={() => toggleRow(line.id)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <LineLink {...line} />
-                  </TableCell>
-                  <TableCell><SeqCell sils={alleles} /></TableCell>
-                  <TableCell><SeqCell sils={plasmids} /></TableCell>
-                  <TableCell><TagChipList tags={line.tags} /></TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <LinesTable lines={items} withCheckbox={true} selectedIds={selectedIds} toggleRow={toggleRow} />
         <TablePagination
           component="div"
           count={data?.total ?? 0}
