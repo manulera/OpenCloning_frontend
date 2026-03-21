@@ -16,11 +16,13 @@ function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequ
     if (type !== 'sequence') {
       return index.syntaxes;
     }
+    const sequencesIdAdded = index.sequences.map((sequence, index) => ({...sequence, id: index}));
     const prePendArray = multiple ? ['__all__'] : [];
     if (selectedCategory === '') {
-      return [...prePendArray, ...index.sequences];
+      return [...prePendArray, ...sequencesIdAdded];
     }
-    return [...prePendArray, ...index.sequences.filter((sequence) => sequence.categories?.includes(selectedCategory))];
+
+    return [...prePendArray, ...sequencesIdAdded.filter((sequence) => sequence.categories?.includes(selectedCategory))];
   }, [type, index, selectedCategory, multiple]);
 
   const categoryOptions = React.useMemo(() => {
@@ -112,6 +114,7 @@ function ServerStaticFileSelect({ onFileSelected, multiple = false, type = 'sequ
             options={options}
             value={selectedOptions}
             onChange={onOptionsChange}
+            getOptionKey={(option) => option.id || option}
             getOptionLabel={(option) => (option === '__all__' ? 'Select all' : option?.name || option?.path || '')}
             disableCloseOnSelect={multiple}
             renderInput={(params) => (

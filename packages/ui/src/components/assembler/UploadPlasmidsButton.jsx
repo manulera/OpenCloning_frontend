@@ -39,6 +39,7 @@ export function UploadPlasmidsFromLocalServerButton({ handleFileChange }) {
   const onFileSelected = React.useCallback(async (files) => {
     try {
       await handleFileChange(files)
+      setDialogOpen(false)
     } catch (e) {
       setError(e.message)
     }
