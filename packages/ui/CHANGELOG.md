@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.7.2
+
+### Patch Changes
+
+- [#675](https://github.com/manulera/OpenCloning_frontend/pull/675) [`1f08cca`](https://github.com/manulera/OpenCloning_frontend/commit/1f08ccab8422d9cf9a9355d2770fa8997e53c96b) Thanks [@manulera](https://github.com/manulera)! - Improve loading files from server in Assembler
+
+- Updated dependencies []:
+  - @opencloning/store@1.7.2
+  - @opencloning/utils@1.7.2
+
 ## 1.7.1
 
 ### Patch Changes
