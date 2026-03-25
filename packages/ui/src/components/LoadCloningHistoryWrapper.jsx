@@ -124,33 +124,59 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         }
         // If there are sequences in the cloning state, give the option to merge or replace
 
+        return;
         // You cannot drop a zip or json file and a sequence file at the same time
       } else if (files.some((file) => file.name.endsWith('.json') || file.name.endsWith('.zip'))) {
         addAlert({
           message: 'Drop either a single JSON/zip file or multiple sequence files. Not both.',
           severity: 'error',
         });
+        return;
         // Process a bunch of sequence files
-      } else {
-        try {
-          const { sources, sequences, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
-          batch(() => {
-            // If there is only one source and it is empty, delete it
-            if (cloningState.sources.length === 1 && cloningState.sources[0].type === null) {
-              dispatch(deleteSourceAndItsChildren(cloningState.sources[0].id));
-            }
-            for (let i = 0; i < sources.length; i += 1) {
-              dispatch(addSourceAndItsOutputSequence({ source: sources[i], sequence: sequences[i] }));
-            }
-            warnings.forEach((warning) => addAlert({ message: warning, severity: 'warning' }));
-          });
-        } catch (e) {
-          console.error(e);
+      } else if (files.length === 1 && files[0].name.endsWith('.dna')) {
+        const url = backendRoute('read_snapgene_history');
+        const formData = new FormData();
+        formData.append('file', files[0]);
+        const config = {
+          headers: {
+            'content-type': 'multipart/form-data',
+          },
+        };
+        const resp = await httpClient.post(url, formData, config);
+        // If it fails to parse the history, just fall back to processing the sequence files
+        if (resp.status === 200) {
+          const { data: cloningStrategy } = resp;
+          // Always merge SnapGene history-derived state with the current state, no prompt
+          const { mergedState } = mergeStates(cloningStrategy, cloningState);
+          dispatch(setCloningState(mergedState));
+          return;
+
+        } else {
           addAlert({
-            message: e.message,
+            message: 'Failed to parse the history from the SnapGene file, will only read the sequence.',
             severity: 'error',
           });
+          return;
         }
+      }
+      try {
+        const { sources, sequences, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
+        batch(() => {
+          // If there is only one source and it is empty, delete it
+          if (cloningState.sources.length === 1 && cloningState.sources[0].type === null) {
+            dispatch(deleteSourceAndItsChildren(cloningState.sources[0].id));
+          }
+          for (let i = 0; i < sources.length; i += 1) {
+            dispatch(addSourceAndItsOutputSequence({ source: sources[i], sequence: sequences[i] }));
+          }
+          warnings.forEach((warning) => addAlert({ message: warning, severity: 'warning' }));
+        });
+      } catch (e) {
+        console.error(e);
+        addAlert({
+          message: e.message,
+          severity: 'error',
+        });
       }
     };
     processFileSubmission();
