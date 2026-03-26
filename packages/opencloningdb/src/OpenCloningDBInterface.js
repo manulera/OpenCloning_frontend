@@ -100,9 +100,9 @@ export default {
   // Name of the database interface
   name: 'OpenCloningDB',
   // Returns a link to the sequence in the database
-  getSequenceLink: (databaseId) => `${baseUrl}/sequence/${databaseId}`,
+  getSequenceLink: (databaseId) => `sequences/${databaseId}`,
   // Returns a link to the primer in the database
-  getPrimerLink: (databaseId) => `${baseUrl}/primer/${databaseId}`,
+  getPrimerLink: (databaseId) => `primers/${databaseId}`,
   // Component for selecting and loading sequence files from the database
   GetSequenceFileAndDatabaseIdComponent,
   // Component for selecting and loading primers from the database

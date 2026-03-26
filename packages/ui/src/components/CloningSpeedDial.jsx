@@ -1,9 +1,9 @@
 import React from 'react'
 import { Box, SpeedDial, SpeedDialAction } from '@mui/material'
-import { Add as AddIcon, Build as BuildIcon, Search as SearchIcon, PushPin as PushPinIcon, Sync as SyncIcon } from '@mui/icons-material'
+import { Build as BuildIcon, Sync as SyncIcon } from '@mui/icons-material'
 import useDatabase from '../hooks/useDatabase';
-import { batch, useDispatch, useStore } from 'react-redux';
-import { getSequenceIdsThatAreInput, getSequenceIdsThatAreNotInput, getSequencesNotInDatabase } from '@opencloning/utils/network';
+import { useDispatch, useStore } from 'react-redux';
+import { getSequencesNotInDatabase } from '@opencloning/utils/network';
 import { cloningActions } from '@opencloning/store/cloning';
 import useCloningAlerts from '../hooks/useCloningAlerts';
 import { cloneDeep } from 'lodash-es';
@@ -80,7 +80,7 @@ function useLocateSequencesInDatabaseAction() {
     //   }
     //   console.log(result);
     // }
-  }, [database, store, dispatch, addAlert]);
+  }, [database, store, dispatch, addAlert, httpClient, url]);
   return main;
 }
 function CloningSpeedDial() {
@@ -90,7 +90,7 @@ function CloningSpeedDial() {
     // <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
     <Box sx={{ position: 'fixed', bottom: 10, left: 10, zIndex: 1000 }}>
       <SpeedDial icon={<BuildIcon />} ariaLabel="Cloning tools" direction="up" >
-        { Boolean(database.locateSequenceInDatabase) && <SpeedDialAction icon={<SyncIcon />} tooltipTitle="Synchronize sequences with database" onClick={locateSequencesInDatabaseAction} /> }
+        { database && Boolean(database.locateSequenceInDatabase) && <SpeedDialAction icon={<SyncIcon />} tooltipTitle="Synchronize sequences with database" onClick={locateSequencesInDatabaseAction} /> }
       </SpeedDial>
 
     </Box>
