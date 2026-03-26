@@ -1,5 +1,17 @@
 # opencloning
 
+## 1.5.3
+
+### Patch Changes
+
+- [#677](https://github.com/manulera/OpenCloning_frontend/pull/677) [`04827d6`](https://github.com/manulera/OpenCloning_frontend/commit/04827d6184c5a1276814f60ef3c3fee2c832a6fd) Thanks [@manulera](https://github.com/manulera)! - Now loads history from Snapgene files
+
+- Updated dependencies [[`04827d6`](https://github.com/manulera/OpenCloning_frontend/commit/04827d6184c5a1276814f60ef3c3fee2c832a6fd)]:
+  - @opencloning/ui@1.7.3
+  - @opencloning/opencloning-elabftw@1.7.3
+  - @opencloning/store@1.7.3
+  - @opencloning/utils@1.7.3
+
 ## 1.5.2
 
 ### Patch Changes
