@@ -10,6 +10,7 @@ import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
 import { getVerificationFileName } from '@opencloning/utils/readNwrite';
 import { isEqual } from 'lodash-es';
+import useSnapgeneHistoryEndpoint from '../hooks/useSnapgeneHistoryEndpoint';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;
 
@@ -64,7 +65,7 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
   const store = useStore();
   const validateState = useValidateState();
   const httpClient = useHttpClient();
-
+  const { loadSnapgeneHistory } = useSnapgeneHistoryEndpoint();
   const [fileLoaderFunctions, setFileLoaderFunctions] = React.useState(null);
 
   React.useEffect(() => {
@@ -134,28 +135,8 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         return;
         // Process a bunch of sequence files
       } else if (files.length === 1 && files[0].name.endsWith('.dna')) {
-        const url = backendRoute('read_snapgene_history');
-        const formData = new FormData();
-        formData.append('file', files[0]);
-        const config = {
-          headers: {
-            'content-type': 'multipart/form-data',
-          },
-        };
-        const resp = await httpClient.post(url, formData, config);
-        // If it fails to parse the history, just fall back to processing the sequence files
-        if (resp.status === 200) {
-          const { data: cloningStrategy } = resp;
-          // Always merge SnapGene history-derived state with the current state, no prompt
-          const { mergedState } = mergeStates(cloningStrategy, cloningState);
-          dispatch(setCloningState(mergedState));
-          return;
-
-        } else {
-          addAlert({
-            message: 'Failed to parse the history from the SnapGene file, will only read the sequence.',
-            severity: 'error',
-          });
+        const success = await loadSnapgeneHistory(files[0]);
+        if (success) {
           return;
         }
       }

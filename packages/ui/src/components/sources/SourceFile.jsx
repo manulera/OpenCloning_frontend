@@ -7,6 +7,7 @@ import { cloningActions } from '@opencloning/store/cloning';
 import { loadFilesToSessionStorage, loadHistoryFile, updateVerificationFileNames } from '@opencloning/utils/readNwrite';
 import useValidateState from '../../hooks/useValidateState';
 import { mergeStates, getGraftSequenceId, graftState } from '@opencloning/utils/network';
+import useSnapgeneHistoryEndpoint from '../../hooks/useSnapgeneHistoryEndpoint';
 
 const { deleteSourceAndItsChildren, restoreSource, setState: setCloningState } = cloningActions;
 
@@ -30,7 +31,7 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
   const dispatch = useDispatch();
   const validateState = useValidateState();
   const store = useStore();
-
+  const { loadSnapgeneHistory } = useSnapgeneHistoryEndpoint();
   const onChange = async (event) => {
     setAlert(null);
     const files = Array.from(event.target.files);
@@ -93,6 +94,13 @@ function SourceFile({ source, requestStatus, sendPostRequest }) {
         }
       });
       return;
+    }
+    if (fileFormat === 'snapgene' || (fileFormat === '' && files[0].name.endsWith('.dna'))) {
+      console.log('loading snapgene history');
+      const success = await loadSnapgeneHistory(files[0], source.id);
+      if (success) {
+        return;
+      }
     }
     const requestData = new FormData();
     requestData.append('file', files[0]);

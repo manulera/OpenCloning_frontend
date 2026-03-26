@@ -1,4 +1,4 @@
-import { loadExample } from '../common_functions';
+import { closeAlerts, loadExample } from '../common_functions';
 
 describe('Test drag and drop functionality', () => {
   beforeEach(() => {
@@ -88,5 +88,20 @@ describe('Test drag and drop functionality', () => {
 
     cy.get('div.cloning-tab-pannel').contains('Homologous recombination').should('not.exist');
     cy.get('div.cloning-tab-pannel').contains('CRISPR HDR with').should('exist');
+  });
+  it('Can load a SnapGene .dna file with history', () => {
+    cy.get('div.cloning-history').selectFile('cypress/test_files/snapgene_history/gibson_assembly.dna', { action: 'drag-drop' });
+    cy.get('li', { timeout: 20000 }).contains('Gibson');
+    cy.get('#global-error-message-wrapper .MuiAlert-message').should('not.exist');
+  });
+  it('Can load a SnapGene .dna file with history and warning', () => {
+    cy.get('div.cloning-history').selectFile('cypress/test_files/snapgene_history/circularize.dna', { action: 'drag-drop' });
+    cy.get('li', { timeout: 20000 }).contains('Circularization of fragment');
+    cy.get('#global-error-message-wrapper').contains('SnapGene parsing warning');
+  });
+  it('Falls back to sequence when SnapGene .dna history fails', () => {
+    cy.get('div.cloning-history').selectFile('cypress/test_files/snapgene_history/topo_ta_cloning.dna', { action: 'drag-drop' });
+    cy.get('#global-error-message-wrapper', { timeout: 20000 }).contains('Failed to parse the history');
+    cy.get('li#source-1', { timeout: 20000 }).contains('Read from file');
   });
 });
