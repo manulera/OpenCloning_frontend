@@ -175,9 +175,19 @@ describe('File Source', () => {
     cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('apps/opencloning/public/examples/ase1.gb', { force: true });
     cy.get('li#source-1 .MuiAlert-message').contains('Input should be greater than or equal');
   });
-  it('works when loading a SnapGene file', () => {
-    clickMultiSelectOption('File format', 'SnapGene', 'li#source-1');
-    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/addgene-plasmid-39296-sequence-49545.dna', { force: true });
-    cy.get('li#source-1').contains('Read from file');
+  it('loads SnapGene history without warning', () => {
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/snapgene_history/gibson_assembly.dna', { force: true });
+    cy.get('li', { timeout: 20000 }).contains('Gibson');
+    cy.get('#global-error-message-wrapper .MuiAlert-message').should('not.exist');
+  });
+  it('loads SnapGene history with warning', () => {
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/snapgene_history/circularize.dna', { force: true });
+    cy.get('li', { timeout: 20000 }).contains('Circularization of fragment');
+    cy.get('#global-error-message-wrapper').contains('SnapGene parsing warning');
+  });
+  it('falls back to sequence when SnapGene history fails', () => {
+    cy.get('li#source-1 form.submit-sequence-file input').last().selectFile('cypress/test_files/snapgene_history/topo_ta_cloning.dna', { force: true });
+    cy.get('#global-error-message-wrapper', { timeout: 20000 }).contains('Failed to parse the history');
+    cy.get('li#source-1', { timeout: 20000 }).contains('Read from file');
   });
 });

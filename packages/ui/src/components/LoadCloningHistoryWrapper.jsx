@@ -10,6 +10,7 @@ import HistoryLoadedDialog from './HistoryLoadedDialog';
 import useHttpClient from '../hooks/useHttpClient';
 import { getVerificationFileName } from '@opencloning/utils/readNwrite';
 import { isEqual } from 'lodash-es';
+import useSnapgeneHistoryEndpoint from '../hooks/useSnapgeneHistoryEndpoint';
 
 const { setState: setCloningState, deleteSourceAndItsChildren, addSourceAndItsOutputSequence } = cloningActions;
 
@@ -64,7 +65,7 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
   const store = useStore();
   const validateState = useValidateState();
   const httpClient = useHttpClient();
-
+  const { loadSnapgeneHistory } = useSnapgeneHistoryEndpoint();
   const [fileLoaderFunctions, setFileLoaderFunctions] = React.useState(null);
 
   React.useEffect(() => {
@@ -124,33 +125,39 @@ function LoadCloningHistoryWrapper({ fileList, clearFiles, children }) {
         }
         // If there are sequences in the cloning state, give the option to merge or replace
 
+        return;
         // You cannot drop a zip or json file and a sequence file at the same time
       } else if (files.some((file) => file.name.endsWith('.json') || file.name.endsWith('.zip'))) {
         addAlert({
           message: 'Drop either a single JSON/zip file or multiple sequence files. Not both.',
           severity: 'error',
         });
+        return;
         // Process a bunch of sequence files
-      } else {
-        try {
-          const { sources, sequences, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
-          batch(() => {
-            // If there is only one source and it is empty, delete it
-            if (cloningState.sources.length === 1 && cloningState.sources[0].type === null) {
-              dispatch(deleteSourceAndItsChildren(cloningState.sources[0].id));
-            }
-            for (let i = 0; i < sources.length; i += 1) {
-              dispatch(addSourceAndItsOutputSequence({ source: sources[i], sequence: sequences[i] }));
-            }
-            warnings.forEach((warning) => addAlert({ message: warning, severity: 'warning' }));
-          });
-        } catch (e) {
-          console.error(e);
-          addAlert({
-            message: e.message,
-            severity: 'error',
-          });
+      } else if (files.length === 1 && files[0].name.endsWith('.dna')) {
+        const success = await loadSnapgeneHistory(files[0]);
+        if (success) {
+          return;
         }
+      }
+      try {
+        const { sources, sequences, warnings } = await processSequenceFiles(files, backendRoute, httpClient);
+        batch(() => {
+          // If there is only one source and it is empty, delete it
+          if (cloningState.sources.length === 1 && cloningState.sources[0].type === null) {
+            dispatch(deleteSourceAndItsChildren(cloningState.sources[0].id));
+          }
+          for (let i = 0; i < sources.length; i += 1) {
+            dispatch(addSourceAndItsOutputSequence({ source: sources[i], sequence: sequences[i] }));
+          }
+          warnings.forEach((warning) => addAlert({ message: warning, severity: 'warning' }));
+        });
+      } catch (e) {
+        console.error(e);
+        addAlert({
+          message: e.message,
+          severity: 'error',
+        });
       }
     };
     processFileSubmission();
