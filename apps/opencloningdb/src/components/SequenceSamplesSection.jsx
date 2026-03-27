@@ -1,18 +1,11 @@
 import React from 'react';
-import { Typography, List, ListItem, ListItemText } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { AddCircle as AddCircleIcon, SwapHoriz as SwapHorizIcon } from '@mui/icons-material';
 import DetailPageSection from './DetailPageSection';
 import DetailPageSectionAction from './DetailPageSectionAction';
 import CreateSampleDialog from './CreateSampleDialog';
 import TransferSampleDialog from './TransferSampleDialog';
-
-function SequenceSamplesSectionActions({ onCreateOpen, onTransferOpen }) {
-  return (
-    <>
-      
-    </>
-  );
-}
+import SampleUidBadge from './SampleUidBadge';
 
 function SequenceSamplesSection({ sequenceId, sampleUids }) {
   const [createOpen, setCreateOpen] = React.useState(false);
@@ -21,7 +14,7 @@ function SequenceSamplesSection({ sequenceId, sampleUids }) {
   return (
     <>
       <DetailPageSection
-        title="Sequence samples"
+        title="Sequence sample UIDs"
         actions={
           <>
             <DetailPageSectionAction icon={<AddCircleIcon />} onClick={() => setCreateOpen(true)} title="Create new UIDs" />
@@ -30,13 +23,11 @@ function SequenceSamplesSection({ sequenceId, sampleUids }) {
         }
       >
         {sampleUids.length > 0 ? (
-          <List sx={{ margin: 0, paddingLeft: 2 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {sampleUids.map((uid) => (
-              <ListItem key={uid} disableGutters sx={{ pl: 0 }}>
-                <ListItemText primary={uid} />
-              </ListItem>
+              <SampleUidBadge key={uid} uid={uid} />
             ))}
-          </List>
+          </Box>
         ) : (
           <Typography color="text.secondary">
             No UIDs linked
