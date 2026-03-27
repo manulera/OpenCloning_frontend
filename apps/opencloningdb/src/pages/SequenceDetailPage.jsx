@@ -22,6 +22,7 @@ import { ImportSequencingFilesInput } from '@opencloning/ui/components/verificat
 import useAppAlerts from '../hooks/useAppAlerts';
 import useSequencingAlignment from '@opencloning/ui/hooks/useSequencingAlignment';
 import { QueryStatusWrapper } from '@opencloning/ui';
+import SequenceSamplesSection from '../components/SequenceSamplesSection';
 
 const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInterface;
 
@@ -196,6 +197,7 @@ function SequenceDetailPage() {
           Add to Design Tab
         </AddToCloningButton>
       </TopButtonSection>
+      <SequenceSamplesSection sequenceId={id} sampleUids={sequenceInDb?.sample_uids ?? []} />
       <DetailPageSection title="Provenance">
         <Typography color="text.secondary" sx={{ mb: 1 }}>
           {parentSource.type}
