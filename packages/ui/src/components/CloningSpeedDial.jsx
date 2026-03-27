@@ -49,13 +49,13 @@ function useLocateSequencesInDatabaseAction() {
       if (results[i].length === 0) {
         continue;
       }
-
-      const newSequence = { ...results[i][0].sequence, id: sequences[i].id };
-      const newSource = { type: 'DatabaseSource', database_id: results[i][0].sequence_ref.id, input: [], id: sequences[i].id };
-      sources = sources.map((s) => s.id === sequences[i].id ? newSource : s);
-      sequences = sequences.map((s) => s.id === sequences[i].id ? newSequence : s);
+      const localId = sequencesNotInDb[i].id;
+      const newSequence = { ...results[i][0].sequence, id: localId };
+      const newSource = { type: 'DatabaseSource', database_id: results[i][0].sequence_ref.id, input: [], id: localId };
+      sources = sources.map((s) => s.id === localId ? newSource : s);
+      sequences = sequences.map((s) => s.id === localId ? newSequence : s);
       addAlert({
-        message: `Sequence ${sequences[i].id} located in database`,
+        message: `Sequence ${localId} located in database`,
         severity: 'success',
       });
     }
