@@ -17,9 +17,9 @@ import useDatabase from '../hooks/useDatabase';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
-const SequenceContent = React.memo(({ sequenceId, sequenceIsTemplate }) => {
+function SequenceContent({ sequenceId, sequenceIsTemplate }) {
   const database = useDatabase();
-  const isSavedToDatabase = database && useSelector((state) => Boolean(getSourceDatabaseId(state.cloning.sources, sequenceId)));
+  const isSavedToDatabase = useSelector((state) => database && Boolean(getSourceDatabaseId(state.cloning.sources, sequenceId)));
   return (
     <span className="tf-nc" style={{ borderColor: isSavedToDatabase ? 'green' : 'default' }}>
       <span className="node-text">
@@ -35,7 +35,9 @@ const SequenceContent = React.memo(({ sequenceId, sequenceIsTemplate }) => {
       </span>
     </span>
   );
-});
+};
+
+const MemoizedSequenceContent = React.memo(SequenceContent);
 
 function SequenceWrapper({ children, sequenceId, sequenceIsTemplate }) {
   if (sequenceId === null) {
@@ -43,7 +45,7 @@ function SequenceWrapper({ children, sequenceId, sequenceIsTemplate }) {
   }
   return (
     <li key={sequenceId} id={`sequence-${sequenceId}`} className="sequence-node">
-      <SequenceContent {...{ sequenceId, sequenceIsTemplate }} />
+      <MemoizedSequenceContent {...{ sequenceId, sequenceIsTemplate }} />
       <ul>
         {children}
       </ul>
@@ -116,36 +118,36 @@ function NetWorkNode({ sourceId }) {
               {sourceId}
             </div>
             { (!sourceIsTemplate && sourceInput.length > 0 && sequenceId) && (
-            <div className="before-node before-node-visibility">
-              <Tooltip
-                arrow
-                title={visibilityIconToolTip}
-                placement="left"
-              >
-                <div ref={tooltipRef}>
-                  <Icon onClick={onVisibilityClick} style={{ color: 'grey' }} />
-                </div>
-              </Tooltip>
-            </div>
+              <div className="before-node before-node-visibility">
+                <Tooltip
+                  arrow
+                  title={visibilityIconToolTip}
+                  placement="left"
+                >
+                  <div ref={tooltipRef}>
+                    <Icon onClick={onVisibilityClick} style={{ color: 'grey' }} />
+                  </div>
+                </Tooltip>
+              </div>
             )}
             { (sourceIsTemplate && sourceInput.length > 0)
             && (
-            <div className="before-node before-node-sequence-in-between">
-              <Tooltip arrow title="Add sequence in between" placement={sourceInput.length > 1 ? 'top' : 'left'}>
-                <div>
-                  <AddCircleIcon onClick={() => { dispatch(addSequenceInBetween(sourceId)); }} color="success" />
-                </div>
-              </Tooltip>
-            </div>
+              <div className="before-node before-node-sequence-in-between">
+                <Tooltip arrow title="Add sequence in between" placement={sourceInput.length > 1 ? 'top' : 'left'}>
+                  <div>
+                    <AddCircleIcon onClick={() => { dispatch(addSequenceInBetween(sourceId)); }} color="success" />
+                  </div>
+                </Tooltip>
+              </div>
             )}
           </span>
         </Box>
         {parentSourceIds.length > 0 && (
-        <ul style={{ display: ancestorsHidden ? 'none' : undefined }}>
-          {parentSourceIds.map((id) => (
-            <MemoizedNetWorkNode sourceId={id} key={`node-${id}`} />
-          ))}
-        </ul>
+          <ul style={ancestorsHidden ? { visibility: 'hidden', height: 0, overflow: 'hidden' } : undefined}>
+            {parentSourceIds.map((id) => (
+              <MemoizedNetWorkNode sourceId={id} key={`node-${id}`} />
+            ))}
+          </ul>
         )}
       </li>
     </SequenceWrapper>
