@@ -31,7 +31,7 @@ function AppLayout() {
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', overflowX: 'auto' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ mr: 4, color: 'white' }}>
