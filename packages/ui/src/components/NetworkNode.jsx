@@ -94,7 +94,7 @@ function NetWorkNode({ sourceId }) {
     if (tooltipRef.current) {
       tooltipRef.current.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
     }
-  }, [ancestorsHidden, sourceId, sequenceId]);
+  }, [ancestorsHidden, sourceId, sequenceId, dispatch]);
 
   const Icon = ancestorsHidden ? VisibilityIcon : VisibilityOffIcon;
   const visibilityIconToolTip = ancestorsHidden ? 'Show ancestors' : 'Hide ancestors';
@@ -102,7 +102,7 @@ function NetWorkNode({ sourceId }) {
 
   return (
     <SequenceWrapper {...{ sequenceId, sequenceIsTemplate }}>
-      <li id={`source-${sourceId}`} className={`source-node ${ancestorsHidden ? 'hidden-ancestors' : ''}`}>
+      <li id={`source-${sourceId}`} className="source-node" style={{ marginBottom: ancestorsHidden ? '30px' : undefined }}>
         <Box component="span" className="tf-nc" style={{ borderColor: isSavedToDatabase ? 'green' : 'default' }}>
           <span className="node-text">
             <SourceBox {...{ sourceId }}>
@@ -141,7 +141,7 @@ function NetWorkNode({ sourceId }) {
           </span>
         </Box>
         {parentSourceIds.length > 0 && (
-        <ul className={ancestorsHidden ? 'hidden-ancestors' : ''}>
+        <ul style={{ display: ancestorsHidden ? 'none' : undefined }}>
           {parentSourceIds.map((id) => (
             <MemoizedNetWorkNode sourceId={id} key={`node-${id}`} />
           ))}

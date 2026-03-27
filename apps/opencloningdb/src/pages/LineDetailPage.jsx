@@ -108,7 +108,6 @@ function LineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  console.log(id)
   const { data: line, isLoading, error } = useQuery({
     queryKey: ['line', id],
     queryFn: async () => {
