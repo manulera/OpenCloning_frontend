@@ -3,6 +3,7 @@ import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@mui
 import { PrimerLink } from './EntityLinks';
 import TagChipList from './TagChipList';
 import SelectAllCheckbox from './SelectAllCheckbox';
+import SampleUidBadge from './SampleUidBadge';
 
 function PrimersTable({
   primers = [],
@@ -44,7 +45,7 @@ function PrimersTable({
                 />
               </TableCell>
             )}
-            <TableCell>{primer.uid ?? '—'}</TableCell>
+            <TableCell>{primer.uid ? <SampleUidBadge uid={primer.uid} /> : '—'}</TableCell>
             <TableCell>
               <PrimerLink id={primer.id} name={primer.name} />
             </TableCell>
