@@ -1,9 +1,10 @@
 import React from 'react';
-import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Box } from '@mui/material';
 import { SequenceLink } from './EntityLinks';
 import TagChipList from './TagChipList';
 import SequenceTypeChip from './SequenceTypeChip';
 import SelectAllCheckbox from './SelectAllCheckbox';
+import SampleUidBadge from './SampleUidBadge';
 
 function SequenceTable({
   sequences = [],
@@ -48,7 +49,13 @@ function SequenceTable({
               </TableCell>
             )}
             {showSampleUids && (
-              <TableCell>{seq.sample_uids?.join(', ') ?? '—'}</TableCell>
+              <TableCell>
+                {seq.sample_uids?.length > 0 ? (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {seq.sample_uids.map((uid) => <SampleUidBadge key={uid} uid={uid} />)}
+                  </Box>
+                ) : '—'}
+              </TableCell>
             )}
             <TableCell>
               <SequenceLink id={seq.id} name={seq.name} />
