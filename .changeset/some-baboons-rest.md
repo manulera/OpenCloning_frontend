@@ -1,5 +1,0 @@
----
-"opencloning": patch
----
-
-Fix Dockerfile

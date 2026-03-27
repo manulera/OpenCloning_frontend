@@ -1,5 +1,11 @@
 # opencloning
 
+## 1.5.4
+
+### Patch Changes
+
+- [#679](https://github.com/manulera/OpenCloning_frontend/pull/679) [`cd7a6d5`](https://github.com/manulera/OpenCloning_frontend/commit/cd7a6d5286913a26dc294ba6d0d753702d652851) Thanks [@manulera](https://github.com/manulera)! - Fix Dockerfile
+
 ## 1.5.3
 
 ### Patch Changes
