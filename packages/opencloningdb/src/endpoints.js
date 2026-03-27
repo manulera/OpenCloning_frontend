@@ -23,6 +23,9 @@ const endpoints = {
   tagPost: '/tag',
   tagUnlinkLine: (lineId, tagId) => `/line/${lineId}/tags/${tagId}`,
   tagUnlinkInputEntity: (inputEntityId, tagId) => `/input_entity/${inputEntityId}/tags/${tagId}`,
+  sequenceSamples: '/sequence_samples',
+  postSequenceSample: '/sequence_sample',
+  sequenceSample: (uid) => `/sequence_sample/${uid}`,
 };
 
 export default endpoints;
