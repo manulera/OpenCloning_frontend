@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Typography, CircularProgress, Alert, Box, IconButton, TableContainer, Paper } from '@mui/material';
+import { Typography, CircularProgress, Alert, Box, IconButton, TableContainer, Paper, Tooltip } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { convertToTeselaJson, downloadBlob, file2base64, getTeselaJsonFromBase64 } from '@opencloning/utils/readNwrite';
 import SequenceViewer from '@opencloning/ui/components/SequenceViewer';
@@ -14,7 +14,7 @@ import PrimersTable from '../components/PrimersTable';
 import PageContainer from '../components/PageContainer';
 import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
-import { List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
+import { List, ListItem, ListItemIcon } from '@mui/material';
 import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon, InsertDriveFile as InsertDriveFileIcon } from '@mui/icons-material';
 import DetailPageSectionAction from '../components/DetailPageSectionAction';
@@ -25,6 +25,29 @@ import { QueryStatusWrapper } from '@opencloning/ui';
 import SequenceSamplesSection from '../components/SequenceSamplesSection';
 
 const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInterface;
+
+function SequencingFileRow({ file, sequenceId, onGetFile }) {
+  return (
+    <ListItem disableGutters dense sx={{ pl: 1, mb: 0.5, borderLeft: '3px solid', borderColor: 'primary.light', display: 'flex', alignItems: 'center', '&:hover .file-actions': { opacity: 1 }, '& .file-actions': { opacity: 0, transition: 'opacity 0.15s' } }}>
+      <ListItemIcon sx={{ minWidth: 32, flexShrink: 0 }}>
+        <InsertDriveFileIcon fontSize="small" color="action" />
+      </ListItemIcon>
+      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem', flexShrink: 0 }}>{file.name}</Box>
+      <Box className="file-actions" sx={{ display: 'flex', alignItems: 'center', ml: 0.5 }}>
+        <Tooltip title="Download" placement="top" arrow>
+          <IconButton size="small" onClick={() => onGetFile(file.getFile)}>
+            <DownloadIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete" placement="top" arrow>
+          <span>
+            <DeleteSequencingFileButton sequenceId={sequenceId} fileId={file.id} />
+          </span>
+        </Tooltip>
+      </Box>
+    </ListItem>
+  );
+}
 
 function DeleteSequencingFileButton({ sequenceId, fileId }) {
   const { addAlert } = useAppAlerts();
@@ -47,10 +70,11 @@ function DeleteSequencingFileButton({ sequenceId, fileId }) {
 
   return (
     <IconButton
+      size="small"
       onClick={() => deleteSequencingFileMutation.mutate()}
       disabled={deleteSequencingFileMutation.isLoading}
     >
-      <DeleteIcon />
+      <DeleteIcon fontSize="small" />
     </IconButton>
   );
 }
@@ -239,29 +263,7 @@ function SequenceDetailPage() {
         <QueryStatusWrapper queryResult={sequencingFilesQuery}>
           <List disablePadding>
             {sequencingFiles.map((file) => (
-              <ListItem
-                key={file.name}
-                disableGutters
-                dense
-                sx={{
-                  pl: 1, mb: 0.5,
-                  borderLeft: '3px solid', borderColor: 'primary.light',
-                  '&:hover .file-actions': { opacity: 1 },
-                  '& .file-actions': { opacity: 0, transition: 'opacity 0.15s' },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                  <InsertDriveFileIcon fontSize="small" color="action" />
-                </ListItemIcon>
-                <ListItemText
-                  primary={file.name}
-                  primaryTypographyProps={{ fontFamily: 'monospace', fontSize: '0.875rem' }}
-                />
-                <Box className="file-actions" sx={{ display: 'flex', alignItems: 'center' }}>
-                  <IconButton size="small" onClick={() => onGetFile(file.getFile)}><DownloadIcon fontSize="small" /></IconButton>
-                  <DeleteSequencingFileButton sequenceId={id} fileId={file.id} />
-                </Box>
-              </ListItem>
+              <SequencingFileRow key={file.name} file={file} sequenceId={id} onGetFile={onGetFile} />
             ))}
           </List>
           {sequencingFiles.length === 0 && (
