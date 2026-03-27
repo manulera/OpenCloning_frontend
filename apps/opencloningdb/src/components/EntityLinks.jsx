@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { sampleUidBadgeSx } from './SampleUidBadge';
 
 function NavigateLink({ to, children, sx }) {
   const navigate = useNavigate();
@@ -43,7 +44,15 @@ export function PrimerLink({ id, name, sx }) {
 
 export function LineLink({ id, uid, sx }) {
   return (
-    <NavigateLink to={`/lines/${id}`} sx={sx}>
+    <NavigateLink
+      to={`/lines/${id}`}
+      sx={{
+        ...sampleUidBadgeSx,
+        textDecoration: 'none',
+        '&:hover': { bgcolor: 'action.selected' },
+        ...sx,
+      }}
+    >
       {uid ?? `Line ${id}`}
     </NavigateLink>
   );
