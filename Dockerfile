@@ -2,7 +2,7 @@
 # https://github.com/manulera/OpenCloning_frontend
 
 # Stage 1: Build the application
-FROM node:22-alpine3.22 AS builder
+FROM node:22.17.1-alpine3.22 AS builder
 WORKDIR /app
 
 # Copy everything (Yarn workspaces need the full structure)
@@ -17,14 +17,14 @@ ARG BASE_URL="/"
 RUN yarn build --base "$BASE_URL"
 
 # Stage 2: Create a lightweight production image
-FROM node:22-alpine3.22
+FROM node:22.17.1-alpine3.22
 WORKDIR /build
 COPY --from=builder /app/apps/opencloning/build .
 
 # Install envsubst (to create config.json from config.env.json)
 RUN apk add --no-cache envsubst
-# Update npm to latest version and remove cache
-RUN npm update -g npm && npm cache clean --force
+# Remove npm cache
+RUN npm cache clean --force
 COPY ./docker_entrypoint.sh /build/docker_entrypoint.sh
 ENV BACKEND_URL=http://127.0.0.1:8000
 ENV DATABASE=""
