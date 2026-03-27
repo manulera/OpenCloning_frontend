@@ -14,9 +14,9 @@ import PrimersTable from '../components/PrimersTable';
 import PageContainer from '../components/PageContainer';
 import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
-import { List, ListItem, ListItemText } from '@mui/material';
+import { List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
-import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Download as DownloadIcon, Visibility as VisibilityIcon, AddCircle as AddCircleIcon, Delete as DeleteIcon, InsertDriveFile as InsertDriveFileIcon } from '@mui/icons-material';
 import DetailPageSectionAction from '../components/DetailPageSectionAction';
 import { ImportSequencingFilesInput } from '@opencloning/ui/components/verification';
 import useAppAlerts from '../hooks/useAppAlerts';
@@ -237,19 +237,35 @@ function SequenceDetailPage() {
         />
       }>
         <QueryStatusWrapper queryResult={sequencingFilesQuery}>
-          <List sx={{ margin: 0, paddingLeft: 2 }}>
+          <List disablePadding>
             {sequencingFiles.map((file) => (
-              <ListItem key={file.name} disableGutters sx={{ pl: 0 }}>
-                <DeleteSequencingFileButton sequenceId={id} fileId={file.id} />
-                <IconButton onClick={() => onGetFile(file.getFile)}><DownloadIcon /></IconButton>
-                <ListItemText primary={file.name} />
+              <ListItem
+                key={file.name}
+                disableGutters
+                dense
+                sx={{
+                  pl: 1, mb: 0.5,
+                  borderLeft: '3px solid', borderColor: 'primary.light',
+                  '&:hover .file-actions': { opacity: 1 },
+                  '& .file-actions': { opacity: 0, transition: 'opacity 0.15s' },
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 32 }}>
+                  <InsertDriveFileIcon fontSize="small" color="action" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={file.name}
+                  primaryTypographyProps={{ fontFamily: 'monospace', fontSize: '0.875rem' }}
+                />
+                <Box className="file-actions" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton size="small" onClick={() => onGetFile(file.getFile)}><DownloadIcon fontSize="small" /></IconButton>
+                  <DeleteSequencingFileButton sequenceId={id} fileId={file.id} />
+                </Box>
               </ListItem>
             ))}
           </List>
           {sequencingFiles.length === 0 && (
-            <Typography color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            No sequencing files linked
-            </Typography>
+            <Typography color="text.secondary">No sequencing files linked</Typography>
           )}
         </QueryStatusWrapper>
       </DetailPageSection>

@@ -80,7 +80,7 @@ function CreateSampleDialog({ sequenceId, open, onClose }) {
                 />
               </FormControl>
               {rows.length > 1 && (
-                <IconButton onClick={() => removeRow(row.id)} size="small" sx={{ pb: 3 }}>
+                <IconButton onClick={() => removeRow(row.id)} size="small" sx={{ mb: 3 }}>
                   <DeleteIcon />
                 </IconButton>
               )}
