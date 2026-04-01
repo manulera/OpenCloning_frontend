@@ -5,20 +5,20 @@ import {
   setUnauthorizedHandler,
   openCloningDBHttpClient,
   endpoints,
-  setWorkspaceHeader,
-  clearWorkspaceHeader,
 } from '@opencloning/opencloningdb';
-import { setUser, setWorkspaceId, setWorkspaceName, setWorkspaceRole, clearUser } from '../store/authSlice';
+import { setUser, clearUser } from '../store/authSlice';
 import { useQueryClient } from '@tanstack/react-query';
+import useChangeWorkspace from './useChangeWorkspace';
 
 export default function useAuthBootstrap() {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { changeWorkspace, clearWorkspace } = useChangeWorkspace();
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
-      clearWorkspaceHeader();
+      clearWorkspace();
       queryClient.clear();
       globalThis.localStorage.removeItem('token');
       dispatch(clearUser());
@@ -35,13 +35,9 @@ export default function useAuthBootstrap() {
         })
         .then(({ data: workspaces }) => {
           const workspace = workspaces[0];
-          const id = workspace.id;
-          setWorkspaceHeader(id);
-          dispatch(setWorkspaceId(id));
-          dispatch(setWorkspaceName(workspace.name));
-          dispatch(setWorkspaceRole(workspace.role));
+          changeWorkspace(workspace);
         })
         .catch(() => globalThis.localStorage.removeItem('token'));
     }
-  }, [dispatch, queryClient]);
+  }, [dispatch, queryClient, navigate, changeWorkspace, clearWorkspace]);
 }

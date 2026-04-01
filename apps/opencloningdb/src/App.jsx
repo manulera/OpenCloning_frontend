@@ -9,9 +9,10 @@ import AppAlerts from './components/AppAlerts';
 import AppBarUserMenu from './components/AppBarUserMenu';
 import SwitchWorkspaceDialog from './components/SwitchWorkspaceDialog';
 import RequireAuth from './components/RequireAuth';
-import { OpenCloningDBInterface, clearWorkspaceHeader } from '@opencloning/opencloningdb';
+import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
 import { clearUser } from './store/authSlice';
 import useAuthBootstrap from './hooks/useAuthBootstrap';
+import useChangeWorkspace from './hooks/useChangeWorkspace';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
 import DesignPage from './pages/DesignPage';
@@ -38,13 +39,14 @@ function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { clearWorkspace } = useChangeWorkspace();
   const user = useSelector((state) => state.auth.user);
-  const workspaceName = useSelector((state) => state.auth.workspaceName);
+  const workspaceName = useSelector((state) => state.auth.workspace?.name);
   const [isSwitchWorkspaceDialogOpen, setIsSwitchWorkspaceDialogOpen] = useState(false);
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? false;
 
   function handleLogout() {
-    clearWorkspaceHeader();
+    clearWorkspace();
     queryClient.clear();
     globalThis.localStorage.removeItem('token');
     dispatch(clearUser());

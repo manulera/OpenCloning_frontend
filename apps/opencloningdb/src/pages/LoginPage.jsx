@@ -3,8 +3,9 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
-import { setUser, setWorkspaceId, setWorkspaceName } from '../store/authSlice';
-import { openCloningDBHttpClient, endpoints, setWorkspaceHeader } from '@opencloning/opencloningdb';
+import { setUser } from '../store/authSlice';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import useChangeWorkspace from '../hooks/useChangeWorkspace';
 
 async function loginAndGetUser(email, password) {
   const body = new URLSearchParams({ username: email, password });
@@ -19,6 +20,7 @@ async function loginAndGetUser(email, password) {
 
 export default function LoginPage() {
   const dispatch = useDispatch();
+  const { changeWorkspace } = useChangeWorkspace();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname ?? '/sequences';
@@ -29,10 +31,8 @@ export default function LoginPage() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => loginAndGetUser(email, password),
     onSuccess: ({ user, workspace }) => {
-      setWorkspaceHeader(workspace.id);
       dispatch(setUser(user));
-      dispatch(setWorkspaceId(workspace.id));
-      dispatch(setWorkspaceName(workspace.name));
+      changeWorkspace(workspace);
       navigate(from, { replace: true });
     },
   });

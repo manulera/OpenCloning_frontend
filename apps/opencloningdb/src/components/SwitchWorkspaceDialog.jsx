@@ -1,15 +1,13 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useQueryClient } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl } from '@mui/material';
 import { QuerySelect } from '@opencloning/ui';
-import { endpoints, openCloningDBHttpClient, setWorkspaceHeader } from '@opencloning/opencloningdb';
-import { setWorkspaceId, setWorkspaceName, setWorkspaceRole } from '../store/authSlice';
+import { endpoints, openCloningDBHttpClient } from '@opencloning/opencloningdb';
+import useChangeWorkspace from '../hooks/useChangeWorkspace';
 
 export default function SwitchWorkspaceDialog({ open, onClose }) {
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
-  const currentWorkspaceId = useSelector((state) => state.auth.workspaceId);
+  const { changeWorkspace } = useChangeWorkspace();
+  const currentWorkspaceId = useSelector((state) => state.auth.workspace?.id);
   const [selectedWorkspace, setSelectedWorkspace] = React.useState(null);
 
   const workspaceQuery = React.useMemo(() => ({
@@ -24,11 +22,7 @@ export default function SwitchWorkspaceDialog({ open, onClose }) {
   function handleSwitchWorkspace() {
     if (!selectedWorkspace) return;
 
-    setWorkspaceHeader(selectedWorkspace.id);
-    dispatch(setWorkspaceId(selectedWorkspace.id));
-    dispatch(setWorkspaceName(selectedWorkspace.name));
-    dispatch(setWorkspaceRole(selectedWorkspace.role));
-    queryClient.removeQueries();
+    changeWorkspace(selectedWorkspace);
     onClose();
   }
 

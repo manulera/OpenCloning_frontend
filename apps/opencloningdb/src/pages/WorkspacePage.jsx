@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Paper, Divider } from '@mui/material';
-import { openCloningDBHttpClient, endpoints, setWorkspaceHeader } from '@opencloning/opencloningdb';
-import { setWorkspaceId, setWorkspaceName, setWorkspaceRole } from '../store/authSlice';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { setWorkspace } from '../store/authSlice';
+import useChangeWorkspace from '../hooks/useChangeWorkspace';
 import useAppAlerts from '../hooks/useAppAlerts';
 import PageContainer from '../components/PageContainer';
 
@@ -20,8 +21,7 @@ function SectionBox({ title, children }) {
 }
 
 function CreateWorkspaceSection() {
-  const dispatch = useDispatch();
-  const queryClient = useQueryClient();
+  const { changeWorkspace } = useChangeWorkspace();
   const { addAlert } = useAppAlerts();
   const [name, setName] = useState('');
 
@@ -31,11 +31,7 @@ function CreateWorkspaceSection() {
       return data;
     },
     onSuccess: (data) => {
-      setWorkspaceHeader(data.id);
-      dispatch(setWorkspaceId(data.id));
-      dispatch(setWorkspaceName(data.name));
-      dispatch(setWorkspaceRole(data.role));
-      queryClient.removeQueries();
+      changeWorkspace({ id: data.id, name: data.name, role: data.role ?? null });
       setName('');
       addAlert({ message: `Workspace "${data.name}" created and activated`, severity: 'success' });
     },
@@ -74,8 +70,9 @@ function CreateWorkspaceSection() {
 
 function RenameWorkspaceSection() {
   const dispatch = useDispatch();
-  const workspaceId = useSelector((state) => state.auth.workspaceId);
-  const workspaceName = useSelector((state) => state.auth.workspaceName);
+  const workspace = useSelector((state) => state.auth.workspace);
+  const workspaceId = workspace?.id;
+  const workspaceName = workspace?.name;
   const { addAlert } = useAppAlerts();
   const [name, setName] = useState(workspaceName ?? '');
 
@@ -85,7 +82,8 @@ function RenameWorkspaceSection() {
       return data;
     },
     onSuccess: (data) => {
-      dispatch(setWorkspaceName(data.name));
+      if (!workspace) return;
+      dispatch(setWorkspace({ ...workspace, name: data.name }));
       addAlert({ message: 'Workspace renamed successfully', severity: 'success' });
     },
     onError: () => {
@@ -133,7 +131,9 @@ function InviteSection() {
 }
 
 export default function WorkspacePage() {
-  const workspaceRole = useSelector((state) => state.auth.workspaceRole);
+  const workspace = useSelector((state) => state.auth.workspace);
+  const workspaceId = workspace?.id;
+  const workspaceRole = workspace?.role;
   const isOwner = workspaceRole === 'owner';
 
   return (
@@ -142,7 +142,7 @@ export default function WorkspacePage() {
         Manage workspaces
       </Typography>
       <CreateWorkspaceSection />
-      {isOwner && <RenameWorkspaceSection />}
+      {isOwner && <RenameWorkspaceSection key={workspaceId ?? 'none'} />}
       {isOwner && <InviteSection />}
     </PageContainer>
   );
