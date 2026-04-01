@@ -8,7 +8,7 @@ import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
 import RequireAuth from './components/RequireAuth';
-import { OpenCloningDBInterface, setUnauthorizedHandler, openCloningDBHttpClient, endpoints, setWorkspaceParam, clearWorkspaceParam } from '@opencloning/opencloningdb';
+import { OpenCloningDBInterface, setUnauthorizedHandler, openCloningDBHttpClient, endpoints, setWorkspaceHeader, clearWorkspaceHeader } from '@opencloning/opencloningdb';
 import { setUser, setWorkspaceId, clearUser } from './store/authSlice';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
@@ -39,7 +39,7 @@ function AppLayout() {
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   function handleLogout() {
-    clearWorkspaceParam();
+    clearWorkspaceHeader();
     queryClient.clear();
     localStorage.removeItem('token');
     dispatch(clearUser());
@@ -102,7 +102,7 @@ function AuthBootstrap({ children }) {
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
-      clearWorkspaceParam();
+      clearWorkspaceHeader();
       queryClient.clear();
       localStorage.removeItem('token');
       dispatch(clearUser());
@@ -119,7 +119,7 @@ function AuthBootstrap({ children }) {
         })
         .then(({ data: workspaces }) => {
           const id = workspaces[0].id;
-          setWorkspaceParam(id);
+          setWorkspaceHeader(id);
           dispatch(setWorkspaceId(id));
         })
         .catch(() => localStorage.removeItem('token'));

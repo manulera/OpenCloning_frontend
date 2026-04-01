@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
 import { setUser, setWorkspaceId } from '../store/authSlice';
-import { openCloningDBHttpClient, endpoints, setWorkspaceParam } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints, setWorkspaceHeader } from '@opencloning/opencloningdb';
 
 async function registerAndGetUser(email, displayName, password) {
   const { data: { access_token } } = await openCloningDBHttpClient.post(endpoints.authRegister, {
@@ -31,7 +31,7 @@ export default function SignUpPage() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => registerAndGetUser(email, displayName, password),
     onSuccess: ({ user, workspaceId }) => {
-      setWorkspaceParam(workspaceId);
+      setWorkspaceHeader(workspaceId);
       dispatch(setUser(user));
       dispatch(setWorkspaceId(workspaceId));
       navigate('/sequences', { replace: true });

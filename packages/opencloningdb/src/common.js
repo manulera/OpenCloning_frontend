@@ -8,17 +8,12 @@ export function setUnauthorizedHandler(fn) {
   unauthorizedHandler = fn;
 }
 
-export function setWorkspaceParam(id) {
-  openCloningDBHttpClient.defaults.params = {
-    ...openCloningDBHttpClient.defaults.params,
-    workspace_id: id,
-  };
+export function setWorkspaceHeader(id) {
+  openCloningDBHttpClient.defaults.headers.common['X-Workspace-Id'] = id;
 }
 
-export function clearWorkspaceParam() {
-  const params = { ...openCloningDBHttpClient.defaults.params };
-  delete params.workspace_id;
-  openCloningDBHttpClient.defaults.params = params;
+export function clearWorkspaceHeader() {
+  delete openCloningDBHttpClient.defaults.headers.common['X-Workspace-Id'];
 }
 
 export const openCloningDBHttpClient = axios.create({

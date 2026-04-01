@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
 import { setUser, setWorkspaceId } from '../store/authSlice';
-import { openCloningDBHttpClient, endpoints, setWorkspaceParam } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints, setWorkspaceHeader } from '@opencloning/opencloningdb';
 
 async function loginAndGetUser(email, password) {
   const body = new URLSearchParams({ username: email, password });
@@ -29,7 +29,7 @@ export default function LoginPage() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => loginAndGetUser(email, password),
     onSuccess: ({ user, workspaceId }) => {
-      setWorkspaceParam(workspaceId);
+      setWorkspaceHeader(workspaceId);
       dispatch(setUser(user));
       dispatch(setWorkspaceId(workspaceId));
       navigate(from, { replace: true });
