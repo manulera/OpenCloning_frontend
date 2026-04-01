@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Logout as LogoutIcon, Person as PersonIcon, SwapHoriz as SwapHorizIcon } from '@mui/icons-material';
 
-export default function AppBarUserMenu({ userName, workspaceName, onLogout }) {
+export default function AppBarUserMenu({ userName, workspaceName, onLogout, onSwitchWorkspaceClick }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -44,7 +44,12 @@ export default function AppBarUserMenu({ userName, workspaceName, onLogout }) {
       </Tooltip>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose} onClick={handleClose}>
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            onSwitchWorkspaceClick();
+          }}
+        >
           <ListItemIcon>
             <SwapHorizIcon fontSize="small" />
           </ListItemIcon>

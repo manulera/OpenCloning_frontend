@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
@@ -7,6 +7,7 @@ import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
 import AppBarUserMenu from './components/AppBarUserMenu';
+import SwitchWorkspaceDialog from './components/SwitchWorkspaceDialog';
 import RequireAuth from './components/RequireAuth';
 import { OpenCloningDBInterface, clearWorkspaceHeader } from '@opencloning/opencloningdb';
 import { clearUser } from './store/authSlice';
@@ -38,6 +39,7 @@ function AppLayout() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const workspaceName = useSelector((state) => state.auth.workspaceName);
+  const [isSwitchWorkspaceDialogOpen, setIsSwitchWorkspaceDialogOpen] = useState(false);
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   function handleLogout() {
@@ -75,9 +77,14 @@ function AppLayout() {
             userName={user.display_name}
             workspaceName={workspaceName}
             onLogout={handleLogout}
+            onSwitchWorkspaceClick={() => setIsSwitchWorkspaceDialogOpen(true)}
           />
         </Toolbar>
       </AppBar>
+      <SwitchWorkspaceDialog
+        open={isSwitchWorkspaceDialogOpen}
+        onClose={() => setIsSwitchWorkspaceDialogOpen(false)}
+      />
       <Box sx={{zIndex: 9000}}>
         <AppAlerts />
       </Box>
