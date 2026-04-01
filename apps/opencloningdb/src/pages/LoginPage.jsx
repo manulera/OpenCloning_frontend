@@ -3,7 +3,7 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
-import { setUser, setWorkspaceId } from '../store/authSlice';
+import { setUser, setWorkspaceId, setWorkspaceName } from '../store/authSlice';
 import { openCloningDBHttpClient, endpoints, setWorkspaceHeader } from '@opencloning/opencloningdb';
 
 async function loginAndGetUser(email, password) {
@@ -14,7 +14,7 @@ async function loginAndGetUser(email, password) {
   localStorage.setItem('token', access_token);
   const { data: user } = await openCloningDBHttpClient.get(endpoints.authMe);
   const { data: workspaces } = await openCloningDBHttpClient.get(endpoints.workspaces);
-  return { user, workspaceId: workspaces[0].id };
+  return { user, workspace: workspaces[0] };
 }
 
 export default function LoginPage() {
@@ -28,10 +28,11 @@ export default function LoginPage() {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => loginAndGetUser(email, password),
-    onSuccess: ({ user, workspaceId }) => {
-      setWorkspaceHeader(workspaceId);
+    onSuccess: ({ user, workspace }) => {
+      setWorkspaceHeader(workspace.id);
       dispatch(setUser(user));
-      dispatch(setWorkspaceId(workspaceId));
+      dispatch(setWorkspaceId(workspace.id));
+      dispatch(setWorkspaceName(workspace.name));
       navigate(from, { replace: true });
     },
   });

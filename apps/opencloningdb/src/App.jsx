@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AppBar, Toolbar, Typography, Tabs, Tab, Box, IconButton, Tooltip } from '@mui/material';
-import { Logout as LogoutIcon} from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
+import AppBarUserMenu from './components/AppBarUserMenu';
 import RequireAuth from './components/RequireAuth';
 import { OpenCloningDBInterface, clearWorkspaceHeader } from '@opencloning/opencloningdb';
 import { clearUser } from './store/authSlice';
@@ -37,6 +37,7 @@ function AppLayout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const workspaceName = useSelector((state) => state.auth.workspaceName);
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   function handleLogout() {
@@ -70,14 +71,11 @@ function AppLayout() {
             <Tab label="Design" value="/design" />
           </Tabs>
           <Box sx={{ flexGrow: 1 }} />
-          <Typography variant="body2" sx={{ color: 'white', mr: 1 }}>
-            {user?.display_name || user?.email}
-          </Typography>
-          <Tooltip title="Sign out">
-            <IconButton color="inherit" onClick={handleLogout}>
-              <LogoutIcon />
-            </IconButton>
-          </Tooltip>
+          <AppBarUserMenu
+            userName={user.display_name}
+            workspaceName={workspaceName}
+            onLogout={handleLogout}
+          />
         </Toolbar>
       </AppBar>
       <Box sx={{zIndex: 9000}}>
