@@ -8,7 +8,7 @@ import {
   setWorkspaceHeader,
   clearWorkspaceHeader,
 } from '@opencloning/opencloningdb';
-import { setUser, setWorkspaceId, setWorkspaceName, clearUser } from '../store/authSlice';
+import { setUser, setWorkspaceId, setWorkspaceName, setWorkspaceRole, clearUser } from '../store/authSlice';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function useAuthBootstrap() {
@@ -39,6 +39,7 @@ export default function useAuthBootstrap() {
           setWorkspaceHeader(id);
           dispatch(setWorkspaceId(id));
           dispatch(setWorkspaceName(workspace.name));
+          dispatch(setWorkspaceRole(workspace.role));
         })
         .catch(() => globalThis.localStorage.removeItem('token'));
     }

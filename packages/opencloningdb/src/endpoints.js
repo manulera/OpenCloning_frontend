@@ -30,6 +30,9 @@ const endpoints = {
   authRegister: '/auth/register',
   authMe: '/auth/me',
   workspaces: '/workspaces',
+  postWorkspace: '/workspaces',
+  workspace: (id) => `/workspaces/${id}`,
+  workspaceInvite: (id) => `/workspaces/${id}/invite`,
 };
 
 export default endpoints;

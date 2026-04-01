@@ -21,6 +21,7 @@ import LinesPage from './pages/LinesPage';
 import LineDetailPage from './pages/LineDetailPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import WorkspacePage from './pages/WorkspacePage';
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,7 @@ function AppLayout() {
   const user = useSelector((state) => state.auth.user);
   const workspaceName = useSelector((state) => state.auth.workspaceName);
   const [isSwitchWorkspaceDialogOpen, setIsSwitchWorkspaceDialogOpen] = useState(false);
-  const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
+  const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? false;
 
   function handleLogout() {
     clearWorkspaceHeader();
@@ -78,6 +79,7 @@ function AppLayout() {
             workspaceName={workspaceName}
             onLogout={handleLogout}
             onSwitchWorkspaceClick={() => setIsSwitchWorkspaceDialogOpen(true)}
+            onManageWorkspacesClick={() => navigate('/workspace')}
           />
         </Toolbar>
       </AppBar>
@@ -90,6 +92,7 @@ function AppLayout() {
       </Box>
       <Routes>
         <Route path="/" element={<Navigate to="/sequences" replace />} />
+        <Route path="/workspace" element={<WorkspacePage />} />
         <Route path="/design" element={<DesignPage />} />
         <Route path="/sequences" element={<SequencesPage />} />
         <Route path="/sequences/:id" element={<SequenceDetailPage />} />

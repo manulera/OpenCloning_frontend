@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl } from '@mui/material';
 import { QuerySelect } from '@opencloning/ui';
 import { endpoints, openCloningDBHttpClient, setWorkspaceHeader } from '@opencloning/opencloningdb';
-import { setWorkspaceId, setWorkspaceName } from '../store/authSlice';
+import { setWorkspaceId, setWorkspaceName, setWorkspaceRole } from '../store/authSlice';
 
 export default function SwitchWorkspaceDialog({ open, onClose }) {
   const dispatch = useDispatch();
@@ -27,6 +27,7 @@ export default function SwitchWorkspaceDialog({ open, onClose }) {
     setWorkspaceHeader(selectedWorkspace.id);
     dispatch(setWorkspaceId(selectedWorkspace.id));
     dispatch(setWorkspaceName(selectedWorkspace.name));
+    dispatch(setWorkspaceRole(selectedWorkspace.role));
     queryClient.invalidateQueries();
     onClose();
   }
