@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Box, IconButton, Tooltip } from '@mui/material';
@@ -8,8 +8,9 @@ import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
 import RequireAuth from './components/RequireAuth';
-import { OpenCloningDBInterface, setUnauthorizedHandler, openCloningDBHttpClient, endpoints, setWorkspaceHeader, clearWorkspaceHeader } from '@opencloning/opencloningdb';
-import { setUser, setWorkspaceId, clearUser } from './store/authSlice';
+import { OpenCloningDBInterface, clearWorkspaceHeader } from '@opencloning/opencloningdb';
+import { clearUser } from './store/authSlice';
+import useAuthBootstrap from './hooks/useAuthBootstrap';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
 import DesignPage from './pages/DesignPage';
@@ -41,7 +42,7 @@ function AppLayout() {
   function handleLogout() {
     clearWorkspaceHeader();
     queryClient.clear();
-    localStorage.removeItem('token');
+    globalThis.localStorage.removeItem('token');
     dispatch(clearUser());
     navigate('/login');
   }
@@ -96,37 +97,22 @@ function AppLayout() {
   );
 }
 
-function AuthBootstrap({ children }) {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    setUnauthorizedHandler(() => {
-      clearWorkspaceHeader();
-      queryClient.clear();
-      localStorage.removeItem('token');
-      dispatch(clearUser());
-      navigate('/login');
-    });
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      openCloningDBHttpClient
-        .get(endpoints.authMe)
-        .then(({ data: user }) => {
-          dispatch(setUser(user));
-          return openCloningDBHttpClient.get(endpoints.workspaces);
-        })
-        .then(({ data: workspaces }) => {
-          const id = workspaces[0].id;
-          setWorkspaceHeader(id);
-          dispatch(setWorkspaceId(id));
-        })
-        .catch(() => localStorage.removeItem('token'));
-    }
-  }, []);
-
-  return children;
+function AppRoutes() {
+  useAuthBootstrap();
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route
+        path="/*"
+        element={
+          <RequireAuth>
+            <AppLayout />
+          </RequireAuth>
+        }
+      />
+    </Routes>
+  );
 }
 
 export default function App() {
@@ -135,20 +121,7 @@ export default function App() {
       <BrowserRouter>
         <ConfigProvider config={config}>
           <DatabaseProvider value={OpenCloningDBInterface}>
-            <AuthBootstrap>
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
-                <Route
-                  path="/*"
-                  element={
-                    <RequireAuth>
-                      <AppLayout />
-                    </RequireAuth>
-                  }
-                />
-              </Routes>
-            </AuthBootstrap>
+            <AppRoutes />
           </DatabaseProvider>
         </ConfigProvider>
       </BrowserRouter>
