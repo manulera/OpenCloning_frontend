@@ -8,8 +8,8 @@ import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
 import RequireAuth from './components/RequireAuth';
-import { OpenCloningDBInterface, setUnauthorizedHandler, openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { setUser, clearUser } from './store/authSlice';
+import { OpenCloningDBInterface, setUnauthorizedHandler, openCloningDBHttpClient, endpoints, setWorkspaceParam, clearWorkspaceParam } from '@opencloning/opencloningdb';
+import { setUser, setWorkspaceId, clearUser } from './store/authSlice';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
 import DesignPage from './pages/DesignPage';
@@ -39,6 +39,8 @@ function AppLayout() {
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
 
   function handleLogout() {
+    clearWorkspaceParam();
+    queryClient.clear();
     localStorage.removeItem('token');
     dispatch(clearUser());
     navigate('/login');
@@ -100,6 +102,8 @@ function AuthBootstrap({ children }) {
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
+      clearWorkspaceParam();
+      queryClient.clear();
       localStorage.removeItem('token');
       dispatch(clearUser());
       navigate('/login');
@@ -109,7 +113,15 @@ function AuthBootstrap({ children }) {
     if (token) {
       openCloningDBHttpClient
         .get(endpoints.authMe)
-        .then(({ data }) => dispatch(setUser(data)))
+        .then(({ data: user }) => {
+          dispatch(setUser(user));
+          return openCloningDBHttpClient.get(endpoints.workspaces);
+        })
+        .then(({ data: workspaces }) => {
+          const id = workspaces[0].id;
+          setWorkspaceParam(id);
+          dispatch(setWorkspaceId(id));
+        })
         .catch(() => localStorage.removeItem('token'));
     }
   }, []);

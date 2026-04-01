@@ -8,6 +8,19 @@ export function setUnauthorizedHandler(fn) {
   unauthorizedHandler = fn;
 }
 
+export function setWorkspaceParam(id) {
+  openCloningDBHttpClient.defaults.params = {
+    ...openCloningDBHttpClient.defaults.params,
+    workspace_id: id,
+  };
+}
+
+export function clearWorkspaceParam() {
+  const params = { ...openCloningDBHttpClient.defaults.params };
+  delete params.workspace_id;
+  openCloningDBHttpClient.defaults.params = params;
+}
+
 export const openCloningDBHttpClient = axios.create({
   baseURL: baseUrl,
   paramsSerializer: (params) => {

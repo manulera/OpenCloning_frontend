@@ -29,6 +29,7 @@ const endpoints = {
   authToken: '/auth/token',
   authRegister: '/auth/register',
   authMe: '/auth/me',
+  workspaces: '/workspaces',
 };
 
 export default endpoints;
