@@ -39,7 +39,10 @@ export default function LoginPage() {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 4 }}>
+      <Typography sx={{color: 'primary.main'}} variant="h1" textAlign="center" >
+        OpenCloningDB
+      </Typography>
       <Box
         component="form"
         onSubmit={handleSubmit}
