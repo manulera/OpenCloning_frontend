@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
@@ -10,7 +10,6 @@ import AppBarUserMenu from './components/AppBarUserMenu';
 import SwitchWorkspaceDialog from './components/SwitchWorkspaceDialog';
 import RequireAuth from './components/RequireAuth';
 import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
-import { clearUser } from './store/authSlice';
 import useAuthBootstrap from './hooks/useAuthBootstrap';
 import useChangeWorkspace from './hooks/useChangeWorkspace';
 import SequencesPage from './pages/SequencesPage';
@@ -38,20 +37,11 @@ const TABS = ['/sequences', '/primers', '/lines', '/design'];
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { clearWorkspace } = useChangeWorkspace();
+  const { logout } = useChangeWorkspace();
   const user = useSelector((state) => state.auth.user);
   const workspaceName = useSelector((state) => state.auth.workspace?.name);
   const [isSwitchWorkspaceDialogOpen, setIsSwitchWorkspaceDialogOpen] = useState(false);
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? false;
-
-  function handleLogout() {
-    clearWorkspace();
-    queryClient.clear();
-    globalThis.localStorage.removeItem('token');
-    dispatch(clearUser());
-    navigate('/login');
-  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', overflowX: 'auto' }}>
@@ -79,7 +69,7 @@ function AppLayout() {
           <AppBarUserMenu
             userName={user.display_name}
             workspaceName={workspaceName}
-            onLogout={handleLogout}
+            onLogout={logout}
             onSwitchWorkspaceClick={() => setIsSwitchWorkspaceDialogOpen(true)}
             onManageWorkspacesClick={() => navigate('/workspace')}
           />
