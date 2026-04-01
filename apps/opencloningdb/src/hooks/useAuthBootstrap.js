@@ -43,5 +43,5 @@ export default function useAuthBootstrap() {
         })
         .catch(() => globalThis.localStorage.removeItem('token'));
     }
-  }, [dispatch, navigate, queryClient]);
+  }, [dispatch, queryClient]);
 }
