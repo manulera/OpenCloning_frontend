@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
-import { setUser } from '../store/authSlice';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { fetchUserAndFirstWorkspace } from '../fetchUserAndWorkspace';
 import useChangeWorkspace from '../hooks/useChangeWorkspace';
 
 async function loginAndGetUser(email, password) {
   const body = new URLSearchParams({ username: email, password });
-  const { data: { access_token } } = await openCloningDBHttpClient.post(endpoints.authToken, body, {
+  const { data: { access_token: accessToken } } = await openCloningDBHttpClient.post(endpoints.authToken, body, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
-  localStorage.setItem('token', access_token);
-  const { data: user } = await openCloningDBHttpClient.get(endpoints.authMe);
-  const { data: workspaces } = await openCloningDBHttpClient.get(endpoints.workspaces);
-  return { user, workspace: workspaces[0] };
+  localStorage.setItem('token', accessToken);
+  return fetchUserAndFirstWorkspace();
 }
 
 export default function LoginPage() {
-  const dispatch = useDispatch();
-  const { changeWorkspace } = useChangeWorkspace();
+  const { applySession } = useChangeWorkspace();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname ?? '/sequences';
@@ -31,8 +27,7 @@ export default function LoginPage() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => loginAndGetUser(email, password),
     onSuccess: ({ user, workspace }) => {
-      dispatch(setUser(user));
-      changeWorkspace(workspace);
+      applySession(user, workspace);
       navigate(from, { replace: true });
     },
   });

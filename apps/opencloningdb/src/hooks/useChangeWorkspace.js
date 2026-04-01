@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
-import { setWorkspaceHeader, clearWorkspaceHeader } from '@opencloning/opencloningdb';
-import { setWorkspace, clearUser } from '../store/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { setWorkspaceHeader, clearWorkspaceHeader } from '@opencloning/opencloningdb';
+import { setWorkspace, clearUser, setUser } from '../store/authSlice';
 
 export default function useChangeWorkspace() {
   const dispatch = useDispatch();
@@ -31,15 +31,23 @@ export default function useChangeWorkspace() {
     queryClient.clear();
   }, [dispatch, queryClient]);
 
+  const applySession = React.useCallback(
+    (user, workspace) => {
+      dispatch(setUser(user));
+      changeWorkspace(workspace);
+    },
+    [dispatch, changeWorkspace],
+  );
+
   const logout = React.useCallback(() => {
     clearWorkspace();
     localStorage.removeItem('token');
     dispatch(clearUser());
     navigate('/login');
-  }, [clearWorkspace, dispatch]);
+  }, [clearWorkspace, dispatch, navigate]);
 
   return React.useMemo(
-    () => ({ changeWorkspace, clearWorkspace }),
-    [changeWorkspace, clearWorkspace],
+    () => ({ changeWorkspace, clearWorkspace, applySession, logout }),
+    [changeWorkspace, clearWorkspace, applySession, logout],
   );
 }

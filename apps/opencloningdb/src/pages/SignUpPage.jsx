@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
-import { setUser } from '../store/authSlice';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { fetchUserAndFirstWorkspace } from '../fetchUserAndWorkspace';
 import useChangeWorkspace from '../hooks/useChangeWorkspace';
 
 async function registerAndGetUser(email, displayName, password) {
@@ -14,14 +13,11 @@ async function registerAndGetUser(email, displayName, password) {
     password,
   });
   localStorage.setItem('token', access_token);
-  const { data: user } = await openCloningDBHttpClient.get(endpoints.authMe);
-  const { data: workspaces } = await openCloningDBHttpClient.get(endpoints.workspaces);
-  return { user, workspace: workspaces[0] };
+  return fetchUserAndFirstWorkspace();
 }
 
 export default function SignUpPage() {
-  const dispatch = useDispatch();
-  const { changeWorkspace } = useChangeWorkspace();
+  const { applySession } = useChangeWorkspace();
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState('');
@@ -33,12 +29,7 @@ export default function SignUpPage() {
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => registerAndGetUser(email, displayName, password),
     onSuccess: ({ user, workspace }) => {
-      dispatch(setUser(user));
-      changeWorkspace({
-        id: workspace.id,
-        name: workspace.name,
-        role: workspace.role ?? null,
-      });
+      applySession(user, workspace);
       navigate('/sequences', { replace: true });
     },
   });
