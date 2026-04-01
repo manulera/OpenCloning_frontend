@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Tabs, Tab, Box, IconButton, Tooltip } from '@mui/material';
+import { Logout as LogoutIcon} from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
 import { ConfigProvider } from '@opencloning/ui/providers/ConfigProvider';
 import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import AppAlerts from './components/AppAlerts';
-import { OpenCloningDBInterface } from '@opencloning/opencloningdb';
+import RequireAuth from './components/RequireAuth';
+import { OpenCloningDBInterface, setUnauthorizedHandler, openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { setUser, clearUser } from './store/authSlice';
 import SequencesPage from './pages/SequencesPage';
 import PrimersPage from './pages/PrimersPage';
 import DesignPage from './pages/DesignPage';
@@ -13,6 +17,8 @@ import SequenceDetailPage from './pages/SequenceDetailPage';
 import PrimerDetailPage from './pages/PrimerDetailPage';
 import LinesPage from './pages/LinesPage';
 import LineDetailPage from './pages/LineDetailPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
 const queryClient = new QueryClient();
 
@@ -28,7 +34,15 @@ const TABS = ['/sequences', '/primers', '/lines', '/design'];
 function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
   const currentTab = TABS.find((tab) => location.pathname === tab || location.pathname.startsWith(`${tab}/`)) ?? TABS[0];
+
+  function handleLogout() {
+    localStorage.removeItem('token');
+    dispatch(clearUser());
+    navigate('/login');
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', overflowX: 'auto' }}>
@@ -52,6 +66,15 @@ function AppLayout() {
             <Tab label="Lines" value="/lines" />
             <Tab label="Design" value="/design" />
           </Tabs>
+          <Box sx={{ flexGrow: 1 }} />
+          <Typography variant="body2" sx={{ color: 'white', mr: 1 }}>
+            {user?.display_name || user?.email}
+          </Typography>
+          <Tooltip title="Sign out">
+            <IconButton color="inherit" onClick={handleLogout}>
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
       <Box sx={{zIndex: 9000}}>
@@ -71,13 +94,49 @@ function AppLayout() {
   );
 }
 
+function AuthBootstrap({ children }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      localStorage.removeItem('token');
+      dispatch(clearUser());
+      navigate('/login');
+    });
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      openCloningDBHttpClient
+        .get(endpoints.authMe)
+        .then(({ data }) => dispatch(setUser(data)))
+        .catch(() => localStorage.removeItem('token'));
+    }
+  }, []);
+
+  return children;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ConfigProvider config={config}>
           <DatabaseProvider value={OpenCloningDBInterface}>
-            <AppLayout />
+            <AuthBootstrap>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route
+                  path="/*"
+                  element={
+                    <RequireAuth>
+                      <AppLayout />
+                    </RequireAuth>
+                  }
+                />
+              </Routes>
+            </AuthBootstrap>
           </DatabaseProvider>
         </ConfigProvider>
       </BrowserRouter>

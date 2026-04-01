@@ -26,6 +26,9 @@ const endpoints = {
   sequenceSamples: '/sequence_samples',
   postSequenceSample: '/sequence_sample',
   sequenceSample: (uid) => `/sequence_sample/${uid}`,
+  authToken: '/auth/token',
+  authRegister: '/auth/register',
+  authMe: '/auth/me',
 };
 
 export default endpoints;
