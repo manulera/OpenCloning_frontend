@@ -35,7 +35,7 @@ function CreateWorkspaceSection() {
       dispatch(setWorkspaceId(data.id));
       dispatch(setWorkspaceName(data.name));
       dispatch(setWorkspaceRole(data.role));
-      queryClient.invalidateQueries();
+      queryClient.removeQueries();
       setName('');
       addAlert({ message: `Workspace "${data.name}" created and activated`, severity: 'success' });
     },

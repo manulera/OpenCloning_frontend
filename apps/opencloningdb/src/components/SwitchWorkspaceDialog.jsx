@@ -28,7 +28,7 @@ export default function SwitchWorkspaceDialog({ open, onClose }) {
     dispatch(setWorkspaceId(selectedWorkspace.id));
     dispatch(setWorkspaceName(selectedWorkspace.name));
     dispatch(setWorkspaceRole(selectedWorkspace.role));
-    queryClient.invalidateQueries();
+    queryClient.removeQueries();
     onClose();
   }
 
