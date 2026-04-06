@@ -1,10 +1,7 @@
 import { useEffect } from 'react';
-import {
-  setUnauthorizedHandler,
-  openCloningDBHttpClient,
-  endpoints,
-} from '@opencloning/opencloningdb';
+import { setUnauthorizedHandler } from '@opencloning/opencloningdb';
 import useChangeWorkspace from './useChangeWorkspace';
+import { fetchUserAndFirstWorkspace } from '../utils/auth_utils';
 
 export default function useAuthBootstrap() {
   const { applySession, logout } = useChangeWorkspace();
@@ -19,9 +16,8 @@ export default function useAuthBootstrap() {
 
     (async () => {
       try {
-        const { data: user } = await openCloningDBHttpClient.get(endpoints.authMe);
-        const { data: workspaces } = await openCloningDBHttpClient.get(endpoints.workspaces);
-        applySession(user, workspaces[0]);
+        const { user, workspace } = await fetchUserAndFirstWorkspace();
+        applySession(user, workspace);
       } catch {
         localStorage.removeItem('token');
       }

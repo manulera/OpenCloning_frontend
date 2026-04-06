@@ -1,14 +1,14 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { setWorkspaceHeader, clearWorkspaceHeader } from '@opencloning/opencloningdb';
 import { setWorkspace, clearUser, setUser } from '../store/authSlice';
+import useStableNavigate from './useStableNavigate';
 
 export default function useChangeWorkspace() {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const navigate = useStableNavigate();
 
   const changeWorkspace = React.useCallback(
     (workspace) => {

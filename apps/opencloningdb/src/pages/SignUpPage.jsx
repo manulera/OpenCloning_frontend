@@ -3,7 +3,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { fetchUserAndFirstWorkspace } from '../fetchUserAndWorkspace';
+import { fetchUserAndFirstWorkspace } from '../utils/auth_utils';
 import useChangeWorkspace from '../hooks/useChangeWorkspace';
 
 async function registerAndGetUser(email, displayName, password) {
