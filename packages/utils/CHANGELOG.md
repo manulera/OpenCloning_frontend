@@ -1,5 +1,14 @@
 # @opencloning/utils
 
+## 1.7.4
+
+### Patch Changes
+
+- [#682](https://github.com/manulera/OpenCloning_frontend/pull/682) [`04703a9`](https://github.com/manulera/OpenCloning_frontend/commit/04703a9269a5d4cc4bdde478c1ec61e5c73b0d2a) Thanks [@manulera](https://github.com/manulera)! - Fix bug when copying pcr products
+
+- Updated dependencies []:
+  - @opencloning/store@1.7.4
+
 ## 1.7.3
 
 ### Patch Changes
