@@ -1,4 +1,4 @@
-import { addLane, addSource, clickMultiSelectOption, deleteSourceByContent, manuallyTypeSequence } from '../common_functions';
+import { addLane, addSource, clickMultiSelectOption, deleteSourceByContent, loadExample, manuallyTypeSequence } from '../common_functions';
 
 describe('Test copy existing sequence functionality', () => {
   beforeEach(() => {
@@ -39,4 +39,14 @@ describe('Test copy existing sequence functionality', () => {
     cy.get('table').contains('BZO903_13409037_13409037.ab1');
     cy.get('table').contains('BZO902_13409020_13409020.ab1');
   });
+  it('Works for entries with PCRs', () => {
+    // This one is important, because the references to the primers must also be copied.
+    loadExample('Gibson assembly');
+    addLane();
+    addSource('CopySequence', true);
+    cy.get('.sequenceNameText').filter(':contains("digested_vector")').should('have.length', 1);
+    clickMultiSelectOption('Sequence to copy', 'digested_vector', 'li');
+    cy.get('button').contains('Copy sequence').click();
+    cy.get('.sequenceNameText span').filter(':contains("digested_vector")').should('have.length', 2);
+  })
 });
