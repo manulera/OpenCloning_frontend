@@ -43,7 +43,8 @@ export function getInputSequencesFromSourceId(state, sourceId) {
 /** True if any assembly input is linear (not circular) according to teselaJsonCache.*/
 export function anyAssemblyInputIsLinear(source, teselaJsonCache) {
   const sequenceIds = source.input.map(({ sequence }) => sequence);
-  return sequenceIds.some((id) => teselaJsonCache[id].circular !== true);
+  // We test whether teselaJsonCache[id], because primers are also listed as inputs
+  return sequenceIds.some((id) => teselaJsonCache[id] && (teselaJsonCache[id].circular !== true));
 }
 
 export function isSourceATemplate({ sources, sequences }, sourceId) {
