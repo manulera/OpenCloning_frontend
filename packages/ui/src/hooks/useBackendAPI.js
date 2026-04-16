@@ -41,6 +41,9 @@ export default function useBackendAPI() {
 
       setSources(receivedSources); setSequences(resp.data.sequences);
     } catch (error) {
+      if (error.response && error.response.headers && error.response.headers['x-warning']) {
+        addAlert({ message: error.response.headers['x-warning'], severity: 'warning' });
+      }
       setRequestStatus({ status: 'error', message: error2String(error) });
       setSources([]);
       setSequences([]);

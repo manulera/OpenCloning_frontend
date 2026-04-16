@@ -1,4 +1,7 @@
-import { addSource, manuallyTypeSequence, clickMultiSelectOption, clickSequenceOutputArrow, addLane} from '../common_functions';
+import {
+  addSource, manuallyTypeSequence, clickMultiSelectOption, clickSequenceOutputArrow, addLane, closeAlerts,
+  deleteSourceByContent,
+} from '../common_functions';
 
 describe('Tests restriction-ligation functionality', () => {
   beforeEach(() => {
@@ -99,5 +102,34 @@ describe('Tests restriction-ligation functionality', () => {
     cy.get('li#source-4 button').contains('Submit').click();
     cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
     cy.get('.MuiAlert-message').contains('Too many assemblies');
+  });
+  it('displays warnings when server returns them', () => {
+    manuallyTypeSequence('aaGAATTCaaGATATCaaGAATTCaaGAATTCaa');
+    addLane();
+    manuallyTypeSequence('CCCCGAATTCCCC', true);
+    addSource('RestrictionAndLigationSource');
+    clickMultiSelectOption('Enzymes used', 'EcoRI', 'li#source-3');
+    clickMultiSelectOption('Enzymes used', 'EcoRV', 'li#source-3');
+    clickMultiSelectOption('Assembly inputs', '2', 'li#source-3');
+    cy.get('li#source-3 button').contains('Submit').click();
+    cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
+    cy.get('#global-error-message-wrapper .MuiAlert-message', { timeout: 20000 }).contains('partially digested products');
+
+    closeAlerts();
+    deleteSourceByContent('Manually typed')
+    deleteSourceByContent('Manually typed')
+    addLane();
+
+    manuallyTypeSequence('aaGAATTCaaGATATCaaGAATTCaa');
+    addLane();
+    manuallyTypeSequence('cccGAATTCccc', true);
+    addSource('RestrictionAndLigationSource');
+    clickMultiSelectOption('Enzymes used', 'EcoRI', 'li#source-3');
+    clickMultiSelectOption('Enzymes used', 'EcoRV', 'li#source-3');
+    clickMultiSelectOption('Assembly inputs', '2', 'li#source-3');
+    cy.get('li#source-3 button').contains('Submit').click();
+    cy.get('.submit-backend-api .loading-progress').should('not.exist', { timeout: 20000 });
+    cy.get('li#source-3 .MuiAlert-message').contains('No compatible restriction-ligation');
+    cy.get('#global-error-message-wrapper .MuiAlert-message', { timeout: 20000 }).contains('partially digested products');
   });
 });
