@@ -1,5 +1,17 @@
 # @opencloning/ui
 
+## 1.7.6
+
+### Patch Changes
+
+- [#686](https://github.com/manulera/OpenCloning_frontend/pull/686) [`c81b179`](https://github.com/manulera/OpenCloning_frontend/commit/c81b179b4fece50271ea214cab1f8a356e36811f) Thanks [@manulera](https://github.com/manulera)! - useBackendAPI now shows x-warning messages when the backend returns a failed request with that header. This is used and tested for partial restriction-ligation.
+
+- [#686](https://github.com/manulera/OpenCloning_frontend/pull/686) [`c81b179`](https://github.com/manulera/OpenCloning_frontend/commit/c81b179b4fece50271ea214cab1f8a356e36811f) Thanks [@manulera](https://github.com/manulera)! - Fix MultipleOutputsSelector to reset to position 0 when sources change. This was giving an error before when number of sources chaged if the position was higher than the length of the new source array, as it was trying to index the array beyond its length.
+
+- Updated dependencies []:
+  - @opencloning/store@1.7.6
+  - @opencloning/utils@1.7.6
+
 ## 1.7.5
 
 ### Patch Changes
