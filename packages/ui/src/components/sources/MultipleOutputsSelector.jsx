@@ -8,27 +8,30 @@ import SubSequenceDisplayer from './SubSequenceDisplayer';
 import AssemblyPlanDisplayer from './AssemblyPlanDisplayer';
 
 function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChosen }) {
+  const [selectedOutput, setSelectedOutput] = React.useState(0);
+  React.useEffect(() => setSelectedOutput(0), [sources]);
+
   // If the output is already set or the list of outputs is empty, do not show this element
   if (sources.length === 0) { return null; }
 
-  // selectedOutput is a local property, until you commit the step by clicking
-  const [selectedOutput, setSelectedOutput] = React.useState(0);
-
   // Functions called to move between outputs of a restriction reaction
-  const incrementSelectedOutput = () => setSelectedOutput(
-    (selectedOutput + 1) % sources.length,
-  );
-  const decreaseSelectedOutput = () => setSelectedOutput((selectedOutput !== 0) ? (selectedOutput - 1) : sources.length - 1);
+  const incrementSelectedOutput = () => setSelectedOutput((current) => (
+    (current + 1) % sources.length
+  ));
+  const decreaseSelectedOutput = () => setSelectedOutput((current) => (
+    (current !== 0) ? (current - 1) : sources.length - 1
+  ));
 
   // The function to pick the fragment as the output, and execute the step
   const chooseFragment = (e) => {
     e.preventDefault();
-    onFragmentChosen(selectedOutput);
+    onFragmentChosen(Math.min(selectedOutput, sources.length - 1));
   };
 
   const editorName = `source_editor_${sourceId}`;
+  const safeSelectedOutput = Math.min(selectedOutput, sources.length - 1);
 
-  const seq = convertToTeselaJson(sequences[selectedOutput]);
+  const seq = convertToTeselaJson(sequences[safeSelectedOutput]);
 
   return (
     <div className="multiple-output-selector">
@@ -36,21 +39,17 @@ function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChose
         <IconButton onClick={decreaseSelectedOutput} type="button" sx={{ height: 'fit-content' }}>
           <ArrowBack />
         </IconButton>
-        {selectedOutput + 1}
-        {' '}
-        /
-        {' '}
-        {sources.length}
+        {`${safeSelectedOutput + 1} / ${sources.length}`}
         <IconButton onClick={incrementSelectedOutput} type="button" sx={{ height: 'fit-content' }}>
           <ArrowForward />
         </IconButton>
       </div>
 
       <div className="fragment-picker">
-        <SubSequenceDisplayer {...{ source: sources[selectedOutput], sourceId }} />
-        <AssemblyPlanDisplayer {...{ source: sources[selectedOutput] }} />
+        <SubSequenceDisplayer {...{ source: sources[safeSelectedOutput], sourceId }} />
+        <AssemblyPlanDisplayer {...{ source: sources[safeSelectedOutput] }} />
         <SimpleCircularOrLinearView {...{ sequenceData: seq, editorName, height: 'auto' }} />
-        <OverhangsDisplay {...{ sequenceData: seq, sequence: sequences[selectedOutput] }} />
+        <OverhangsDisplay {...{ sequenceData: seq, sequence: sequences[safeSelectedOutput] }} />
       </div>
       <form onSubmit={chooseFragment}>
         <Button fullWidth type="submit" variant="contained">Choose product</Button>
