@@ -7,8 +7,22 @@ import OverhangsDisplay from '../OverhangsDisplay';
 import SubSequenceDisplayer from './SubSequenceDisplayer';
 import AssemblyPlanDisplayer from './AssemblyPlanDisplayer';
 
-function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChosen }) {
+function MultipleOutputsSelector({
+  sources,
+  sequences,
+  sourceId,
+  onFragmentChosen,
+  mockable = {}, // for testing
+}) {
   const [selectedOutput, setSelectedOutput] = React.useState(0);
+  const {
+    SubSequenceDisplayerComponent = SubSequenceDisplayer,
+    AssemblyPlanDisplayerComponent = AssemblyPlanDisplayer,
+    CircularOrLinearViewComponent = SimpleCircularOrLinearView,
+    OverhangsDisplayComponent = OverhangsDisplay,
+    convertSequence = convertToTeselaJson,
+  } = mockable;
+
   React.useEffect(() => setSelectedOutput(0), [sources]);
 
   // If the output is already set or the list of outputs is empty, do not show this element
@@ -31,7 +45,7 @@ function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChose
   const editorName = `source_editor_${sourceId}`;
   const safeSelectedOutput = Math.min(selectedOutput, sources.length - 1);
 
-  const seq = convertToTeselaJson(sequences[safeSelectedOutput]);
+  const seq = convertSequence(sequences[safeSelectedOutput]);
 
   return (
     <div className="multiple-output-selector">
@@ -46,10 +60,10 @@ function MultipleOutputsSelector({ sources, sequences, sourceId, onFragmentChose
       </div>
 
       <div className="fragment-picker">
-        <SubSequenceDisplayer {...{ source: sources[safeSelectedOutput], sourceId }} />
-        <AssemblyPlanDisplayer {...{ source: sources[safeSelectedOutput] }} />
-        <SimpleCircularOrLinearView {...{ sequenceData: seq, editorName, height: 'auto' }} />
-        <OverhangsDisplay {...{ sequenceData: seq, sequence: sequences[safeSelectedOutput] }} />
+        <SubSequenceDisplayerComponent {...{ source: sources[safeSelectedOutput], sourceId }} />
+        <AssemblyPlanDisplayerComponent {...{ source: sources[safeSelectedOutput] }} />
+        <CircularOrLinearViewComponent {...{ sequenceData: seq, editorName, height: 'auto' }} />
+        <OverhangsDisplayComponent {...{ sequenceData: seq, sequence: sequences[safeSelectedOutput] }} />
       </div>
       <form onSubmit={chooseFragment}>
         <Button fullWidth type="submit" variant="contained">Choose product</Button>
