@@ -40,6 +40,13 @@ export function getInputSequencesFromSourceId(state, sourceId) {
   return thisSource.input.map(({sequence}) => state.cloning.sequences.find((e) => e.id === sequence)).filter((e) => e !== undefined);
 }
 
+/** True if any assembly input is linear (not circular) according to teselaJsonCache.*/
+export function anyAssemblyInputIsLinear(source, teselaJsonCache) {
+  const sequenceIds = source.input.map(({ sequence }) => sequence);
+  // We test whether teselaJsonCache[id], because primers are also listed as inputs
+  return sequenceIds.some((id) => teselaJsonCache[id] && (teselaJsonCache[id].circular !== true));
+}
+
 export function isSourceATemplate({ sources, sequences }, sourceId) {
   // Get the output sequence
   const source = sources.find((s) => s.id === sourceId);

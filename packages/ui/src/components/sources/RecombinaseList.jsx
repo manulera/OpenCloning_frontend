@@ -65,7 +65,7 @@ function RecombinaseList({ recombinases, setRecombinases }) {
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
         <TextField
           fullWidth
-          label="Name (optional)"
+          label="Recombinase name (optional)"
           value={name}
           onChange={(e) => setName(e.target.value)}
           size="small"

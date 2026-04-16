@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { Checkbox, FormControlLabel, InputLabel, MenuItem, Select, TextField, FormControl, InputAdornment } from '@mui/material';
 import MultipleInputsSelector from './MultipleInputsSelector';
-import { getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
+import { anyAssemblyInputIsLinear, getInputSequencesFromSourceId } from '@opencloning/store/cloning_utils';
 import EnzymeMultiSelect from '../form/EnzymeMultiSelect';
 import SubmitButtonBackendAPI from '../form/SubmitButtonBackendAPI';
 import { classNameToEndPointMap } from '@opencloning/utils/sourceFunctions';
@@ -20,6 +20,11 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
   const { id: sourceId, input: sourceInput } = source;
   const inputSequences = useSelector((state) => getInputSequencesFromSourceId(state, sourceId), shallowEqual);
   const inputContainsTemplates = inputSequences.some((sequence) => sequence.type === 'TemplateSequence');
+  const anyInputIsLinear = useSelector(
+    (state) => anyAssemblyInputIsLinear(source, state.cloning.teselaJsonCache),
+  );
+  // It starts as undefined to avoid flashing the checkbox when the component mounts
+  const [inputContainsGenome, setInputContainsGenome] = React.useState(undefined);
   const [minimalHomology, setMinimalHomology] = React.useState(20);
   const [allowPartialOverlap, setAllowPartialOverlap] = React.useState(false);
   const [circularOnly, setCircularOnly] = React.useState(false);
@@ -43,6 +48,13 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
     }
   }, [source]);
 
+  React.useEffect(() => {
+    if (inputSequences.length == 1) {
+      setInputContainsGenome(false);
+    } else {
+      setInputContainsGenome(anyInputIsLinear);
+    }
+  }, [anyInputIsLinear, inputSequences.length]);
   const { updateSource } = cloningActions;
 
   const preventSubmit = (
@@ -97,7 +109,10 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
     } else if (assemblyType === 'RecombinaseSource') {
       if (recombinases.length === 0) { return; }
       requestData.source.recombinases = recombinases;
-      const config = { params: { reverse_recombinase: reverseRecombinase } };
+      const config = { params: {
+        reverse_recombinase: reverseRecombinase,
+        input_contains_genome: inputContainsGenome,
+      } };
       sendPostRequest({ endpoint: 'recombinase', requestData, config, source });
     } else {
       const config = { params: {
@@ -160,6 +175,25 @@ function SourceAssembly({ source, requestStatus, sendPostRequest }) {
                 )}
               />
             </FormControl>
+            {(anyInputIsLinear && inputSequences.length > 1) && inputContainsGenome !== undefined && (
+              <FormControl fullWidth style={{ textAlign: 'left' }}>
+                <FormControlLabel
+                  control={(
+                    <Checkbox
+                      data-testid="input-contains-genome-checkbox"
+                      checked={inputContainsGenome}
+                      onChange={() => setInputContainsGenome(prev => !prev)}
+                    />
+                  )}
+                  label={(
+                    <LabelWithTooltip
+                      label="Input contains genome"
+                      tooltip="Select this option if any of the linear input sequences is part of a genome. This will be used to simulate genome integration rather than treating it as a linear DNA sequence"
+                    />
+                  )}
+                />
+              </FormControl>
+            )}
           </>
         )}
         { (assemblyType === 'GatewaySource') && (
