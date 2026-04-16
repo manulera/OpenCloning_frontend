@@ -20,7 +20,7 @@ export function useQueryParamsForm(parse, applyToSearchParams) {
   }, [paramsFromUrl]);
 
   const submitToUrl = useCallback(() => {
-    const next = new globalThis.URLSearchParams(searchParams);
+    const next = new URLSearchParams(searchParams);
     applyToSearchParams(pendingParams, next);
     setSearchParams(next);
   }, [searchParams, setSearchParams, pendingParams, applyToSearchParams]);

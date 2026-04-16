@@ -120,7 +120,7 @@ export default function QuerySelect({
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{autocompleteProps.noOptionsText || ''}</FormHelperText>
+            <FormHelperText>{options.length === 0 ? autocompleteProps?.noOptionsText : ''}</FormHelperText>
           </>
         )}
       </FormControl>
