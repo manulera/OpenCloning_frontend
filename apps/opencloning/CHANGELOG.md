@@ -1,5 +1,17 @@
 # opencloning
 
+## 1.5.7
+
+### Patch Changes
+
+- [#686](https://github.com/manulera/OpenCloning_frontend/pull/686) [`c81b179`](https://github.com/manulera/OpenCloning_frontend/commit/c81b179b4fece50271ea214cab1f8a356e36811f) Thanks [@manulera](https://github.com/manulera)! - useBackendAPI now shows x-warning messages when the backend returns a failed request with that header. This is used and tested for partial restriction-ligation.
+
+- Updated dependencies [[`c81b179`](https://github.com/manulera/OpenCloning_frontend/commit/c81b179b4fece50271ea214cab1f8a356e36811f), [`c81b179`](https://github.com/manulera/OpenCloning_frontend/commit/c81b179b4fece50271ea214cab1f8a356e36811f)]:
+  - @opencloning/ui@1.7.6
+  - @opencloning/opencloning-elabftw@1.7.6
+  - @opencloning/store@1.7.6
+  - @opencloning/utils@1.7.6
+
 ## 1.5.6
 
 ### Patch Changes
