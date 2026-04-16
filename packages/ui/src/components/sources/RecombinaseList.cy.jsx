@@ -85,7 +85,7 @@ describe('<RecombinaseList />', () => {
     const setRecombinasesSpy = cy.spy().as('setRecombinasesSpy');
     cy.mount(<RecombinaseList recombinases={[]} setRecombinases={setRecombinasesSpy} />);
 
-    setInputValue('Name (optional)', 'MyRecombinase', 'body');
+    setInputValue('Recombinase name (optional)', 'MyRecombinase', 'body');
     setInputValue('Site 1', 'AAaaTTC', 'body');
     setInputValue('Site 1 name', 'loxP', 'body');
     setInputValue('Site 2', 'CCaaGC', 'body');
