@@ -9,7 +9,7 @@ import { Alert, Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import useUpdateAnnotationInMainSequence from './annotation/useUpdateAnnotationInMainSequence';
 import useStoreEditor from '../hooks/useStoreEditor';
-import BatchDomesticateDialog from './domesticate/BatchDomesticateDialog';
+import DomesticateDialog from './domesticate/DomesticateDialog';
 
 const { setMainSequenceSelection, addPrimer } = cloningActions;
 
@@ -173,13 +173,14 @@ function MainSequenceEditor() {
       }
       <Editor {...{ editorName, ...defaultMainEditorProps, ...extraProp, height: '800' }} />
       {domesticateDialogOpen && 
-        <BatchDomesticateDialog
+        <DomesticateDialog
           open={domesticateDialogOpen}
           onClose={() => {
             setDomesticateDialogOpen(false);
             setDomesticateContext(null);
           }}
           initialContext={domesticateContext}
+          mainSequenceId={mainSequenceId}
         />
       }
     </div>

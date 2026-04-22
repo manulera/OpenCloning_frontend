@@ -18,12 +18,12 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { jsonToGenbank } from '@teselagen/bio-parsers';
 import error2String from '@opencloning/utils/error2String';
-import useAlerts from '../../hooks/useAlerts';
 import useBackendRoute from '../../hooks/useBackendRoute';
 import useHttpClient from '../../hooks/useHttpClient';
-import { featureToGenbankLocationString } from '@opencloning/utils';
+import { featureToGenbankLocationString, mergeStates } from '@opencloning/utils';
+import { useDispatch, useStore } from 'react-redux';
+import { cloningActions } from '@opencloning/store/cloning';
 
 /** Matches OpenAPI `CloningType` */
 export const CLONING_TYPES = ['domestication', 'synthesis'];
@@ -65,6 +65,8 @@ export const ALLOWED_CATEGORIES = [
 
 const FOUR_BP = /^[ACGT]{4}$/;
 
+const { setState: setCloningState, setCurrentTab } = cloningActions;
+
 function categoryPrefixSuffixValid(category, prefix, suffix) {
   const pref = prefix.toUpperCase();
   const suff = suffix.toUpperCase();
@@ -74,22 +76,10 @@ function categoryPrefixSuffixValid(category, prefix, suffix) {
   return prefix === '' && suffix === '';
 }
 
-function buildTextFileSequence(sequenceData) {
-  const fileContent = jsonToGenbank(sequenceData);
-  return {
-    id: 1,
-    type: 'TextFileSequence',
-    sequence_file_format: 'genbank',
-    overhang_crick_3prime: 0,
-    overhang_watson_3prime: 0,
-    file_content: fileContent,
-  };
-}
-
-export default function BatchDomesticateDialog({ open, onClose, initialContext }) {
+export default function DomesticateDialog({ open, onClose, initialContext, mainSequenceId }) {
   const httpClient = useHttpClient();
   const backendRoute = useBackendRoute();
-  const { addAlert } = useAlerts();
+  const store = useStore();
 
   const location = React.useMemo(() => featureToGenbankLocationString(initialContext.annotation), [initialContext]);
   const [cloningType, setCloningType] = React.useState('domestication');
@@ -99,6 +89,8 @@ export default function BatchDomesticateDialog({ open, onClose, initialContext }
   const [category, setCategory] = React.useState('');
   const [enzymes, setEnzymes] = React.useState(['BsaI', 'BsmBI']);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const dispatch = useDispatch();
 
   const categoryValueForApi = category || null;
 
@@ -127,7 +119,7 @@ export default function BatchDomesticateDialog({ open, onClose, initialContext }
     e.preventDefault();
     if (!validationOk || !initialContext) return;
     setIsSubmitting(true);
-    const sequence = buildTextFileSequence(initialContext.sequenceData);
+    const sequence = store.getState().cloning.sequences.find((s) => s.id === mainSequenceId);
     const body = {
       sequence,
       location: location.trim(),
@@ -141,12 +133,29 @@ export default function BatchDomesticateDialog({ open, onClose, initialContext }
     try {
       const url = backendRoute('batch_cloning/domesticate');
       const { data } = await httpClient.post(url, body);
-      console.log('batch_cloning/domesticate response', data);
-      addAlert({ message: 'Domestication request completed (see console for response)', severity: 'success' });
+
+      const { mergedState, idShift } = mergeStates(data, store.getState().cloning);
+      const originalSequenceIdInNewState = data.sources.find((s) => s.type === 'ManuallyTypedSource')?.id;
+      if (!originalSequenceIdInNewState) {
+        throw new Error('Original sequence not found in new state');
+      }
+      const originalSequenceIdInMergedState = originalSequenceIdInNewState + idShift;
+      mergedState.sequences = mergedState.sequences.filter((s) => s.id !== originalSequenceIdInMergedState);
+      mergedState.sources = mergedState.sources.filter((s) => s.id !== originalSequenceIdInMergedState);
+      mergedState.sources.map((s) => {
+        s.input = s.input.map((i) => {
+          if (i.sequence === originalSequenceIdInMergedState) {
+            return { ...i, sequence: mainSequenceId };
+          }
+          return i;
+        });
+      });
+
+      dispatch(setCloningState(mergedState));
+      dispatch(setCurrentTab(1));
       onClose();
     } catch (err) {
-      console.log(err.response);
-      addAlert({ message: error2String(err), severity: 'error' });
+      setError(error2String(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -189,6 +198,9 @@ export default function BatchDomesticateDialog({ open, onClose, initialContext }
               ))}
             </Select>
           </FormControl>
+          {location.includes('join') && cloningType === 'synthesis' && 
+          <Alert severity="info" sx={{ mb: 2 }}>Synthesis will remove introns in this feature</Alert>
+          }
           <FormControl fullWidth margin="dense">
             <InputLabel id="category-label" shrink>
               Category
@@ -248,6 +260,7 @@ export default function BatchDomesticateDialog({ open, onClose, initialContext }
               </FormGroup>
             </FormControl>
           </Box>
+          {error && <Alert severity="error">{error}</Alert>}
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="inherit">Cancel</Button>
