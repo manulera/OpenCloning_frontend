@@ -17,3 +17,4 @@ export * from './other.js';
 export { default as getTransformCoords } from './transformCoords.js';
 export * from './selectedRegionUtils.js';
 export * from './normalizeSyntax.js';
+export * from './dnaUtils.js';

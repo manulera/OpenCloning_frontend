@@ -9,6 +9,7 @@ import { Alert, Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import useUpdateAnnotationInMainSequence from './annotation/useUpdateAnnotationInMainSequence';
 import useStoreEditor from '../hooks/useStoreEditor';
+import BatchDomesticateDialog from './domesticate/BatchDomesticateDialog';
 
 const { setMainSequenceSelection, addPrimer } = cloningActions;
 
@@ -41,20 +42,6 @@ function primerRightClickedOverride(items, { annotation }, props) {
   ];
 }
 
-function featureRightClickedOverride(items, { annotation }, props) {
-  return [
-    ...regionRightClickedOverride(items, { annotation }, props),
-    "--",
-    "editFeature",
-    "deleteFeature",
-    "showRemoveDuplicatesDialogFeatures",
-    "--",
-    "toggleCdsFeatureTranslations",
-    "viewFeatureProperties",
-  ];
-}
-
-
 function MainSequenceEditor() {
   const dispatch = useDispatch();
   const { addAlert } = useAlerts();
@@ -75,6 +62,30 @@ function MainSequenceEditor() {
   const editorName = 'mainEditor';
   const mainSequenceId = useSelector((state) => state.cloning.mainSequenceId);
   const topDivRef = React.useRef(null);
+
+  const [domesticateDialogOpen, setDomesticateDialogOpen] = React.useState(false);
+  const [domesticateContext, setDomesticateContext] = React.useState(null);
+
+  const featureRightClickedOverride = React.useCallback((items, { annotation }, props) => {
+    return [
+      ...regionRightClickedOverride(items, { annotation }, props),
+      "--",
+      "editFeature",
+      "deleteFeature",
+      "showRemoveDuplicatesDialogFeatures",
+      "--",
+      "toggleCdsFeatureTranslations",
+      "viewFeatureProperties",
+      "--",
+      {
+        text: 'Domesticate (experimental)',
+        onClick: () => {
+          setDomesticateContext({ sequenceData: props.sequenceData, annotation });
+          setDomesticateDialogOpen(true);
+        },
+      },
+    ];
+  }, []);
 
   React.useEffect(() => {
     if (annotationChanged) {
@@ -161,6 +172,16 @@ function MainSequenceEditor() {
       </Alert>
       }
       <Editor {...{ editorName, ...defaultMainEditorProps, ...extraProp, height: '800' }} />
+      {domesticateDialogOpen && 
+        <BatchDomesticateDialog
+          open={domesticateDialogOpen}
+          onClose={() => {
+            setDomesticateDialogOpen(false);
+            setDomesticateContext(null);
+          }}
+          initialContext={domesticateContext}
+        />
+      }
     </div>
   );
 }
