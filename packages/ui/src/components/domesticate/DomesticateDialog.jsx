@@ -152,7 +152,7 @@ export default function DomesticateDialog({ open, onClose, initialContext, mainS
       });
 
       dispatch(setCloningState(mergedState));
-      dispatch(setCurrentTab(1));
+      dispatch(setCurrentTab(0));
       onClose();
     } catch (err) {
       setError(error2String(err));

@@ -29,5 +29,11 @@ describe('Domesticate flow', () => {
     cy.get('.MuiDialog-root button').contains('Submit').should('not.be.disabled').click();
     cy.wait('@batchDomesticate');
     cy.get('.MuiDialog-root').should('not.exist');
+
+    // Check we moved to the cloning tab
+    cy.get('button.MuiTab-root.Mui-selected').contains('Cloning').should('exist');
+    // Check the sequence is updated
+    cy.get('li#sequence-3').should('have.length', 2);
+    cy.get('li').contains('Restriction with BsaI and BsmBI').should('exist');
   });
 });
