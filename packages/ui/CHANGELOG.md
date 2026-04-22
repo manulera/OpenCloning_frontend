@@ -1,5 +1,15 @@
 # @opencloning/ui
 
+## 1.7.7
+
+### Patch Changes
+
+- [#689](https://github.com/manulera/OpenCloning_frontend/pull/689) [`c5d9309`](https://github.com/manulera/OpenCloning_frontend/commit/c5d93099583fdfafafd40e9924d2216b596e0cec) Thanks [@manulera](https://github.com/manulera)! - Added experimental feature for domestication that relies on API calls to goldenbraidpro
+
+- Updated dependencies [[`c5d9309`](https://github.com/manulera/OpenCloning_frontend/commit/c5d93099583fdfafafd40e9924d2216b596e0cec)]:
+  - @opencloning/utils@1.7.7
+  - @opencloning/store@1.7.7
+
 ## 1.7.6
 
 ### Patch Changes
