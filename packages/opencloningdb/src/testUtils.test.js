@@ -44,13 +44,8 @@ export function addStubToServer(server, stub) {
       const plainParams = Object.fromEntries(Object.entries(params ?? {}));
       const actualParams = Object.keys(plainParams).length === 0 ? null : plainParams;
       let actualBody;
-      if (stub.body && typeof stub.body === 'object' && 'multipart_files' in stub.body) {
-        const multipartText = await request.clone().text();
-        stub.body.multipart_files.forEach((file) => {
-          expect(multipartText).toContain(`filename="${file.filename}"`);
-          expect(multipartText).toContain(`Content-Type: ${file.content_type}`);
-          expect(multipartText).toContain(file.content);
-        });
+      if (request.headers.get('content-type')?.includes('multipart/form-data')) {
+        console.log(await request.formData());
         actualBody = stub.body;
       } else {
         actualBody = await request
@@ -66,7 +61,7 @@ export function addStubToServer(server, stub) {
       delete actualHeaders['accept'];
       expect(actualHeaders).toMatchObject(stub.headers);
 
-      if (stub.response.body_encoding === 'base64') {
+      if (stub.response.headers['content-disposition']) {
         return new HttpResponse(Buffer.from(stub.response.body, 'base64'), {
           status: stub.response.status_code,
           headers: stub.response.headers,

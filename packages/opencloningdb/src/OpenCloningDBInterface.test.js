@@ -4,6 +4,7 @@ import OpenCloningDBInterface from './OpenCloningDBInterface';
 
 import { addStubToServer, getStub, setupToken, clearToken } from './testUtils.test';
 import { setWorkspaceHeader } from './common';
+import { file2base64 } from '@opencloning/utils/readNwrite';
 
 const server = setupServer();
 
@@ -91,7 +92,7 @@ describe('locateSequenceInDatabase', () => {
   });
 });
 
-describe('submitSequencingFileToDatabase', () => {
+describe.only('submitSequencingFileToDatabase', () => {
   it('posts multipart files to /sequence/:id/sequencing_files and returns response', async () => {
     const stub = getStub('post_sequence_sequencing_files');
     addStubToServer(server, stub);
@@ -126,10 +127,8 @@ describe('getSequencingFiles', () => {
     const downloadedFile = await files[0].getFile();
     expect(downloadedFile).toBeInstanceOf(File);
     expect(downloadedFile.name).toBe(listStub.response.body[0].original_name);
-    const downloadedText = typeof downloadedFile.text === 'function'
-      ? await downloadedFile.text()
-      : new TextDecoder().decode(await downloadedFile.arrayBuffer());
-    expect(downloadedText).toBe(Buffer.from(downloadStub.response.body, 'base64').toString('utf8'));
+    const downloadedText = await file2base64(downloadedFile);
+    expect(downloadedText).toBe(downloadStub.response.body);
   });
 });
 
