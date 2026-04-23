@@ -92,25 +92,6 @@ describe('locateSequenceInDatabase', () => {
   });
 });
 
-describe.only('submitSequencingFileToDatabase', () => {
-  it('posts multipart files to /sequence/:id/sequencing_files and returns response', async () => {
-    const stub = getStub('post_sequence_sequencing_files');
-    addStubToServer(server, stub);
-
-    const fileFromStub = stub.body.multipart_files[0];
-    const sequenceFile = new File([fileFromStub.content], fileFromStub.filename, {
-      type: fileFromStub.content_type,
-    });
-
-    const result = await OpenCloningDBInterface.submitSequencingFileToDatabase({
-      databaseId: 10,
-      sequencingFiles: [sequenceFile],
-    });
-
-    expect(result).toEqual(stub.response.body);
-  });
-});
-
 describe('getSequencingFiles', () => {
   it('gets sequencing files list and supports getFile download', async () => {
     const listStub = getStub('get_sequence_sequencing_files');

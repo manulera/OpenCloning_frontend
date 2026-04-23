@@ -45,8 +45,7 @@ export function addStubToServer(server, stub) {
       const actualParams = Object.keys(plainParams).length === 0 ? null : plainParams;
       let actualBody;
       if (request.headers.get('content-type')?.includes('multipart/form-data')) {
-        console.log(await request.formData());
-        actualBody = stub.body;
+        throw new Error('Multipart form data is not supported');
       } else {
         actualBody = await request
           .clone()
