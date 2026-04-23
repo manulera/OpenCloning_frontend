@@ -1,26 +1,38 @@
 import React from 'react';
+import { QuerySelect, useDebouncedSearchQuery } from '@opencloning/ui';
 import { openCloningDBHttpClient } from './common';
-import GetRequestMultiSelect from '@opencloning/ui/components/form/GetRequestMultiSelect';
+import endpoints from './endpoints';
 
 const PAGE_SIZE = 100;
 const messages = { loadingMessage: 'retrieving primers', errorMessage: 'Could not retrieve primers from OpenCloningDB' };
 
+const getGetQuery = (filterDatabaseIds) => {
+  return (name) => ({
+    queryKey: ['primers-search', name],
+    queryFn: async () => {
+      const { data } = await openCloningDBHttpClient.get(endpoints.primers, {
+        params: { page: 1, size: PAGE_SIZE, name },
+      });
+      return data.items.filter((primer) => !filterDatabaseIds.includes(primer.id));
+    },
+  });
+};
+
 function PrimerSelect({ setPrimer, filterDatabaseIds = [], ...rest }) {
-  const url = '/primers';
-  const getOptionsFromResponse = React.useCallback((data) => data.items.filter((primer) => !filterDatabaseIds.includes(primer.id)), [filterDatabaseIds]);
-  const onChange = React.useCallback((value) => setPrimer(value), [setPrimer]);
+  const { query, autocompleteProps, clearInput } = useDebouncedSearchQuery(getGetQuery(filterDatabaseIds));
 
   return (
-    <GetRequestMultiSelect
-      getOptionsFromResponse={getOptionsFromResponse}
-      httpClient={openCloningDBHttpClient}
-      url={url}
-      requestParams={{ page: 1, size: PAGE_SIZE }}
+    <QuerySelect
+      query={query}
       label="Primer"
-      messages={messages}
-      onChange={onChange}
+      loadingMessage={messages.loadingMessage}
+      errorMessage={messages.errorMessage}
+      onChange={setPrimer}
       getOptionLabel={(option) => (option === '' ? '' : `${option.id} - ${option.name || 'Unnamed'}`)}
+      getOptionKey={(option) => option.id}
       multiple={false}
+      autocompleteProps={autocompleteProps}
+      onClear={clearInput}
       {...rest}
     />
   );
