@@ -29,7 +29,7 @@ describe('<PrimerSelect />', () => {
       cy.get('@primerSpy').should('have.been.calledWith', selectedPrimer);
     });
 
-    // Input should be cleared
-    cy.get('input').should('have.value', '');
+    // Input should show the selected primer
+    cy.get('input').should('have.value', '16 - ase1_fwd');
   });
 });

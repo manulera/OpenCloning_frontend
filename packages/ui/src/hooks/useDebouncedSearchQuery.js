@@ -29,7 +29,7 @@ export default function useDebouncedSearchQuery(getQuery, { minChars = 3, deboun
   const autocompleteProps = {
     inputValue: input,
     onInputChange: (_event, value, reason) => {
-      if (reason === 'input') setInput(value);
+      if (reason === 'input'|| reason === 'reset') setInput(value);
     },
     filterOptions: (x) => syncing ? [] : x,
     noOptionsText,
