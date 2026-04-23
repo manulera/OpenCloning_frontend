@@ -12,9 +12,8 @@ import {
   TableContainer,
   Paper,
 } from '@mui/material';
-import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient, endpoints, SequenceSelect } from '@opencloning/opencloningdb';
 import { Dialog, DialogTitle } from '@mui/material';
-import SequenceSelect from '../components/SequenceSelect';
 import NewLineUID from '../components/NewLineUID';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';

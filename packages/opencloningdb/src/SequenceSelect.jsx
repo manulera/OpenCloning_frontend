@@ -1,26 +1,33 @@
 import React from 'react';
-import { openCloningDBHttpClient } from './common';
-import GetRequestMultiSelect from '@opencloning/ui/components/form/GetRequestMultiSelect';
+import { QuerySelect, useDebouncedSearchQuery } from '@opencloning/ui';
+import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 
-const PAGE_SIZE = 100;
+const getGetQuery = (sequenceTypes) => {
+  return (name) => ({
+    queryKey: ['sequences', { sequence_types: sequenceTypes, name }],
+    queryFn: async () => {
+      const { data } = await openCloningDBHttpClient.get(endpoints.sequences, {
+        params: { sequence_types: sequenceTypes, name },
+      });
+      return data.items;
+    },
+  })};
 
-function SequenceSelect({ setSequence, ...rest }) {
-  const url = '/sequences';
-  const getOptionsFromResponse = (data) => data.items;
-  const messages = { loadingMessage: 'retrieving sequences', errorMessage: 'Could not retrieve sequences from OpenCloningDB' };
-  const onChange = (value) => setSequence(value);
+function SequenceSelect({ value, onChange, label, multiple = true, sequenceTypes = undefined, ...rest }) {
+  const { query, autocompleteProps, clearInput } = useDebouncedSearchQuery(getGetQuery(sequenceTypes));
 
   return (
-    <GetRequestMultiSelect
-      getOptionsFromResponse={getOptionsFromResponse}
-      httpClient={openCloningDBHttpClient}
-      url={url}
-      requestParams={{ page: 1, size: PAGE_SIZE }}
-      label="Sequence"
-      messages={messages}
+    <QuerySelect
+      query={query}
+      label={label}
+      multiple={multiple}
+      getOptionLabel={(seq) => seq.name ?? `Sequence ${seq.id}`}
+      getOptionKey={(seq) => seq.id}
+      value={value}
       onChange={onChange}
-      getOptionLabel={(option) => (option === '' ? '' : `${option.id} - ${option.name}`)}
-      multiple={false}
+      autoComplete={true}
+      autocompleteProps={autocompleteProps}
+      onClear={clearInput}
       {...rest}
     />
   );

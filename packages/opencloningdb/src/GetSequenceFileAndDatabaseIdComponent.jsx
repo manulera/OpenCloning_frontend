@@ -2,6 +2,7 @@ import React from 'react';
 import SequenceSelect from './SequenceSelect';
 import { openCloningDBHttpClient } from './common';
 import endpoints from './endpoints';
+import { FormControl } from '@mui/material';
 
 function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   const onSequenceSelect = async (selectedSequence) => {
@@ -22,9 +23,9 @@ function GetSequenceFileAndDatabaseIdComponent({ setFile, setDatabaseId }) {
   };
 
   return (
-    <div>
-      <SequenceSelect fullWidth setSequence={onSequenceSelect} />
-    </div>
+    <FormControl fullWidth>
+      <SequenceSelect multiple={false} label="Sequence" onChange={onSequenceSelect} />
+    </FormControl>
   );
 }
 
