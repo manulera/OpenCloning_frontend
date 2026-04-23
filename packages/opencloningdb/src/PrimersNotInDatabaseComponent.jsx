@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Alert, Box, Typography, List, ListItem } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { getSubState } from '@opencloning/utils/network';
 
 function PrimersNotInDatabaseComponent({ id, submissionData, setSubmissionData }) {
@@ -25,7 +25,7 @@ function PrimersNotInDatabaseComponent({ id, submissionData, setSubmissionData }
       icon={false}
     >
       <Box>
-        <Typography>Primers will be saved to the database, consider changing their name</Typography>
+        <Typography>The below primers will be saved to the database, consider changing their name in the primer tab</Typography>
         <ul>
           {primers.map((primer) => (
             <li key={primer.id}>{primer.name}</li>

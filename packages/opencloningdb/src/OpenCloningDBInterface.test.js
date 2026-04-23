@@ -19,13 +19,151 @@ afterAll(() => {
 });
 
 describe('submitPrimerToDatabase', () => {
-  it('posts the primer and returns the new id, with the expected body', async () => {
-    addStubToServer(server, 'post_primer');
+  it('posts the primer and returns the new id', async () => {
+    const stub = getStub('post_primer');
+    addStubToServer(server, stub);
+
     const id = await OpenCloningDBInterface.submitPrimerToDatabase({
-      submissionData: { title: 'new' },
-      primer: { sequence: 'GGCC' },
+      submissionData: { title: stub.body.name },
+      primer: { sequence: stub.body.sequence },
     });
-    expect(id).toBe(70);
+
+    expect(id).toBe(stub.response.body.id);
+  });
+});
+
+describe('getPrimer', () => {
+  it('returns primer in interface format', async () => {
+    const stub = getStub('get_primer');
+    addStubToServer(server, stub);
+
+    const primer = await OpenCloningDBInterface.getPrimer(stub.response.body.id);
+
+    expect(primer).toEqual({
+      name: stub.response.body.name,
+      'database_id': stub.response.body.id,
+      sequence: stub.response.body.sequence,
+    });
+  });
+});
+
+describe('submitSequenceToDatabase', () => {
+  it('submits /sequence payload and returns databaseId + filtered mappings', async () => {
+    const stub = getStub('post_sequence');
+    addStubToServer(server, {
+      ...stub,
+      body: {
+        sources: stub.body.sources,
+        primers: stub.body.primers,
+        sequences: stub.body.sequences,
+      },
+    });
+
+    const primerIds = new Set(stub.body.primers.map((primer) => primer.id));
+    const sequenceIds = new Set(stub.body.sequences.map((sequence) => sequence.id));
+    const expectedPrimerMappings = stub.response.body.mappings.filter(({ localId }) => primerIds.has(localId));
+    const expectedSequenceMappings = stub.response.body.mappings.filter(({ localId }) =>
+      sequenceIds.has(localId),
+    );
+
+    const result = await OpenCloningDBInterface.submitSequenceToDatabase({
+      submissionData: { title: 'name' },
+      substate: stub.body,
+      id: stub.body.sequences[0].id,
+    });
+
+    expect(result).toEqual({
+      databaseId: stub.response.body.id,
+      primerMappings: expectedPrimerMappings,
+      sequenceMappings: expectedSequenceMappings,
+    });
+  });
+});
+
+describe('locateSequenceInDatabase', () => {
+  it('posts to /sequence/search and returns response data', async () => {
+    const stub = getStub('post_sequence_search');
+    addStubToServer(server, stub);
+
+    const result = await OpenCloningDBInterface.locateSequenceInDatabase(stub.body);
+
+    expect(result).toEqual(stub.response.body);
+  });
+});
+
+describe('submitSequencingFileToDatabase', () => {
+  it('posts multipart files to /sequence/:id/sequencing_files and returns response', async () => {
+    const stub = getStub('post_sequence_sequencing_files');
+    addStubToServer(server, stub);
+
+    const fileFromStub = stub.body.multipart_files[0];
+    const sequenceFile = new File([fileFromStub.content], fileFromStub.filename, {
+      type: fileFromStub.content_type,
+    });
+
+    const result = await OpenCloningDBInterface.submitSequencingFileToDatabase({
+      databaseId: 10,
+      sequencingFiles: [sequenceFile],
+    });
+
+    expect(result).toEqual(stub.response.body);
+  });
+});
+
+describe('getSequencingFiles', () => {
+  it('gets sequencing files list and supports getFile download', async () => {
+    const listStub = getStub('get_sequence_sequencing_files');
+    const downloadStub = getStub('download_sequencing_file');
+    addStubToServer(server, listStub);
+    addStubToServer(server, downloadStub);
+
+    const files = await OpenCloningDBInterface.getSequencingFiles(10);
+
+    expect(files).toHaveLength(1);
+    expect(files[0].id).toBe(listStub.response.body[0].id);
+    expect(files[0].name).toBe(listStub.response.body[0].original_name);
+
+    const downloadedFile = await files[0].getFile();
+    expect(downloadedFile).toBeInstanceOf(File);
+    expect(downloadedFile.name).toBe(listStub.response.body[0].original_name);
+    const downloadedText = typeof downloadedFile.text === 'function'
+      ? await downloadedFile.text()
+      : new TextDecoder().decode(await downloadedFile.arrayBuffer());
+    expect(downloadedText).toBe(Buffer.from(downloadStub.response.body, 'base64').toString('utf8'));
+  });
+});
+
+describe('isSubmissionDataValid', () => {
+  it('returns true when title is provided', () => {
+    expect(OpenCloningDBInterface.isSubmissionDataValid({ title: 'name' })).toBe(true);
   });
 
+  it('returns false when title is missing or empty', () => {
+    expect(OpenCloningDBInterface.isSubmissionDataValid({})).toBe(false);
+    expect(OpenCloningDBInterface.isSubmissionDataValid({ title: '' })).toBe(false);
+  });
+});
+
+describe('getSequenceLink', () => {
+  it('returns sequence link path', () => {
+    expect(OpenCloningDBInterface.getSequenceLink(42)).toBe('sequences/42');
+  });
+});
+
+describe('getPrimerLink', () => {
+  it('returns primer link path', () => {
+    expect(OpenCloningDBInterface.getPrimerLink(7)).toBe('primers/7');
+  });
+});
+
+describe('loadSequenceFromUrlParams', () => {
+  it('is currently a no-op', () => {
+    expect(OpenCloningDBInterface.loadSequenceFromUrlParams()).toBeUndefined();
+  });
+});
+
+describe('getSequenceName', () => {
+  it('is currently a no-op', () => {
+    expect(OpenCloningDBInterface.getSequenceName()).toBeUndefined();
+  });
 });

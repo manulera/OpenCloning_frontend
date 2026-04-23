@@ -1,8 +1,7 @@
-/* global FormData */
 import { Save as SaveIcon, Link as LinkIcon } from '@mui/icons-material';
 import GetPrimerComponent from './GetPrimerComponent';
 import GetSequenceFileAndDatabaseIdComponent from './GetSequenceFileAndDatabaseIdComponent';
-import { baseUrl, openCloningDBHttpClient } from './common';
+import { openCloningDBHttpClient } from './common';
 import endpoints from './endpoints';
 import LoadHistoryComponent from './LoadHistoryComponent';
 import SubmitToDatabaseComponent from './SubmitToDatabaseComponent';
