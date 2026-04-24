@@ -163,17 +163,29 @@ jobs:
       - name: run python dev server in background
         working-directory: OpenCloning_backend
         run: |
-          uv run uvicorn opencloning.main:app &
+          uv run opencloning-cli db test reset
+          uv run uvicorn opencloning.main:app --port 8000 &
+          uv run opencloning_db.api:app --port 8001 &
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
           ADDGENE_USERNAME: ${{ secrets.ADDGENE_USERNAME }}
           ADDGENE_PASSWORD: ${{ secrets.ADDGENE_PASSWORD }}
 
-      - name: check if the server is running
+      - name: check if the backend and opencloning-db servers are running
         run: |
           for i in {1..3}; do
             if curl -s http://127.0.0.1:8000 > /dev/null; then
-              echo "Server is up!"
+              echo "Backend server is up!"
+              exit 0
+            fi
+            echo "Waiting for server... ($i/3)"
+            sleep 2
+          done
+          echo "Server failed to start"
+          exit 1
+          for i in {1..3}; do
+            if curl -f http://127.0.0.1:8001/docs > /dev/null; then
+              echo "OpenCloning-DB server is up!"
               exit 0
             fi
             echo "Waiting for server... ($i/3)"
