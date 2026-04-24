@@ -1,5 +1,5 @@
 import { setWorkspaceHeader } from '@opencloning/opencloningdb';
-import fs from 'fs';
+
 const DB_URL = 'http://localhost:8001';
 
 /**

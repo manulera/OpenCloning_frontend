@@ -35,7 +35,7 @@ describe('<SequenceSelect />', () => {
           sequence_type: stubSequence.sequence_type,
         });
         expect(liveSequence.sample_uids).to.deep.equal(stubSequence.sample_uids);
-        expect(liveSequence.tags).to.deep.equal(stubSequence.tags);
+        expect(liveSequence.tags.map((tag) => tag.name)).to.deep.equal(stubSequence.tags.map((tag) => tag.name));
         cy.wrap(liveSequence).as('liveSequence');
       });
     });
