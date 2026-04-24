@@ -21,24 +21,13 @@ function expectCloningStrategyFile(file, sequenceId, expectedSequenceFile) {
 }
 
 describe('<GetSequenceFileAndDatabaseIdComponent />', () => {
-  beforeEach(() => {
-    cy.loginToOpenCloningDB('bootstrap@example.com', 'password', 1);
-  });
-
   it('selects a sequence and calls setFile and setDatabaseId with correct data', () => {
     const setFileSpy = cy.spy().as('setFileSpy');
     const setDatabaseIdSpy = cy.spy().as('setDatabaseIdSpy');
-    cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
-    cy.intercept('GET', 'http://localhost:8001/sequence/*/text_file_sequence').as('getSequenceFile');
+    cy.setupOpenCloningDBTestAuth();
 
-    cy.getStub('get_sequences').then((sequencesStub) => {
-      const stubSequence = sequencesStub.response.body.items.find((sequence) => sequence.name === SEQUENCE_NAME);
-      cy.wrap(stubSequence).as('stubSequence');
-    });
-
-    cy.getStub('get_text_file_sequence').then((textFileSequenceStub) => {
-      cy.wrap(textFileSequenceStub.response.body).as('stubSequenceFile');
-    });
+    cy.interceptOpenCloningDBStub('get_sequences_search_by_name', { alias: 'getSequences' });
+    cy.interceptOpenCloningDBStub('get_text_file_sequence', { alias: 'getSequenceFile' });
 
     cy.mount(
       <GetSequenceFileAndDatabaseIdComponent setFile={setFileSpy} setDatabaseId={setDatabaseIdSpy} />,
@@ -46,65 +35,51 @@ describe('<GetSequenceFileAndDatabaseIdComponent />', () => {
 
     cy.get('input').type(SEQUENCE_NAME);
     cy.get('.MuiAutocomplete-listbox li', { timeout: 10000 }).should('have.length.greaterThan', 0);
-    cy.get('@stubSequence').then((stubSequence) => {
-      cy.wait('@getSequences').then(({ response }) => {
-        const liveSequence = response.body.items.find((sequence) => sequence.name === SEQUENCE_NAME);
-        expect(liveSequence).to.include({
-          name: stubSequence.name,
-          seguid: stubSequence.seguid,
-          sequence_type: stubSequence.sequence_type,
-        });
-        cy.wrap(liveSequence).as('liveSequence');
-      });
-    });
+    cy.wait('@getSequences').its('request.url').should('include', `name=${SEQUENCE_NAME}`);
 
     clickMultiSelectOption('Sequence', SEQUENCE_NAME, 'div');
-
-    cy.get('@liveSequence').then((liveSequence) => {
-      cy.get('@stubSequenceFile').then((stubSequenceFile) => {
-        cy.wait('@getSequenceFile').then(({ request, response }) => {
-          expect(request.url).to.include(`/sequence/${liveSequence.id}/text_file_sequence`);
-          expect(response.body).to.include({
-            file_content: stubSequenceFile.file_content,
-            overhang_crick_3prime: stubSequenceFile.overhang_crick_3prime,
-            overhang_watson_3prime: stubSequenceFile.overhang_watson_3prime,
-            sequence_file_format: stubSequenceFile.sequence_file_format,
-            type: stubSequenceFile.type,
-          });
-          cy.get('@setDatabaseIdSpy').should('have.been.calledWith', liveSequence.id);
-          cy.get('@setFileSpy').should('have.been.calledOnce');
-          return cy.get('@setFileSpy').then((spy) => {
-            const [file] = spy.lastCall.args;
-            return expectCloningStrategyFile(file, liveSequence.id, stubSequenceFile);
-          });
-        });
+    cy.getStub('get_text_file_sequence').then((stub) => {
+      cy.get('@setDatabaseIdSpy').should('have.been.calledWith', stub.response.body.id);
+      cy.get('@setFileSpy').should('have.been.calledOnce');
+      return cy.get('@setFileSpy').then((spy) => {
+        const [file] = spy.lastCall.args;
+        return expectCloningStrategyFile(file, stub.response.body.id, stub.response.body.sequence);
       });
     });
+
   });
 
   it('shows a retry button when requesting the selected file fails and retries successfully', () => {
     const setFileSpy = cy.spy().as('setFileSpy');
     const setDatabaseIdSpy = cy.spy().as('setDatabaseIdSpy');
 
+    cy.setupOpenCloningDBTestAuth();
+    cy.interceptOpenCloningDBStub('get_sequences_search_by_name', { alias: 'getSequences' });
+
+    cy.getStub('get_text_file_sequence').then((textFileSequenceStub) => {
+      let callCount = 0;
+      cy.intercept('GET', '**/sequence/*/text_file_sequence', (req) => {
+        callCount += 1;
+        if (callCount === 1) {
+          req.reply({ statusCode: 500 });
+          return;
+        }
+
+        req.reply({
+          statusCode: textFileSequenceStub.response.status_code,
+          body: textFileSequenceStub.response.body,
+          headers: textFileSequenceStub.response.headers,
+        });
+      }).as('getSequenceFile');
+    });
+
     cy.mount(
       <GetSequenceFileAndDatabaseIdComponent setFile={setFileSpy} setDatabaseId={setDatabaseIdSpy} />,
     );
 
     cy.get('input').type(SEQUENCE_NAME);
     cy.get('.MuiAutocomplete-listbox li', { timeout: 10000 }).should('have.length.greaterThan', 0);
-
-    let callCount = 0;
-    cy.intercept('GET', `**/text_file_sequence`, (req) => {
-      callCount += 1;
-      if (callCount === 1) {
-        req.reply({ statusCode: 500 });
-        return;
-      }
-
-      req.reply({
-        statusCode: 200,
-        body: {},
-      })}).as('getSequenceFile');
+    cy.wait('@getSequences').its('request.url').should('include', `name=${SEQUENCE_NAME}`);
 
     clickMultiSelectOption('Sequence', SEQUENCE_NAME, 'div');
 
