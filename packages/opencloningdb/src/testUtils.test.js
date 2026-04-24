@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { http, HttpResponse } from 'msw';
-import { expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { baseUrl } from './common';
 
 const STUB_FOLDER = `${__dirname}/../../../OpenCloning_backend/stubs/db`;
@@ -82,3 +82,10 @@ export function setupToken() {
 export function clearToken() {
   localStorage.removeItem('token');
 }
+
+describe('test utility module', () => {
+  it('exports helpers for other test files', () => {
+    expect(typeof getStub).toBe('function');
+    expect(typeof addStubToServer).toBe('function');
+  });
+});

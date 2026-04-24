@@ -19,6 +19,12 @@ vi.mock('./common', async (importOriginal) => {
   };
 });
 
+vi.mock('./GetPrimerComponent', () => ({ default: () => null }));
+vi.mock('./GetSequenceFileAndDatabaseIdComponent', () => ({ default: () => null }));
+vi.mock('./LoadHistoryComponent', () => ({ default: () => null }));
+vi.mock('./SubmitToDatabaseComponent', () => ({ default: () => null }));
+vi.mock('./PrimersNotInDatabaseComponent', () => ({ default: () => null }));
+
 import OpenCloningDBInterface from './OpenCloningDBInterface';
 
 function readFileAsText(file) {

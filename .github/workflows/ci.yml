@@ -127,18 +127,19 @@ jobs:
         run: |
           git describe --tags
 
-      - name: Cache mafft
-        id: cache-mafft
-        uses: actions/cache@v3
-        with:
-          path: /usr/bin/mafft
-          key: ${{ runner.os }}-mafft
+      # This is no longer needed, but keeping in case it's reused in the future
+      # - name: Cache mafft
+      #   id: cache-mafft
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: /usr/bin/mafft
+      #     key: ${{ runner.os }}-mafft
 
-      - name: Install mafft
-        if: steps.cache-mafft.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mafft
+      # - name: Install mafft
+      #   if: steps.cache-mafft.outputs.cache-hit != 'true'
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y mafft
 
       - name: Download MARS executable
         run: |

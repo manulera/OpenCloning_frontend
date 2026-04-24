@@ -1,10 +1,17 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { setupServer } from 'msw/node';
-import OpenCloningDBInterface from './OpenCloningDBInterface';
 
 import { addStubToServer, getStub, setupToken, clearToken } from './testUtils.test';
 import { setWorkspaceHeader } from './common';
 import { file2base64 } from '@opencloning/utils/readNwrite';
+
+vi.mock('./GetPrimerComponent', () => ({ default: () => null }));
+vi.mock('./GetSequenceFileAndDatabaseIdComponent', () => ({ default: () => null }));
+vi.mock('./LoadHistoryComponent', () => ({ default: () => null }));
+vi.mock('./SubmitToDatabaseComponent', () => ({ default: () => null }));
+vi.mock('./PrimersNotInDatabaseComponent', () => ({ default: () => null }));
+
+import OpenCloningDBInterface from './OpenCloningDBInterface';
 
 const server = setupServer();
 
