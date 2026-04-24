@@ -15,8 +15,7 @@ const STUB_FOLDER = `${__dirname}/../../../OpenCloning_backend/stubs/db`;
  * @property {{
  *   body: unknown,
  *   headers: Record<string, string>,
- *   status_code: number,
- *   body_encoding?: 'base64'
+ *   status_code: number
  * }} response
  */
 

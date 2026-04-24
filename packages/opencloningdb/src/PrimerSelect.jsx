@@ -3,7 +3,6 @@ import { QuerySelect, useDebouncedSearchQuery } from '@opencloning/ui';
 import { openCloningDBHttpClient } from './common';
 import endpoints from './endpoints';
 
-const PAGE_SIZE = 100;
 const messages = { loadingMessage: 'retrieving primers', errorMessage: 'Could not retrieve primers from OpenCloningDB' };
 
 const getGetQuery = (filterDatabaseIds) => {
@@ -11,7 +10,7 @@ const getGetQuery = (filterDatabaseIds) => {
     queryKey: ['primers-search', name],
     queryFn: async () => {
       const { data } = await openCloningDBHttpClient.get(endpoints.primers, {
-        params: { page: 1, size: PAGE_SIZE, name },
+        params: { name },
       });
       return data.items.filter((primer) => !filterDatabaseIds.includes(primer.id));
     },
@@ -28,7 +27,7 @@ function PrimerSelect({ setPrimer, filterDatabaseIds = [], ...rest }) {
       loadingMessage={messages.loadingMessage}
       errorMessage={messages.errorMessage}
       onChange={setPrimer}
-      getOptionLabel={(option) => (option === '' ? '' : `${option.id} - ${option.name || 'Unnamed'}`)}
+      getOptionLabel={(option) => (option === '' ? '' : option.name)}
       getOptionKey={(option) => option.id}
       multiple={false}
       autocompleteProps={autocompleteProps}

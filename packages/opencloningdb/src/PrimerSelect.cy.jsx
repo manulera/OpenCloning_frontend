@@ -8,14 +8,12 @@ const PRIMER_NAME = 'lacZ_attB1_fwd';
 
 describe('<PrimerSelect />', () => {
   it('searches for a primer and shows results', () => {
-    cy.loginToOpenCloningDB('bootstrap@example.com', 'password', 1);
+    cy.setupOpenCloningDBTestAuth();
     const primerSpy = cy.spy().as('primerSpy');
-    cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');
 
-    cy.getStub('get_primers').then((primersStub) => {
-      const stubPrimer = primersStub.response.body.items.find((primer) => primer.name === PRIMER_NAME);
-      cy.wrap(stubPrimer).as('stubPrimer');
-    });
+    cy.interceptOpenCloningDBStub('get_primers_search_by_name', {
+      alias: 'getPrimers',
+    })
 
     cy.mount(
       <DatabaseProvider value={OpenCloningDBInterface}>
@@ -27,22 +25,13 @@ describe('<PrimerSelect />', () => {
     cy.contains('Type at least').should('exist');
     cy.get('input').type(PRIMER_NAME);
     cy.get('.MuiAutocomplete-listbox li', { timeout: 10000 }).should('have.length.greaterThan', 0);
-    cy.get('@stubPrimer').then((stubPrimer) => {
-      cy.wait('@getPrimers').then(({ response }) => {
-        const livePrimer = response.body.items.find((primer) => primer.name === PRIMER_NAME);
-        expect(livePrimer).to.include({
-          name: stubPrimer.name,
-          sequence: stubPrimer.sequence,
-        });
-        cy.wrap(livePrimer).as('livePrimer');
-      });
-    });
 
     clickMultiSelectOption('Primer', PRIMER_NAME, 'div');
 
-    cy.get('@livePrimer').then((livePrimer) => {
-      cy.get('@primerSpy').should('have.been.calledWith', livePrimer);
-      cy.get('input').should('have.value', `${livePrimer.id} - ${PRIMER_NAME}`);
+    cy.getStub('get_primers_search_by_name').then((stub) => {
+      const stubPrimer = stub.response.body.items.find((primer) => primer.name === PRIMER_NAME);
+      cy.get('input').should('have.value', PRIMER_NAME);
+      cy.get('@primerSpy').should('have.been.calledWith', stubPrimer);
     });
   });
 
