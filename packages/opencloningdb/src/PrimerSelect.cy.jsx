@@ -4,10 +4,19 @@ import { DatabaseProvider } from '@opencloning/ui/providers/DatabaseContext';
 import OpenCloningDBInterface from './OpenCloningDBInterface';
 import { clickMultiSelectOption } from '../../../cypress/e2e/common_functions';
 
+const PRIMER_NAME = 'lacZ_attB1_fwd';
+
 describe('<PrimerSelect />', () => {
-  it('searches for "ase1" and shows results', () => {
+  it('searches for a primer and shows results', () => {
     cy.loginToOpenCloningDB('bootstrap@example.com', 'password', 1);
     const primerSpy = cy.spy().as('primerSpy');
+    cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');
+
+    cy.getStub('get_primers').then((primersStub) => {
+      const stubPrimer = primersStub.response.body.items.find((primer) => primer.name === PRIMER_NAME);
+      cy.wrap(stubPrimer).as('stubPrimer');
+    });
+
     cy.mount(
       <DatabaseProvider value={OpenCloningDBInterface}>
         <PrimerSelect setPrimer={primerSpy} />
@@ -16,17 +25,25 @@ describe('<PrimerSelect />', () => {
     // Clicking on the input
     cy.get('input').click();
     cy.contains('Type at least').should('exist');
-    cy.get('input').type('ase1');
+    cy.get('input').type(PRIMER_NAME);
     cy.get('.MuiAutocomplete-listbox li', { timeout: 10000 }).should('have.length.greaterThan', 0);
-    clickMultiSelectOption('Primer', 'ase1_fwd', 'div');
-
-    cy.getStub('get_primers').then((primersStub) => {
-      const selectedPrimer = primersStub.response.body.items.find(primer => primer.name === 'ase1_fwd');
-      cy.get('@primerSpy').should('have.been.calledWith', selectedPrimer);
+    cy.get('@stubPrimer').then((stubPrimer) => {
+      cy.wait('@getPrimers').then(({ response }) => {
+        const livePrimer = response.body.items.find((primer) => primer.name === PRIMER_NAME);
+        expect(livePrimer).to.include({
+          name: stubPrimer.name,
+          sequence: stubPrimer.sequence,
+        });
+        cy.wrap(livePrimer).as('livePrimer');
+      });
     });
 
-    // Input should show the selected primer
-    cy.get('input').should('have.value', '16 - ase1_fwd');
+    clickMultiSelectOption('Primer', PRIMER_NAME, 'div');
+
+    cy.get('@livePrimer').then((livePrimer) => {
+      cy.get('@primerSpy').should('have.been.calledWith', livePrimer);
+      cy.get('input').should('have.value', `${livePrimer.id} - ${PRIMER_NAME}`);
+    });
   });
 
   it('shows an error message when the request fails', () => {
