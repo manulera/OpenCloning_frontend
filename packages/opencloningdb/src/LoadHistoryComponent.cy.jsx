@@ -1,19 +1,14 @@
 import React from 'react';
 import LoadHistoryComponent from './LoadHistoryComponent';
 
-const DB_URL = 'http://localhost:8001';
 const DATABASE_ID = 10;
-const ENDPOINT = `/sequence/${DATABASE_ID}/cloning_strategy`;
 
 describe('<LoadHistoryComponent />', () => {
-  beforeEach(() => {
-    cy.loginToOpenCloningDB('bootstrap@example.com', 'password', 1);
-  });
-
   it('calls loadDatabaseFile with the file returned by the API', () => {
     const loadDatabaseFileSpy = cy.spy().as('loadDatabaseFileSpy');
+    cy.setupOpenCloningDBTestAuth();
 
-    cy.intercept('GET', `${DB_URL}${ENDPOINT}`).as('getCloningStrategy');
+    cy.interceptOpenCloningDBStub('get_cloning_strategy', { alias: 'getCloningStrategy' });
 
     cy.mount(
       <LoadHistoryComponent
@@ -22,8 +17,10 @@ describe('<LoadHistoryComponent />', () => {
       />,
     );
 
-    cy.wait('@getCloningStrategy').then(({ response }) => {
-      const expectedContent = JSON.stringify(response.body);
+    cy.getStub('get_cloning_strategy').then((cloningStrategyStub) => {
+      const expectedContent = JSON.stringify(cloningStrategyStub.response.body);
+
+      cy.wait('@getCloningStrategy').its('request.url').should('include', cloningStrategyStub.endpoint);
       cy.get('@loadDatabaseFileSpy').should('have.been.calledOnce');
 
       cy.get('@loadDatabaseFileSpy').then((spy) => {
@@ -39,11 +36,18 @@ describe('<LoadHistoryComponent />', () => {
   });
 
   it('shows a loading spinner while the request is pending', () => {
-    cy.intercept('GET', `${DB_URL}${ENDPOINT}`, (req) => {
-      req.reply((res) => {
-        res.setDelay(1000);
-      });
-    }).as('getCloningStrategy');
+    cy.setupOpenCloningDBTestAuth();
+
+    cy.getStub('get_cloning_strategy').then((cloningStrategyStub) => {
+      cy.intercept({ method: cloningStrategyStub.method, pathname: cloningStrategyStub.endpoint }, (req) => {
+        req.reply({
+          delay: 1000,
+          statusCode: cloningStrategyStub.response.status_code,
+          body: cloningStrategyStub.response.body,
+          headers: cloningStrategyStub.response.headers,
+        });
+      }).as('getCloningStrategy');
+    });
 
     cy.mount(
       <LoadHistoryComponent
@@ -57,15 +61,23 @@ describe('<LoadHistoryComponent />', () => {
   });
 
   it('shows a retry button when the request fails, and retries on click', () => {
-    let callCount = 0;
-    cy.intercept('GET', `${DB_URL}${ENDPOINT}`, (req) => {
-      callCount += 1;
-      if (callCount === 1) {
-        req.reply({ statusCode: 500 });
-      } else {
-        req.reply({ statusCode: 200, body: {} });
-      }
-    }).as('getCloningStrategy');
+    cy.setupOpenCloningDBTestAuth();
+
+    cy.getStub('get_cloning_strategy').then((cloningStrategyStub) => {
+      let callCount = 0;
+      cy.intercept({ method: cloningStrategyStub.method, pathname: cloningStrategyStub.endpoint }, (req) => {
+        callCount += 1;
+        if (callCount === 1) {
+          req.reply({ statusCode: 500 });
+        } else {
+          req.reply({
+            statusCode: cloningStrategyStub.response.status_code,
+            body: cloningStrategyStub.response.body,
+            headers: cloningStrategyStub.response.headers,
+          });
+        }
+      }).as('getCloningStrategy');
+    });
 
     cy.mount(
       <LoadHistoryComponent
