@@ -1,36 +1,33 @@
-import { Button, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { openCloningDBHttpClient } from './common';
 import RetryAlert from '@opencloning/ui/components/form/RetryAlert';
 import endpoints from './endpoints';
 
-function LoadHistoryComponent({ handleClose, databaseId, loadDatabaseFile }) {
+function LoadHistoryComponent({ databaseId, loadDatabaseFile }) {
   const url = endpoints.sequenceCloningStrategy(databaseId);
-  const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
-  const [retry, setRetry] = React.useState(0);
+
+  const { isLoading, error, data, refetch } = useQuery({
+    queryKey: ['cloningStrategy', databaseId],
+    queryFn: async () => {
+      const response = await openCloningDBHttpClient.get(url);
+      return response.data;
+    },
+    retry: false,
+  });
+
   React.useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await openCloningDBHttpClient.get(url);
-        const file = new File([JSON.stringify(response.data)], 'cloning_strategy.json', { type: 'application/json' });
-        loadDatabaseFile(file, databaseId, true);
-      } catch (e) {
-        console.error(e);
-        setError('Failed to load history file.');
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [url, retry]);
+    if (data) {
+      const file = new File([JSON.stringify(data)], 'cloning_strategy.json', { type: 'application/json' });
+      loadDatabaseFile(file, databaseId, true);
+    }
+  }, [data, databaseId, loadDatabaseFile]);
+
   return (
     <div>
-      {loading && <CircularProgress />}
-      {error && <RetryAlert onRetry={() => setRetry((prev) => prev + 1)}>{error}</RetryAlert>}
-      <Button onClick={handleClose}>Close</Button>
-
+      {isLoading && <CircularProgress />}
+      {error && <RetryAlert onRetry={refetch}>Failed to load history file.</RetryAlert>}
     </div>
   );
 }

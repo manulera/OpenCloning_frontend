@@ -5,12 +5,8 @@ import OpenCloningDBInterface from './OpenCloningDBInterface';
 import { clickMultiSelectOption } from '../../../cypress/e2e/common_functions';
 
 describe('<PrimerSelect />', () => {
-  beforeEach(() => {
-    cy.loginToOpenCloningDB('bootstrap@example.com', 'password', 1);
-  });
-
-
   it('searches for "ase1" and shows results', () => {
+    cy.loginToOpenCloningDB('bootstrap@example.com', 'password', 1);
     const primerSpy = cy.spy().as('primerSpy');
     cy.mount(
       <DatabaseProvider value={OpenCloningDBInterface}>
@@ -31,5 +27,18 @@ describe('<PrimerSelect />', () => {
 
     // Input should show the selected primer
     cy.get('input').should('have.value', '16 - ase1_fwd');
+  });
+
+  it('shows an error message when the request fails', () => {
+    cy.intercept('GET', 'http://localhost:8001/primers*', { statusCode: 500 }).as('getPrimers');
+    cy.mount(
+      <DatabaseProvider value={OpenCloningDBInterface}>
+        <PrimerSelect setPrimer={cy.stub()} />
+      </DatabaseProvider>
+    );
+    cy.get('input').type('ase1');
+    cy.wait('@getPrimers');
+    cy.contains('Could not retrieve primers from OpenCloningDB').should('exist');
+    cy.contains('button', 'Retry').should('exist');
   });
 });
