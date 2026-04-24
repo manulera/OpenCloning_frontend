@@ -165,7 +165,7 @@ jobs:
         run: |
           uv run opencloning-cli db test reset
           uv run uvicorn opencloning.main:app --port 8000 &
-          uv run opencloning_db.api:app --port 8001 &
+          uv run uvicorn opencloning_db.api:app --port 8001 &
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
           ADDGENE_USERNAME: ${{ secrets.ADDGENE_USERNAME }}
