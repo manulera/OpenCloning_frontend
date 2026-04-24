@@ -1,6 +1,12 @@
 import React from 'react';
 import { QuerySelect, useDebouncedSearchQuery } from '@opencloning/ui';
-import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
+import { openCloningDBHttpClient } from './common';
+import endpoints from './endpoints';
+
+const messages = {
+  loadingMessage: 'retrieving sequences',
+  errorMessage: 'Could not retrieve sequences from OpenCloningDB',
+};
 
 const getGetQuery = (sequenceTypes) => {
   return (name) => ({
@@ -20,6 +26,8 @@ function SequenceSelect({ value, onChange, label, multiple = true, sequenceTypes
     <QuerySelect
       query={query}
       label={label}
+      loadingMessage={messages.loadingMessage}
+      errorMessage={messages.errorMessage}
       multiple={multiple}
       getOptionLabel={(seq) => seq.name ?? `Sequence ${seq.id}`}
       getOptionKey={(seq) => seq.id}
