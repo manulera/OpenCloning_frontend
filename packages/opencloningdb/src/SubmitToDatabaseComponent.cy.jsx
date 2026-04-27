@@ -51,4 +51,24 @@ describe('<SubmitToDatabaseComponent />', () => {
     cy.get('input#resource_title').should('have.value', 'Seq1').and('be.disabled');
     cy.get('.MuiAlert-root').contains('To change the sequence name').should('exist');
   });
+  it('sets the submission data to null when the name is missing (unlikely to happen in reality)', () => {
+    const submissionDataNoName = structuredClone(defaultState);
+    Object.values(submissionDataNoName.teselaJsonCache).forEach((value) => {
+      value.name = '';
+    });
+    const store = createTestStore(submissionDataNoName);
+    cy.mount(
+      <Provider store={store}>
+        <SubmitToDatabaseComponent
+          id={1}
+          setSubmissionData={cy.spy().as('setSubmissionDataSpy')}
+          resourceType="sequence"
+        />
+      </Provider>,
+    );
+    cy.get('@setSubmissionDataSpy').should((spy) => {
+      const result = spy.lastCall.args[0];
+      expect(result).equal(null);
+    });
+  });
 });
