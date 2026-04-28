@@ -22,7 +22,7 @@ function ResourceDetailHeader({
       <Button onClick={onBack} sx={{ mb: 2 }}>
         <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> {backTitle}
       </Button>
-      <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row', mb: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row', mb: 1 }} data-testid="resource-detail-header-title">
         {!isEditing && (
           <>
             <Typography variant="h5">

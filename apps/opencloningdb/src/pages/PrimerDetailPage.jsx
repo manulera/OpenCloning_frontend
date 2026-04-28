@@ -45,15 +45,15 @@ function PrimerDetailPage() {
           Add to Design Tab
         </AddToCloningButton>
       </TopButtonSection>
-      <DetailPageSection title="Sequence">
+      <DetailPageSection title="Sequence" data-testid="sequence">
         <Typography sx={{ mt: 1, fontFamily: 'monospace' }}>{primer.sequence}</Typography>
       </DetailPageSection>
-      <DetailPageSection title="Linked templates">
+      <DetailPageSection title="Linked templates" data-testid="linked-templates">
         <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
           <SequenceTable sequences={templates} />
         </TableContainer>
       </DetailPageSection>
-      <DetailPageSection title="Linked products">
+      <DetailPageSection title="Linked products" data-testid="linked-products">
         <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
           <SequenceTable sequences={products} />
         </TableContainer>

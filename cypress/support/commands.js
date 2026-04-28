@@ -173,8 +173,12 @@ Cypress.Commands.add('loadExample', (name) => {
   cy.wait('@validateHistory');
 });
 
-Cypress.Commands.add('changeTab', (tabName) => {
-  cy.get('button.MuiTab-root').contains(tabName).click();
+Cypress.Commands.add('changeTab', (tabName, extraSelector = '') => {
+  if (extraSelector) {
+    cy.get(`${extraSelector} button.MuiTab-root`).contains(tabName).click();
+  } else {
+    cy.get('button.MuiTab-root').contains(tabName).click();
+  }
 });
 
 Cypress.Commands.add('closeAlerts', () => {

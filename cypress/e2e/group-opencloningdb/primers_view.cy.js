@@ -1,4 +1,4 @@
-describe('PrimersPage', () => {
+describe('Actions that can be perfomed by a view-only user on the Primers page', () => {
   it('should render and make the right search request', () => {
     cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');
     cy.e2eLogin('/primers', 'view-only-user@example.com', 'password');
@@ -61,6 +61,50 @@ describe('PrimersPage', () => {
       cy.wrap(request.query).should('have.property', 'uid', "ML7");
       cy.wrap(request.query).should('have.property', 'name', "fwd_restriction_then_ligation");
       cy.wrap(request.query.tags).should('have.length', 2);
+    });
+  });
+  it('clicking on entry shows the detail page and allows to add to design tab', () => {
+    cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');
+    cy.e2eLogin('/primers', 'view-only-user@example.com', 'password');
+    cy.wait('@getPrimers').then(({ response }) => {
+      const primer = response.body.items.find((primer) => primer.name === 'fwd_restriction_then_ligation');
+      cy.intercept('GET', `http://localhost:8001/primer/${primer.id}*`).as('getPrimer');
+      cy.get('tbody button').contains(primer.name).click();
+      cy.wait('@getPrimer')
+      cy.get('[data-testid="resource-detail-header-title"] h5').contains(primer.name).should('exist');
+      cy.get('[data-testid="resource-detail-header-title"] span').contains(primer.uid).should('exist');
+      cy.get('[data-testid="tag-chip-with-delete"]').contains(primer.tags[0].name).should('exist');
+      cy.get('[data-testid="sequence"]').contains(primer.sequence).should('exist');
+      cy.get('[data-testid="linked-templates"]').contains('CU329670').should('exist');
+      cy.get('[data-testid="linked-products"]').contains('ase1_CDS_PCR').should('exist');
+      cy.get('button').contains('Add to Design Tab').click();
+      // TODO: Eventually this should be disabled after adding to design tab
+      // cy.get('button').contains('Add to Design Tab').should('not.exist');
+      cy.changeTab('Design');
+      cy.changeTab('Primers', '#opencloning-app-tabs')
+      cy.get('.primer-table-container').contains(primer.name).should('exist');
+
+    });
+  });
+  it('clicking on add to design tab button adds primers to the design tab', () => {
+    cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');
+    cy.e2eLogin('/primers', 'view-only-user@example.com', 'password');
+    cy.wait('@getPrimers').then(({ response }) => {
+      cy.get('button').contains('Add to Design Tab').should('not.exist');
+      cy.get('button').contains('Tag Primers').should('not.exist');
+      const firstTwoPrimers = response.body.items.slice(0, 2);
+      for (const primer of firstTwoPrimers) {
+        cy.get('tbody tr').filter(`:contains(${primer.name})`).within(() => {
+          cy.get('input').eq(0).should('not.be.checked');
+          cy.get('input').eq(0).click();
+          cy.get('input').eq(0).should('be.checked');
+        });
+      }
+      cy.get('button').contains('Add to Design Tab').click();
+      cy.changeTab('Design');
+      cy.changeTab('Primers', '#opencloning-app-tabs')
+      cy.get('.primer-table-container').contains(firstTwoPrimers[0].name).should('exist');
+      cy.get('.primer-table-container').contains(firstTwoPrimers[1].name).should('exist');
     });
   });
 });
