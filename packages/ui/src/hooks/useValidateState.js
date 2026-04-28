@@ -37,7 +37,7 @@ export default function useValidateState() {
       }
       return newState;
     }
-  }, [addAlert, backendRoute]);
+  }, [addAlert, backendRoute, httpClient]);
 
   return validateState;
 }

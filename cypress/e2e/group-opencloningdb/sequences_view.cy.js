@@ -80,68 +80,113 @@ describe('SequencesPage', () => {
     });
   });
 
-  it('clicking on entry shows the detail page and allows to add to design tab', () => {
+  it('clicking on entry shows the detail page', () => {
+    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
+    cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
+    // entry clone has parent and children, no sequencing data.
+    // pREX0008 has sequencing data, no parent or children.
+    for (const name of ['entry_clone_lacZ', 'pREX0008']) {
+      cy.setInputValue('Name', name, '[data-testid="sequences-page"]');
+      cy.get('[data-testid="sequences-page"] button').contains('Search').click();
+      cy.wait('@getSequences').then(({ response }) => {
+        const sequence = response.body.items.find((item) => item.name === name);
+
+        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}`).as('getSequenceDetail');
+        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/cloning_strategy`).as('getSequenceCloningStrategy');
+        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/children`).as('getSequenceChildren');
+        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/primers`).as('getSequencePrimers');
+        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/sequencing_files`).as('getSequenceSequencingFiles');
+        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/text_file_sequence`).as('getSequenceTextFile');
+
+        cy.get('tbody button').contains(sequence.name).click();
+        cy.wait('@getSequenceCloningStrategy');
+        cy.wait('@getSequenceDetail').then(({ response: sequenceDetailResponse }) => {
+          const sequenceDetail = sequenceDetailResponse.body;
+
+          cy.get('[data-testid="resource-detail-header-title"] h5').contains(sequenceDetail.name).should('exist');
+          cy.get('[data-testid="resource-detail-header-title"]').contains('Plasmid').should('exist');
+          cy.get('[data-testid="tag-chip-with-delete"]').contains(sequenceDetail.tags[0].name).should('exist');
+
+          if (sequenceDetail.sample_uids.length > 0) {
+            sequenceDetail.sample_uids.forEach((uid) => {
+              cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains(uid).should('exist');
+            });
+          } else {
+            cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains('No UIDs linked').should('exist');
+          }
+        });
+        cy.wait('@getSequenceChildren');
+        cy.wait('@getSequencePrimers').then(({ response: sequencePrimersResponse }) => {
+          const linkedPrimers = [...sequencePrimersResponse.body.templates, ...sequencePrimersResponse.body.products];
+
+          if (linkedPrimers.length > 0) {
+            linkedPrimers.forEach((primer) => {
+              cy.contains('h6', 'Linked primers').parent().parent().contains(primer.name).should('exist');
+            });
+          } else {
+            cy.contains('h6', 'Linked primers').should('not.exist');
+          }
+        });
+        cy.wait('@getSequenceSequencingFiles').then(({ response: sequencingFilesResponse }) => {
+          const sequencingFiles = sequencingFilesResponse.body;
+
+          if (sequencingFiles.length > 0) {
+            sequencingFiles.forEach((file) => {
+              cy.get('[data-testid="sequencing-file-row"]').contains(file.original_name).should('exist');
+            });
+          } else {
+            cy.contains('h6', 'Sequencing files').parent().parent().contains('No sequencing files linked').should('exist');
+          }
+        });
+
+        cy.contains('h6', 'Provenance').should('exist');
+        // TODO: Add explicit provenance parent assertions once stable parent examples are documented in backend stubs.
+        // TODO: Add explicit children assertions once stable child examples are documented in backend stubs.
+        cy.get('button').contains('Back to Sequences').click();
+      });
+    }
+    cy.get('button').contains('Add to Design Tab').click();
+    cy.wait('@getSequenceTextFile');
+    cy.changeTab('Design');
+    cy.get('.open-cloning', { timeout: 20000 }).contains('pREX0008').should('exist');
+  });
+
+  it('can add to tab from the detail page', () => {
+    cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
+    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
+    cy.wait('@getSequences')
+    cy.get('tbody button').contains('pREX0008').click();
+    cy.get('button').contains('Add to Design Tab', { timeout: 20000 }).click();
+    cy.changeTab('Design');
+    cy.get('.open-cloning', { timeout: 20000 }).contains('pREX0008').should('exist');
+  });
+
+  it('can download and align sequencing files', () => {
+    cy.disableCache();
+    // If downloaded file exists, delete it
     cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
     cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
     cy.wait('@getSequences').then(({ response }) => {
       const sequence = response.body.items.find((item) => item.name === 'pREX0008');
-
-      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}`).as('getSequenceDetail');
-      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/cloning_strategy`).as('getSequenceCloningStrategy');
-      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/children`).as('getSequenceChildren');
-      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/primers`).as('getSequencePrimers');
       cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/sequencing_files`).as('getSequenceSequencingFiles');
-      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/text_file_sequence`).as('getSequenceTextFile');
-
       cy.get('tbody button').contains(sequence.name).click();
-      cy.wait('@getSequenceCloningStrategy');
-      cy.wait('@getSequenceDetail').then(({ response: sequenceDetailResponse }) => {
-        const sequenceDetail = sequenceDetailResponse.body;
-
-        cy.get('[data-testid="resource-detail-header-title"] h5').contains(sequenceDetail.name).should('exist');
-        cy.get('[data-testid="resource-detail-header-title"]').contains('Plasmid').should('exist');
-        cy.get('[data-testid="tag-chip-with-delete"]').contains(sequenceDetail.tags[0].name).should('exist');
-
-        if (sequenceDetail.sample_uids.length > 0) {
-          sequenceDetail.sample_uids.forEach((uid) => {
-            cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains(uid).should('exist');
-          });
-        } else {
-          cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains('No UIDs linked').should('exist');
-        }
-      });
-      cy.wait('@getSequenceChildren');
-      cy.wait('@getSequencePrimers').then(({ response: sequencePrimersResponse }) => {
-        const linkedPrimers = [...sequencePrimersResponse.body.templates, ...sequencePrimersResponse.body.products];
-
-        if (linkedPrimers.length > 0) {
-          linkedPrimers.forEach((primer) => {
-            cy.contains('h6', 'Linked primers').parent().parent().contains(primer.name).should('exist');
-          });
-        } else {
-          cy.contains('h6', 'Linked primers').should('not.exist');
-        }
-      });
       cy.wait('@getSequenceSequencingFiles').then(({ response: sequencingFilesResponse }) => {
         const sequencingFiles = sequencingFilesResponse.body;
-
-        if (sequencingFiles.length > 0) {
-          sequencingFiles.forEach((file) => {
-            cy.contains('h6', 'Sequencing files').parent().parent().contains(file.original_name).should('exist');
-          });
-        } else {
-          cy.contains('h6', 'Sequencing files').parent().parent().contains('No sequencing files linked').should('exist');
-        }
+        const firstFile = sequencingFiles[0];
+        cy.intercept('GET', `http://localhost:8001/sequencing_files/${firstFile.id}/download`).as('downloadSequencingFile');
+        // Wait until name displayed on sequence editor
+        cy.get('.veEditor').contains('pREX0008', { timeout: 20000 }).should('exist').then(() => {
+          cy.get('h5').contains('pREX0008').scrollIntoView()
+          cy.get('[data-testid="sequencing-file-row"] [data-testid="DownloadIcon"]').first().click();
+          cy.wait('@downloadSequencingFile', { timeout: 20000 });
+          // Check that the file was downloaded
+          cy.readFile(`cypress/downloads/${firstFile.original_name}`);
+          // Click outside to remove the tooltip covering this
+          cy.get('body').click('topLeft');
+          cy.get('button[aria-label="See alignments"]').click();
+          cy.get('.veTabActive').contains('Alignments', { timeout: 20000 }).should('exist');
+        });
       });
-
-      cy.contains('h6', 'Provenance').should('exist');
-      // TODO: Add explicit provenance parent assertions once stable parent examples are documented in backend stubs.
-      // TODO: Add explicit children assertions once stable child examples are documented in backend stubs.
-
-      cy.get('button').contains('Add to Design Tab').click();
-      cy.wait('@getSequenceTextFile');
-      cy.changeTab('Design');
-      cy.get('.open-cloning', { timeout: 20000 }).contains(sequence.name).should('exist');
     });
   });
 

@@ -186,3 +186,16 @@ Cypress.Commands.add('closeAlerts', () => {
     cy.get('div#global-error-message-wrapper .MuiAlert-root button').first().click();
   });
 });
+
+Cypress.Commands.add('disableCache', () => {
+  if (Cypress.browser.family === 'chromium') {
+    Cypress.automation('remote:debugger:protocol', {
+      command: 'Network.enable',
+      params: {}
+    });
+    Cypress.automation('remote:debugger:protocol', {
+      command: 'Network.setCacheDisabled',
+      params: { cacheDisabled: true }
+    });
+  }
+});

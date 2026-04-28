@@ -28,14 +28,14 @@ const { getSequencingFiles, submitSequencingFileToDatabase } = OpenCloningDBInte
 
 function SequencingFileRow({ file, sequenceId, onGetFile }) {
   return (
-    <ListItem disableGutters dense sx={{ pl: 1, mb: 0.5, borderLeft: '3px solid', borderColor: 'primary.light', display: 'flex', alignItems: 'center', '&:hover .file-actions': { opacity: 1 }, '& .file-actions': { opacity: 0, transition: 'opacity 0.15s' } }}>
+    <ListItem disableGutters dense sx={{ pl: 1, mb: 0.5, borderLeft: '3px solid', borderColor: 'primary.light', display: 'flex', alignItems: 'center', '&:hover .file-actions': { opacity: 1 }, '& .file-actions': { opacity: 0, transition: 'opacity 0.15s' } }} data-testid="sequencing-file-row">
       <ListItemIcon sx={{ minWidth: 32, flexShrink: 0 }}>
         <InsertDriveFileIcon fontSize="small" color="action" />
       </ListItemIcon>
       <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem', flexShrink: 0 }}>{file.name}</Box>
       <Box className="file-actions" sx={{ display: 'flex', alignItems: 'center', ml: 0.5 }}>
         <Tooltip title="Download" placement="top" arrow>
-          <IconButton size="small" onClick={() => onGetFile(file.getFile)}>
+          <IconButton size="small" onClick={() => {onGetFile(file.getFile); console.log('clicked')}}>
             <DownloadIcon fontSize="small" />
           </IconButton>
         </Tooltip>
