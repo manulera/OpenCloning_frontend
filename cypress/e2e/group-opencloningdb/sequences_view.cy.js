@@ -79,4 +79,99 @@ describe('SequencesPage', () => {
       cy.wrap(request.query.tags).should('match', /\d+/);
     });
   });
+
+  it('clicking on entry shows the detail page and allows to add to design tab', () => {
+    cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
+    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
+    cy.wait('@getSequences').then(({ response }) => {
+      const sequence = response.body.items.find((item) => item.name === 'pREX0008');
+
+      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}`).as('getSequenceDetail');
+      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/cloning_strategy`).as('getSequenceCloningStrategy');
+      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/children`).as('getSequenceChildren');
+      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/primers`).as('getSequencePrimers');
+      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/sequencing_files`).as('getSequenceSequencingFiles');
+      cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/text_file_sequence`).as('getSequenceTextFile');
+
+      cy.get('tbody button').contains(sequence.name).click();
+      cy.wait('@getSequenceCloningStrategy');
+      cy.wait('@getSequenceDetail').then(({ response: sequenceDetailResponse }) => {
+        const sequenceDetail = sequenceDetailResponse.body;
+
+        cy.get('[data-testid="resource-detail-header-title"] h5').contains(sequenceDetail.name).should('exist');
+        cy.get('[data-testid="resource-detail-header-title"]').contains('Plasmid').should('exist');
+        cy.get('[data-testid="tag-chip-with-delete"]').contains(sequenceDetail.tags[0].name).should('exist');
+
+        if (sequenceDetail.sample_uids.length > 0) {
+          sequenceDetail.sample_uids.forEach((uid) => {
+            cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains(uid).should('exist');
+          });
+        } else {
+          cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains('No UIDs linked').should('exist');
+        }
+      });
+      cy.wait('@getSequenceChildren');
+      cy.wait('@getSequencePrimers').then(({ response: sequencePrimersResponse }) => {
+        const linkedPrimers = [...sequencePrimersResponse.body.templates, ...sequencePrimersResponse.body.products];
+
+        if (linkedPrimers.length > 0) {
+          linkedPrimers.forEach((primer) => {
+            cy.contains('h6', 'Linked primers').parent().parent().contains(primer.name).should('exist');
+          });
+        } else {
+          cy.contains('h6', 'Linked primers').should('not.exist');
+        }
+      });
+      cy.wait('@getSequenceSequencingFiles').then(({ response: sequencingFilesResponse }) => {
+        const sequencingFiles = sequencingFilesResponse.body;
+
+        if (sequencingFiles.length > 0) {
+          sequencingFiles.forEach((file) => {
+            cy.contains('h6', 'Sequencing files').parent().parent().contains(file.original_name).should('exist');
+          });
+        } else {
+          cy.contains('h6', 'Sequencing files').parent().parent().contains('No sequencing files linked').should('exist');
+        }
+      });
+
+      cy.contains('h6', 'Provenance').should('exist');
+      // TODO: Add explicit provenance parent assertions once stable parent examples are documented in backend stubs.
+      // TODO: Add explicit children assertions once stable child examples are documented in backend stubs.
+
+      cy.get('button').contains('Add to Design Tab').click();
+      cy.wait('@getSequenceTextFile');
+      cy.changeTab('Design');
+      cy.get('.open-cloning', { timeout: 20000 }).contains(sequence.name).should('exist');
+    });
+  });
+
+  it('clicking on add to design tab button adds sequences to the design tab', () => {
+    cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
+    cy.intercept('GET', 'http://localhost:8001/sequence/*/text_file_sequence').as('getSequenceTextFile');
+    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
+    cy.wait('@getSequences').then(({ response }) => {
+      cy.get('button').contains('Add to Design Tab').should('not.exist');
+      cy.get('button').contains('Tag Sequences').should('not.exist');
+
+      const selectedSequences = [
+        response.body.items.find((sequence) => sequence.name === 'pREX0008'),
+        response.body.items.find((sequence) => sequence.name === 'excised_plasmid'),
+      ];
+
+      selectedSequences.forEach((sequence) => {
+        cy.get('tbody tr').filter(`:contains(${sequence.name})`).within(() => {
+          cy.get('input').eq(0).should('not.be.checked');
+          cy.get('input').eq(0).click();
+          cy.get('input').eq(0).should('be.checked');
+        });
+      });
+
+      cy.get('button').contains('Add to Design Tab').click();
+      cy.wait('@getSequenceTextFile');
+      cy.wait('@getSequenceTextFile');
+      cy.changeTab('Design');
+      cy.get('.open-cloning', { timeout: 20000 }).contains(selectedSequences[0].name).should('exist');
+      cy.get('.open-cloning').contains(selectedSequences[1].name).should('exist');
+    });
+  });
 });

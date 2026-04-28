@@ -26,7 +26,7 @@ function TagChipList({tags, entityId=null, entityType=null, canDelete=false}) {
     return "-";
   }, [entityId, entityType]);
   if (!Array.isArray(tags)) return <CircularProgress />;
-  return <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+  return <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }} data-testid="tag-chip-list">
     {tags.sort((a, b) => a.name.localeCompare(b.name)).map((tag) => <TagChip canDelete={canDelete} entityId={entityId} entityType={entityType} key={tag.id} tag={tag} />)}
     {tags.length === 0 && noTagsText}
     {entityId && entityType && (

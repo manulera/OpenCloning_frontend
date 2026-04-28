@@ -74,4 +74,30 @@ describe('LinesPage', () => {
       cy.wrap(request.query).should('have.property', 'tags', '4');
     });
   });
+
+  it('clicking on entry shows the detail page', () => {
+    cy.intercept('GET', 'http://localhost:8001/lines*').as('getLines');
+    cy.e2eLogin('/lines', 'view-only-user@example.com', 'password');
+    cy.wait('@getLines').then(({ response }) => {
+      const line = response.body.items.find((item) => item.uid === 'crispr_hdr-line');
+
+      cy.intercept('GET', `http://localhost:8001/line/${line.id}`).as('getLineDetail');
+      cy.intercept('GET', 'http://localhost:8001/line/*').as('getParentLine');
+
+      cy.get('tbody button').contains(line.uid).click();
+      cy.wait('@getLineDetail');
+      cy.wait('@getParentLine');
+
+      cy.get('[data-testid="resource-detail-header-title"] h5').contains(line.uid).should('exist');
+      cy.get('[data-testid="tag-chip-with-delete"]').contains('crispr_hdr').should('exist');
+      cy.contains('h6', 'Genotype').parent().parent().contains('3xHA-ase1').should('exist');
+      cy.contains('h6', 'Plasmids').parent().parent().contains('pFA6a-3HA-kanMX6').should('exist');
+      cy.contains('h6', 'Parent lines').parent().parent().contains('parent_strain').should('exist');
+      cy.get('button').contains('Transformation').should('exist');
+    });
+  });
+
+  it('TODO: add the second primer-parity line case when lines can be added to the design tab', () => {
+    // Placeholder requested by the user: Lines currently have no Add to Design Tab flow on the list or detail page.
+  });
 });

@@ -68,7 +68,7 @@ function TagEntitiesDialog({ selectedEntities, entityType, label, open, onClose,
   };
   
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} data-testid="tag-entities-dialog">
       <DialogTitle>Tag {label}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
