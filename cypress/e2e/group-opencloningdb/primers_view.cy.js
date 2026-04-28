@@ -52,4 +52,15 @@ describe('PrimersPage', () => {
       });
     });
   });
+  it('should set query params from the URL', () => {
+    cy.e2eLogin('/primers', 'view-only-user@example.com', 'password');
+    cy.intercept('GET', 'http://localhost:8001/primers*', { statusCode: 200, body: { items: [] } }).as('getPrimers2');
+    cy.visit('/primers?uid=ML7&name=fwd_restriction_then_ligation&tags=1&tags=2');
+
+    cy.wait('@getPrimers2').then(({ response, request }) => {
+      cy.wrap(request.query).should('have.property', 'uid', "ML7");
+      cy.wrap(request.query).should('have.property', 'name', "fwd_restriction_then_ligation");
+      cy.wrap(request.query.tags).should('have.length', 2);
+    });
+  });
 });

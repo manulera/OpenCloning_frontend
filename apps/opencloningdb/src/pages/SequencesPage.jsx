@@ -116,7 +116,7 @@ function SequencesPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load sequences'}</Alert>;
 
   return (
-    <PageContainer>
+    <PageContainer data-testid="sequences-page">
       <Typography variant="h5" sx={{ mb: 2 }}>
         Sequences
       </Typography>

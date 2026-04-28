@@ -45,6 +45,13 @@ Cypress.Commands.add('loginToOpenCloningDB', (email, password, workspaceId) => {
   });
 });
 
+Cypress.Commands.add('mockLogin', () => {
+  cy.intercept('POST', `${DB_URL}/auth/token`, { statusCode: 200, body: { access_token: 'test_token' } }).as('login');
+  cy.intercept('GET', `${DB_URL}/auth/me`, { statusCode: 200, body: {} }).as('authMe');
+  cy.intercept('GET', `${DB_URL}/workspaces`, { statusCode: 200, body: [{ id: 1 }] }).as('workspaces');
+
+});
+
 /**
  * Set up OpenCloningDB client headers for tests without network login.
  * Mirrors testUtils.setupToken + setWorkspaceHeader from unit tests.
