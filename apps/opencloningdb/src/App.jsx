@@ -51,6 +51,7 @@ function AppLayout() {
             OpenCloning
           </Typography>
           <Tabs
+            data-testid="opencloningdb-app-tabs"
             value={currentTab}
             onChange={(_, newValue) => navigate(newValue)}
             textColor="inherit"

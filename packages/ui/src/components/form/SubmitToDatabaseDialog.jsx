@@ -118,6 +118,7 @@ function SubmitToDatabaseDialog({ id, dialogOpen, setDialogOpen, resourceType })
         sx: { width: '40%' },
         onSubmit: handleSubmit,
       }}
+      data-testid="submit-to-database-component"
     >
       <DialogTitle>{`Save ${resourceType} to ${database.name}`}</DialogTitle>
       <DialogContent>
