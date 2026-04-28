@@ -23,10 +23,11 @@ function TagChip({ tag, entityId, entityType, canDelete = false }) {
     },
   });
   if (canDelete !== true) {
-    return <Chip label={tag.name} size="small" variant="outlined" />;
+    return <Chip label={tag.name} size="small" variant="outlined" data-testid="tag-chip-no-delete" />;
   }
   return (
     <Chip
+      data-testid="tag-chip-with-delete"
       label={
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Tooltip title="Remove tag" arrow placement="top">

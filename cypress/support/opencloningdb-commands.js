@@ -1,4 +1,4 @@
-import { setWorkspaceHeader } from '@opencloning/opencloningdb';
+import { setWorkspaceHeader } from '../../packages/opencloningdb/src/common.js';
 
 const DB_URL = 'http://localhost:8001';
 const STUB_FOLDER = 'OpenCloning_backend/stubs/db';
@@ -92,4 +92,13 @@ Cypress.Commands.add('interceptOpenCloningDBStub', (stubOrName, options = {}) =>
 
     return cy.wrap(stub, { log: false });
   });
+});
+
+
+Cypress.Commands.add('e2eLogin', (page, email, password) => {
+  cy.visit(page);
+  cy.get('input[type="email"]').type(email, { delay: 0 });
+  cy.get('input[type="password"]').type(password, { delay: 0 });
+  cy.get('button[type="submit"]').click();
+  cy.location('pathname').should('eq', page);
 });

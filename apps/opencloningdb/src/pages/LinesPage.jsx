@@ -19,7 +19,7 @@ import {
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { LineLink, CommaSeparatorWrapper, SequenceInLineLink } from '../components/EntityLinks';
 import { parseLinesParams, applyLinesParamsToSearchParams } from '../utils/query_utils';
-import SearchBar from '../components/SearchBar';
+import SearchBarTextField from '../components/SearchBarTextField';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
 import TagChipList from '../components/TagChipList';
@@ -33,21 +33,21 @@ const MIN_WIDTH = 150;
 function LinesQueryFields({ pendingParams, setPendingParams }) {
   return (
     <>
-      <SearchBar
+      <SearchBarTextField
         label="UID"
         placeholder="Search by UID"
         value={pendingParams.uid ?? ''}
         onChange={(value) => setPendingParams((p) => ({ ...p, uid: value }))}
         sx={{ minWidth: MIN_WIDTH }}
       />
-      <SearchBar
+      <SearchBarTextField
         label="Genotype"
         placeholder="Search by allele names"
         value={pendingParams.genotype ?? ''}
         onChange={(value) => setPendingParams((p) => ({ ...p, genotype: value }))}
         sx={{ minWidth: MIN_WIDTH * 1.5 }}
       />
-      <SearchBar
+      <SearchBarTextField
         label="Plasmid"
         placeholder="Search by plasmid"
         value={pendingParams.plasmid ?? ''}
@@ -107,7 +107,7 @@ function LinesPage() {
   if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load lines'}</Alert>;
 
   return (
-    <PageContainer>
+    <PageContainer data-testid="lines-page">
       <Typography variant="h5" sx={{ mb: 2 }}>
         Lines
       </Typography>

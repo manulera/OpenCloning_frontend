@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { parseSequenceParams, applySequenceParamsToSearchParams } from '../utils/query_utils';
-import SearchBar from '../components/SearchBar';
+import SearchBarTextField from '../components/SearchBarTextField';
 import TagMultiSelect from '../components/TagMultiSelect';
 import SequenceTypeMultiSelect from '../components/SequenceTypeMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
@@ -29,14 +29,14 @@ const MIN_WIDTH = 200;
 function SequenceQueryFields({ pendingParams, setPendingParams }) {
   return (
     <>
-      <SearchBar
+      <SearchBarTextField
         label="UID"
         placeholder="Search by UID"
         value={pendingParams.uid ?? ''}
         onChange={(value) => setPendingParams((p) => ({ ...p, uid: value }))}
         sx={{ minWidth: MIN_WIDTH }}
       />
-      <SearchBar
+      <SearchBarTextField
         label="Name"
         placeholder="Search by name"
         value={pendingParams.name ?? ''}

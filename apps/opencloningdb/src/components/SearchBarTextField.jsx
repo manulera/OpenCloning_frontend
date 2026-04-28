@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField } from '@mui/material';
 
-function SearchBar({ label, placeholder, value, onChange, sx }) {
+function SearchBarTextField({ label, placeholder, value, onChange, sx }) {
   return (
     <TextField
       size="small"
@@ -15,5 +15,5 @@ function SearchBar({ label, placeholder, value, onChange, sx }) {
   );
 }
 
-export default SearchBar;
+export default SearchBarTextField;
 
