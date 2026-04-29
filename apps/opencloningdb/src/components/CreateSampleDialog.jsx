@@ -67,7 +67,7 @@ function CreateSampleDialog({ sequenceId, open, onClose }) {
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={resetAndClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={resetAndClose} data-testid="create-sequence-sample-uid-dialog">
       <DialogTitle>Create sample UIDs</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>

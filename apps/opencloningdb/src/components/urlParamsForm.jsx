@@ -45,6 +45,7 @@ export function UrlParamsForm({ parse, applyToSearchParams, component, value, sx
 
   return (
     <Box
+      data-testid="url-params-form"
       component="form"
       onSubmit={handleSubmit}
       sx={{ minHeight: 65, mb: 2, display: 'flex', gap: 2, flexWrap: 'nowrap', alignItems: 'center', ...sx }}

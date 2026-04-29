@@ -199,7 +199,7 @@ function SequenceDetailPage() {
   return (
     <PageContainer>
       <Box sx={{ position: 'relative'}}>
-        <Box sx={{ position: 'absolute', top: 0, right: 0, fontFamily: 'monospace' }}>
+        <Box sx={{ position: 'absolute', top: 0, right: 0, fontFamily: 'monospace' }} data-testid="sequence-seguid">
           {sequenceInDb?.seguid}
         </Box>
       </Box>

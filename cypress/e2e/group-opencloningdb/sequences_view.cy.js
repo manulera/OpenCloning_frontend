@@ -112,6 +112,7 @@ describe('SequencesPage', () => {
           } else {
             cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains('No UIDs linked').should('exist');
           }
+          cy.get('[data-testid="sequence-seguid"]').contains(sequenceDetail.seguid).should('exist');
         });
         cy.wait('@getSequencePrimers').then(({ response: sequencePrimersResponse }) => {
           const linkedPrimers = [...sequencePrimersResponse.body.templates, ...sequencePrimersResponse.body.products];

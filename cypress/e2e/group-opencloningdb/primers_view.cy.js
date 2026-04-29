@@ -33,6 +33,7 @@ describe('Actions that can be perfomed by a view-only user on the Primers page',
     cy.setInputValue('UID', 'ML7', '[data-testid="primers-page"]');
     cy.setInputValue('Name', 'fwd_restriction_then_ligation', '[data-testid="primers-page"]');
     cy.clickMultiSelectOption('Tags', 'templateless_PCR', '[data-testid="primers-page"]');
+    cy.get('[data-testid="primers-page"] label').contains('With UID').parent().find('input').click({ force: true });
     cy.get('button').contains('Search').click();
     cy.wait('@getPrimers2').then(({ response, request }) => {
       cy.wrap(request.query).should('have.property', 'page', "1");
@@ -40,6 +41,7 @@ describe('Actions that can be perfomed by a view-only user on the Primers page',
       cy.wrap(request.query).should('have.property', 'uid', "ML7");
       cy.wrap(request.query).should('have.property', 'name', "fwd_restriction_then_ligation");
       cy.wrap(request.query.tags).should('match', /\d+/);
+      cy.wrap(request.query).should('have.property', 'has_uid', 'true');
     });
     // Finally a query to verify that multiple tags are working, mock since no need
     cy.intercept('GET', 'http://localhost:8001/primers*', { statusCode: 200, body: { items: [] } }).as('getPrimers3');
@@ -55,13 +57,22 @@ describe('Actions that can be perfomed by a view-only user on the Primers page',
   it('should set query params from the URL', () => {
     cy.e2eLogin('/primers', 'view-only-user@example.com', 'password');
     cy.intercept('GET', 'http://localhost:8001/primers*', { statusCode: 200, body: { items: [] } }).as('getPrimers2');
-    cy.visit('/primers?uid=ML7&name=fwd_restriction_then_ligation&tags=1&tags=2');
+    cy.intercept('GET', 'http://localhost:8001/tags*', { statusCode: 200, body:[{ id: 1, name: 'crispr_hdr' }, { id: 2, name: 'templateless_PCR' }] }).as('getTags');
+    cy.visit('/primers?uid=ML7&name=fwd_restriction_then_ligation&tags=1&tags=2&has_uid=true');
 
     cy.wait('@getPrimers2').then(({ response, request }) => {
       cy.wrap(request.query).should('have.property', 'uid', "ML7");
       cy.wrap(request.query).should('have.property', 'name', "fwd_restriction_then_ligation");
       cy.wrap(request.query.tags).should('have.length', 2);
     });
+    cy.get('[data-testid="url-params-form"]').within(() => {
+      cy.get('label').contains('With UID').parent().find('input').should('be.checked');
+      cy.get('label').contains(/^UID$/).parent().find('input').should('have.value', 'ML7');
+      cy.get('label').contains('Name').parent().find('input').should('have.value', 'fwd_restriction_then_ligation');
+      cy.get('label').contains('Tags').siblings().find('div').contains('crispr_hdr').should('exist');
+      cy.get('label').contains('Tags').siblings().find('div').contains('templateless_PCR').should('exist');
+    });
+
   });
   it('clicking on entry shows the detail page and allows to add to design tab', () => {
     cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');

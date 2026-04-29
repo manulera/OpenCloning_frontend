@@ -15,10 +15,11 @@ function SequenceSamplesSection({ sequenceId, sampleUids }) {
     <>
       <DetailPageSection
         title="Sequence sample UIDs"
+        data-testid="sequence-samples-section"
         actions={
           <>
-            <DetailPageSectionAction icon={<AddCircleIcon />} onClick={() => setCreateOpen(true)} title="Create new UIDs" />
-            <DetailPageSectionAction icon={<SwapHorizIcon />} onClick={() => setTransferOpen(true)} title="Transfer UID" />
+            <DetailPageSectionAction icon={<AddCircleIcon />} onClick={() => setCreateOpen(true)} title="Add new UIDs" />
+            <DetailPageSectionAction icon={<SwapHorizIcon />} onClick={() => setTransferOpen(true)} title="Transfer UID from another sequence" />
           </>
         }
       >

@@ -64,7 +64,7 @@ function TransferSampleDialog({ sequenceId, open, onClose }) {
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle>Transfer UID to this sequence</DialogTitle>
+      <DialogTitle>Transfer UID from another sequence to this sequence</DialogTitle>
       <DialogContent>
         {!confirming ? (
           <FormControl fullWidth sx={{ mt: 1 }}>
