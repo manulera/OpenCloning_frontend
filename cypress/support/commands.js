@@ -86,9 +86,13 @@ Cypress.Commands.add('setInputValue', (label, value, parentSelector = 'body') =>
     .type(value, { delay: 0 });
 });
 
-Cypress.Commands.add('setAutocompleteValue', (label, value, parentSelector = 'body') => {
+Cypress.Commands.add('setAutocompleteValue', (label, value, parentSelector = 'body', exactMatch = true) => {
   cy.setInputValue(label, value, parentSelector);
-  cy.get('div[role="presentation"]').contains(new RegExp(`^${value}$`)).click();
+  if (exactMatch) {
+    cy.get('div[role="presentation"]').contains(new RegExp(`^${value}$`)).click();
+  } else {
+    cy.get('div[role="presentation"]').contains(value).click();
+  }
 });
 
 Cypress.Commands.add('clearAutocompleteValue', (label, parentSelector = 'body') => {
@@ -184,6 +188,16 @@ Cypress.Commands.add('changeTab', (tabName, extraSelector = '') => {
 Cypress.Commands.add('closeAlerts', () => {
   cy.get('div#global-error-message-wrapper .MuiAlert-root button').each(() => {
     cy.get('div#global-error-message-wrapper .MuiAlert-root button').first().click();
+  });
+});
+
+Cypress.Commands.add('dbAlertExists', (message) => {
+  cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root`).contains(message).should('exist');
+});
+
+Cypress.Commands.add('closeDbAlerts', () => {
+  cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root button`).each(() => {
+    cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root button`).first().click();
   });
 });
 

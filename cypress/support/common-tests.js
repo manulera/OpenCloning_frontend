@@ -19,7 +19,6 @@ Cypress.Commands.add('addTagInDetailPageTest', (resourcePlural, resourceName, ex
   cy.intercept('GET', `http://localhost:8001/${resourcePlural}*`).as('getRequest');
   cy.e2eLogin(`/${resourcePlural}`, 'bootstrap@example.com', 'password');
   cy.wait('@getRequest').then(({ response }) => {
-    console.log(response.body.items);
     const resource = response.body.items.find((resource) => resource.name === resourceName || resource.uid === resourceName);
     const tagId = resource.tags[0].id;
     cy.get('tbody tr button').contains(resourceName).click();
