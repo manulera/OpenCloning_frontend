@@ -70,6 +70,7 @@ describe('SequencesPage', () => {
   it('should set query params from the URL', () => {
     cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
     cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
+    cy.intercept('GET', 'http://localhost:8001/tags*', { statusCode: 200, body: [{ id: 1, name: 'example_sequencing' }] }).as('getTags');
     cy.visit('/sequences?uid=example_sequencing-sample&name=pREX0008&sequence_types=plasmid&tags=1&has_uid=true');
     cy.wait('@getSequences').then(({ request }) => {
       cy.wrap(request.query).should('have.property', 'uid', 'example_sequencing-sample');
@@ -77,6 +78,13 @@ describe('SequencesPage', () => {
       cy.wrap(request.query).should('have.property', 'sequence_types', 'plasmid');
       cy.wrap(request.query).should('have.property', 'has_uid', 'true');
       cy.wrap(request.query.tags).should('match', /\d+/);
+    });
+    cy.get('[data-testid="url-params-form"]').within(() => {
+      cy.get('label').contains('With UID').parent().find('input').should('be.checked');
+      cy.get('label').contains(/^UID$/).parent().find('input').should('have.value', 'example_sequencing-sample');
+      cy.get('label').contains('Name').parent().find('input').should('have.value', 'pREX0008');
+      cy.get('label').contains('Type').siblings().find('div').contains('Plasmid').should('exist');
+      cy.get('label').contains('Tags').siblings().find('div').contains('example_sequencing').should('exist');
     });
   });
 

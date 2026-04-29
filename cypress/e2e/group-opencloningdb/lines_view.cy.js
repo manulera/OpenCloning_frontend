@@ -66,12 +66,19 @@ describe('LinesPage', () => {
   it('should set query params from the URL', () => {
     cy.e2eLogin('/lines', 'view-only-user@example.com', 'password');
     cy.intercept('GET', 'http://localhost:8001/lines*', { statusCode: 200, body: { items: [] } }).as('getLines');
+    cy.intercept('GET', 'http://localhost:8001/tags*', { statusCode: 200, body: [{ id: 4, name: 'crispr_hdr' }] }).as('getTags');
     cy.visit('/lines?uid=crispr_hdr-line&genotype=3xHA-ase1&plasmid=pFA6a-3HA-kanMX6&tags=4');
     cy.wait('@getLines').then(({ request }) => {
       cy.wrap(request.query).should('have.property', 'uid', 'crispr_hdr-line');
       cy.wrap(request.query).should('have.property', 'genotype', '3xHA-ase1');
       cy.wrap(request.query).should('have.property', 'plasmid', 'pFA6a-3HA-kanMX6');
       cy.wrap(request.query).should('have.property', 'tags', '4');
+    });
+    cy.get('[data-testid="url-params-form"]').within(() => {
+      cy.get('label').contains(/^UID$/).parent().find('input').should('have.value', 'crispr_hdr-line');
+      cy.get('label').contains('Genotype').parent().find('input').should('have.value', '3xHA-ase1');
+      cy.get('label').contains('Plasmid').parent().find('input').should('have.value', 'pFA6a-3HA-kanMX6');
+      cy.get('label').contains('Tags').siblings().find('div').contains('crispr_hdr').should('exist');
     });
   });
 
