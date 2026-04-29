@@ -141,7 +141,7 @@ function LineDetailPage() {
       </Box>
 
       {alleles.length > 0 && (
-        <DetailPageSection title="Genotype">
+        <DetailPageSection title="Genotype" data-testid="line-genotype">
           <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
             <SequenceTable sequences={alleles} showType={false} />
           </TableContainer>
@@ -149,7 +149,7 @@ function LineDetailPage() {
       )}
 
       {plasmids.length > 0 && (
-        <DetailPageSection title="Plasmids">
+        <DetailPageSection title="Plasmids" data-testid="line-plasmids">
           <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
             <SequenceTable sequences={plasmids} showType={false} />
           </TableContainer>
@@ -157,7 +157,7 @@ function LineDetailPage() {
       )}
 
       {parentLines.length > 0 && (
-        <DetailPageSection title="Parent lines">
+        <DetailPageSection title="Parent lines" data-testid="line-parent-lines">
           <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
             <LinesTable lines={parentLines} withCheckbox={false} />
           </TableContainer>
