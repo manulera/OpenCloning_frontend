@@ -119,6 +119,13 @@ function EditSequenceNameAndType({ sequenceData, sequenceInDb, onSave }) {
       >
         {patchMutation.isLoading ? 'Submitting' : 'Save'}
       </Button>
+      <Button
+        variant="text"
+        color="error"
+        onClick={() => onSave()}
+      >
+        Cancel
+      </Button>
     </Box>
   );
 }

@@ -16,6 +16,7 @@ const endpoints = {
   postPrimer: '/primer',
   lines: '/lines',
   line: (id) => `/line/${id}`,
+  lineChildren: (id) => `/line/${id}/children`,
   lineTags: (id) => `/line/${id}/tags`,
   inputEntityTags: (id) => `/input_entity/${id}/tags`,
   postLine: '/line',

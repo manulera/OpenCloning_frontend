@@ -23,10 +23,16 @@ export default function TextFieldQueryValidated({
   debounceDelay = 500,
   successMessage = ' ',
   validatingMessage = 'Validating...',
+  defaultValue = '',
   ...rest
 }) {
-  const [localValue, setLocalValue] = useState('');
-  const [debouncedValue, setDebouncedValue] = useState('');
+  const [localValue, setLocalValue] = useState(defaultValue);
+  const [debouncedValue, setDebouncedValue] = useState(defaultValue);
+
+  useEffect(() => {
+    setLocalValue(defaultValue);
+    setDebouncedValue(defaultValue);
+  }, [defaultValue]);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedValue(localValue), debounceDelay);

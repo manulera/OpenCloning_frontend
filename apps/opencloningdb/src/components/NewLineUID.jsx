@@ -2,26 +2,34 @@ import React from 'react'
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import { TextFieldQueryValidated } from '@opencloning/ui';
 
-const getLineUIDExistsErrorQuery = (value) => ({
-  queryKey: ['lines', { uid: value }],
+const getLineUIDExistsErrorQuery = (value, excludeUid) => ({
+  queryKey: ['lines', { uid: value, excludeUid: excludeUid ?? '' }],
   queryFn: async () => {
     const { data } = await openCloningDBHttpClient.get(endpoints.lines, {
       params: { uid: value },
     });
-    if (data.items.find((item) => item.uid === value)) {
+    if (data.items.find((item) => item.uid === value && item.uid !== excludeUid)) {
       return 'Line UID already exists';
     }
     return '';
   },
 });
 
-function NewLineUID({ onChange }) {
+function NewLineUID({
+  onChange,
+  label = 'New Line UID',
+  placeholder = 'Enter a new line UID',
+  excludeUid = null,
+  ...rest
+}) {
+  const getQuery = React.useCallback((value) => getLineUIDExistsErrorQuery(value, excludeUid), [excludeUid]);
   return (
     <TextFieldQueryValidated
-      label="New Line UID"
-      placeholder="Enter a new line UID"
+      label={label}
+      placeholder={placeholder}
       onChange={onChange}
-      getQuery={getLineUIDExistsErrorQuery}
+      getQuery={getQuery}
+      {...rest}
     />
   )
 }

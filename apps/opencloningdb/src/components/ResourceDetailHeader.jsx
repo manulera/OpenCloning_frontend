@@ -15,6 +15,7 @@ function ResourceDetailHeader({
   editorComponent : EditorComponent = null,
   editorComponentProps = {},
   editorIconToolTipText = 'Edit name',
+  afterEditorComponent = null,
   ...rest
 }) {
   const [isEditing, setIsEditing] = React.useState(false);
@@ -38,6 +39,7 @@ function ResourceDetailHeader({
                 </IconButton>
               </Tooltip>
             )}
+            {afterEditorComponent}
           </>)}
         {isEditing && (
           <Box>

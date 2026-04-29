@@ -11,15 +11,20 @@ import {
   FormControl,
   TableContainer,
   Paper,
+  Tooltip,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints, SequenceSelect } from '@opencloning/opencloningdb';
 import { Dialog, DialogTitle } from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import NewLineUID from '../components/NewLineUID';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
 import LinesTable from '../components/LinesTable';
 import DetailPageSection from '../components/DetailPageSection';
 import PageContainer from '../components/PageContainer';
+import TopButtonSection from '../components/TopButtonSection';
+import useAppAlerts from '../hooks/useAppAlerts';
+import ConfirmMutationDialog from '../components/ConfirmMutationDialog';
 
 
 
@@ -103,9 +108,73 @@ function TransformButton({ line }) {
   );
 }
 
+function EditLineUID({ line, onSave }) {
+  const queryClient = useQueryClient();
+  const { addAlert } = useAppAlerts();
+  const [nextUid, setNextUid] = React.useState(line.uid ?? '');
+  const sanitizedUid = nextUid.trim();
+  const canSubmit = sanitizedUid.length > 0 && sanitizedUid !== line.uid;
+
+  const patchMutation = useMutation({
+    mutationFn: async () => openCloningDBHttpClient.patch(endpoints.line(line.id), { uid: sanitizedUid }),
+    onSuccess: () => {
+      addAlert({ message: 'Line UID updated successfully', severity: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['line', line.id] });
+      queryClient.invalidateQueries({ queryKey: ['lineChildren', line.id] });
+      queryClient.invalidateQueries({ queryKey: ['lines'] });
+      onSave();
+    },
+    onError: (mutationError) => {
+      addAlert({
+        message: mutationError?.response?.data?.detail || mutationError?.message || 'Error updating line UID',
+        severity: 'error',
+      });
+    },
+  });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!canSubmit) return;
+    patchMutation.mutate();
+  };
+
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+      <NewLineUID
+        onChange={setNextUid}
+        label="Line UID"
+        placeholder="Edit line UID"
+        excludeUid={line.uid}
+        defaultValue={line.uid ?? ''}
+        sx={{ minWidth: 240 }}
+        size="small"
+      />
+      <Button
+        type="submit"
+        variant="contained"
+        sx={{ mb: 3 }}
+        disabled={!canSubmit || patchMutation.isPending}
+      >
+        {patchMutation.isPending ? 'Saving...' : 'Save'}
+      </Button>
+      <Button
+        variant="text"
+        color="error"
+        sx={{ mb: 3 }}
+        onClick={() => onSave()}
+      >
+        Cancel
+      </Button>
+    </Box>
+  );
+}
+
 function LineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addAlert } = useAppAlerts();
+  const queryClient = useQueryClient();
+  const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
 
   const { data: line, isLoading, error } = useQuery({
     queryKey: ['line', id],
@@ -114,16 +183,42 @@ function LineDetailPage() {
       const parentLinesData = await Promise.all(res.parent_ids.map((parentId) => openCloningDBHttpClient.get(endpoints.line(parentId))));
       const parentLines = parentLinesData?.map((r) => r.data) ?? [];
       return { ...res, parentLines };
+    }
+  });
+
+  const { data: children = [], isLoading: isChildrenLoading, error: childrenError} = useQuery({
+    queryKey: ['lineChildren', id],
+    queryFn: async () => {
+      const { data } = await openCloningDBHttpClient.get(endpoints.lineChildren(id));
+      return data ?? [];
+    }
+  });
+
+  const deleteLineMutation = useMutation({
+    mutationFn: async () => openCloningDBHttpClient.delete(endpoints.line(id)),
+    onSuccess: () => {
+      addAlert({ message: 'Line deleted successfully', severity: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['lines'] });
+      navigate('/lines');
+    },
+    onError: (mutationError) => {
+      addAlert({
+        message: mutationError?.response?.data?.detail || mutationError?.message || 'Error deleting line',
+        severity: 'error',
+      });
+      setIsDeleteOpen(false);
     },
   });
 
-  if (isLoading) return <CircularProgress />;
-  if (error) return <Alert severity="error">{error?.response?.data?.detail || error?.message || 'Failed to load line'}</Alert>;
+  if (isLoading || isChildrenLoading) return <CircularProgress />;
+  if (error || childrenError) return <Alert severity="error">{error?.response?.data?.detail || error?.message || childrenError?.response?.data?.detail || childrenError?.message || 'Failed to load line or children'}</Alert>;
 
   const sequences = line?.sequences_in_line ?? [];
   const alleles = sequences.filter((s) => s.sequence_type === 'allele');
   const plasmids = sequences.filter((s) => s.sequence_type === 'plasmid');
   const {parentLines } = line;
+  const hasChildren = children.length > 0;
+  const deleteTooltip = hasChildren ? 'Cannot delete: line has children' : null;
 
   return (
     <PageContainer>
@@ -134,11 +229,27 @@ function LineDetailPage() {
         backTitle="Back to Lines"
         entityId={id}
         entityType="lines"
+        editorComponent={EditLineUID}
+        editorComponentProps={{ line }}
+        editorIconToolTipText="Edit line UID"
       />
 
-      <Box sx={{ mb: 3 }}>
+      <TopButtonSection>
         <TransformButton line={line} />
-      </Box>
+        <Tooltip title={deleteTooltip} arrow placement="right">
+          <span>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => setIsDeleteOpen(true)}
+              disabled={hasChildren}
+            >
+              Delete line
+            </Button>
+          </span>
+        </Tooltip>
+      </TopButtonSection>
 
       {alleles.length > 0 && (
         <DetailPageSection title="Genotype" data-testid="line-genotype">
@@ -167,6 +278,15 @@ function LineDetailPage() {
       {alleles.length === 0 && plasmids.length === 0 && parentLines.length === 0 && (
         <Typography color="text.secondary">No genotype, plasmids, or parents for this line.</Typography>
       )}
+
+      <ConfirmMutationDialog
+        open={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        mutation={deleteLineMutation}
+        title="Delete line"
+        content={<Typography>Are you sure you want to delete line <strong>{line.uid}</strong>?</Typography>}
+        confirmButtonText="Confirm delete"
+      />
     </PageContainer>
   );
 }
