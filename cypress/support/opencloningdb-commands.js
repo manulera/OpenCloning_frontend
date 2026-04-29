@@ -109,3 +109,14 @@ Cypress.Commands.add('e2eLogin', (page, email, password) => {
   cy.get('button[type="submit"]').click();
   cy.location('pathname').should('eq', page);
 });
+
+Cypress.Commands.add('resetDB', () => {
+  cy.request({
+    method: 'POST',
+    url: `${DB_URL}/__test/reset-db`,
+    headers: {
+      'x-test-reset-token': 'RESET-TOKEN',
+    },
+    failOnStatusCode: false,
+  }).its('status').should('eq', 204);
+});

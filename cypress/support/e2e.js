@@ -17,6 +17,7 @@
 import './commands';
 import '@cypress/code-coverage/support';
 import './opencloningdb-commands';
+import './common-tests';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
