@@ -222,7 +222,7 @@ function SequenceDetailPage() {
         </AddToCloningButton>
       </TopButtonSection>
       <SequenceSamplesSection sequenceId={id} sampleUids={sequenceInDb?.sample_uids ?? []} />
-      <DetailPageSection title="Provenance">
+      <DetailPageSection title="Provenance" data-testid="sequence-provenance">
         <Typography color="text.secondary" sx={{ mb: 1 }}>
           {parentSource.type}
         </Typography>
@@ -234,7 +234,7 @@ function SequenceDetailPage() {
       </DetailPageSection>
 
       {children?.length > 0 && (
-        <DetailPageSection title="Children">
+        <DetailPageSection title="Children" data-testid="sequence-children">
           <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
             <SequenceTable sequences={children} />
           </TableContainer>

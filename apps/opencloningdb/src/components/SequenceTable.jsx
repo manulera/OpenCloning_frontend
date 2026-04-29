@@ -17,7 +17,7 @@ function SequenceTable({
   const ids = sequences.map((seq) => seq.id);
 
   return (
-    <Table size="small">
+    <Table size="small" data-testid="sequence-table">
       <TableHead>
         <TableRow>
           {withCheckbox && (

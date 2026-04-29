@@ -96,10 +96,8 @@ describe('SequencesPage', () => {
         cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/children`).as('getSequenceChildren');
         cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/primers`).as('getSequencePrimers');
         cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/sequencing_files`).as('getSequenceSequencingFiles');
-        cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/text_file_sequence`).as('getSequenceTextFile');
 
         cy.get('tbody button').contains(sequence.name).click();
-        cy.wait('@getSequenceCloningStrategy');
         cy.wait('@getSequenceDetail').then(({ response: sequenceDetailResponse }) => {
           const sequenceDetail = sequenceDetailResponse.body;
 
@@ -115,7 +113,6 @@ describe('SequencesPage', () => {
             cy.contains('h6', 'Sequence sample UIDs').parent().parent().contains('No UIDs linked').should('exist');
           }
         });
-        cy.wait('@getSequenceChildren');
         cy.wait('@getSequencePrimers').then(({ response: sequencePrimersResponse }) => {
           const linkedPrimers = [...sequencePrimersResponse.body.templates, ...sequencePrimersResponse.body.products];
 
@@ -139,16 +136,31 @@ describe('SequencesPage', () => {
           }
         });
 
-        cy.contains('h6', 'Provenance').should('exist');
-        // TODO: Add explicit provenance parent assertions once stable parent examples are documented in backend stubs.
-        // TODO: Add explicit children assertions once stable child examples are documented in backend stubs.
+        cy.wait(['@getSequenceCloningStrategy', '@getSequenceChildren']).then(() => {
+          if (name === 'pREX0008') {
+            // Parents
+            cy.get('[data-testid="sequence-provenance"]').contains('UploadedFileSource').should('exist');
+            // Children
+            cy.get('[data-testid="sequence-children"]').should('not.exist')
+          } else {
+            // Parents
+            cy.get('[data-testid="sequence-provenance"]').contains('GatewaySource').should('exist');
+            cy.get('[data-testid="sequence-provenance"] [data-testid="sequence-table"]').should('exist').within(() => {
+              cy.get('tr').should('have.length', 3);
+              cy.get('tr').eq(1).contains('pDONR221').should('exist');
+              cy.get('tr').eq(2).contains('lacZ_PCR_product').should('exist');
+            });
+            // Children
+            cy.get('[data-testid="sequence-children"] [data-testid="sequence-table"]').should('exist').within(() => {
+              cy.get('tr').should('have.length', 2);
+              cy.get('tr').eq(1).contains('expression_clone_lacZ').should('exist');
+            });
+          }
+        });
+        cy.get('.veEditor').contains(name).should('exist');
         cy.get('button').contains('Back to Sequences').click();
       });
     }
-    cy.get('button').contains('Add to Design Tab').click();
-    cy.wait('@getSequenceTextFile');
-    cy.changeTab('Design');
-    cy.get('.open-cloning', { timeout: 20000 }).contains('pREX0008').should('exist');
   });
 
   it('can add to tab from the detail page', () => {
@@ -212,7 +224,6 @@ describe('SequencesPage', () => {
       });
 
       cy.get('button').contains('Add to Design Tab').click();
-      cy.wait('@getSequenceTextFile');
       cy.wait('@getSequenceTextFile');
       cy.changeTab('Design');
       cy.get('.open-cloning', { timeout: 20000 }).contains(selectedSequences[0].name).should('exist');
