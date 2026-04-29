@@ -170,7 +170,9 @@ function EditLineUID({ line, onSave }) {
 }
 
 function LineDetailPage() {
-  const { id } = useParams();
+  const { id: stringId } = useParams();
+  // This is necessary because of query keys
+  const id = parseInt(stringId);
   const navigate = useNavigate();
   const { addAlert } = useAppAlerts();
   const queryClient = useQueryClient();
