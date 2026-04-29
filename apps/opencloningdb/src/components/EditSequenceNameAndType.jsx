@@ -14,7 +14,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 
 import useAppAlerts from '../hooks/useAppAlerts';
-import { VALID_SEQUENCE_TYPES, SEQUENCE_TYPE_LABELS } from '../utils/query_utils';
+import { VALID_SEQUENCE_TYPES, CIRCULAR_SEQUENCE_TYPES, LINEAR_SEQUENCE_TYPES } from '../utils/query_utils';
 
 function SequenceTypeSelect({ value, onChange, isCircular, helperText }) {
   return (
@@ -34,7 +34,7 @@ function SequenceTypeSelect({ value, onChange, isCircular, helperText }) {
         >
           {VALID_SEQUENCE_TYPES.map((t) => (
             <MenuItem key={t} value={t}>
-              {SEQUENCE_TYPE_LABELS[t] ?? t}
+              {isCircular ? CIRCULAR_SEQUENCE_TYPES[t] : LINEAR_SEQUENCE_TYPES[t] ?? t}
             </MenuItem>
           ))}
         </Select>

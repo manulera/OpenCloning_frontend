@@ -204,6 +204,7 @@ function SequenceDetailPage() {
         </Box>
       </Box>
       <ResourceDetailHeader
+        data-testid="sequence-header"
         title={sequenceInDb?.name}
         afterTitle={<SequenceTypeChip sequenceType={sequenceInDb?.sequence_type} sx={{ fontSize: '1.2rem' }} />}
         tags={tags}

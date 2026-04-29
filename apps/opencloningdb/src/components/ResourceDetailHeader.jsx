@@ -14,11 +14,12 @@ function ResourceDetailHeader({
   belowTitle = null,
   editorComponent : EditorComponent = null,
   editorComponentProps = {},
-  editorIconToolTipText = 'Edit name'
+  editorIconToolTipText = 'Edit name',
+  ...rest
 }) {
   const [isEditing, setIsEditing] = React.useState(false);
   return (
-    <>
+    <Box {...rest}>
       <Button onClick={onBack} sx={{ mb: 2 }}>
         <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} /> {backTitle}
       </Button>
@@ -50,7 +51,7 @@ function ResourceDetailHeader({
           <TagChipList tags={tags} entityId={entityId} entityType={entityType} canDelete={true} />
         </Box>
       )}
-    </>
+    </Box>
   )
 }
 

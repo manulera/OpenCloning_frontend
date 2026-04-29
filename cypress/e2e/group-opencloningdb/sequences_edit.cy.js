@@ -73,4 +73,42 @@ describe('Actions that can be perfomed by an edit user on the Sequences page', (
       cy.closeDbAlerts();
     });
   });
+  it('can change name but not sequence type in circular sequence', () => {
+
+    cy.e2eLogin(`/sequences`, 'bootstrap@example.com', 'password');
+    cy.get('tbody tr button').contains('pREX0008').click();
+    cy.get('[data-testid="sequence-header"]').within(() => {
+      cy.get('[aria-label="Edit name and type"]').click();
+      cy.get('input').first().clear()
+      cy.get('input').first().type('new_sequence_name');
+      cy.get('input').last().should('be.disabled');
+      cy.get('button').contains('Save').click();
+      cy.contains('new_sequence_name').should('exist');
+    });
+    cy.dbAlertExists('Sequence updated successfully');
+
+    cy.closeDbAlerts();
+  });
+  it('can change name and sequence type in linear sequence', () => {
+    cy.e2eLogin(`/sequences`, 'bootstrap@example.com', 'password');
+    cy.get('tbody tr button').contains('reconstituted_locus').click();
+    cy.get('[data-testid="sequence-header"]').within(() => {
+      cy.contains('Linear DNA').should('exist');
+      cy.get('[aria-label="Edit name and type"]').click();
+      cy.get('input').first().clear()
+      cy.get('input').first().type('new_sequence_name');
+      cy.contains('Type').siblings('div').first().click();
+    });
+    // Plasmid should not be an option
+    cy.get('div[role="presentation"]').contains('Plasmid').should('not.exist');
+    cy.get('div[role="presentation"]').contains('Allele').click();
+    cy.get('[data-testid="sequence-header"]').within(() => {
+      cy.get('button').contains('Save').click();
+      cy.contains('new_sequence_name').should('exist');
+      cy.contains('Allele').should('exist');
+      cy.contains('Linear DNA').should('not.exist');
+    });
+    cy.dbAlertExists('Sequence updated successfully');
+    cy.closeDbAlerts();
+  });
 });

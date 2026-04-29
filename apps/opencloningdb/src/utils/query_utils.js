@@ -66,6 +66,19 @@ export const SEQUENCE_TYPE_LABELS = {
   linear_dna: 'Linear DNA',
 };
 
+export const LINEAR_SEQUENCE_TYPES = {
+  locus: 'Locus',
+  allele: 'Allele',
+  pcr_product: 'PCR product',
+  restriction_fragment: 'Restriction fragment',
+  linear_dna: 'Linear DNA',
+};
+
+export const CIRCULAR_SEQUENCE_TYPES = {
+  plasmid: 'Plasmid',
+};
+
+
 /**
  * Parse URL search params into sequence filter object.
  * Single source of truth for sequence query params.
