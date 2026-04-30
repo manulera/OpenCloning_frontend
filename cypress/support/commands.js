@@ -88,11 +88,8 @@ Cypress.Commands.add('setInputValue', (label, value, parentSelector = 'body') =>
 
 Cypress.Commands.add('setAutocompleteValue', (label, value, parentSelector = 'body', exactMatch = true) => {
   cy.setInputValue(label, value, parentSelector);
-  if (exactMatch) {
-    cy.get('div[role="presentation"]').contains(new RegExp(`^${value}$`)).click();
-  } else {
-    cy.get('div[role="presentation"]').contains(value).click();
-  }
+  const matcher = exactMatch ? new RegExp(`^${value}$`) : value;
+  cy.document().its('body').find('div[role="presentation"]').contains(matcher).click();
 });
 
 Cypress.Commands.add('clearAutocompleteValue', (label, parentSelector = 'body') => {
@@ -212,4 +209,12 @@ Cypress.Commands.add('disableCache', () => {
       params: { cacheDisabled: true }
     });
   }
+});
+
+Cypress.Commands.add('clearChip', (text, parentSelector = '') => {
+  let selector = 'span.MuiChip-label'
+  if (parentSelector) {
+    selector = `${parentSelector} ${selector}`;
+  }
+  cy.get(selector).contains(text).siblings('svg').click();
 });

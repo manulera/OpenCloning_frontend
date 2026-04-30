@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEqual } from 'lodash-es';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -25,45 +26,48 @@ import PageContainer from '../components/PageContainer';
 import TopButtonSection from '../components/TopButtonSection';
 import useAppAlerts from '../hooks/useAppAlerts';
 import ConfirmMutationDialog from '../components/ConfirmMutationDialog';
+import { getPlasmidSequencesInLine, getAlleleSequencesInLine } from '../utils/models_utils';
+import useCreateLineMutation from '../hooks/useCreateLineMutation';
 
+function getUniqueIds(sequences) {
+  return new Set(sequences.map((s) => s.id));
+}
 
-
-function TransformationDialog({ line, open, onClose }) {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const [alleles, setAlleles] = React.useState([]);
+export function TransformationDialog({ line, open, onClose }) {
+  const originalPlasmids = React.useMemo(() => getPlasmidSequencesInLine(line), [line]);
+  const originalAlleles = React.useMemo(() => getAlleleSequencesInLine(line), [line]);
   const [lineUID, setLineUID] = React.useState('');
-  const [plasmids, setPlasmids] = React.useState([]);
+  const [alleles, setAlleles] = React.useState(originalAlleles);
+  const [plasmids, setPlasmids] = React.useState(originalPlasmids);
+  const navigate = useNavigate();
 
-  const anyTransormedSequence = alleles.length > 0 || plasmids.length > 0;
+  React.useEffect(() => {
+    setAlleles(originalAlleles);
+    setPlasmids(originalPlasmids);
+  }, [originalAlleles, originalPlasmids, open]);
 
-  const createLineMutation = useMutation({
-    mutationFn: async (body) => {
-      const { data } = await openCloningDBHttpClient.post(endpoints.postLine, body);
-      return data;
-    },
-    onSuccess: (data) => {
-      onClose();
-      queryClient.invalidateQueries({ queryKey: ['lines'] });
-      queryClient.invalidateQueries({ queryKey: ['line', line.id] });
-      navigate(`/lines/${data.id}`);
-    },
-  });
+  const anyTransformedSequence = !isEqual(getUniqueIds(alleles), getUniqueIds(originalAlleles)) || !isEqual(getUniqueIds(plasmids), getUniqueIds(originalPlasmids));
 
-  const handleSubmit = (e) => {
+  const createLineMutation = useCreateLineMutation();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!lineUID || !anyTransormedSequence) return;
-    createLineMutation.mutate({
+    if (!lineUID || !anyTransformedSequence) return;
+    const resp = await createLineMutation.mutateAsync({
       uid: lineUID,
       allele_ids: alleles.map((a) => a.id),
       plasmid_ids: plasmids.map((p) => p.id),
       parent_ids: [line.id],
     });
+    navigate(`/lines/${resp.id}`);
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Transformation of {line.uid ?? `Line ${line.id}`}</DialogTitle>
+    <Dialog open={open} onClose={onClose} data-testid="transformation-dialog">
+      <DialogTitle>Select sequences transformed into {line.uid ?? `Line ${line.id}`}</DialogTitle>
+      <Alert severity="info">
+        You can also remove existing plasmids or alleles, for instance to represent the further modification of an allele that was already there.
+      </Alert>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth sx={{ mt: 1 }}>
@@ -82,7 +86,7 @@ function TransformationDialog({ line, open, onClose }) {
           )}
           <FormControl fullWidth sx={{ mt: 2 }}>
             <Button
-              disabled={!lineUID || !anyTransormedSequence || createLineMutation.isPending}
+              disabled={!lineUID || !anyTransformedSequence || createLineMutation.isPending}
               type="submit"
               variant="contained"
               color="primary"
@@ -215,10 +219,9 @@ function LineDetailPage() {
   if (isLoading || isChildrenLoading) return <CircularProgress />;
   if (error || childrenError) return <Alert severity="error">{error?.response?.data?.detail || error?.message || childrenError?.response?.data?.detail || childrenError?.message || 'Failed to load line or children'}</Alert>;
 
-  const sequences = line?.sequences_in_line ?? [];
-  const alleles = sequences.filter((s) => s.sequence_type === 'allele');
-  const plasmids = sequences.filter((s) => s.sequence_type === 'plasmid');
-  const {parentLines } = line;
+  const alleles = getAlleleSequencesInLine(line);
+  const plasmids = getPlasmidSequencesInLine(line);
+  const { parentLines } = line;
   const hasChildren = children.length > 0;
   const deleteTooltip = hasChildren ? 'Cannot delete: line has children' : null;
 

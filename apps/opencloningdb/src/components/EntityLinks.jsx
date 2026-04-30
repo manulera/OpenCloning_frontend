@@ -26,14 +26,6 @@ export function SequenceLink({ id, name, sx }) {
   );
 }
 
-export function SequenceInLineLink({ sequence_id, name, sx }) {
-  return (
-    <NavigateLink to={`/sequences/${sequence_id}`} sx={sx}>
-      {name}
-    </NavigateLink>
-  );
-}
-
 export function PrimerLink({ id, name, sx }) {
   return (
     <NavigateLink to={`/primers/${id}`} sx={sx}>

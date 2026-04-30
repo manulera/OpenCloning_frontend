@@ -1,15 +1,16 @@
 import React from 'react';
 import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { LineLink, CommaSeparatorWrapper, SequenceInLineLink } from './EntityLinks';
+import { LineLink, CommaSeparatorWrapper, SequenceLink } from './EntityLinks';
 import TagChipList from './TagChipList';
 import SelectAllCheckbox from './SelectAllCheckbox';
+import { getAlleleSequencesInLine, getPlasmidSequencesInLine } from '../utils/models_utils';
 
-function SeqCell({ sils }) {
+function SeqCell({ sequences }) {
   return (
-    sils.length ? (
+    sequences.length ? (
       <CommaSeparatorWrapper>
-        {sils.map((sil) => (
-          <SequenceInLineLink key={sil.id} {...sil} />
+        {sequences.map((sequence) => (
+          <SequenceLink key={sequence.id} {...sequence} />
         ))}
       </CommaSeparatorWrapper>
     ) : (
@@ -43,8 +44,6 @@ function LinesTable({ lines = [], withCheckbox = false, selectedIds = new Set(),
       </TableHead>
       <TableBody>
         {lines.map((line) => {
-          const alleles = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'allele') ?? [];
-          const plasmids = line.sequences_in_line?.filter((sil) => sil.sequence_type === 'plasmid') ?? [];
           return (
             <TableRow key={line.id} hover>
               {withCheckbox &&
@@ -58,8 +57,8 @@ function LinesTable({ lines = [], withCheckbox = false, selectedIds = new Set(),
               <TableCell>
                 <LineLink {...line} />
               </TableCell>
-              <TableCell><SeqCell sils={alleles} /></TableCell>
-              <TableCell><SeqCell sils={plasmids} /></TableCell>
+              <TableCell><SeqCell sequences={getAlleleSequencesInLine(line)} /></TableCell>
+              <TableCell><SeqCell sequences={getPlasmidSequencesInLine(line)} /></TableCell>
               <TableCell><TagChipList tags={line.tags} /></TableCell>
             </TableRow>
           );

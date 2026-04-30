@@ -24,6 +24,7 @@ declare namespace Cypress {
         dbAlertExists(message: any): Chainable<any>;
         closeDbAlerts(): Chainable<any>;
         disableCache(): Chainable<any>;
+        clearChip(text: any, parentSelector?: string): Chainable<any>;
         addTagInTableTest(resourcePlural: any): Chainable<any>;
         addTagInDetailPageTest(resourcePlural: any, resourceName: any, expectedTagName: any): Chainable<any>;
         mount(component: any, options?: object): Chainable<any>;

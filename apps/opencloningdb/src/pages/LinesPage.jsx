@@ -2,27 +2,19 @@ import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   TablePagination,
   Paper,
   CircularProgress,
   Alert,
   Typography,
   Button,
-  Checkbox,
 } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
-import { LineLink, CommaSeparatorWrapper, SequenceInLineLink } from '../components/EntityLinks';
 import { parseLinesParams, applyLinesParamsToSearchParams } from '../utils/query_utils';
 import SearchBarTextField from '../components/SearchBarTextField';
 import TagMultiSelect from '../components/TagMultiSelect';
 import { UrlParamsForm } from '../components/urlParamsForm';
-import TagChipList from '../components/TagChipList';
 import TagEntitiesButton from '../components/TagEntitiesButton';
 import TopButtonSection from '../components/TopButtonSection';
 import PageContainer from '../components/PageContainer';
