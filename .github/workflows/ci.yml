@@ -206,6 +206,7 @@ jobs:
           path: |
             node_modules
             /home/runner/.cache/Cypress
+            apps/*/node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
       - name: enable corepack
