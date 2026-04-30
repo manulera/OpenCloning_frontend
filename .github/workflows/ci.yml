@@ -115,7 +115,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4, "component", "unit-tests"]
+        group: [1, 2, 3, 4, "component", "unit-tests", "opencloning-db"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -170,6 +170,7 @@ jobs:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
           ADDGENE_USERNAME: ${{ secrets.ADDGENE_USERNAME }}
           ADDGENE_PASSWORD: ${{ secrets.ADDGENE_PASSWORD }}
+          OPENCLONING_TESTING: '1'
 
       - name: check if the backend server is running
         run: |
@@ -208,8 +209,8 @@ jobs:
       - name: enable corepack
         run: corepack enable
 
-      - name: Cypress run E2E tests
-        if: matrix.group != 'component' && matrix.group != 'unit-tests'
+      - name: Cypress run E2E tests (OpenCloning)
+        if: matrix.group != 'component' && matrix.group != 'unit-tests' && matrix.group != 'opencloning-db'
         uses: cypress-io/github-action@v6
         env:
           VITE_COVERAGE: "true"
@@ -218,6 +219,15 @@ jobs:
         with:
           start: yarn start
           install: false
+      - name: Cypress run E2E tests (OpenCloning-DB)
+        if: matrix.group == 'opencloning-db'
+        uses: cypress-io/github-action@v6
+        env:
+          VITE_COVERAGE: "true"
+          VITE_LOG_LEVEL: "warn"
+          CYPRESS_TEST_GROUP: ${{ matrix.group }}
+        with:
+          start: yarn workspace opencloningdb dev --port 3000
 
       - name: Cypress run component tests
         if: matrix.group == 'component'
