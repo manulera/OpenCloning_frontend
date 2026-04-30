@@ -88,6 +88,7 @@ jobs:
         with:
           path: |
             node_modules
+            apps/*/node_modules
             /home/runner/.cache/Cypress
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
@@ -220,6 +221,7 @@ jobs:
         with:
           start: yarn start
           install: false
+
       - name: Cypress run E2E tests (OpenCloningDB)
         if: matrix.group == 'opencloningdb1'
         uses: cypress-io/github-action@v6
