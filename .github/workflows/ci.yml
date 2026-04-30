@@ -232,7 +232,6 @@ jobs:
           CYPRESS_TEST_GROUP: ${{ matrix.group }}
         with:
           start: yarn workspace opencloningdb dev --port 3000
-          install: false
 
       - name: Cypress run component tests
         if: matrix.group == 'component'
