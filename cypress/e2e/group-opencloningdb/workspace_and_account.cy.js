@@ -19,7 +19,7 @@ describe('workspace and account', () => {
     cy.e2eLogin('/workspace', 'bootstrap@example.com', 'password');
     cy.contains('h5', 'Manage workspaces').should('be.visible');
     cy.contains('h6', 'Create workspace').closest('.MuiPaper-root').within(() => {
-      cy.contains('label', 'Workspace name').parent().find('input').clear().type('e2e-created-workspace', { delay: 0 });
+      cy.setInputValue('Workspace name', 'e2e-created-workspace', 'div');
       cy.get('button').contains('Create').click();
     });
     cy.dbAlertExists('Workspace "e2e-created-workspace" created and activated');
