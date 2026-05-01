@@ -69,7 +69,6 @@ export default function QuerySelect({
           <Autocomplete
             multiple={multiple}
             onChange={handleAutocompleteChange}
-            id="tags-standard"
             options={displayOptions}
             noOptionsText={noOptionsText}
             getOptionLabel={getOptionLabel}
