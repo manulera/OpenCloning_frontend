@@ -3,7 +3,7 @@ describe('Actions that can be perfomed by an edit user on the Primers page', () 
     cy.resetDB();
   })
   it('can tag primers from the table', () => {
-    cy.addTagInTableTest('primers');
+    cy.addTagInTableTest('primers', 'input_entity');
   });
   it('can remove and add tags from the detail page', () => {
     cy.addTagInDetailPageTest('primers', 'fwd_restriction_then_ligation', 'restriction_then_ligation');

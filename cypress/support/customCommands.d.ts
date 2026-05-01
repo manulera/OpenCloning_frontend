@@ -29,10 +29,11 @@ declare namespace Cypress {
         dragAndDropFile(filePath: any): Chainable<any>;
         checkSequenceInDatabase(sequenceId: any): Chainable<any>;
         checkSequenceNotInDatabase(sequenceId: any): Chainable<any>;
-        addTagInTableTest(resourcePlural: any): Chainable<any>;
+        addTagInTableTest(resourcePlural: any, tagEndpointName: any): Chainable<any>;
         addTagInDetailPageTest(resourcePlural: any, resourceName: any, expectedTagName: any): Chainable<any>;
         openCloningDbTablePaginationTest(resourcePlural: any, pageTestId: any): Chainable<any>;
         openCloningDbTableSelectAllTest(resourcePlural: any, pageTestId: any, selectAllAriaLabel: any, bulkButtonLabel: any): Chainable<any>;
+        goBackToMainPageFromDetailPage(resourcePlural: any, resourceName: any): Chainable<any>;
         mount(component: any, options?: object): Chainable<any>;
         loginToOpenCloningDB(email: any, password: any, workspaceId: any): Chainable<any>;
         mockLogin(): Chainable<any>;

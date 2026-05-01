@@ -3,7 +3,7 @@ describe('Actions that can be perfomed by an edit user on the Lines page', () =>
     cy.resetDB();
   })
   it('can tag lines from the table', () => {
-    cy.addTagInTableTest('lines');
+    cy.addTagInTableTest('lines', 'line');
   });
   it('can remove and add tags from the detail page', () => {
     cy.addTagInDetailPageTest('lines', 'crispr_hdr-line', 'crispr_hdr');

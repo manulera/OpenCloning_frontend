@@ -47,6 +47,9 @@ describe('LinesPage', () => {
         });
     });
   });
+  it('can go back to main page from the detail page', () => {
+    cy.goBackToMainPageFromDetailPage('lines', 'crispr_hdr-line');
+  });
 
   it('should set query params from the URL', () => {
     cy.e2eLogin('/lines', 'view-only-user@example.com', 'password');

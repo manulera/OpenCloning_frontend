@@ -7,7 +7,7 @@ import SelectAllCheckbox from './SelectAllCheckbox';
 import SampleUidBadge from './SampleUidBadge';
 
 function SequenceTable({
-  sequences = [],
+  sequences,
   showType = true,
   showSampleUids = false,
   withCheckbox = false,

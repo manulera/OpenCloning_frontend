@@ -88,15 +88,22 @@ describe('SequencesPage', () => {
     });
   });
 
+  it('can go back to main page from the detail page', () => {
+    cy.goBackToMainPageFromDetailPage('sequences', 'pREX0008');
+  });
+
   it('clicking on entry shows the detail page', () => {
-    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
     cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
+    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
     // entry clone has parent and children, no sequencing data.
     // pREX0008 has sequencing data, no parent or children.
-    for (const name of ['entry_clone_lacZ', 'pREX0008']) {
+    // lacZ_PCR_product has linked primers
+    cy.wait('@getSequences');
+    for (const name of ['entry_clone_lacZ', 'pREX0008', 'lacZ_PCR_product']) {
+      cy.intercept('GET', 'http://localhost:8001/sequences*').as(`getSequences-${name}`);
       cy.setInputValue('Name', name, '[data-testid="sequences-page"]');
       cy.get('[data-testid="sequences-page"] button').contains('Search').click();
-      cy.wait('@getSequences').then(({ response }) => {
+      cy.wait(`@getSequences-${name}`).then(({ response }) => {
         const sequence = response.body.items.find((item) => item.name === name);
 
         cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}`).as('getSequenceDetail');
@@ -110,7 +117,11 @@ describe('SequencesPage', () => {
           const sequenceDetail = sequenceDetailResponse.body;
 
           cy.get('[data-testid="resource-detail-header-title"] h5').contains(sequenceDetail.name).should('exist');
-          cy.get('[data-testid="resource-detail-header-title"]').contains('Plasmid').should('exist');
+          if (name !== 'lacZ_PCR_product') {
+            cy.get('[data-testid="resource-detail-header-title"]').contains('Plasmid').should('exist');
+          } else {
+            cy.get('[data-testid="resource-detail-header-title"]').contains('PCR product').should('exist');
+          }
           cy.get('[data-testid="tag-chip-with-delete"]').contains(sequenceDetail.tags[0].name).should('exist');
 
           if (sequenceDetail.sample_uids.length > 0) {
@@ -125,7 +136,8 @@ describe('SequencesPage', () => {
         cy.wait('@getSequencePrimers').then(({ response: sequencePrimersResponse }) => {
           const linkedPrimers = [...sequencePrimersResponse.body.templates, ...sequencePrimersResponse.body.products];
 
-          if (linkedPrimers.length > 0) {
+          if (name === 'lacZ_PCR_product') {
+            expect(linkedPrimers).to.have.length(2);
             linkedPrimers.forEach((primer) => {
               cy.contains('h6', 'Linked primers').parent().parent().contains(primer.name).should('exist');
             });
@@ -151,7 +163,7 @@ describe('SequencesPage', () => {
             cy.get('[data-testid="sequence-provenance"]').contains('UploadedFileSource').should('exist');
             // Children
             cy.get('[data-testid="sequence-children"]').should('not.exist')
-          } else {
+          } else if (name === 'entry_clone_lacZ') {
             // Parents
             cy.get('[data-testid="sequence-provenance"]').contains('GatewaySource').should('exist');
             cy.get('[data-testid="sequence-provenance"] [data-testid="sequence-table"]').should('exist').within(() => {

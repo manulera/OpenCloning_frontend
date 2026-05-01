@@ -1,4 +1,4 @@
-Cypress.Commands.add('addTagInTableTest', (resourcePlural) => {
+Cypress.Commands.add('addTagInTableTest', (resourcePlural, tagEndpointName) => {
   cy.intercept('GET', `http://localhost:8001/${resourcePlural}*`).as('getRequest');
   cy.e2eLogin(`/${resourcePlural}`, 'bootstrap@example.com', 'password');
   cy.wait('@getRequest')
@@ -9,10 +9,34 @@ Cypress.Commands.add('addTagInTableTest', (resourcePlural) => {
   cy.setInputValue('Tags', 'test-tag', '[data-testid="tag-entities-dialog"]');
   cy.get('div[role="presentation"]').contains('Create tag').click();
   cy.clickMultiSelectOption('Tags', 'test-tag', '[data-testid="tag-entities-dialog"]');
+  cy.intercept('POST', `http://localhost:8001/${tagEndpointName}/*/tags`).as('addTag');
   cy.get('[data-testid="tag-entities-dialog"] button').contains('Tag').click();
+  cy.wait('@addTag');
   cy.get('tbody tr').eq(0).contains('test-tag').should('exist');
   cy.get('tbody tr').eq(1).contains('test-tag').should('exist');
   cy.get('tbody tr').eq(2).contains('test-tag').should('not.exist');
+
+  // No errors if adding the same tag again (just skipped)
+  
+  cy.get('tbody tr input').eq(0).click();
+  cy.get('tbody tr input').eq(1).click();
+  cy.get('button').contains(`Tag ${resourcePlural}`, { matchCase: false }).click();
+  cy.setAutocompleteValue('Tags', 'test-tag', '[data-testid="tag-entities-dialog"]');
+  cy.get('[data-testid="tag-entities-dialog"] button').contains('Tag').click();
+  cy.wait('@addTag');
+  cy.get('tbody tr').eq(0).contains('test-tag').should('exist');
+  cy.get('tbody tr').eq(1).contains('test-tag').should('exist');
+  cy.get('tbody tr').eq(2).contains('test-tag').should('not.exist');
+
+  // No errors if adding the same tag again (just skipped)
+  cy.get('tbody tr input').eq(0).click();
+  cy.get('tbody tr input').eq(1).click();
+  cy.get('button').contains(`Tag ${resourcePlural}`, { matchCase: false }).click();
+  cy.setAutocompleteValue('Tags', 'test-tag', '[data-testid="tag-entities-dialog"]');
+  cy.get('[data-testid="tag-entities-dialog"] button').contains('Tag').click();
+  cy.get('[data-testid="tag-entities-dialog"]').should('not.exist');
+  cy.get('@addTag.all').should('have.length', 2);
+
 });
 
 Cypress.Commands.add('addTagInDetailPageTest', (resourcePlural, resourceName, expectedTagName) => {
@@ -70,4 +94,13 @@ Cypress.Commands.add('openCloningDbTableSelectAllTest', (resourcePlural, pageTes
     cy.wrap($tr).find('input[type="checkbox"]').first().should('be.checked');
   });
   cy.get(`${pageTestId} button`).contains(bulkButtonLabel).should('exist');
+});
+
+Cypress.Commands.add('goBackToMainPageFromDetailPage', (resourcePlural, resourceName) => {
+  cy.intercept('GET', `http://localhost:8001/${resourcePlural}*`).as('list');
+  cy.e2eLogin(`/${resourcePlural}?name=${resourceName}`, 'view-only-user@example.com', 'password');
+  cy.wait('@list');
+  cy.get('tbody button').contains(resourceName).click();
+  cy.get('button').contains(`Back to ${resourcePlural}`, { matchCase: false }).click();
+  cy.url().should('include', `/${resourcePlural}`);
 });

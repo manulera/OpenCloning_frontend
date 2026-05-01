@@ -5,12 +5,7 @@ import TagChipList from './TagChipList';
 import SelectAllCheckbox from './SelectAllCheckbox';
 import SampleUidBadge from './SampleUidBadge';
 
-function PrimersTable({
-  primers = [],
-  withCheckbox = false,
-  selectedIds = new Set(),
-  toggleRow = () => {},
-}) {
+function PrimersTable({ primers, withCheckbox, selectedIds, toggleRow}) {
   const ids = primers.map((primer) => primer.id);
 
   return (

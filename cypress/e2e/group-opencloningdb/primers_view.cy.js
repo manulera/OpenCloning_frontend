@@ -119,6 +119,10 @@ describe('Actions that can be perfomed by a view-only user on the Primers page',
     });
   });
 
+  it('can go back to main page from the detail page', () => {
+    cy.goBackToMainPageFromDetailPage('primers', 'fwd_restriction_then_ligation');
+  });
+
   it('paginates the table after lowering rows per page', () => {
     cy.openCloningDbTablePaginationTest('primers', '[data-testid="primers-page"]');
   });
