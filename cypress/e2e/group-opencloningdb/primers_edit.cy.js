@@ -6,7 +6,7 @@ describe('Actions that can be perfomed by an edit user on the Primers page', () 
     cy.addTagInTableTest('primers');
   });
   it('can remove and add tags from the detail page', () => {
-    cy.addTagInDetailPageTest('primers', 'fwd_restriction_then_ligation', 'templateless_PCR');
+    cy.addTagInDetailPageTest('primers', 'fwd_restriction_then_ligation', 'restriction_then_ligation');
   });
   it('can add primers from the design tab', () => {
     cy.e2eLogin('/design', 'bootstrap@example.com', 'password');

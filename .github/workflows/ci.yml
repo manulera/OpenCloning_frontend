@@ -116,8 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # group: [1, 2, 3, 4, "component", "unit-tests", "opencloningdb1"]
-        group: ["opencloningdb1"]
+        group: [1, 2, 3, 4, "component", "unit-tests", "opencloningdb"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
