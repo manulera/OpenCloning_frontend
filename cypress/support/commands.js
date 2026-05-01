@@ -188,6 +188,10 @@ Cypress.Commands.add('closeAlerts', () => {
   });
 });
 
+Cypress.Commands.add('openCloningAlertExists', (message) => {
+  cy.get(`div#global-error-message-wrapper [role="alert"]`).contains(message).should('exist');
+});
+
 Cypress.Commands.add('dbAlertExists', (message) => {
   cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root`).contains(message).should('exist');
 });
@@ -217,4 +221,18 @@ Cypress.Commands.add('clearChip', (text, parentSelector = '') => {
     selector = `${parentSelector} ${selector}`;
   }
   cy.get(selector).contains(text).siblings('svg').click();
+});
+
+Cypress.Commands.add('dragAndDropFile', (filePath) => {
+  cy.get('div.cloning-history').selectFile(filePath, { action: 'drag-drop' });
+});
+
+Cypress.Commands.add('checkSequenceInDatabase', (sequenceId) => {
+  cy.get(`#sequence-${sequenceId}`).should('have.class', 'in-database');
+  cy.get(`#source-${sequenceId}`).should('have.class', 'in-database');
+});
+
+Cypress.Commands.add('checkSequenceNotInDatabase', (sequenceId) => {
+  cy.get(`#sequence-${sequenceId}`).should('not.have.class', 'in-database');
+  cy.get(`#source-${sequenceId}`).should('not.have.class', 'in-database');
 });

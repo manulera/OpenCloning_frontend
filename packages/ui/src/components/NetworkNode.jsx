@@ -17,9 +17,7 @@ import useDatabase from '../hooks/useDatabase';
 
 const { addToSourcesWithHiddenAncestors, removeFromSourcesWithHiddenAncestors, addSequenceInBetween } = cloningActions;
 
-function SequenceContent({ sequenceId, sequenceIsTemplate }) {
-  const database = useDatabase();
-  const isSavedToDatabase = useSelector((state) => database && Boolean(getSourceDatabaseId(state.cloning.sources, sequenceId)));
+function SequenceContent({ sequenceId, sequenceIsTemplate, isSavedToDatabase }) {
   return (
     <span className="tf-nc" style={{ borderColor: isSavedToDatabase ? 'green' : 'default' }}>
       <span className="node-text">
@@ -39,13 +37,14 @@ function SequenceContent({ sequenceId, sequenceIsTemplate }) {
 
 const MemoizedSequenceContent = React.memo(SequenceContent);
 
-function SequenceWrapper({ children, sequenceId, sequenceIsTemplate }) {
+function SequenceWrapper({ children, sequenceId, sequenceIsTemplate, isSavedToDatabase }) {
   if (sequenceId === null) {
     return children;
   }
+  const className = 'sequence-node' + (isSavedToDatabase ? ' in-database' : '');
   return (
-    <li key={sequenceId} id={`sequence-${sequenceId}`} className="sequence-node">
-      <MemoizedSequenceContent {...{ sequenceId, sequenceIsTemplate }} />
+    <li key={sequenceId} id={`sequence-${sequenceId}`} className={className}>
+      <MemoizedSequenceContent {...{ sequenceId, sequenceIsTemplate, isSavedToDatabase }} />
       <ul>
         {children}
       </ul>
@@ -101,10 +100,11 @@ function NetWorkNode({ sourceId }) {
   const Icon = ancestorsHidden ? VisibilityIcon : VisibilityOffIcon;
   const visibilityIconToolTip = ancestorsHidden ? 'Show ancestors' : 'Hide ancestors';
   const isSavedToDatabase = database && hasDatabaseId;
+  const className = 'source-node' + (isSavedToDatabase ? ' in-database' : '');
 
   return (
-    <SequenceWrapper {...{ sequenceId, sequenceIsTemplate }}>
-      <li id={`source-${sourceId}`} className="source-node" style={{ marginBottom: ancestorsHidden ? '30px' : undefined }}>
+    <SequenceWrapper {...{ sequenceId, sequenceIsTemplate, isSavedToDatabase }}>
+      <li id={`source-${sourceId}`} className={className} style={{ marginBottom: ancestorsHidden ? '30px' : undefined }}>
         <Box component="span" className="tf-nc" style={{ borderColor: isSavedToDatabase ? 'green' : 'default' }}>
           <span className="node-text">
             <SourceBox {...{ sourceId }}>

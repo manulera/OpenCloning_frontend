@@ -21,10 +21,14 @@ declare namespace Cypress {
         loadExample(name: any): Chainable<any>;
         changeTab(tabName: any, extraSelector?: string): Chainable<any>;
         closeAlerts(): Chainable<any>;
+        openCloningAlertExists(message: any): Chainable<any>;
         dbAlertExists(message: any): Chainable<any>;
         closeDbAlerts(): Chainable<any>;
         disableCache(): Chainable<any>;
         clearChip(text: any, parentSelector?: string): Chainable<any>;
+        dragAndDropFile(filePath: any): Chainable<any>;
+        checkSequenceInDatabase(sequenceId: any): Chainable<any>;
+        checkSequenceNotInDatabase(sequenceId: any): Chainable<any>;
         addTagInTableTest(resourcePlural: any): Chainable<any>;
         addTagInDetailPageTest(resourcePlural: any, resourceName: any, expectedTagName: any): Chainable<any>;
         openCloningDbTablePaginationTest(resourcePlural: any, pageTestId: any): Chainable<any>;
