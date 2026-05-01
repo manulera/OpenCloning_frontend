@@ -33,7 +33,6 @@ const endpoints = {
   workspaces: '/workspaces',
   postWorkspace: '/workspaces',
   workspace: (id) => `/workspaces/${id}`,
-  workspaceInvite: (id) => `/workspaces/${id}/invite`,
 };
 
 export default endpoints;
