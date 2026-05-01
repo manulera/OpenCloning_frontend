@@ -214,29 +214,25 @@ describe('SequencesPage', () => {
   it('clicking on add to design tab button adds sequences to the design tab', () => {
     cy.intercept('GET', 'http://localhost:8001/sequences*').as('getSequences');
     cy.intercept('GET', 'http://localhost:8001/sequence/*/text_file_sequence').as('getSequenceTextFile');
-    cy.e2eLogin('/sequences', 'view-only-user@example.com', 'password');
-    cy.wait('@getSequences').then(({ response }) => {
-      cy.get('button').contains('Add to Design Tab').should('not.exist');
-      cy.get('button').contains('Tag Sequences').should('not.exist');
+    cy.e2eLogin('/sequences?name=lacz', 'view-only-user@example.com', 'password');
+    cy.wait('@getSequences')
+    cy.get('button').contains('Add to Design Tab').should('not.exist');
+    cy.get('button').contains('Tag Sequences').should('not.exist');
 
-      const selectedSequences = [
-        response.body.items.find((sequence) => sequence.name === 'pREX0008'),
-        response.body.items.find((sequence) => sequence.name === 'excised_plasmid'),
-      ];
+    const selectedSequences = ['entry_clone_lacZ', 'expression_clone_lacZ'];
 
-      selectedSequences.forEach((sequence) => {
-        cy.get('tbody tr').filter(`:contains(${sequence.name})`).within(() => {
-          cy.get('input').eq(0).should('not.be.checked');
-          cy.get('input').eq(0).click();
-          cy.get('input').eq(0).should('be.checked');
-        });
+    selectedSequences.forEach((name) => {
+      cy.get('tbody tr').filter(`:contains(${name})`).within(() => {
+        cy.get('input').eq(0).should('not.be.checked');
+        cy.get('input').eq(0).click();
+        cy.get('input').eq(0).should('be.checked');
       });
-
-      cy.get('button').contains('Add to Design Tab').click();
-      cy.wait('@getSequenceTextFile');
-      cy.changeTab('Design');
-      cy.get('.open-cloning', { timeout: 20000 }).contains(selectedSequences[0].name).should('exist');
-      cy.get('.open-cloning').contains(selectedSequences[1].name).should('exist');
     });
+
+    cy.get('button').contains('Add to Design Tab').click();
+    cy.wait('@getSequenceTextFile');
+    cy.changeTab('Design');
+    cy.get('.open-cloning', { timeout: 20000 }).contains(selectedSequences[0]).should('exist');
+    cy.get('.open-cloning').contains(selectedSequences[1]).should('exist');
   });
 });

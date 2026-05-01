@@ -104,10 +104,15 @@ Cypress.Commands.add('interceptOpenCloningDBStub', (stubOrName, options = {}) =>
 
 Cypress.Commands.add('e2eLogin', (page, email, password) => {
   cy.visit(page);
-  cy.get('input[type="email"]').type(email, { delay: 0 });
-  cy.get('input[type="password"]').type(password, { delay: 0 });
+  // Split page into pathname and search params
+  const url = new URL(page, 'http://localhost:8001');
+  const pathname = url.pathname;
+  const searchParams = url.search;
+  cy.setInputValue('Email', email);
+  cy.setInputValue('Password', password);
   cy.get('button[type="submit"]').click();
-  cy.location('pathname').should('eq', page);
+  cy.location('pathname').should('eq', pathname);
+  cy.location('search').should('eq', searchParams);
 });
 
 Cypress.Commands.add('resetDB', () => {

@@ -2,31 +2,16 @@ describe('LinesPage', () => {
   it('should render and make the right search request', () => {
     cy.intercept('GET', 'http://localhost:8001/lines*').as('getLines');
     cy.e2eLogin('/lines', 'view-only-user@example.com', 'password');
-    cy.wait('@getLines').then(({ response, request }) => {
+    cy.wait('@getLines').then(({ request }) => {
       expect(request.query).to.deep.equal({ page: '1', size: '25' });
       cy.get('h5').contains('Lines').should('exist');
 
-      const lines = response.body.items;
-      const exampleLine = lines.find((line) => line.uid === 'crispr_hdr-line');
-
-      expect(exampleLine).to.exist;
-      const alleleNames = exampleLine.sequences_in_line
-        .filter((sequence) => sequence.sequence_type === 'allele')
-        .map((sequence) => sequence.name);
-      const plasmidNames = exampleLine.sequences_in_line
-        .filter((sequence) => sequence.sequence_type === 'plasmid')
-        .map((sequence) => sequence.name);
-
-      expect(alleleNames).to.include('3xHA-ase1');
-      expect(plasmidNames).to.include('pFA6a-3HA-kanMX6');
-      expect(exampleLine.tags.map((tag) => tag.name)).to.include('crispr_hdr');
-
       cy.get('tbody tr')
-        .filter(`:contains(${exampleLine.uid})`)
+        .filter(`:contains(crispr_hdr-line)`)
         .should('have.length', 1)
         .first()
         .within(() => {
-          cy.get('td').eq(1).should('contain', exampleLine.uid);
+          cy.get('td').eq(1).should('contain', 'crispr_hdr-line');
           cy.get('td').eq(2).should('contain', '3xHA-ase1');
           cy.get('td').eq(3).should('contain', 'pFA6a-3HA-kanMX6');
           cy.get('td').eq(4).contains('crispr_hdr').should('exist');

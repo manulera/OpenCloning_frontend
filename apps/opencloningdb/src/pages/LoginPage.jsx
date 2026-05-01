@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, TextField, Typography, Link, Alert, CircularProgress } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
@@ -19,7 +19,8 @@ export default function LoginPage() {
   const { applySession } = useChangeWorkspace();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname ?? '/sequences';
+  const from = location.state?.from ?? '/sequences';
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

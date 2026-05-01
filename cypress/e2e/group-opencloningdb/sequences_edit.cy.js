@@ -11,7 +11,7 @@ describe('Actions that can be perfomed by an edit user on the Sequences page', (
   it('can add and remove sequencing files from the detail page', () => {
     const sequenceName = 'pREX0008';
     cy.intercept('GET', `http://localhost:8001/sequences*`).as('getSequences');
-    cy.e2eLogin(`/sequences`, 'bootstrap@example.com', 'password');
+    cy.e2eLogin(`/sequences?name=pREX0008`, 'bootstrap@example.com', 'password');
     cy.wait('@getSequences').then(({ response }) => {
       const sequence = response.body.items.find((item) => item.name === sequenceName);
       cy.intercept('GET', `http://localhost:8001/sequence/${sequence.id}/sequencing_files`).as('getSequenceSequencingFiles');
@@ -39,7 +39,7 @@ describe('Actions that can be perfomed by an edit user on the Sequences page', (
   it('can add and remove sample UIDs from the detail page', () => {
     const sequenceName = 'pREX0008';
     cy.intercept('GET', `http://localhost:8001/sequences*`).as('getSequences');
-    cy.e2eLogin(`/sequences`, 'bootstrap@example.com', 'password');
+    cy.e2eLogin(`/sequences?name=pREX0008`, 'bootstrap@example.com', 'password');
     cy.wait('@getSequences').then(({ response }) => {
       const sequence = response.body.items.find((item) => item.name === sequenceName);
       cy.get('tbody tr button').contains(sequenceName).click();
@@ -75,7 +75,7 @@ describe('Actions that can be perfomed by an edit user on the Sequences page', (
   });
   it('can change name but not sequence type in circular sequence', () => {
 
-    cy.e2eLogin(`/sequences`, 'bootstrap@example.com', 'password');
+    cy.e2eLogin(`/sequences?name=pREX0008`, 'bootstrap@example.com', 'password');
     cy.get('tbody tr button').contains('pREX0008').click();
     cy.get('[data-testid="sequence-header"]').within(() => {
       cy.get('[aria-label="Edit name and type"]').click();
@@ -90,7 +90,7 @@ describe('Actions that can be perfomed by an edit user on the Sequences page', (
     cy.closeDbAlerts();
   });
   it('can change name and sequence type in linear sequence', () => {
-    cy.e2eLogin(`/sequences`, 'bootstrap@example.com', 'password');
+    cy.e2eLogin(`/sequences?name=reconstituted_locus`, 'bootstrap@example.com', 'password');
     cy.get('tbody tr button').contains('reconstituted_locus').click();
     cy.get('[data-testid="sequence-header"]').within(() => {
       cy.contains('Linear DNA').should('exist');
