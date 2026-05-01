@@ -72,6 +72,7 @@ export default [
       'vitest/valid-expect-in-promise': 'off',
       'vitest/valid-expect': 'off',
       'vitest/no-focused-tests': ['error', { fixable: false }],
+      'vitest/no-standalone-expect': 'off',
     }
   }
 ];

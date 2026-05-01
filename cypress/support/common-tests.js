@@ -39,3 +39,35 @@ Cypress.Commands.add('addTagInDetailPageTest', (resourcePlural, resourceName, ex
 
   });
 });
+
+/** Requires seeded list total > 10 so page 2 exists when size is 10. */
+Cypress.Commands.add('openCloningDbTablePaginationTest', (resourcePlural, pageTestId) => {
+  cy.intercept('GET', `http://localhost:8001/${resourcePlural}*`).as('list');
+  cy.e2eLogin(`/${resourcePlural}`, 'view-only-user@example.com', 'password');
+  cy.wait('@list').then(({ response }) => {
+    expect(response.body.total).to.be.greaterThan(10);
+  });
+  cy.get(`${pageTestId} .MuiTablePagination-select`).click();
+  cy.get('ul[role="listbox"] li').contains(/^10$/).click();
+  cy.wait('@list').then(({ request }) => {
+    expect(request.query).to.have.property('page', '1');
+    expect(request.query).to.have.property('size', '10');
+  });
+  cy.get('tbody tr').should('have.length', 10);
+  cy.get(`${pageTestId} .MuiTablePagination-actions button[aria-label="Go to next page"]`).click();
+  cy.wait('@list').then(({ request }) => {
+    expect(request.query).to.have.property('page', '2');
+    expect(request.query).to.have.property('size', '10');
+  });
+});
+
+Cypress.Commands.add('openCloningDbTableSelectAllTest', (resourcePlural, pageTestId, selectAllAriaLabel, bulkButtonLabel) => {
+  cy.intercept('GET', `http://localhost:8001/${resourcePlural}*`).as('list');
+  cy.e2eLogin(`/${resourcePlural}`, 'view-only-user@example.com', 'password');
+  cy.wait('@list');
+  cy.get(`${pageTestId} [aria-label="${selectAllAriaLabel}"]`).click();
+  cy.get(`${pageTestId} tbody tr`).each(($tr) => {
+    cy.wrap($tr).find('input[type="checkbox"]').first().should('be.checked');
+  });
+  cy.get(`${pageTestId} button`).contains(bulkButtonLabel).should('exist');
+});

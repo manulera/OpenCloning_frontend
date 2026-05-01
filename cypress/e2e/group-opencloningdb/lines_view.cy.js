@@ -91,7 +91,11 @@ describe('LinesPage', () => {
     });
   });
 
-  it('TODO: add the second primer-parity line case when lines can be added to the design tab', () => {
-    // Placeholder requested by the user: Lines currently have no Add to Design Tab flow on the list or detail page.
+  it('paginates the table after lowering rows per page', () => {
+    cy.openCloningDbTablePaginationTest('lines', '[data-testid="lines-page"]');
+  });
+
+  it('select all checks every row and shows bulk actions', () => {
+    cy.openCloningDbTableSelectAllTest('lines', '[data-testid="lines-page"]', 'select all lines', 'Tag Lines');
   });
 });

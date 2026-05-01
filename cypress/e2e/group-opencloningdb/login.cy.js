@@ -32,4 +32,14 @@ describe('opencloningdb login', () => {
     cy.visit('/sequences');
     cy.location('pathname').should('eq', '/login');
   });
+
+  it('after login, returns to the originally requested path and query', () => {
+    cy.visit('/lines?uid=crispr_hdr-line');
+    cy.location('pathname').should('eq', '/login');
+    cy.setInputValue('Email', 'view-only-user@example.com');
+    cy.setInputValue('Password', 'password');
+    cy.get('button[type="submit"]').click();
+    cy.location('pathname').should('eq', '/lines');
+    cy.location('search').should('eq', '?uid=crispr_hdr-line');
+  });
 });

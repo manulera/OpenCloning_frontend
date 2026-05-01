@@ -27,6 +27,8 @@ declare namespace Cypress {
         clearChip(text: any, parentSelector?: string): Chainable<any>;
         addTagInTableTest(resourcePlural: any): Chainable<any>;
         addTagInDetailPageTest(resourcePlural: any, resourceName: any, expectedTagName: any): Chainable<any>;
+        openCloningDbTablePaginationTest(resourcePlural: any, pageTestId: any): Chainable<any>;
+        openCloningDbTableSelectAllTest(resourcePlural: any, pageTestId: any, selectAllAriaLabel: any, bulkButtonLabel: any): Chainable<any>;
         mount(component: any, options?: object): Chainable<any>;
         loginToOpenCloningDB(email: any, password: any, workspaceId: any): Chainable<any>;
         mockLogin(): Chainable<any>;

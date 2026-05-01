@@ -118,4 +118,12 @@ describe('Actions that can be perfomed by a view-only user on the Primers page',
       cy.get('.primer-table-container').contains(firstTwoPrimers[1].name).should('exist');
     });
   });
+
+  it('paginates the table after lowering rows per page', () => {
+    cy.openCloningDbTablePaginationTest('primers', '[data-testid="primers-page"]');
+  });
+
+  it('select all checks every row and shows bulk actions', () => {
+    cy.openCloningDbTableSelectAllTest('primers', '[data-testid="primers-page"]', 'select all primers', 'Add to Design Tab');
+  });
 });

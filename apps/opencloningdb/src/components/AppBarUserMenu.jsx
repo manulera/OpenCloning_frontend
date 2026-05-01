@@ -26,7 +26,7 @@ export default function AppBarUserMenu({ userName, workspaceName, onLogout, onSw
   return (
     <>
       <Tooltip title="Account">
-        <IconButton color="inherit" onClick={handleOpen} sx={{ borderRadius: 2, px: 1 }}>
+        <IconButton color="inherit" data-testid="opencloningdb-appbar-account" onClick={handleOpen} sx={{ borderRadius: 2, px: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Avatar sx={{ width: 30, height: 30 }}>
               <PersonIcon fontSize="small" />

@@ -235,4 +235,12 @@ describe('SequencesPage', () => {
     cy.get('.open-cloning', { timeout: 20000 }).contains(selectedSequences[0]).should('exist');
     cy.get('.open-cloning').contains(selectedSequences[1]).should('exist');
   });
+
+  it('paginates the table after lowering rows per page', () => {
+    cy.openCloningDbTablePaginationTest('sequences', '[data-testid="sequences-page"]');
+  });
+
+  it('select all checks every row and shows bulk actions', () => {
+    cy.openCloningDbTableSelectAllTest('sequences', '[data-testid="sequences-page"]', 'select all sequences', 'Add to Design Tab');
+  });
 });
