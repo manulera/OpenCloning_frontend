@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function useDebouncedSearchQuery(getQuery, { minChars = 3, debounceMs = 500 } = {}) {
   const [input, setInput] = useState('');
@@ -29,7 +28,7 @@ export default function useDebouncedSearchQuery(getQuery, { minChars = 3, deboun
   const autocompleteProps = {
     inputValue: input,
     onInputChange: (_event, value, reason) => {
-      if (reason === 'input'|| reason === 'reset') setInput(value);
+      if (reason === 'input' || reason === 'reset') setInput(value);
     },
     filterOptions: (x) => syncing ? [] : x,
     noOptionsText,
