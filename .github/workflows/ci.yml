@@ -116,7 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4, "component", "unit-tests", "opencloningdb1"]
+        group: [1, 2, 3, 4, "component", "unit-tests", "opencloningdb"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -212,7 +212,7 @@ jobs:
         run: corepack enable
 
       - name: Cypress run E2E tests (OpenCloning)
-        if: matrix.group != 'component' && matrix.group != 'unit-tests' && matrix.group != 'opencloningdb1'
+        if: matrix.group != 'component' && matrix.group != 'unit-tests' && matrix.group != 'opencloningdb'
         uses: cypress-io/github-action@v6
         env:
           VITE_COVERAGE: "true"
@@ -223,7 +223,7 @@ jobs:
           install: false
 
       - name: Cypress run E2E tests (OpenCloningDB)
-        if: matrix.group == 'opencloningdb1'
+        if: matrix.group == 'opencloningdb'
         uses: cypress-io/github-action@v6
         env:
           VITE_COVERAGE: "true"
