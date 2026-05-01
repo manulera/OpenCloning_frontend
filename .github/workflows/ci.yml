@@ -116,7 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4, "component", "unit-tests", "opencloningdb"]
+        group: [1, 2, 3, 4, "component", "unit-tests", "opencloningdb1"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -128,24 +128,24 @@ jobs:
         run: |
           git describe --tags
 
-      # - name: Cache mafft
-      #   id: cache-mafft
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: /usr/bin/mafft
-      #     key: ${{ runner.os }}-mafft
+      - name: Cache mafft
+        id: cache-mafft
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/mafft
+          key: ${{ runner.os }}-mafft
 
-      # - name: Install mafft
-      #   if: steps.cache-mafft.outputs.cache-hit != 'true'
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y mafft
+      - name: Install mafft
+        if: steps.cache-mafft.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mafft
 
-      # - name: Download MARS executable
-      #   run: |
-      #     wget https://github.com/manulera/MARS/releases/download/v0.2/mars-Linux
-      #     chmod +x mars-Linux
-      #     sudo mv mars-Linux /usr/local/bin/mars
+      - name: Download MARS executable
+        run: |
+          wget https://github.com/manulera/MARS/releases/download/v0.2/mars-Linux
+          chmod +x mars-Linux
+          sudo mv mars-Linux /usr/local/bin/mars
 
       - name: Install Python
         uses: actions/setup-python@v5.4.0
