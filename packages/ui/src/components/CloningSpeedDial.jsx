@@ -86,6 +86,7 @@ function useLocateSequencesInDatabaseAction() {
 function CloningSpeedDial() {
   const database = useDatabase();
   const locateSequencesInDatabaseAction = useLocateSequencesInDatabaseAction();
+  if (!database || !database.locateSequenceInDatabase) return null;
   return (
     // <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
     <Box sx={{ position: 'fixed', bottom: 10, left: 10, zIndex: 1000 }}>
