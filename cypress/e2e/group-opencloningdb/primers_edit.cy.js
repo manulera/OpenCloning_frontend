@@ -1,0 +1,57 @@
+describe('Actions that can be perfomed by an edit user on the Primers page', () => {
+  afterEach(() => {
+    cy.resetDB();
+  })
+  it('can tag primers from the table', () => {
+    cy.addTagInTableTest('primers', 'input_entity');
+  });
+  it('can remove and add tags from the detail page', () => {
+    cy.addTagInDetailPageTest('primers', 'fwd_restriction_then_ligation', 'restriction_then_ligation');
+  });
+  it('can edit the name and UID of a primer', () => {
+    cy.e2eLogin('/primers?name=rvs_restriction_then_ligation', 'bootstrap@example.com', 'password');
+    cy.get('tbody tr').contains('rvs_restriction_then_ligation').click();
+    cy.get('[data-testid="resource-detail-header-title"]').contains('rvs_restriction_then_ligation').should('exist');
+    cy.get('[aria-label="Edit name and UID"]').click();
+    cy.get('[data-testid="resource-detail-header-title"]').within(() => {
+      cy.contains('Name must be at least 2 characters').should('not.exist');
+      cy.setInputValue('Name', '1', 'div');
+      cy.contains('Name must be at least 2 characters').should('exist');
+      cy.setInputValue('Name', 'new_name', 'div');
+      cy.setInputValue('UID', 'ML7', 'div'); // Existing UID
+      cy.get('button').contains('Save').click();
+      cy.dbAlertExists("Primer UID 'ML7' already exists");
+      cy.closeDbAlerts();
+      cy.setInputValue('UID', 'new_uid', 'div');
+      cy.get('button').contains('Save').click();
+      cy.dbAlertExists('Primer updated successfully');
+      cy.closeDbAlerts();
+      cy.get('button').contains('Save').should('not.exist');
+      cy.contains('new_name').should('exist');
+      cy.contains('new_uid').should('exist');
+    });
+  });
+  it('can add primers from the design tab', () => {
+    cy.e2eLogin('/design', 'bootstrap@example.com', 'password');
+    cy.addPrimer('test_primer', 'AACCCCTTTGGG').then(() => {
+      cy.get('.primer-table-container').contains('test_primer').should('exist');
+      cy.intercept('POST', 'http://localhost:8001/primer').as('addPrimer');
+      cy.changeTab('Primers', '#opencloning-app-tabs');
+      cy.get('.primer-table-container [data-testid="SaveIcon"]').click();
+      cy.get('[data-testid="submit-to-database-component"]').within(() => {
+        cy.get('input#resource_title').should('have.value', 'test_primer');
+        cy.contains('To change the primer name').should('exist');
+        cy.get('button').contains('Submit').click();
+      });
+      cy.wait('@addPrimer');
+      cy.get('.primer-table-container').contains('test_primer').should('exist');
+      cy.changeTab('Primers', '[data-testid="opencloningdb-app-tabs"]');
+      cy.get('[data-testid="primers-page"] tbody tr').last().within(() => {
+        cy.get('td').contains('test_primer').should('exist');
+        cy.get('td').contains('AACCCCTTTGGG').should('exist');
+      });
+      
+
+    });
+  });
+});
