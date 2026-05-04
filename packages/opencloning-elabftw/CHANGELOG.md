@@ -1,5 +1,15 @@
 # @opencloning/opencloning-elabftw
 
+## 1.7.8
+
+### Patch Changes
+
+- [#693](https://github.com/manulera/OpenCloning_frontend/pull/693) [`e830407`](https://github.com/manulera/OpenCloning_frontend/commit/e830407749f4c016c0e7f7ce715f20fb36addebd) Thanks [@manulera](https://github.com/manulera)! - Use template as categoryKey when creating resource, for newer eLabFTW versions, see [this discussion](https://github.com/elabftw/elabftw/discussions/6764).
+
+- Updated dependencies []:
+  - @opencloning/ui@1.7.8
+  - @opencloning/utils@1.7.8
+
 ## 1.7.7
 
 ### Patch Changes

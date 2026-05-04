@@ -1,5 +1,13 @@
 # @opencloning/ui
 
+## 1.7.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @opencloning/store@1.7.8
+  - @opencloning/utils@1.7.8
+
 ## 1.7.7
 
 ### Patch Changes
