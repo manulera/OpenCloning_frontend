@@ -26,7 +26,7 @@ function SequenceSamplesSection({ sequenceId, sampleUids }) {
         {sampleUids.length > 0 ? (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {sampleUids.map((uid) => (
-              <SampleUidBadge key={uid} uid={uid} />
+              <SampleUidBadge key={uid} uid={uid} canDelete />
             ))}
           </Box>
         ) : (

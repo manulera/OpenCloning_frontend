@@ -71,6 +71,15 @@ describe('Actions that can be perfomed by an edit user on the Sequences page', (
       cy.get('[data-testid="sequence-samples-section"]').contains('new_sample_uid2').should('exist');
       cy.dbAlertExists('2 sample UID(s) created successfully');
       cy.closeDbAlerts();
+
+      // Can delete it
+      cy.get('[data-testid="sample-uid-badge-with-delete"]').contains('new_sample_uid2').within(() => {
+        cy.get('svg').click();
+      });
+      cy.dbAlertExists('UID new_sample_uid2 deleted successfully');
+      cy.closeDbAlerts();
+      cy.get('[data-testid="sample-uid-badge-with-delete"]').contains('new_sample_uid').should('exist');
+      cy.get('[data-testid="sample-uid-badge-with-delete"]').contains('new_sample_uid2').should('not.exist');
     });
   });
   it('can change name but not sequence type in circular sequence', () => {
