@@ -95,4 +95,38 @@ describe('workspace and account', () => {
       cy.window().its('localStorage').invoke('getItem', 'token').should('be.null');
     });
   });
+
+  it('changing workspace clears the design tab', () => {
+    cy.e2eLogin('/design', 'bootstrap@example.com', 'password');
+    cy.get('.open-cloning', { timeout: 20000 }).should('exist');
+    cy.manuallyTypeSequence('AACCCCTTTGGG', true);
+    cy.get('li#sequence-1').should('exist');
+    openAccountMenu();
+    cy.contains('Manage workspaces').click();
+    cy.contains('h6', 'Create workspace').closest('.MuiPaper-root').within(() => {
+      cy.setInputValue('Workspace name', 'e2e-second-workspace', 'div');
+      cy.get('button').contains('Create').click();
+    });
+    cy.dbAlertExists('Workspace "e2e-second-workspace" created and activated');
+    cy.closeDbAlerts();
+    cy.get('.MuiToolbar-root .MuiTypography-caption').contains('e2e-second-workspace').should('exist');
+    cy.changeTab('Design');
+    cy.get('.open-cloning').should('exist');
+    cy.get('li#sequence-1').should('not.exist');
+  });
+
+  it('logging out clears the design tab', () => {
+    cy.e2eLogin('/design', 'view-only-user@example.com', 'password');
+    cy.get('.open-cloning', { timeout: 20000 }).should('exist');
+    cy.manuallyTypeSequence('AACCCCTTTGGG', true);
+    cy.get('li#sequence-1').should('exist');
+    openAccountMenu();
+    cy.contains('Sign out').click();
+    cy.setInputValue('Email', 'view-only-user@example.com');
+    cy.setInputValue('Password', 'password');
+    cy.get('button[type="submit"]').click();
+    cy.changeTab('Design');
+    cy.get('.open-cloning').should('exist');
+    cy.get('li#sequence-1').should('not.exist');
+  });
 });

@@ -1,9 +1,12 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { batch, useDispatch } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import { setWorkspaceHeader, clearWorkspaceHeader } from '@opencloning/opencloningdb';
 import { setWorkspace, clearUser, setUser } from '../store/authSlice';
 import useStableNavigate from './useStableNavigate';
+import { cloningActions } from '@opencloning/store/cloning';
+
+const { reset: resetCloningState } = cloningActions;
 
 export default function useChangeWorkspace() {
   const dispatch = useDispatch();
@@ -14,20 +17,26 @@ export default function useChangeWorkspace() {
     (workspace) => {
       queryClient.clear();
       setWorkspaceHeader(workspace.id);
-      dispatch(
-        setWorkspace({
-          id: workspace.id,
-          name: workspace.name,
-          role: workspace.role ?? null,
-        }),
-      );
+      batch(() => {
+        dispatch(
+          setWorkspace({
+            id: workspace.id,
+            name: workspace.name,
+            role: workspace.role ?? null,
+          }),
+        );
+        dispatch(resetCloningState());
+      });
     },
     [dispatch, queryClient],
   );
 
   const clearWorkspace = React.useCallback(() => {
     clearWorkspaceHeader();
-    dispatch(setWorkspace(null));
+    batch(() => {
+      dispatch(setWorkspace(null));
+      dispatch(resetCloningState());
+    });
     queryClient.clear();
   }, [dispatch, queryClient]);
 
