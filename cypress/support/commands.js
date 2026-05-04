@@ -193,12 +193,12 @@ Cypress.Commands.add('openCloningAlertExists', (message) => {
 });
 
 Cypress.Commands.add('dbAlertExists', (message) => {
-  cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root`).contains(message).should('exist');
+  cy.document().its('body').find(`div#opencloningdb-error-message-wrapper .MuiAlert-root`).contains(message).should('exist');
 });
 
 Cypress.Commands.add('closeDbAlerts', () => {
-  cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root button`).each(() => {
-    cy.get(`div#opencloningdb-error-message-wrapper .MuiAlert-root button`).first().click();
+  cy.document().its('body').find(`div#opencloningdb-error-message-wrapper .MuiAlert-root button`).each(() => {
+    cy.document().its('body').find(`div#opencloningdb-error-message-wrapper .MuiAlert-root button`).first().click();
   });
 });
 

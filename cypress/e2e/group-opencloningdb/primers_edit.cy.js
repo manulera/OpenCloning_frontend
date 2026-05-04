@@ -8,6 +8,29 @@ describe('Actions that can be perfomed by an edit user on the Primers page', () 
   it('can remove and add tags from the detail page', () => {
     cy.addTagInDetailPageTest('primers', 'fwd_restriction_then_ligation', 'restriction_then_ligation');
   });
+  it('can edit the name and UID of a primer', () => {
+    cy.e2eLogin('/primers?name=rvs_restriction_then_ligation', 'bootstrap@example.com', 'password');
+    cy.get('tbody tr').contains('rvs_restriction_then_ligation').click();
+    cy.get('[data-testid="resource-detail-header-title"]').contains('rvs_restriction_then_ligation').should('exist');
+    cy.get('[aria-label="Edit name and UID"]').click();
+    cy.get('[data-testid="resource-detail-header-title"]').within(() => {
+      cy.contains('Name must be at least 2 characters').should('not.exist');
+      cy.setInputValue('Name', '1', 'div');
+      cy.contains('Name must be at least 2 characters').should('exist');
+      cy.setInputValue('Name', 'new_name', 'div');
+      cy.setInputValue('UID', 'ML7', 'div'); // Existing UID
+      cy.get('button').contains('Save').click();
+      cy.dbAlertExists("Primer UID 'ML7' already exists");
+      cy.closeDbAlerts();
+      cy.setInputValue('UID', 'new_uid', 'div');
+      cy.get('button').contains('Save').click();
+      cy.dbAlertExists('Primer updated successfully');
+      cy.closeDbAlerts();
+      cy.get('button').contains('Save').should('not.exist');
+      cy.contains('new_name').should('exist');
+      cy.contains('new_uid').should('exist');
+    });
+  });
   it('can add primers from the design tab', () => {
     cy.e2eLogin('/design', 'bootstrap@example.com', 'password');
     cy.addPrimer('test_primer', 'AACCCCTTTGGG').then(() => {

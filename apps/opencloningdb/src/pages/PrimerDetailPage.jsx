@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Typography, CircularProgress, Alert, TableContainer, Paper, Box } from '@mui/material';
+import { Typography, CircularProgress, Alert, TableContainer, Paper } from '@mui/material';
 import { openCloningDBHttpClient, endpoints } from '@opencloning/opencloningdb';
 import ResourceDetailHeader from '../components/ResourceDetailHeader';
 import SequenceTable from '../components/SequenceTable';
@@ -10,6 +10,7 @@ import PageContainer from '../components/PageContainer';
 import TopButtonSection from '../components/TopButtonSection';
 import AddToCloningButton from '../components/AddToCloningButton';
 import SampleUidBadge from '../components/SampleUidBadge';
+import EditPrimerNameAndUid from '../components/EditPrimerNameAndUid';
 
 function PrimerDetailPage() {
   const { id } = useParams();
@@ -33,12 +34,15 @@ function PrimerDetailPage() {
     <PageContainer>
       <ResourceDetailHeader
         title={primer.name}
-        afterTitle={primer.uid ? <SampleUidBadge uid={primer.uid} /> : null}
+        afterTitle={primer.uid ? <SampleUidBadge uid={primer.uid} /> : <span><i>No UID</i></span>}
         tags={primer.tags}
         onBack={() => navigate('/primers')}
         backTitle="Back to Primers"
         entityId={id}
         entityType="input_entities"
+        editorComponent={EditPrimerNameAndUid}
+        editorComponentProps={{ primer }}
+        editorIconToolTipText="Edit name and UID"
       />
       <TopButtonSection>
         <AddToCloningButton selectedEntities={[primer]} entityType="primer">

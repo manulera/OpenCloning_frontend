@@ -97,6 +97,16 @@ describe('Actions that can be perfomed by a view-only user on the Primers page',
 
     });
   });
+  it('detail page shows UID if exist, message otherwise', () => {
+    cy.e2eLogin('/primers?name=fwd_restriction_then_ligation', 'view-only-user@example.com', 'password');
+    cy.get('tbody tr').contains('fwd_restriction_then_ligation').click();
+    cy.get('[data-testid="resource-detail-header-title"]').contains('fwd_restriction_then_ligation').should('exist');
+    cy.get('[data-testid="resource-detail-header-title"] span').contains('ML7').should('exist');
+    cy.visit('/primers?name=rvs_restriction_then_ligation');
+    cy.get('tbody tr').contains('rvs_restriction_then_ligation').click();
+    cy.get('[data-testid="resource-detail-header-title"]').contains('rvs_restriction_then_ligation').should('exist');
+    cy.get('[data-testid="resource-detail-header-title"] span').contains('No UID').should('exist');
+  });
   it('clicking on add to design tab button adds primers to the design tab', () => {
     cy.intercept('GET', 'http://localhost:8001/primers*').as('getPrimers');
     cy.e2eLogin('/primers', 'view-only-user@example.com', 'password');
