@@ -24,7 +24,13 @@ const linkToParent = async (childId, parentId) => {
 
 const createResource = async (categoryId) => {
   const eLabFTWVersion = await getELabFTWVersion();
-  const categoryKey = eLabFTWVersion && eLabFTWVersion >= 50300 ? 'category' : 'category_id';
+  let categoryKey
+  // 0 is for development (nightly image)
+  if (eLabFTWVersion >= 50300 || eLabFTWVersion === 0) {
+    categoryKey = 'template';
+  } else {
+    categoryKey = 'category_id';
+  }
   const createdItemResponse = await eLabFTWHttpClient.post(
     '/api/v2/items',
     {
