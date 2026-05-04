@@ -1,5 +1,13 @@
 # syntax-builder
 
+## 0.5.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @opencloning/ui@1.7.8
+  - @opencloning/utils@1.7.8
+
 ## 0.5.7
 
 ### Patch Changes

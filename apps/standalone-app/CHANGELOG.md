@@ -1,5 +1,14 @@
 # standalone-app
 
+## 0.1.36
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @opencloning/ui@1.7.8
+  - @opencloning/store@1.7.8
+  - @opencloning/utils@1.7.8
+
 ## 0.1.35
 
 ### Patch Changes
