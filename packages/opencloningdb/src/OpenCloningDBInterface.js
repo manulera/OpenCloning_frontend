@@ -36,7 +36,6 @@ async function getPrimer(databaseId) {
 
 async function submitPrimerToDatabase({ submissionData, primer }) {
   const payload = {
-    id: 0,
     name: submissionData.title,
     sequence: primer.sequence,
   };
